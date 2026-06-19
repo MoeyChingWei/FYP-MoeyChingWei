@@ -210,10 +210,31 @@ model ChatMessage {
   createdAt DateTime @default(now())
 
   session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  attachments MessageAttachment[]
 
   @@index([sessionId])
   @@index([createdAt])
   @@map("chat_messages")
+}
+
+model MessageAttachment {
+  id           String   @id @default(uuid())
+  messageId    Int
+  fileName     String
+  fileUrl      String
+  fileType     String
+  fileSize     Int
+  mimeType     String?
+  thumbnailUrl String?
+  aiAnalysis   String?  @db.Text
+  uploadedAt   DateTime @default(now())
+  metadata     Json?
+
+  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([uploadedAt])
+  @@map("message_attachments")
 }
 
 model Source {
