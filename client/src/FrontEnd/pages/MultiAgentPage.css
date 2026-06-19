@@ -1,0 +1,55 @@
+.multi-agent-page {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.page-header {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page-header h2 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 响应式 */
+@media (max-width: 992px) {
+  .multi-agent-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .page-header h2 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .multi-agent-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .page-header h2 {
+    font-size: 20px;
+  }
+
+  .page-header p {
+    font-size: 13px;
+  }
+}

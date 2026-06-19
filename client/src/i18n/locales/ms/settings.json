@@ -1,0 +1,42 @@
+{
+  "title": "Tetapan",
+  "sections": {
+    "categorySelection": "Kategori Pemilihan",
+    "companyAddress": "Alamat Syarikat",
+    "feedback": "Maklum Balas",
+    "aiAssistant": "Pembantu AI"
+  },
+  "actions": {
+    "open": "Buka",
+    "manage": "Urus"
+  },
+  "description": "Urus keutamaan dan konfigurasi sistem anda",
+  "companyAddress": {
+    "title": "Alamat Syarikat",
+    "label": "Alamat penghantaran / pengakuan pesanan",
+    "description": "Alamat ini digunakan apabila sistem menjana butiran pengakuan pesanan untuk pembekal.",
+    "placeholder": "Masukkan alamat syarikat",
+    "saveButton": "Simpan Alamat"
+  },
+  "feedback": {
+    "title": "Maklum Balas",
+    "subtitle": "Hantar isu, penambahbaikan, atau komen. Semua pentadbir akan menerima pemberitahuan.",
+    "submitTitle": "Hantar maklum balas",
+    "allFeedbackTitle": "Semua maklum balas",
+    "typeLabel": "Jenis",
+    "descriptionLabel": "Penerangan",
+    "descriptionPlaceholder": "Sila terangkan isu atau idea dengan terperinci.",
+    "type": {
+      "issue": "Isu",
+      "improvement": "Penambahbaikan",
+      "comment": "Komen"
+    },
+    "table": {
+      "type": "Jenis",
+      "description": "Penerangan",
+      "from": "Daripada",
+      "status": "Status",
+      "created": "Dicipta"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "仪表板概览",
+  "welcome": "欢迎回来，{{name}}！",
+  "cards": {
+    "pendingApprovals": "待审批",
+    "purchaseRequests": "采购申请",
+    "purchaseOrders": "采购订单",
+    "monthlySpending": "月度支出"
+  },
+  "charts": {
+    "purchasingTrend": "采购趋势",
+    "spendingByCategory": "分类支出"
+  },
+  "quickActions": {
+    "title": "快捷操作",
+    "createPurchaseRequest": "创建采购申请",
+    "trackingItems": "跟踪项目",
+    "approveRequests": "审批申请",
+    "createPurchaseOrder": "创建采购订单",
+    "viewPurchaseOrders": "查看采购订单"
+  },
+  "recentActivity": {
+    "title": "最近活动",
+    "noNewActivity": "无新活动"
+  },
+  "userGuide": "用户指南"
+}

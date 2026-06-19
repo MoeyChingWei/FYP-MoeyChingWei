@@ -1,0 +1,65 @@
+/* ScrollButtons.css */
+
+.scroll-buttons-container {
+  position: fixed;
+  right: 32px;
+  bottom: 110px; /* Leave space for ChatBot button (80px height + 30px gap) */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999;
+}
+
+.scroll-button {
+  width: 48px !important;
+  height: 48px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+.scroll-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+}
+
+.scroll-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.scroll-button .anticon {
+  color: white;
+  font-size: 18px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .scroll-buttons-container {
+    right: 16px;
+    bottom: 90px; /* ChatBot button also needs space on mobile */
+  }
+
+  .scroll-button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .scroll-button .anticon {
+    font-size: 16px;
+  }
+}

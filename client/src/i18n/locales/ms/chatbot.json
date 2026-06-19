@@ -1,0 +1,63 @@
+{
+  "page": {
+    "title": "Pembantu AI OptiMind",
+    "newChatPlaceholder": "Sembang baharu dalam OptiMind...",
+    "typePlaceholder": "Taip mesej... (Enter untuk hantar, Shift+Enter untuk baris baharu)",
+    "thinkingMessage": "AI sedang berfikir..."
+  },
+  "buttons": {
+    "send": "Hantar",
+    "newChat": "Sembang Baharu",
+    "delete": "Padam",
+    "clearAllHistory": "Padam Semua Sejarah",
+    "upload": "Muat Naik Dokumen"
+  },
+  "tabs": {
+    "chats": "Sembang",
+    "sources": "Dokumen"
+  },
+  "history": {
+    "noHistory": "Tiada sejarah sembang lagi",
+    "newConversation": "Perbualan Baharu",
+    "messages": "mesej"
+  },
+  "sources": {
+    "uploadTitle": "Muat Naik Dokumen",
+    "uploadDescription": "Seret dan lepaskan fail di sini, atau klik untuk semak imbas. Tambah konteks pada perbualan anda dengan dokumen yang berkaitan.",
+    "uploadFormats": "PDF, Excel, Word, Teks",
+    "uploading": "Memuat naik...",
+    "noDocuments": "Tiada dokumen lagi",
+    "noDocumentsDescription": "Muat naik dokumen untuk memberikan AI lebih banyak konteks tentang perniagaan, produk atau keperluan anda.",
+    "loadingDocuments": "Memuatkan dokumen anda...",
+    "uploadSuccess": "berjaya dimuat naik",
+    "uploadFailed": "Muat naik gagal",
+    "deleteSuccess": "Dokumen dipadam",
+    "deleteFailed": "Gagal memadam dokumen"
+  },
+  "formats": {
+    "pdf": "PDF",
+    "excel": "Excel",
+    "word": "Word",
+    "text": "Teks"
+  },
+  "messages": {
+    "loginRequired": "Sila log masuk terlebih dahulu",
+    "sessionDeleted": "Sesi dipadam",
+    "sessionDeleteFailed": "Gagal memadam sesi",
+    "allHistoryCleared": "Semua sejarah sembang dipadam",
+    "clearHistoryFailed": "Gagal memadam sejarah sembang",
+    "sendFailed": "Gagal menghantar mesej",
+    "createSessionFailed": "Gagal mencipta perbualan",
+    "userNotLoggedIn": "Pengguna tidak log masuk, tidak dapat mencipta perbualan baharu",
+    "cannotClearHistory": "Pengguna tidak log masuk, tidak dapat memadam sejarah sembang"
+  },
+  "modal": {
+    "clearHistoryTitle": "Padam semua sejarah sembang?",
+    "clearHistoryContent": "Ini akan memadam secara kekal semua perbualan dan mesej AI untuk akaun anda.",
+    "confirmButton": "Padam Semua Sejarah",
+    "cancelButton": "Batal"
+  },
+  "aria": {
+    "chatOptions": "Pilihan sembang"
+  }
+}

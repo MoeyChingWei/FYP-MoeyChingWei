@@ -1,0 +1,66 @@
+/* Item detail blocks: darker panel so multiple items are easy to tell apart */
+.itemDetailCard {
+  margin-bottom: 18px;
+  border-radius: 12px;
+  border: 1px solid #94a3b8 !important;
+  background: #e2e8f0 !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.1);
+}
+
+.itemDetailCard :global(.ant-card-head) {
+  background: #cbd5e1 !important;
+  border-bottom: 1px solid #94a3b8 !important;
+  min-height: 46px;
+}
+
+.itemDetailCard :global(.ant-card-head-title) {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.itemDetailCard :global(.ant-card-extra) {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.itemDetailCard :global(.ant-card-body) {
+  background: #f1f5f9 !important;
+  padding: 16px 16px 12px !important;
+}
+
+.summarySection {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.formActions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.supplierDetailBox {
+  min-height: 112px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px;
+}
+
+.supplierEntry {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.45);
+}
+
+.supplierEntry:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}

@@ -1,0 +1,39 @@
+@startuml
+title Activity (Detailed) - Profile View, Edit, and Avatar Upload
+
+start
+:User opens Profile page;
+:Frontend requests GET /api/profile\n(with userId + email);
+
+if (Identity check passes?) then (Yes)
+  :Display profile details\n(name, role, department, avatar);
+  if (User edits profile fields?) then (Yes)
+    :Submit PATCH /api/profile;
+    if (Update payload valid?) then (Yes)
+      :Save new profile fields;
+      :Show "Profile updated successfully";
+    else (No)
+      :Show "No valid fields to update";
+    endif
+  else (No)
+    :Keep current profile data;
+  endif
+
+  if (User uploads avatar image?) then (Yes)
+    :Submit POST /api/profile/avatar\n(multipart file + identity fields);
+    if (Image upload valid?) then (Yes)
+      :Store file in uploads folder;
+      :Save avatar URL in database;
+      :Refresh profile preview;
+    else (No)
+      :Show upload error message;
+    endif
+  else (No)
+    :Skip avatar update;
+  endif
+else (No)
+  :Show "Not allowed" / access error;
+endif
+
+stop
+@enduml

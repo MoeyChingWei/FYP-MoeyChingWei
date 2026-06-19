@@ -1,0 +1,63 @@
+{
+  "page": {
+    "title": "OptiMind AI助手",
+    "newChatPlaceholder": "在OptiMind中新建聊天...",
+    "typePlaceholder": "输入消息...（回车发送，Shift+回车换行）",
+    "thinkingMessage": "AI正在思考..."
+  },
+  "buttons": {
+    "send": "发送",
+    "newChat": "新建聊天",
+    "delete": "删除",
+    "clearAllHistory": "清除所有历史记录",
+    "upload": "上传文档"
+  },
+  "tabs": {
+    "chats": "聊天",
+    "sources": "文档"
+  },
+  "history": {
+    "noHistory": "暂无聊天记录",
+    "newConversation": "新对话",
+    "messages": "条消息"
+  },
+  "sources": {
+    "uploadTitle": "上传文档",
+    "uploadDescription": "将文件拖放到此处，或单击浏览。添加相关文档为您的对话提供上下文。",
+    "uploadFormats": "PDF、Excel、Word、文本",
+    "uploading": "上传中...",
+    "noDocuments": "暂无文档",
+    "noDocumentsDescription": "上传文档以为AI提供有关您的业务、产品或需求的更多上下文。",
+    "loadingDocuments": "正在加载您的文档...",
+    "uploadSuccess": "上传成功",
+    "uploadFailed": "上传失败",
+    "deleteSuccess": "文档已删除",
+    "deleteFailed": "删除文档失败"
+  },
+  "formats": {
+    "pdf": "PDF",
+    "excel": "Excel",
+    "word": "Word",
+    "text": "文本"
+  },
+  "messages": {
+    "loginRequired": "请先登录",
+    "sessionDeleted": "会话已删除",
+    "sessionDeleteFailed": "删除会话失败",
+    "allHistoryCleared": "所有聊天记录已清除",
+    "clearHistoryFailed": "清除聊天记录失败",
+    "sendFailed": "发送消息失败",
+    "createSessionFailed": "创建对话失败",
+    "userNotLoggedIn": "用户未登录，无法创建新对话",
+    "cannotClearHistory": "用户未登录，无法清除聊天记录"
+  },
+  "modal": {
+    "clearHistoryTitle": "清除所有聊天记录？",
+    "clearHistoryContent": "这将永久删除您帐户的所有对话和AI消息。",
+    "confirmButton": "清除所有记录",
+    "cancelButton": "取消"
+  },
+  "aria": {
+    "chatOptions": "聊天选项"
+  }
+}

@@ -1,0 +1,24 @@
+.wrap {
+  animation: contentIn 220ms ease-out both;
+  transform-origin: top left;
+}
+
+@keyframes contentIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap {
+    animation: none;
+  }
+}
+

@@ -1,0 +1,35 @@
+@startuml
+title Sequence Diagram - Feedback Submit and Admin Notification
+
+actor User
+participant "React Frontend" as FE
+participant "Feedback Route" as FR
+database "Prisma / PostgreSQL" as DB
+participant "Notification Service" as NS
+participant "Admin Users" as Admin
+
+User -> FE: Submit feedback form
+FE -> FR: POST /api/feedback {userId, type, description}
+FR -> FR: Validate input
+
+alt invalid input
+  FR --> FE: 400 validation error
+  FE --> User: Show validation message
+else valid input
+  FR -> DB: find user
+  DB --> FR: user or null
+  alt user not found
+    FR --> FE: 404 user not found
+  else user found
+    FR -> DB: create feedback
+    DB --> FR: feedback created
+    FR -> NS: notifyAdminsForFeedback(...)
+    NS -> DB: create notification rows
+    DB --> NS: saved
+    NS --> Admin: In-app notification(s) on Overview
+    FR --> FE: 201 created + feedback payload
+    FE --> User: Show success message
+  end
+end
+
+@enduml

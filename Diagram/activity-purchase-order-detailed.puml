@@ -1,0 +1,36 @@
+@startuml
+title Activity (Detailed) - Purchase Order Review by Executive and Approval by Manager
+
+|System|
+start
+ :Auto-generate Purchase Order as Draft\n(from approved request);
+ :Place PO draft in Executive review queue;
+
+|Executive|
+:Open Purchase Order Review;
+:Check PO details (supplier, terms, items);
+:Submit PO to Manager;
+
+|System|
+:Detect PO submission;
+:Send notification to Manager\n(in-app + Gmail);
+
+|Manager|
+:Open Purchase Order Approval;
+:Review PO details;
+if (Manager approves?) then (Yes)
+  |System|
+  :Set PO status = approved;
+  :Notify Requester (in-app + Gmail)\n"PO approved, waiting supplier acknowledge";
+  :Notify Supplier (in-app + Gmail)\n"New order for acknowledgement";
+  stop
+else (No)
+  |Manager|
+  :Write rejection reason;
+  |System|
+  :Set PO status = rejected;
+  :Send rejection reason to Requester\n(in-app + Gmail);
+  stop
+endif
+
+@enduml

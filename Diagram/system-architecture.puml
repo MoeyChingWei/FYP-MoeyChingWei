@@ -1,0 +1,103 @@
+@startuml
+title System Architecture - FYP MoeyChingWei (Detailed Backend Split)
+left to right direction
+
+actor User
+actor Admin
+
+rectangle "Frontend (React + TypeScript)" as FE {
+  component "Pages\nOverview / User & Access / Purchasing /\nSupplier Overview / Tracking Item / Settings" as FEPages
+  component "Overview Widgets\nNotifications panel, quick entry cards" as FEWidgets
+
+  component "Core Domain Modules\nPR (Create/Review/Approve)\nPO (Create/Review/Approve)\nSupplier Fulfillment (Ack/Delivery/GRN)" as FECore
+  component "Platform Modules\nAuth & Session / Notifications / Feedback" as FEPlatform
+  component "Support Modules\nSettings / Tracking Item / RBAC UI" as FESupport
+
+  component "API Client Layer\nshared/api/*" as FEApi
+}
+
+rectangle "Backend (Node.js + Express)" as BE {
+  package "API Gateway / Route Groups" {
+    component "Auth Login Route\nPOST /api/login" as AuthLogin
+    component "Password Recovery Routes\nPOST /api/forgot-password\nPOST /api/reset-password" as AuthRecovery
+    component "Profile Routes\nGET/PATCH /api/profile\nPOST /api/profile/avatar" as ProfileRoutes
+
+    component "Workflow API\nGET/PUT /api/workflow/:store" as WorkflowApi
+    component "Workflow Store: purchase-requests" as WfPR
+    component "Workflow Store: purchase-orders" as WfPO
+    component "Workflow Store: supplier-order-acks" as WfAck
+    component "Workflow Store: deliveries" as WfDel
+    component "Workflow Store: grns" as WfGrn
+
+    component "Notifications API\nGET/PATCH/DELETE /api/notifications/*" as NotiApi
+    component "Feedback API\nGET/POST /api/feedback/*" as FbApi
+    component "Admin Users API\n/api/admin/users*" as AdminUsersApi
+    component "Admin Supplier Types API\n/api/admin/supplier-types*" as AdminSuppApi
+    component "Purchasing Lookup API\n/api/purchasing/*" as LookupApi
+    component "Health Endpoint\nGET /" as HealthApi
+  }
+
+  package "Service Layer" {
+    component "Notification Service\nprocessWorkflowNotifications\nnotifyAdminsForFeedback" as NotiSvc
+    component "Email Services\nemailNotifications\nsendResetEmail" as EmailSvc
+  }
+}
+
+database "PostgreSQL (Prisma ORM)" as DB
+folder "uploads/" as Uploads
+cloud "Email Provider" as Email
+
+User --> FEPages
+Admin --> FEPages
+
+FEPages --> FEWidgets
+FEPages --> FECore
+FEPages --> FEPlatform
+FEPages --> FESupport
+
+FEWidgets --> FEApi
+FECore --> FEApi
+FEPlatform --> FEApi
+FESupport --> FEApi
+
+FEApi --> AuthLogin
+FEApi --> AuthRecovery
+FEApi --> ProfileRoutes
+FEApi --> WorkflowApi
+FEApi --> NotiApi
+FEApi --> FbApi
+FEApi --> AdminUsersApi
+FEApi --> AdminSuppApi
+FEApi --> LookupApi
+
+WorkflowApi --> WfPR
+WorkflowApi --> WfPO
+WorkflowApi --> WfAck
+WorkflowApi --> WfDel
+WorkflowApi --> WfGrn
+
+AuthLogin --> DB
+AuthRecovery --> DB
+ProfileRoutes --> DB
+ProfileRoutes --> Uploads
+
+WfPR --> DB
+WfPO --> DB
+WfAck --> DB
+WfDel --> DB
+WfGrn --> DB
+
+NotiApi --> DB
+FbApi --> DB
+AdminUsersApi --> DB
+AdminSuppApi --> DB
+LookupApi --> DB
+
+WorkflowApi --> NotiSvc
+FbApi --> NotiSvc
+NotiSvc --> DB
+NotiSvc --> EmailSvc
+AuthRecovery --> EmailSvc
+EmailSvc --> Email
+
+@enduml

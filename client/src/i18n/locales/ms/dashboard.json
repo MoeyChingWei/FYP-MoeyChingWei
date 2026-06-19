@@ -1,0 +1,27 @@
+{
+  "title": "Gambaran Keseluruhan Dashboard",
+  "welcome": "Selamat kembali, {{name}}!",
+  "cards": {
+    "pendingApprovals": "Kelulusan Tertangguh",
+    "purchaseRequests": "Permintaan Pembelian",
+    "purchaseOrders": "Pesanan Pembelian",
+    "monthlySpending": "Perbelanjaan Bulanan"
+  },
+  "charts": {
+    "purchasingTrend": "Trend Pembelian",
+    "spendingByCategory": "Perbelanjaan Mengikut Kategori"
+  },
+  "quickActions": {
+    "title": "Tindakan Pantas",
+    "createPurchaseRequest": "Cipta Permintaan Pembelian",
+    "trackingItems": "Item Penjejakan",
+    "approveRequests": "Luluskan Permintaan",
+    "createPurchaseOrder": "Cipta Pesanan Pembelian",
+    "viewPurchaseOrders": "Lihat Pesanan Pembelian"
+  },
+  "recentActivity": {
+    "title": "Aktiviti Terkini",
+    "noNewActivity": "Tiada aktiviti baharu"
+  },
+  "userGuide": "Panduan Pengguna"
+}

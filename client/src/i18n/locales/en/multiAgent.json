@@ -1,0 +1,39 @@
+{
+  "title": "🤖 Multi-Agent AI Assistant",
+  "subtitle": "Choose from 6 specialized AI agents with 8 advanced features",
+  "agents": {
+    "general": "General Assistant",
+    "purchase": "Purchase Expert",
+    "analytics": "Data Analyst",
+    "approval": "Approval Advisor",
+    "supplier": "Supplier Coordinator",
+    "document": "Document Specialist"
+  },
+  "tabs": {
+    "chat": "Chat",
+    "statistics": "Statistics"
+  },
+  "tabPane": {
+    "chat": "AI Chat",
+    "statistics": "Usage Statistics"
+  },
+  "features": {
+    "title": "✨ Advanced Features",
+    "quickReplies": "⚡ Quick Replies - Pre-set common questions",
+    "sessionHistory": "📜 Session History - View and restore conversations",
+    "exportChat": "💾 Export Chat - Download in 4 formats",
+    "voiceInput": "🎤 Voice Input - Speech-to-text",
+    "smartRecommendations": "🎯 Smart Recommendations - AI suggests agents",
+    "autoComplete": "💡 Auto-complete - Intelligent suggestions",
+    "agentCollaboration": "🤝 Agent Collaboration - Seamless handoff",
+    "usageStats": "📊 Usage Stats - Track your activity"
+  },
+  "tips": {
+    "title": "💡 Quick Tips",
+    "quickActions": "Click <strong>Quick Actions</strong> for instant queries",
+    "voiceInput": "Use <strong>Voice Input</strong> (microphone icon)",
+    "history": "View <strong>History</strong> to resume past chats",
+    "collaborate": "Try <strong>Collaborate</strong> for complex tasks",
+    "exportConversations": "Export conversations for records"
+  }
+}

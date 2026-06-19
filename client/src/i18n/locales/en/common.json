@@ -1,0 +1,70 @@
+{
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "add": "Add",
+    "open": "Open",
+    "refresh": "Refresh"
+  },
+  "labels": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "description": "Description",
+    "status": "Status",
+    "date": "Date",
+    "amount": "Amount",
+    "type": "Type",
+    "from": "From",
+    "created": "Created"
+  },
+  "all": "All",
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "backToSettings": "Back to settings",
+  "messages": {
+    "success": "Operation successful",
+    "error": "Operation failed",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "confirmDelete": "Are you sure you want to delete?",
+    "unsavedChanges": "You have unsaved changes. Continue?"
+  },
+  "languages": {
+    "en": "English",
+    "zh": "简体中文",
+    "ms": "Bahasa Malaysia"
+  },
+  "login": {
+    "title": "Sign In",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "submitButton": "Sign In",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember me",
+    "errorInvalidCredentials": "Invalid email or password",
+    "errorNetworkError": "Network error. Please try again."
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "minutesAgo_plural": "{{count}} mins ago",
+    "hoursAgo": "{{count}} hour ago",
+    "hoursAgo_plural": "{{count}} hours ago",
+    "daysAgo": "{{count}} day ago",
+    "daysAgo_plural": "{{count}} days ago"
+  }
+}

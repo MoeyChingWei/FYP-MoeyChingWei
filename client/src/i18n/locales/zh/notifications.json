@@ -1,0 +1,30 @@
+{
+  "title": "通知",
+  "subtitle": "基于角色的警报和请求者更新",
+  "markAllAsRead": "全部标记为已读",
+  "markRead": "标记已读",
+  "filterByType": "按类型筛选：",
+  "status": {
+    "all": "全部",
+    "unread": "未读",
+    "read": "已读"
+  },
+  "searchPlaceholder": "按标题或消息搜索通知...",
+  "showingCount": "显示 {{filtered}} / {{total}} 条通知",
+  "clearFilters": "清除所有筛选",
+  "new": "新",
+  "type": {
+    "approval": "审批",
+    "created": "已创建",
+    "update": "更新",
+    "delivery": "交付",
+    "completed": "已完成",
+    "feedback": "反馈",
+    "discrepancy": "差异",
+    "other": "其他"
+  },
+  "empty": {
+    "noNotifications": "暂无通知",
+    "noMatches": "没有匹配的通知"
+  }
+}

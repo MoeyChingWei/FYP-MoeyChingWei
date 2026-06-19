@@ -1,0 +1,29 @@
+/* ChatBotWidget.css */
+
+.chatbot-widget-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.chatbot-window-container {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 400px;
+  height: 600px;
+  z-index: 999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .chatbot-window-container {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 150px);
+    right: 24px;
+    bottom: 100px;
+  }
+}

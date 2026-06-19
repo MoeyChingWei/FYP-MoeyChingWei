@@ -1,0 +1,195 @@
+/* MessageList.css */
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message-item {
+  display: flex;
+  gap: 12px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-user {
+  flex-direction: row-reverse;
+}
+
+.message-assistant {
+  flex-direction: row;
+}
+
+.message-avatar {
+  flex-shrink: 0;
+}
+
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+.message-user .message-content-wrapper {
+  align-items: flex-end;
+}
+
+.message-assistant .message-content-wrapper {
+  align-items: flex-start;
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  word-wrap: break-word;
+}
+
+.message-user .message-bubble {
+  background-color: #1890ff;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-assistant .message-bubble {
+  background-color: white;
+  color: rgba(0, 0, 0, 0.85);
+  border: 1px solid #f0f0f0;
+  border-bottom-left-radius: 4px;
+}
+
+.message-text {
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.quick-option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.quick-option-button {
+  height: 30px;
+  border-radius: 8px;
+  border-color: #d9d9d9;
+  background: #ffffff;
+  font-weight: 500;
+}
+
+.quick-option-button:hover {
+  border-color: #1890ff !important;
+  color: #1890ff !important;
+  background: #f0f9ff !important;
+}
+
+/* Markdown Table Styles */
+.message-text .markdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.message-text .markdown-thead {
+  background-color: #f5f5f5;
+}
+
+.message-text .markdown-th {
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #262626;
+  border-bottom: 2px solid #e8e8e8;
+  white-space: nowrap;
+}
+
+.message-text .markdown-tbody .markdown-tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.message-text .markdown-tbody .markdown-tr:hover {
+  background-color: #f5f5f5;
+}
+
+.message-text .markdown-tbody .markdown-tr:last-child {
+  border-bottom: none;
+}
+
+.message-text .markdown-td {
+  padding: 10px 8px;
+  color: #595959;
+  vertical-align: middle;
+}
+
+/* Status badges in tables */
+.message-text .markdown-td:has(> em) {
+  font-style: normal;
+}
+
+/* Make tables responsive */
+.message-assistant .message-content-wrapper {
+  max-width: 85%;
+}
+
+.message-text .markdown-table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Style for list items in markdown */
+.message-text ul,
+.message-text ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.message-text li {
+  margin: 4px 0;
+}
+
+/* Style for code blocks in markdown */
+.message-text code {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: 'Courier New', monospace;
+}
+
+.message-text pre {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.message-text pre code {
+  background-color: transparent;
+  padding: 0;
+}

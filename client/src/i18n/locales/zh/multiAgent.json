@@ -1,0 +1,39 @@
+{
+  "title": "🤖 多智能体AI助手",
+  "subtitle": "从6个专业AI智能体中选择，具有8项高级功能",
+  "agents": {
+    "general": "通用助手",
+    "purchase": "采购专家",
+    "analytics": "数据分析师",
+    "approval": "审批顾问",
+    "supplier": "供应商协调员",
+    "document": "文档专员"
+  },
+  "tabs": {
+    "chat": "聊天",
+    "statistics": "统计"
+  },
+  "tabPane": {
+    "chat": "AI聊天",
+    "statistics": "使用统计"
+  },
+  "features": {
+    "title": "✨ 高级功能",
+    "quickReplies": "⚡ 快速回复 - 预设常见问题",
+    "sessionHistory": "📜 会话历史 - 查看和恢复对话",
+    "exportChat": "💾 导出聊天 - 下载4种格式",
+    "voiceInput": "🎤 语音输入 - 语音转文字",
+    "smartRecommendations": "🎯 智能推荐 - AI建议智能体",
+    "autoComplete": "💡 自动完成 - 智能建议",
+    "agentCollaboration": "🤝 智能体协作 - 无缝交接",
+    "usageStats": "📊 使用统计 - 跟踪您的活动"
+  },
+  "tips": {
+    "title": "💡 快速提示",
+    "quickActions": "点击<strong>快速操作</strong>进行即时查询",
+    "voiceInput": "使用<strong>语音输入</strong>（麦克风图标）",
+    "history": "查看<strong>历史记录</strong>以恢复过去的聊天",
+    "collaborate": "尝试<strong>协作</strong>处理复杂任务",
+    "exportConversations": "导出对话以供记录"
+  }
+}

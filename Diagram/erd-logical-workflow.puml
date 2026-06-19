@@ -1,0 +1,83 @@
+@startuml
+title ERD (Logical) - Purchasing Workflow Relationships
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+entity "users" as User {
+  * id : Int
+  --
+  role : String
+  email : String
+}
+
+entity "purchasing_lookups" as PurchasingLookup {
+  * id : Int
+  --
+  kind : String
+  value : String
+}
+
+entity "purchase_request_records" as PurchaseRequestRecord {
+  * localId : String
+  --
+  payload : Json
+  status : draft/submitted/approved/rejected (in payload)
+}
+
+entity "purchase_order_records" as PurchaseOrderRecord {
+  * localId : String
+  --
+  payload : Json
+  status : draft/submitted/approved/rejected (in payload)
+}
+
+entity "supplier_order_acknowledgement_records" as SupplierOrderAckRecord {
+  * localId : String
+  --
+  payload : Json
+  status : pending/acknowledged/rejected (in payload)
+}
+
+entity "supplier_delivery_records" as SupplierDeliveryRecord {
+  * localId : String
+  --
+  payload : Json
+  status : pending delivery/delivered (in payload)
+}
+
+entity "supplier_grn_records" as SupplierGrnRecord {
+  * localId : String
+  --
+  payload : Json
+  status : received/discrepancy/completed (in payload)
+}
+
+entity "notifications" as Notification {
+  * id : Int
+  --
+  userId : Int
+  refType/refId : String
+}
+
+User ..> PurchaseRequestRecord : requester creates request
+User ..> PurchaseOrderRecord : executive/manager review and approval
+User ..> SupplierOrderAckRecord : supplier acknowledgement
+User ..> SupplierDeliveryRecord : supplier delivery actions
+User ..> SupplierGrnRecord : requester GRN verification
+
+PurchasingLookup ..> PurchaseRequestRecord : lookup values used
+PurchaseRequestRecord ..> PurchaseOrderRecord : approved request -> PO draft
+PurchaseOrderRecord ..> SupplierOrderAckRecord : approved PO -> acknowledgement
+SupplierOrderAckRecord ..> SupplierDeliveryRecord : ack approved -> delivery pending
+SupplierDeliveryRecord ..> SupplierGrnRecord : delivered -> GRN verification
+SupplierGrnRecord ..> SupplierDeliveryRecord : discrepancy -> create delivery loop
+
+PurchaseRequestRecord ..> Notification : submit/approve/reject alerts
+PurchaseOrderRecord ..> Notification : manager approval alerts
+SupplierOrderAckRecord ..> Notification : supplier ack alerts
+SupplierDeliveryRecord ..> Notification : delivery alerts
+SupplierGrnRecord ..> Notification : GRN/discrepancy alerts
+
+@enduml

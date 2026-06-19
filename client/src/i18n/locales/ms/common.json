@@ -1,0 +1,70 @@
+{
+  "buttons": {
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Padam",
+    "edit": "Edit",
+    "create": "Cipta",
+    "submit": "Hantar",
+    "back": "Kembali",
+    "next": "Seterusnya",
+    "confirm": "Sahkan",
+    "close": "Tutup",
+    "yes": "Ya",
+    "no": "Tidak",
+    "add": "Tambah",
+    "open": "Buka",
+    "refresh": "Muat semula"
+  },
+  "labels": {
+    "name": "Nama",
+    "email": "E-mel",
+    "phone": "Telefon",
+    "address": "Alamat",
+    "description": "Penerangan",
+    "status": "Status",
+    "date": "Tarikh",
+    "amount": "Jumlah",
+    "type": "Jenis",
+    "from": "Daripada",
+    "created": "Dicipta"
+  },
+  "all": "Semua",
+  "newPassword": "Kata laluan baharu",
+  "confirmPassword": "Sahkan kata laluan",
+  "backToSettings": "Kembali ke tetapan",
+  "messages": {
+    "success": "Operasi berjaya",
+    "error": "Operasi gagal",
+    "loading": "Memuatkan...",
+    "noData": "Tiada data tersedia",
+    "confirmDelete": "Adakah anda pasti mahu memadamkan?",
+    "unsavedChanges": "Anda mempunyai perubahan yang belum disimpan. Teruskan?"
+  },
+  "languages": {
+    "en": "English",
+    "zh": "简体中文",
+    "ms": "Bahasa Malaysia"
+  },
+  "login": {
+    "title": "Log Masuk",
+    "emailLabel": "Alamat E-mel",
+    "emailPlaceholder": "Masukkan e-mel anda",
+    "passwordLabel": "Kata Laluan",
+    "passwordPlaceholder": "Masukkan kata laluan anda",
+    "submitButton": "Log Masuk",
+    "forgotPassword": "Lupa Kata Laluan?",
+    "rememberMe": "Ingat saya",
+    "errorInvalidCredentials": "E-mel atau kata laluan tidak sah",
+    "errorNetworkError": "Ralat rangkaian. Sila cuba lagi."
+  },
+  "time": {
+    "justNow": "Baru sahaja",
+    "minutesAgo": "{{count}} minit lalu",
+    "minutesAgo_plural": "{{count}} minit lalu",
+    "hoursAgo": "{{count}} jam lalu",
+    "hoursAgo_plural": "{{count}} jam lalu",
+    "daysAgo": "{{count}} hari lalu",
+    "daysAgo_plural": "{{count}} hari lalu"
+  }
+}

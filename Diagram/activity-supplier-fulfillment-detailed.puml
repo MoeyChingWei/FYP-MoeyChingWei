@@ -1,0 +1,50 @@
+@startuml
+title Activity (Detailed) - Supplier Fulfillment (Ack, Delivery, GRN)
+
+|System|
+start
+:Send notification to Supplier\n(in-app + Gmail, new order to acknowledge);
+
+|Supplier|
+:Open notification;
+:Open Supplier Overview;
+:Check new approved PO items;
+:Open Order Acknowledgement module;
+:Confirm or update acknowledgement details;
+
+if (Acknowledgement submitted?) then (Yes)
+  |System|
+  :Save to supplier-order-acks store;
+  :Notify Requester order acknowledged\n(in-app + Gmail);
+  :Generate delivery as Pending Delivery;
+  |Supplier|
+  :Supplier prepares shipment;
+  :Open Delivery module and submit delivery info;
+  |System|
+  :Save to deliveries store;
+  :Notify Requester delivery submitted\n(in-app + Gmail);
+  |Requester|
+  :Requester receives goods and records GRN status;
+  |System|
+  :Save GRN progress to grns store;
+  if (Delivery and GRN completed?) then (Yes)
+    :Mark fulfillment cycle as completed;
+    :Notify Requester and Supplier completed\n(in-app + Gmail);
+  else (No)
+    :Requester marks discrepancy in GRN;
+    :Notify Supplier discrepancy found\n(in-app + Gmail, resend required);
+    |Supplier|
+    :Open GRN discrepancy item;
+    :Click Create Delivery (resend shipment);
+    |System|
+    :Generate new pending delivery cycle;
+    |Requester|
+    :Wait for next delivery and re-check GRN;
+  endif
+else (No)
+  |System|
+  :PO remains pending acknowledgement;
+endif
+
+stop
+@enduml

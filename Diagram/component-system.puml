@@ -1,0 +1,66 @@
+@startuml
+title Component Diagram - Frontend/Backend Modules
+left to right direction
+
+package "Frontend (React + TS)" {
+  [App Router]
+  [Overview Page]
+  [User and Access Pages]
+  [Purchasing Pages]
+  [Supplier Overview Pages]
+  [Tracking Item Page]
+  [Settings/Feedback Page]
+  [Frontend Modules]
+  [Shared API Client]
+}
+
+package "Backend (Express)" {
+  [Auth Routes]
+  [Workflow Routes]
+  [Purchasing Lookup Routes]
+  [Notifications Routes]
+  [Feedback Routes]
+  [Admin Routes]
+  [Notification Service]
+  [Email Service]
+}
+
+database "PostgreSQL (Prisma)" as DB
+folder "uploads/" as UP
+
+[App Router] --> [Overview Page]
+[App Router] --> [User and Access Pages]
+[App Router] --> [Purchasing Pages]
+[App Router] --> [Supplier Overview Pages]
+[App Router] --> [Tracking Item Page]
+[App Router] --> [Settings/Feedback Page]
+[App Router] --> [Frontend Modules]
+
+[Overview Page] --> [Shared API Client]
+[User and Access Pages] --> [Shared API Client]
+[Purchasing Pages] --> [Shared API Client]
+[Supplier Overview Pages] --> [Shared API Client]
+[Tracking Item Page] --> [Shared API Client]
+[Settings/Feedback Page] --> [Shared API Client]
+[Frontend Modules] --> [Shared API Client]
+
+[Shared API Client] --> [Auth Routes]
+[Shared API Client] --> [Workflow Routes]
+[Shared API Client] --> [Purchasing Lookup Routes]
+[Shared API Client] --> [Notifications Routes]
+[Shared API Client] --> [Feedback Routes]
+[Shared API Client] --> [Admin Routes]
+
+[Auth Routes] --> DB
+[Auth Routes] --> UP
+[Workflow Routes] --> DB
+[Purchasing Lookup Routes] --> DB
+[Workflow Routes] --> [Notification Service]
+[Notifications Routes] --> DB
+[Feedback Routes] --> DB
+[Feedback Routes] --> [Notification Service]
+[Admin Routes] --> DB
+[Notification Service] --> DB
+[Notification Service] --> [Email Service]
+
+@enduml

@@ -1,0 +1,76 @@
+@startuml
+title Activity (Detailed) - Notification Panel Usage (Step-by-Step)
+
+|User|
+start
+:Open Overview page;
+:Click notification panel;
+
+|System|
+:Read current user session (userId);
+:Send GET /api/notifications?userId={id};
+if (Valid userId?) then (Yes)
+  :Load latest notifications\n(max 200, newest first);
+  :Return list to frontend;
+else (No)
+  :Return error "userId is required";
+  |User|
+  :See error / empty panel;
+  stop
+endif
+
+|User|
+:See notification list and unread count;
+:Decide what action to take;
+
+if (User opens one notification?) then (Yes)
+  |System|
+  :Send PATCH /api/notifications/{id}/read;
+  if (Notification exists?) then (Yes)
+    :Set isRead = true;
+    :Set readAt = current time;
+    :Return updated notification;
+  else (No)
+    :Return "Notification not found";
+  endif
+  |User|
+  :Panel refreshes item status;
+endif
+
+if (User clicks "Mark all as read"?) then (Yes)
+  |System|
+  :Send PATCH /api/notifications/read-all\n(with userId);
+  :Update all unread notifications\nfor this user only;
+  :Return number of updated rows;
+  |User|
+  :Unread badge becomes 0;
+endif
+
+if (User deletes one notification?) then (Yes)
+  |System|
+  :Send DELETE /api/notifications/{id}\n(with userId in body);
+  if (Notification belongs to user?) then (Yes)
+    :Delete selected notification;
+    :Return success;
+  else (No)
+    :Return "Not found" / not allowed;
+  endif
+  |User|
+  :Selected item disappears from panel;
+endif
+
+if (User clears read history?) then (Yes)
+  |System|
+  :Send DELETE /api/notifications/history\n(with userId);
+  :Delete only read notifications\nfor this user;
+  :Keep unread notifications unchanged;
+  |User|
+  :History list becomes shorter;
+endif
+
+|System|
+:Recalculate unread count and list order;
+|User|
+:See latest panel state;
+stop
+@enduml

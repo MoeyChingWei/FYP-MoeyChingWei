@@ -1,0 +1,27 @@
+{
+  "newValuePlaceholder": "新值",
+  "source": {
+    "builtin": "内置",
+    "added": "已添加"
+  },
+  "tooltip": {
+    "delete": "删除此条目",
+    "cannotDelete": "内置值 — 无法删除"
+  },
+  "confirm": {
+    "removeTitle": "删除此值？"
+  },
+  "aria": {
+    "cannotDelete": "无法删除内置值"
+  },
+  "columns": {
+    "value": "值",
+    "source": "来源",
+    "actions": "操作"
+  },
+  "error": {
+    "couldNotLoad": "无法加载",
+    "couldNotAdd": "无法添加",
+    "couldNotDelete": "无法删除"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "page": {
+    "title": "OptiMind AI Assistant",
+    "newChatPlaceholder": "New chat in OptiMind...",
+    "typePlaceholder": "Type a message... (Enter to send, Shift+Enter for new line)",
+    "thinkingMessage": "AI is thinking..."
+  },
+  "buttons": {
+    "send": "Send",
+    "newChat": "New Chat",
+    "delete": "Delete",
+    "clearAllHistory": "Clear All History",
+    "upload": "Upload Documents"
+  },
+  "tabs": {
+    "chats": "Chats",
+    "sources": "Sources"
+  },
+  "history": {
+    "noHistory": "No chat history yet",
+    "newConversation": "New Conversation",
+    "messages": "messages"
+  },
+  "sources": {
+    "uploadTitle": "Upload Documents",
+    "uploadDescription": "Drag and drop files here, or click to browse. Add context to your conversations with relevant documents.",
+    "uploadFormats": "PDF, Excel, Word, Text",
+    "uploading": "Uploading...",
+    "noDocuments": "No documents yet",
+    "noDocumentsDescription": "Upload documents to give the AI more context about your business, products, or requirements.",
+    "loadingDocuments": "Loading your documents...",
+    "uploadSuccess": "uploaded successfully",
+    "uploadFailed": "Upload failed",
+    "deleteSuccess": "Source deleted",
+    "deleteFailed": "Failed to delete source"
+  },
+  "formats": {
+    "pdf": "PDF",
+    "excel": "Excel",
+    "word": "Word",
+    "text": "Text"
+  },
+  "messages": {
+    "loginRequired": "Please login first",
+    "sessionDeleted": "Session deleted",
+    "sessionDeleteFailed": "Failed to delete session",
+    "allHistoryCleared": "All chat history cleared",
+    "clearHistoryFailed": "Failed to clear chat history",
+    "sendFailed": "Failed to send message",
+    "createSessionFailed": "Failed to create conversation",
+    "userNotLoggedIn": "User not logged in, cannot create new conversation",
+    "cannotClearHistory": "User not logged in, cannot clear chat history"
+  },
+  "modal": {
+    "clearHistoryTitle": "Clear all chat history?",
+    "clearHistoryContent": "This will permanently delete all conversations and AI messages for your account.",
+    "confirmButton": "Clear All History",
+    "cancelButton": "Cancel"
+  },
+  "aria": {
+    "chatOptions": "Chat options"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "page": {
+    "title": "Profile",
+    "subtitle": "Your account details in OptiMind."
+  },
+  "avatar": {
+    "changePhoto": "Change profile photo",
+    "clickToUpload": "Click to upload"
+  },
+  "fields": {
+    "name": "Name",
+    "email": "Email",
+    "department": "Department",
+    "role": "Role",
+    "userId": "User ID",
+    "status": "Status"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "buttons": {
+    "resetPassword": "Reset password"
+  },
+  "messages": {
+    "notSignedIn": "Not signed in",
+    "couldNotLoadProfile": "Could not load profile",
+    "avatarUpdated": "Avatar updated",
+    "uploadFailed": "Upload failed"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "subtitle": "Send a verification code to your account email, then set a new password. This page stays inside OptiMind (not the public login screens).",
+    "backToProfile": "Back to profile",
+    "accountEmail": "Account email",
+    "sendCode": "Send verification code",
+    "smtpNote": "If SMTP is not configured, check the backend terminal for the code.",
+    "verificationCodeLabel": "Verification code",
+    "verificationCodePlaceholder": "6-digit code",
+    "verificationCodeRequired": "Enter the code",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "New password",
+    "newPasswordRequired": "Enter a new password",
+    "newPasswordMinLength": "At least 6 characters",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "confirmPasswordRequired": "Confirm your password",
+    "passwordMismatch": "The two passwords do not match",
+    "updateButton": "Update password",
+    "codeSentSuccess": "If this email is registered, a verification code has been sent.",
+    "codeSendFailed": "Could not send code. Is the backend running?",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordUpdated": "Password updated",
+    "resetFailed": "Could not reset password",
+    "pleaseSignInFirst": "Please sign in first"
+  }
+}

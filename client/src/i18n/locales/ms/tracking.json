@@ -1,0 +1,93 @@
+{
+  "page": {
+    "title": "Penjejakan Item",
+    "loadingData": "Memuatkan data penjejakan..."
+  },
+  "search": {
+    "placeholder": "Cari nama pemohon...",
+    "clearFilter": "Kosongkan Penapis",
+    "unreadCount": "belum dibaca",
+    "markAllAsRead": "Tandakan Semua Sebagai Dibaca"
+  },
+  "sections": {
+    "inProgress": "Dalam Proses",
+    "completedRejected": "Selesai/Ditolak",
+    "noInProgress": "Tiada item dalam proses.",
+    "noCompleted": "Tiada item selesai."
+  },
+  "stages": {
+    "pr": {
+      "pending": "Menunggu Permohonan Pembelian",
+      "complete": "Permohonan Pembelian Diluluskan"
+    },
+    "po": {
+      "pending": "Menunggu Pesanan Pembelian",
+      "complete": "Pesanan Pembelian Diluluskan"
+    },
+    "ack": {
+      "pending": "Menunggu Pengesahan Pesanan",
+      "complete": "Pesanan Disahkan"
+    },
+    "delivery": {
+      "pending": "Menunggu Penghantaran",
+      "complete": "Telah Dihantar"
+    },
+    "grn": {
+      "pending": "Menunggu GRN",
+      "complete": "GRN Diterima"
+    },
+    "completed": {
+      "label": "Selesai",
+      "complete": "Selesai"
+    }
+  },
+  "status": {
+    "rejected": "Ditolak",
+    "completed": "Selesai",
+    "discrepancy": "Percanggahan"
+  },
+  "descriptions": {
+    "prPending": "Permohonan pembelian menunggu kelulusan sebelum pesanan pembelian boleh dicipta.",
+    "prRejected": "Permohonan pembelian telah ditolak dan aliran item terhenti pada peringkat permohonan.",
+    "poApproved": "Permohonan pembelian telah diluluskan dan item kini menunggu kelulusan pesanan pembelian.",
+    "poRejected": "Pesanan pembelian telah ditolak dan aliran item terhenti pada peringkat pesanan pembelian.",
+    "ackPending": "Pesanan pembelian telah diluluskan dan menunggu pembekal mengesahkan pesanan.",
+    "ackRejected": "Pembekal menolak pengesahan pesanan dan aliran item terhenti pada peringkat tersebut.",
+    "deliveryPending": "Pesanan telah disahkan dan kini menunggu penghantaran pembekal.",
+    "grnPending": "Penghantaran telah selesai dan nota penerimaan barang menunggu pengesahan pengguna.",
+    "grnDiscrepancy": "Nota penerimaan barang mempunyai percanggahan dan masih memerlukan susulan pembelian.",
+    "completed": "Nota penerimaan barang telah diterima dan aliran penjejakan item selesai.",
+    "rejected": "Aliran item ini telah ditolak dan tidak akan diteruskan ke peringkat proses seterusnya."
+  },
+  "row": {
+    "item": "Item",
+    "status": "Status",
+    "description": "Penerangan",
+    "createdDate": "Tarikh Permohonan Pembelian Dicipta"
+  },
+  "modal": {
+    "trackingDetail": "Butiran Penjejakan",
+    "rejectDetail": "Butiran Penolakan",
+    "close": "Tutup",
+    "viewRejectDetail": "Lihat butiran penolakan"
+  },
+  "details": {
+    "requestNo": "No. Permohonan",
+    "item": "Item",
+    "requester": "Pemohon",
+    "department": "Jabatan",
+    "currentStatus": "Status Semasa",
+    "poNumber": "No. Pesanan Pembelian",
+    "ackNumber": "No. Pengesahan Pesanan",
+    "deliveryNumber": "No. Penghantaran",
+    "grnNumber": "No. GRN",
+    "rejectedBy": "Ditolak Oleh",
+    "rejectedStage": "Peringkat Ditolak",
+    "rejectDescription": "Penerangan Penolakan",
+    "noRejectDescription": "Tiada penerangan penolakan disediakan.",
+    "trackedItem": "Item Dijejaki",
+    "otherItems": "Item Lain Dalam Permohonan Ini",
+    "noDescription": "Tiada penerangan disediakan",
+    "uncategorized": "Tidak Dikategorikan"
+  }
+}

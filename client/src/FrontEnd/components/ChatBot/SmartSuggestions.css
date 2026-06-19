@@ -1,0 +1,28 @@
+.smart-suggestions-input .ant-select-selector {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s;
+}
+
+.smart-suggestions-input .ant-select-selector:hover {
+  border-color: #1890ff;
+}
+
+.smart-suggestions-input.ant-select-focused .ant-select-selector {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.smart-suggestions-dropdown .ant-select-item {
+  padding: 8px 12px;
+}
+
+.smart-suggestions-dropdown .ant-select-item:hover {
+  background: #f0f5ff;
+}

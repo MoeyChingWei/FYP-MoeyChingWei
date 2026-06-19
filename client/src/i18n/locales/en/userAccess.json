@@ -1,0 +1,179 @@
+{
+  "layout": {
+    "tabs": {
+      "userManagement": "User Management",
+      "rbac": "Role-Based Access Control"
+    }
+  },
+  "userManagement": {
+    "title": "User Management",
+    "tabs": {
+      "userList": "User list",
+      "createUser": "Create user",
+      "supplierTypes": "Type of Supplier"
+    }
+  },
+  "userList": {
+    "title": "User list",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "department": "Department",
+      "role": "Role",
+      "status": "Status",
+      "action": "Action",
+      "noDepartment": "(No department)"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "edit": "Edit",
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "modal": {
+      "editTitle": "Edit user #{{id}}",
+      "editTitleGeneric": "Edit user",
+      "deactivateConfirm": "Deactivate this user?",
+      "deactivateDescription": "They will not be able to sign in.",
+      "activateConfirm": "Activate this user?",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "department": "Department",
+      "role": "User role",
+      "password": "Password (leave blank to keep)",
+      "placeholders": {
+        "department": "Select department",
+        "password": "••••••••"
+      },
+      "validation": {
+        "nameRequired": "Please enter name",
+        "emailRequired": "Please enter email",
+        "emailInvalid": "Invalid email format",
+        "roleRequired": "Please select a role",
+        "passwordMinLength": "At least 6 characters"
+      }
+    },
+    "messages": {
+      "loadFailed": "Failed to load users",
+      "updateSuccess": "User updated",
+      "updateFailed": "Failed to update user",
+      "activateSuccess": "User activated",
+      "deactivateSuccess": "User deactivated",
+      "statusUpdateFailed": "Failed to update status"
+    }
+  },
+  "createUser": {
+    "title": "Create user",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "department": "Department",
+      "role": "User role",
+      "placeholders": {
+        "name": "John Doe",
+        "email": "user@example.com",
+        "password": "••••••••",
+        "department": "Select department"
+      },
+      "validation": {
+        "nameRequired": "Please enter name",
+        "emailRequired": "Please enter email",
+        "emailInvalid": "Invalid email format",
+        "passwordRequired": "Please enter password",
+        "passwordMinLength": "At least 6 characters",
+        "roleRequired": "Please select a role"
+      }
+    },
+    "actions": {
+      "create": "Create"
+    },
+    "messages": {
+      "createSuccess": "User created",
+      "createFailed": "Failed to create user"
+    }
+  },
+  "supplierTypes": {
+    "title": "Type of Supplier",
+    "description": "Assign multiple supply categories to users with the Supplier role so matching suppliers is easier when a purchase request category is selected.",
+    "table": {
+      "supplier": "Supplier",
+      "department": "Department",
+      "status": "Status",
+      "supplierTypes": "Type of Supplier"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "placeholders": {
+      "selectSupplierTypes": "Select supplier types"
+    },
+    "messages": {
+      "loadFailed": "Failed to load suppliers",
+      "updateSuccess": "Supplier types updated.",
+      "updateFailed": "Failed to update supplier types",
+      "noSuppliers": "No users with Supplier role found."
+    }
+  },
+  "rbac": {
+    "title": "Role-Based Access Control",
+    "tabs": {
+      "roles": "Roles"
+    },
+    "roles": {
+      "title": "Roles",
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "action": "Action"
+      },
+      "search": {
+        "placeholder": "Search by name"
+      },
+      "actions": {
+        "save": "Save"
+      },
+      "messages": {
+        "loadUsersFailed": "Failed to load users",
+        "loadAuditsFailed": "Failed to load role change log",
+        "updateSuccess": "Role updated",
+        "updateFailed": "Failed to update role"
+      }
+    },
+    "roleChangeLog": {
+      "title": "Role change log",
+      "table": {
+        "time": "Time",
+        "actor": "Actor",
+        "targetUser": "Target user",
+        "from": "From",
+        "to": "To"
+      }
+    }
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "create": "Create",
+    "delete": "Delete",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Action",
+    "status": "Status"
+  }
+}

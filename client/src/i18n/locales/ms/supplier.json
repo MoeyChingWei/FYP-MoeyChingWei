@@ -1,0 +1,213 @@
+{
+  "moduleTitle": "Gambaran Keseluruhan Pembekal",
+  "notifications": {
+    "title": "Notifikasi",
+    "hint": "Kemas kini dan aktiviti terkini pihak pembekal.",
+    "latest": "Terkini ({{count}})",
+    "history": "Sejarah ({{count}})",
+    "markAllRead": "Tandakan semua telah dibaca",
+    "deleteAll": "Padam semua",
+    "type": {
+      "success": "kejayaan",
+      "warning": "amaran",
+      "info": "maklumat"
+    },
+    "messages": {
+      "noNotifications": "Tiada notifikasi sekarang.",
+      "noHistory": "Tiada sejarah notifikasi.",
+      "deleted": "Notifikasi dipadam",
+      "historyDeleted": "Sejarah notifikasi dipadam"
+    }
+  },
+  "statusCards": {
+    "pendingOrderAcknowledge": "Menunggu Pengakuan Pesanan",
+    "pendingDelivery": "Menunggu Penghantaran",
+    "pendingGrn": "Menunggu Nota Barang Diterima",
+    "discrepancy": "Percanggahan",
+    "completed": "Selesai"
+  },
+  "modules": {
+    "orderAcknowledge": {
+      "title": "Pengakuan Pesanan",
+      "hint": "Semak dan akui pesanan pembelian yang masuk"
+    },
+    "delivery": {
+      "title": "Penghantaran",
+      "hint": "Urus kemajuan penghantaran dan kemas kini penghantaran yang dikemukakan"
+    },
+    "grn": {
+      "title": "Nota Barang Diterima",
+      "hint": "Jejak status nota barang diterima daripada pembelian"
+    }
+  },
+  "orderAcknowledgement": {
+    "title": "Pengakuan Pesanan",
+    "list": {
+      "table": {
+        "orderNo": "No Pesanan",
+        "status": "Status",
+        "supplier": "Pembekal",
+        "items": "Item",
+        "total": "Jumlah",
+        "action": "Tindakan"
+      },
+      "filter": {
+        "filterByDate": "Tapis mengikut tarikh",
+        "searchPlaceholder": "Cari no pesanan, pembekal, item..."
+      },
+      "summary": "{{count}} rekod pengakuan",
+      "status": {
+        "pendingOrderAcknowledge": "Menunggu Pengakuan Pesanan",
+        "approved": "Diluluskan",
+        "rejected": "Ditolak"
+      },
+      "actions": {
+        "view": "Lihat",
+        "approve": "Lulus",
+        "reject": "Tolak",
+        "back": "Kembali"
+      },
+      "messages": {
+        "acknowledged": "{{poNumber}} telah diakui.",
+        "rejected": "{{poNumber}} telah ditolak.",
+        "noAcknowledgements": "Tiada pengakuan pesanan ditemui."
+      }
+    },
+    "detail": {
+      "title": "Butiran Pengakuan Pesanan",
+      "summary": {
+        "orderNumber": "Nombor Pesanan",
+        "createdDate": "Tarikh Dicipta",
+        "items": "Item",
+        "total": "Jumlah"
+      },
+      "info": {
+        "title": "Gambaran Pengakuan",
+        "sourcePr": "PR Sumber",
+        "purchaseRequester": "Pemohon Pembelian",
+        "createdBy": "Dicipta Oleh",
+        "supplier": "Pembekal",
+        "supplierEmail": "E-mel Pembekal",
+        "department": "Jabatan",
+        "currentStatus": "Status Semasa",
+        "companyAddress": "Alamat Syarikat",
+        "rejectedBy": "Ditolak Oleh",
+        "rejectDescription": "Penerangan Penolakan"
+      },
+      "items": {
+        "title": "Item Pesanan",
+        "description": "Semak item pesanan pembelian sebelum meluluskan atau menolak pengakuan pesanan ini."
+      },
+      "actions": {
+        "approve": "Lulus",
+        "reject": "Tolak",
+        "back": "Kembali"
+      },
+      "messages": {
+        "notFound": "Butiran pengakuan pesanan tidak ditemui."
+      },
+      "modal": {
+        "rejectTitle": "Tolak Pengakuan Pesanan",
+        "rejectLabel": "pesanan ini"
+      }
+    }
+  },
+  "delivery": {
+    "title": "Penghantaran",
+    "list": {
+      "table": {
+        "orderNo": "No Pesanan",
+        "status": "Status",
+        "supplier": "Pembekal",
+        "items": "Item",
+        "total": "Jumlah",
+        "action": "Tindakan"
+      },
+      "filter": {
+        "filterByDate": "Tapis mengikut tarikh",
+        "searchPlaceholder": "Cari no pesanan, pembekal, item..."
+      },
+      "summary": "{{count}} rekod penghantaran",
+      "status": {
+        "pendingDelivery": "Menunggu Penghantaran",
+        "delivered": "Dihantar"
+      },
+      "actions": {
+        "view": "Lihat",
+        "deliver": "Hantar",
+        "back": "Kembali"
+      },
+      "messages": {
+        "delivered": "{{deliveryNo}} ditanda sebagai dihantar.",
+        "noDeliveryRecords": "Tiada rekod penghantaran ditemui."
+      }
+    },
+    "detail": {
+      "title": "Butiran Penghantaran",
+      "summary": {
+        "orderNumber": "Nombor Pesanan (No Penghantaran)",
+        "createdDate": "Tarikh Dicipta",
+        "items": "Item",
+        "total": "Jumlah"
+      },
+      "info": {
+        "title": "Gambaran Penghantaran",
+        "sourcePr": "PR Sumber",
+        "originalOrderNo": "Nombor Pesanan Asal",
+        "purchaseRequester": "Pemohon Pembelian",
+        "createdBy": "Dicipta Oleh",
+        "supplier": "Pembekal",
+        "supplierEmail": "E-mel Pembekal",
+        "department": "Jabatan",
+        "currentStatus": "Status Semasa",
+        "companyAddress": "Alamat Syarikat"
+      },
+      "items": {
+        "title": "Item Penghantaran",
+        "description": "Semak penghantaran pesanan ini dan tandakan sebagai dihantar setelah penghantaran selesai."
+      },
+      "actions": {
+        "deliver": "Hantar",
+        "back": "Kembali"
+      },
+      "messages": {
+        "notFound": "Butiran penghantaran tidak ditemui."
+      }
+    }
+  },
+  "grnStatus": {
+    "title": "Status Nota Barang Diterima",
+    "list": {
+      "summary": "{{count}} rekod nota barang diterima",
+      "messages": {
+        "noGrnRecords": "Tiada rekod nota barang diterima ditemui."
+      }
+    },
+    "detail": {
+      "title": "Butiran Nota Barang Diterima",
+      "actions": {
+        "createNewDelivery": "Cipta Penghantaran Baharu",
+        "back": "Kembali"
+      },
+      "messages": {
+        "notFound": "Butiran nota barang diterima tidak ditemui."
+      }
+    }
+  },
+  "common": {
+    "back": "Kembali",
+    "view": "Lihat",
+    "approve": "Lulus",
+    "reject": "Tolak",
+    "deliver": "Hantar",
+    "cancel": "Batal",
+    "delete": "Padam",
+    "save": "Simpan",
+    "submit": "Hantar",
+    "loading": "Memuatkan...",
+    "noData": "Tiada data",
+    "actions": "Tindakan",
+    "status": "Status",
+    "uncategorized": "Tidak Berkategori"
+  }
+}

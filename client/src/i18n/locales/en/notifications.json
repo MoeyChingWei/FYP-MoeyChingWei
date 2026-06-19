@@ -1,0 +1,30 @@
+{
+  "title": "Notifications",
+  "subtitle": "Role-based alerts and requester updates",
+  "markAllAsRead": "Mark all as read",
+  "markRead": "Mark read",
+  "filterByType": "Filter by Type:",
+  "status": {
+    "all": "All",
+    "unread": "Unread",
+    "read": "Read"
+  },
+  "searchPlaceholder": "Search notifications by title or message...",
+  "showingCount": "Showing {{filtered}} of {{total}} notifications",
+  "clearFilters": "Clear all filters",
+  "new": "New",
+  "type": {
+    "approval": "Approval",
+    "created": "Created",
+    "update": "Update",
+    "delivery": "Delivery",
+    "completed": "Completed",
+    "feedback": "Feedback",
+    "discrepancy": "Discrepancy",
+    "other": "Other"
+  },
+  "empty": {
+    "noNotifications": "No notifications yet",
+    "noMatches": "No notifications match your filters"
+  }
+}

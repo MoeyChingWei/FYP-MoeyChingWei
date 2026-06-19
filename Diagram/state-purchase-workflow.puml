@@ -1,0 +1,24 @@
+@startuml
+title State Diagram - Purchase Workflow Lifecycle
+
+[*] --> DraftRequest
+DraftRequest --> SubmittedForReview : employee submit request
+SubmittedForReview --> RequestRework : reviewer requests changes
+RequestRework --> DraftRequest : employee revises
+SubmittedForReview --> Reviewed : reviewer approves request
+
+Reviewed --> POCreated : create purchase order
+POCreated --> PendingApproval : send to approver
+PendingApproval --> ApprovalRejected : approver rejects PO
+ApprovalRejected --> POCreated : revise PO details
+PendingApproval --> ApprovedPO : approver approves PO
+
+ApprovedPO --> AcknowledgedBySupplier : supplier submits order acknowledgement
+AcknowledgedBySupplier --> DeliveryCreated : supplier creates delivery
+DeliveryCreated --> GRNPending : waiting buyer GRN processing
+GRNPending --> GoodsReceived : buyer records goods received note
+GoodsReceived --> Closed : workflow finished
+
+Closed --> [*]
+
+@enduml

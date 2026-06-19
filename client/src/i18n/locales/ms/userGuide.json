@@ -1,0 +1,214 @@
+{
+  "modal": {
+    "title": "Panduan Pengguna",
+    "description": "Panduan ini menyediakan maklumat tentang cara menggunakan sistem berdasarkan peranan anda.",
+    "yourRole": "Peranan semasa anda ialah:"
+  },
+  "gettingStarted": {
+    "title": "Bermula",
+    "welcome": "Selamat datang ke OptiMind ERP! Panduan ini akan membantu anda menavigasi sistem dan memahami keupayaan anda.",
+    "navigation": "Navigasi",
+    "navItems": {
+      "sidebar": "Gunakan menu bar sisi untuk mengakses modul yang berbeza",
+      "profile": "Klik ikon profil anda (kanan atas) untuk mengakses tetapan dan log keluar",
+      "overview": "Halaman Gambaran Keseluruhan menunjukkan jubin akses pantas untuk modul yang tersedia",
+      "notifications": "Notifikasi muncul di ikon loceng dan halaman Gambaran Keseluruhan"
+    }
+  },
+  "admin": {
+    "title": "Panduan Super Admin",
+    "userManagement": "Pengurusan Pengguna",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "userCapabilities": {
+      "create": "Cipta, edit dan urus akaun pengguna",
+      "assignRoles": "Tetapkan dan tukar peranan pengguna",
+      "activate": "Aktifkan atau nyahaktifkan akaun pengguna",
+      "auditLogs": "Lihat log audit untuk perubahan peranan"
+    },
+    "howToCreateUser": "Cara mencipta pengguna baharu:",
+    "createUserSteps": {
+      "step1": "Navigasi ke Pengguna & Akses → Pengurusan Pengguna",
+      "step2": "Klik butang \"Tambah Pengguna\"",
+      "step3": "Isi butiran pengguna (nama, e-mel, peranan)",
+      "step4": "Tetapkan kata laluan awal",
+      "step5": "Klik \"Cipta Pengguna\""
+    },
+    "categoryManagement": "Pengurusan Kategori",
+    "categoryCapabilities": {
+      "items": "Urus kategori item",
+      "units": "Urus unit pengukuran",
+      "suppliers": "Tetapkan jenis/kategori pembekal"
+    }
+  },
+  "purchasing": {
+    "title": "Aliran Kerja Pembelian",
+    "requestCreation": "Penciptaan Permintaan Pembelian",
+    "availableFor": "Tersedia untuk: Pekerja, Eksekutif, Pengurus",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "requestCapabilities": {
+      "create": "Cipta permintaan pembelian untuk item yang diperlukan",
+      "specify": "Tentukan butiran item, kuantiti dan justifikasi",
+      "draft": "Simpan draf dan hantar apabila bersedia"
+    },
+    "howToCreateRequest": "Cara mencipta permintaan pembelian:",
+    "createRequestSteps": {
+      "step1": "Navigasi ke Pembelian → Cipta Permintaan",
+      "step2": "Isi butiran permintaan (keutamaan, justifikasi, tarikh penghantaran)",
+      "step3": "Tambah item: Klik \"Tambah Item\" dan tentukan butiran",
+      "step4": "Untuk setiap item: nama, kategori, kuantiti, unit, anggaran harga",
+      "step5": "Simpan sebagai draf atau Hantar untuk kelulusan"
+    },
+    "tips": "Petua:",
+    "tipsList": {
+      "draft": "Gunakan ciri draf untuk menyimpan kerja dalam proses",
+      "justification": "Berikan justifikasi terperinci untuk mempercepatkan kelulusan",
+      "dates": "Tetapkan tarikh penghantaran yang realistik"
+    }
+  },
+  "approval": {
+    "title": "Kelulusan Permintaan",
+    "requestApproval": "Kelulusan Permintaan Pembelian",
+    "availableFor": "Tersedia untuk: Eksekutif Jabatan",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "approvalCapabilities": {
+      "review": "Semak permintaan pembelian yang belum selesai",
+      "approve": "Luluskan atau tolak permintaan dengan komen",
+      "viewDetails": "Lihat butiran permintaan dan justifikasi"
+    },
+    "howToApprove": "Cara meluluskan permintaan:",
+    "approveSteps": {
+      "step1": "Navigasi ke Pembelian → Kelulusan",
+      "step2": "Klik pada permintaan yang belum selesai untuk lihat butiran",
+      "step3": "Semak item, kuantiti dan justifikasi",
+      "step4": "Tambah komen (pilihan)",
+      "step5": "Klik \"Lulus\" atau \"Tolak\""
+    },
+    "poCreation": "Penciptaan Pesanan Pembelian",
+    "howToCreatePO": "Cara mencipta pesanan pembelian:",
+    "createPOSteps": {
+      "step1": "Navigasi ke Pembelian → Cipta Pesanan",
+      "step2": "Pilih permintaan pembelian yang diluluskan",
+      "step3": "Pilih pembekal",
+      "step4": "Semak dan laraskan butiran item jika perlu",
+      "step5": "Hantar untuk kelulusan pengurus"
+    }
+  },
+  "poApproval": {
+    "title": "Kelulusan Pesanan Pembelian",
+    "reviewApproval": "Semakan & Kelulusan Pesanan Pembelian",
+    "availableFor": "Tersedia untuk: Pengurus",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "poCapabilities": {
+      "review": "Semak pesanan pembelian yang belum selesai",
+      "approve": "Luluskan atau tolak pesanan",
+      "viewDetails": "Lihat butiran pesanan dan maklumat pembekal"
+    },
+    "howToApprove": "Cara meluluskan pesanan pembelian:",
+    "approveSteps": {
+      "step1": "Navigasi ke Pembelian → Kelulusan Pesanan",
+      "step2": "Klik pada pesanan yang belum selesai untuk lihat butiran",
+      "step3": "Semak item, harga dan pembekal",
+      "step4": "Tambah komen kelulusan (pilihan)",
+      "step5": "Klik \"Lulus\" atau \"Tolak\""
+    },
+    "smartApproval": "Kelulusan Pintar",
+    "configureRules": "Konfigurasi peraturan kelulusan automatik:",
+    "smartCapabilities": {
+      "threshold": "Tetapkan jumlah ambang untuk kelulusan automatik",
+      "criteria": "Tentukan kriteria kelulusan",
+      "navigate": "Navigasi ke Kelulusan Pintar di bar sisi"
+    }
+  },
+  "supplier": {
+    "title": "Pemenuhan Pembekal",
+    "orderAcknowledgement": "Pengakuan Pesanan",
+    "availableFor": "Tersedia untuk: Pembekal",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "supplierCapabilities": {
+      "view": "Lihat pesanan pembelian yang ditetapkan kepada anda",
+      "acknowledge": "Akui pesanan dan sahkan tarikh penghantaran",
+      "update": "Kemas kini status pesanan"
+    },
+    "howToAcknowledge": "Cara mengakui pesanan:",
+    "acknowledgeSteps": {
+      "step1": "Navigasi ke Gambaran Pembekal → Pengakuan Pesanan",
+      "step2": "Klik pada pesanan yang belum selesai",
+      "step3": "Semak butiran pesanan",
+      "step4": "Sahkan tarikh penghantaran yang dijangka",
+      "step5": "Klik \"Akui Pesanan\""
+    },
+    "deliveryManagement": "Pengurusan Penghantaran",
+    "howToRecordDelivery": "Cara merekod penghantaran:",
+    "deliverySteps": {
+      "step1": "Navigasi ke Gambaran Pembekal → Penghantaran",
+      "step2": "Pilih pesanan yang telah diakui",
+      "step3": "Masukkan butiran penghantaran (tarikh, nombor penjejakan)",
+      "step4": "Tentukan kuantiti yang dihantar untuk setiap item",
+      "step5": "Hantar rekod penghantaran"
+    }
+  },
+  "tracking": {
+    "title": "Penjejakan Item",
+    "itemTracking": "Penjejakan Item",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "trackingCapabilities": {
+      "requests": "Jejak status permintaan pembelian anda",
+      "orders": "Lihat kemajuan pesanan pembelian",
+      "deliveries": "Pantau penghantaran dan status GRN",
+      "search": "Cari dan tapis mengikut status atau tarikh"
+    },
+    "howToTrack": "Cara menjejak item:",
+    "trackingSteps": {
+      "step1": "Navigasi ke Item Penjejakan dari bar sisi atau Gambaran Keseluruhan",
+      "step2": "Gunakan penapis untuk mencari item anda",
+      "step3": "Klik pada item untuk lihat status terperinci",
+      "step4": "Lihat kemajuan aliran kerja dan peringkat semasa"
+    }
+  },
+  "profile": {
+    "title": "Profil & Tetapan",
+    "managing": "Menguruskan Profil Anda",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "profileCapabilities": {
+      "update": "Kemas kini maklumat profil anda",
+      "password": "Tukar kata laluan anda",
+      "avatar": "Muat naik avatar profil",
+      "notifications": "Konfigurasi keutamaan notifikasi"
+    },
+    "howToUpdate": "Cara mengemas kini profil anda:",
+    "updateSteps": {
+      "step1": "Klik avatar anda di sudut kanan atas",
+      "step2": "Pilih \"Profil\"",
+      "step3": "Edit maklumat anda",
+      "step4": "Klik \"Simpan Perubahan\""
+    },
+    "howToChangePassword": "Cara menukar kata laluan anda:",
+    "passwordSteps": {
+      "step1": "Pergi ke Profil → Tetapkan Semula Kata Laluan",
+      "step2": "Masukkan kata laluan semasa",
+      "step3": "Masukkan kata laluan baharu (dua kali untuk pengesahan)",
+      "step4": "Klik \"Tukar Kata Laluan\""
+    }
+  },
+  "notifications": {
+    "title": "Notifikasi",
+    "understanding": "Memahami Notifikasi",
+    "description": "Notifikasi memastikan anda dimaklumkan tentang peristiwa penting dan tindakan yang memerlukan perhatian anda.",
+    "types": "Jenis Notifikasi:",
+    "typesList": {
+      "success": "Kejayaan",
+      "successDesc": "Tindakan berjaya diselesaikan",
+      "info": "Maklumat",
+      "infoDesc": "Kemas kini maklumat umum",
+      "warning": "Amaran",
+      "warningDesc": "Item yang memerlukan perhatian atau penolakan"
+    },
+    "managing": "Menguruskan Notifikasi:",
+    "managingList": {
+      "click": "Klik pada notifikasi untuk lihat butiran dan tandakan sebagai dibaca",
+      "markAll": "Gunakan \"Tandakan semua sebagai dibaca\" untuk mengosongkan notifikasi terkini",
+      "history": "Lihat sejarah notifikasi di tab Sejarah",
+      "delete": "Padam notifikasi individu atau semua sejarah"
+    }
+  }
+}

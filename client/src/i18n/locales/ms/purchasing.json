@@ -1,0 +1,132 @@
+{
+  "moduleTitle": "Modul Pembelian",
+  "purchaseRequest": {
+    "title": "Permintaan Pembelian",
+    "review": {
+      "title": "Semakan PR",
+      "hint": "Semak data permintaan yang dikemukakan",
+      "table": {
+        "prNo": "No PR",
+        "status": "Status",
+        "itemSummary": "Ringkasan Item",
+        "department": "Jabatan",
+        "requester": "Pemohon",
+        "items": "Item",
+        "total": "Jumlah",
+        "moreItems": "+ {{count}} item lagi"
+      },
+      "filter": {
+        "filterByDate": "Tapis mengikut tarikh",
+        "searchPlaceholder": "Cari no PR, item, status..."
+      },
+      "section": {
+        "draft": "Draf",
+        "otherStatus": "Status Lain"
+      },
+      "status": {
+        "draft": "Draf",
+        "submitted": "Dikemukakan",
+        "approved": "Diluluskan",
+        "rejected": "Ditolak",
+        "pendingApproval": "Menunggu Kelulusan",
+        "ordered": "Dipesan",
+        "closed": "Ditutup"
+      },
+      "actions": {
+        "view": "Lihat",
+        "create": "Cipta",
+        "delete": "Padam",
+        "deleteSelected": "Padam permintaan pembelian yang dipilih?"
+      },
+      "messages": {
+        "deleteSuccess": "Permintaan pembelian yang dipilih telah dipadam.",
+        "noPurchaseRequestsFound": "Tiada permintaan pembelian ditemui."
+      }
+    },
+    "approval": {
+      "title": "Kelulusan Permintaan Pembelian",
+      "hint": "Luluskan permintaan pembelian",
+      "table": {
+        "prNo": "No PR",
+        "status": "Status",
+        "requester": "Pemohon",
+        "department": "Jabatan",
+        "items": "Item",
+        "total": "Jumlah"
+      },
+      "filter": {
+        "filterByDate": "Tapis mengikut tarikh",
+        "searchPlaceholder": "Cari no PR, pemohon, item..."
+      },
+      "summary": "{{count}} permintaan dikemukakan",
+      "actions": {
+        "view": "Lihat",
+        "approve": "Lulus",
+        "reject": "Tolak"
+      },
+      "messages": {
+        "approved": "{{prNumber}} telah diluluskan.",
+        "rejected": "{{prNumber}} telah ditolak.",
+        "noPendingApprovals": "Tiada kelulusan permintaan pembelian yang menunggu."
+      }
+    },
+    "detail": {
+      "title": "Butiran Permintaan Pembelian",
+      "approvalTitle": "Butiran Kelulusan Permintaan Pembelian",
+      "summary": {
+        "prNumber": "Nombor PR",
+        "requestDate": "Tarikh Permintaan",
+        "items": "Item",
+        "total": "Jumlah"
+      },
+      "info": {
+        "title": "Maklumat Permintaan",
+        "approvalTitle": "Gambaran Kelulusan",
+        "requester": "Pemohon",
+        "department": "Jabatan",
+        "status": "Status",
+        "currentStatus": "Status Semasa",
+        "matchedSuppliers": "Pembekal yang Sepadan"
+      },
+      "items": {
+        "title": "Pecahan Item",
+        "submittedTitle": "Item yang Dikemukakan",
+        "description": "Semak setiap item yang diminta, pembekal yang dipilih, kuantiti dan harga sebelum menghantar permintaan ini.",
+        "approvalDescription": "Semak semua item yang diminta, pembekal yang ditetapkan dan harga sebelum meluluskan permintaan pembelian ini. Kelulusan akan menjana pesanan pembelian draf.",
+        "item": "Item {{index}}",
+        "fields": {
+          "description": "Penerangan",
+          "quantity": "Kuantiti",
+          "unit": "Unit",
+          "unitPrice": "Harga Unit",
+          "lineTotal": "Jumlah Baris",
+          "assignedSupplier": "Pembekal yang Ditetapkan",
+          "supplierEmail": "E-mel Pembekal",
+          "noDescription": "Tiada penerangan diberikan",
+          "noSupplier": "Tiada pembekal dipilih"
+        }
+      },
+      "actions": {
+        "edit": "Edit",
+        "submit": "Hantar",
+        "approve": "Lulus",
+        "reject": "Tolak",
+        "back": "Kembali"
+      },
+      "status": {
+        "draft": "Draf",
+        "submitted": "Dikemukakan"
+      },
+      "messages": {
+        "submitted": "{{prNumber}} telah dikemukakan.",
+        "approved": "{{prNumber}} telah diluluskan.",
+        "rejected": "{{prNumber}} telah ditolak.",
+        "notFound": "Butiran permintaan pembelian tidak ditemui."
+      },
+      "modal": {
+        "rejectTitle": "Tolak Permintaan Pembelian",
+        "rejectLabel": "permintaan pembelian ini"
+      }
+    }
+  }
+}

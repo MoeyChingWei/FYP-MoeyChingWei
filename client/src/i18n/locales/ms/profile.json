@@ -1,0 +1,57 @@
+{
+  "page": {
+    "title": "Profil",
+    "subtitle": "Butiran akaun anda dalam OptiMind."
+  },
+  "avatar": {
+    "changePhoto": "Tukar foto profil",
+    "clickToUpload": "Klik untuk muat naik"
+  },
+  "fields": {
+    "name": "Nama",
+    "email": "E-mel",
+    "department": "Jabatan",
+    "role": "Peranan",
+    "userId": "ID Pengguna",
+    "status": "Status"
+  },
+  "status": {
+    "active": "Aktif",
+    "inactive": "Tidak Aktif"
+  },
+  "buttons": {
+    "resetPassword": "Set semula kata laluan"
+  },
+  "messages": {
+    "notSignedIn": "Tidak log masuk",
+    "couldNotLoadProfile": "Tidak dapat memuatkan profil",
+    "avatarUpdated": "Avatar dikemaskini",
+    "uploadFailed": "Muat naik gagal"
+  },
+  "resetPassword": {
+    "title": "Set semula kata laluan",
+    "subtitle": "Hantar kod pengesahan ke e-mel akaun anda, kemudian tetapkan kata laluan baharu. Halaman ini kekal dalam OptiMind (bukan skrin log masuk awam).",
+    "backToProfile": "Kembali ke profil",
+    "accountEmail": "E-mel akaun",
+    "sendCode": "Hantar kod pengesahan",
+    "smtpNote": "Jika SMTP tidak dikonfigurasikan, semak terminal backend untuk kod tersebut.",
+    "verificationCodeLabel": "Kod pengesahan",
+    "verificationCodePlaceholder": "Kod 6 digit",
+    "verificationCodeRequired": "Masukkan kod",
+    "newPasswordLabel": "Kata laluan baharu",
+    "newPasswordPlaceholder": "Kata laluan baharu",
+    "newPasswordRequired": "Masukkan kata laluan baharu",
+    "newPasswordMinLength": "Sekurang-kurangnya 6 aksara",
+    "confirmPasswordLabel": "Sahkan kata laluan",
+    "confirmPasswordPlaceholder": "Sahkan kata laluan",
+    "confirmPasswordRequired": "Sahkan kata laluan anda",
+    "passwordMismatch": "Kedua-dua kata laluan tidak sepadan",
+    "updateButton": "Kemaskini kata laluan",
+    "codeSentSuccess": "Jika e-mel ini didaftarkan, kod pengesahan telah dihantar.",
+    "codeSendFailed": "Tidak dapat menghantar kod. Adakah backend berjalan?",
+    "passwordsDoNotMatch": "Kata laluan tidak sepadan",
+    "passwordUpdated": "Kata laluan dikemaskini",
+    "resetFailed": "Tidak dapat set semula kata laluan",
+    "pleaseSignInFirst": "Sila log masuk terlebih dahulu"
+  }
+}

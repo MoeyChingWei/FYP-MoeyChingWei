@@ -1,0 +1,26 @@
+@startuml
+title Activity (Part 1 - Submit) - Purchase Request Submission Flow
+
+|Requester|
+start
+:Open Purchasing > Creation;
+:Fill request form\n(item, quantity, unit, justification);
+:Click Submit;
+
+|System|
+if (Required fields complete?) then (Yes)
+  :System assigns localId;
+  :Save record to purchase-requests store;
+  :Detect request status = submitted;
+  :Send notification to Requester\n(in-app + Gmail);
+  :Send notification to Executive\n(in-app + Gmail, new approval request);
+  :Request appears in Review list;
+  :Request is ready for reviewer action;
+  stop
+else (No)
+  |Requester|
+  :Show validation message\n(missing required fields);
+  stop
+endif
+
+@enduml

@@ -1,0 +1,63 @@
+import React, { useState, useEffect } from 'react';
+import { Badge, Button } from 'antd';
+import { MessageOutlined, CloseOutlined } from '@ant-design/icons';
+import ChatWindow from './ChatWindow';
+import './ChatBotWidget.css';
+
+interface ChatBotWidgetProps {
+  userId: number;
+}
+
+const ChatBotWidget: React.FC<ChatBotWidgetProps> = ({ userId }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setUnreadCount(0); // Clear unread count when opened
+    }
+  };
+
+  const handleNewMessage = () => {
+    if (!isOpen) {
+      setUnreadCount((prev) => prev + 1);
+    }
+  };
+
+  return (
+    <>
+      {/* Chat window */}
+      {isOpen && (
+        <div className="chatbot-window-container">
+          <ChatWindow
+            userId={userId}
+            onClose={() => setIsOpen(false)}
+            onNewMessage={handleNewMessage}
+          />
+        </div>
+      )}
+
+      {/* Floating button */}
+      <div className="chatbot-widget-button">
+        <Badge count={unreadCount} offset={[-5, 5]}>
+          <Button
+            type="primary"
+            shape="circle"
+            size="large"
+            icon={isOpen ? <CloseOutlined /> : <MessageOutlined />}
+            onClick={toggleChat}
+            style={{
+              width: 60,
+              height: 60,
+              fontSize: 24,
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            }}
+          />
+        </Badge>
+      </div>
+    </>
+  );
+};
+
+export default ChatBotWidget;

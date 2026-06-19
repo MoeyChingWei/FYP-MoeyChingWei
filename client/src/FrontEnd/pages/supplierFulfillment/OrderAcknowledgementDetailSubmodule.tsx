@@ -1,0 +1,301 @@
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  Descriptions,
+  Empty,
+  Flex,
+  Tag,
+  Typography,
+  message,
+} from "antd";
+import {
+  ArrowLeftOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+import {
+  appendSupplierDelivery,
+  createDeliveryFromAcknowledgement,
+  loadSupplierOrderAcknowledgements,
+  type SupplierOrderAcknowledgementRecord,
+  updateSupplierOrderAcknowledgement,
+} from "../../modules/supplierFulfillment/workflow";
+import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
+import { getSessionUser } from "../../shared/auth/session";
+import RejectReasonModal from "../../shared/components/RejectReasonModal";
+
+import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
+
+const { Paragraph, Title } = Typography;
+
+function currencyLabel(currency: string, amount: number): string {
+  return `${currency} ${amount.toFixed(2)}`;
+}
+
+function statusColor(status: SupplierOrderAcknowledgementRecord["status"]): string {
+  switch (status) {
+    case "PENDING_ORDER_ACKNOWLEDGE":
+      return "orange";
+    case "APPROVED":
+      return "green";
+    case "REJECTED":
+      return "red";
+    default:
+      return "default";
+  }
+}
+
+function statusText(status: SupplierOrderAcknowledgementRecord["status"], t: any): string {
+  switch (status) {
+    case "PENDING_ORDER_ACKNOWLEDGE":
+      return t("orderAcknowledgement.detail.status.pendingOrderAcknowledge");
+    case "APPROVED":
+      return t("orderAcknowledgement.detail.status.approved");
+    case "REJECTED":
+      return t("orderAcknowledgement.detail.status.rejected");
+    default:
+      return status;
+  }
+}
+
+function ItemDetailCard({
+  item,
+  currency,
+  index,
+  t,
+}: {
+  item: DraftLineItem;
+  currency: string;
+  index: number;
+  t: any;
+}): React.ReactElement {
+  const lineTotal = item.quantity * item.unitPrice;
+
+  return (
+    <div className={styles.itemCard}>
+      <div className={styles.itemHeader}>
+        <div>
+          <div className={styles.itemIndex}>{t("orderAcknowledgement.detail.items.item", { index: index + 1 })}</div>
+          <h4 className={styles.itemTitle}>{item.itemName}</h4>
+        </div>
+        <Tag>{item.itemCategory || t("common.uncategorized")}</Tag>
+      </div>
+      <div className={styles.itemGrid}>
+        <div className={`${styles.detailBlock} ${styles.detailWide}`}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.description")}</span>
+          <div className={styles.detailValue}>
+            {item.itemDescription || t("orderAcknowledgement.detail.items.fields.noDescription")}
+          </div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.quantity")}</span>
+          <div className={styles.detailValue}>{item.quantity}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.unit")}</span>
+          <div className={styles.detailValue}>{item.unitOfMeasurement || "-"}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.unitPrice")}</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, item.unitPrice)}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.lineTotal")}</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, lineTotal)}</div>
+        </div>
+
+        <div className={`${styles.detailBlock} ${styles.detailWide}`}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.assignedSupplier")}</span>
+          <div className={styles.detailValue}>
+            {item.supplierName || item.supplierEmail || t("orderAcknowledgement.detail.items.fields.noSupplier")}
+          </div>
+        </div>
+
+        <div className={`${styles.detailBlock} ${styles.detailWide}`}>
+          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.supplierEmail")}</span>
+          <div className={styles.detailValue}>{item.supplierEmail || "-"}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function OrderAcknowledgementDetailSubmodule(): React.ReactElement {
+  const { t: tMsg } = useTranslation('messages');
+
+  const { t } = useTranslation("supplier");
+  const navigate = useNavigate();
+  const { localId } = useParams();
+  const [rows, setRows] = useState<SupplierOrderAcknowledgementRecord[]>([]);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const sessionUser = useMemo(() => getSessionUser(), []);
+
+  useEffect(() => {
+    const sync = (): void => {
+      setRows(loadSupplierOrderAcknowledgements());
+    };
+    const handleSync = (): void => {
+      sync();
+    };
+
+    sync();
+    window.addEventListener("storage", handleSync);
+    window.addEventListener("erp-supplier-order-acks", handleSync);
+
+    return () => {
+      window.removeEventListener("storage", handleSync);
+      window.removeEventListener("erp-supplier-order-acks", handleSync);
+    };
+  }, []);
+
+  const row = useMemo(() => rows.find((item) => item.localId === localId), [localId, rows]);
+
+  const onApprove = (): void => {
+    if (!row) return;
+    appendSupplierDelivery(createDeliveryFromAcknowledgement(row));
+    updateSupplierOrderAcknowledgement(row.localId, (draft) => ({
+      ...draft,
+      status: "APPROVED",
+    }));
+    message.success(t("orderAcknowledgement.list.messages.acknowledged", { poNumber: row.poNumber }));
+    navigate("/supplier-overview/delivery");
+  };
+
+  const onReject = (): void => {
+    if (!row) return;
+    setRejectOpen(true);
+  };
+
+  const onRejectConfirm = (reason: string): void => {
+    if (!row) return;
+    updateSupplierOrderAcknowledgement(row.localId, (draft) => ({
+      ...draft,
+      status: "REJECTED",
+      rejectionReason: reason,
+      rejectedBy:
+        sessionUser?.name?.trim() ||
+        sessionUser?.email ||
+        draft.supplierName ||
+        draft.supplierEmail,
+    }));
+    message.success(t("orderAcknowledgement.list.messages.rejected", { poNumber: row.poNumber }));
+    navigate("/supplier-overview/order-acknowledgement");
+  };
+
+  if (!row) {
+    return (
+      <Card>
+        <Empty description={t("orderAcknowledgement.detail.messages.notFound")} />
+      </Card>
+    );
+  }
+
+  const total = row.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+
+  return (
+    <Card>
+      <div className={styles.page}>
+        <div className={styles.header}>
+          <Flex align="center" gap={8}>
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate("/supplier-overview/order-acknowledgement")}
+              style={{ paddingInline: 0 }}
+              aria-label={t("orderAcknowledgement.detail.actions.back")}
+            />
+            <Title level={3} style={{ margin: 0 }}>
+              {t("orderAcknowledgement.detail.title")}
+            </Title>
+          </Flex>
+
+          <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+        </div>
+
+        <div className={styles.summaryGrid}>
+          <div className={styles.summaryCard}>
+            <div className={styles.summaryLabel}>{t("orderAcknowledgement.detail.summary.orderNumber")}</div>
+            <div className={styles.summaryValue}>{row.poNumber}</div>
+          </div>
+          <div className={styles.summaryCard}>
+            <div className={styles.summaryLabel}>{t("orderAcknowledgement.detail.summary.createdDate")}</div>
+            <div className={styles.summaryValue}>{row.createdDate}</div>
+          </div>
+          <div className={styles.summaryCard}>
+            <div className={styles.summaryLabel}>{t("orderAcknowledgement.detail.summary.items")}</div>
+            <div className={styles.summaryValue}>{row.items.length}</div>
+          </div>
+          <div className={styles.summaryCard}>
+            <div className={styles.summaryLabel}>{t("orderAcknowledgement.detail.summary.total")}</div>
+            <div className={styles.summaryValue}>{currencyLabel(row.currency, total)}</div>
+          </div>
+        </div>
+
+        <div className={styles.sectionCard}>
+          <h3 className={styles.sectionTitle}>{t("orderAcknowledgement.detail.info.title")}</h3>
+          <Descriptions column={2} bordered size="middle">
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.purchaseRequester")}>
+              {row.sourceRequester || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.createdBy")}>{row.createdBy}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.supplierEmail")}>{row.supplierEmail || "-"}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.department")}>{row.department || "-"}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.currentStatus")}>{statusText(row.status, t)}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.companyAddress")} span={2}>
+              {row.companyAddress}
+            </Descriptions.Item>
+            {row.status === "REJECTED" ? (
+              <>
+                <Descriptions.Item label={t("orderAcknowledgement.detail.info.rejectedBy")}>
+                  {row.rejectedBy || "-"}
+                </Descriptions.Item>
+                <Descriptions.Item label={t("orderAcknowledgement.detail.info.rejectDescription")}>
+                  {row.rejectionReason || "-"}
+                </Descriptions.Item>
+              </>
+            ) : null}
+          </Descriptions>
+        </div>
+
+        <div className={styles.itemsCard}>
+          <h3 className={styles.sectionTitle}>{t("orderAcknowledgement.detail.items.title")}</h3>
+          <Paragraph type="secondary">
+            {t("orderAcknowledgement.detail.items.description")}
+          </Paragraph>
+          <div className={styles.itemList}>
+            {row.items.map((item, index) => (
+              <ItemDetailCard key={item.tempId} item={item} currency={row.currency} index={index} t={t} />
+            ))}
+          </div>
+        </div>
+
+        {row.status === "PENDING_ORDER_ACKNOWLEDGE" ? (
+          <div className={styles.actionRow}>
+            <Button danger icon={<CloseOutlined />} onClick={onReject}>
+              {t("orderAcknowledgement.detail.actions.reject")}
+            </Button>
+            <Button type="primary" icon={<CheckOutlined />} onClick={onApprove}>
+              {t("orderAcknowledgement.detail.actions.approve")}
+            </Button>
+          </div>
+        ) : null}
+        <RejectReasonModal
+          open={rejectOpen}
+          title={t("orderAcknowledgement.detail.modal.rejectTitle")}
+          itemLabel={row.poNumber}
+          onCancel={() => setRejectOpen(false)}
+          onConfirm={(reason) => {
+            setRejectOpen(false);
+            onRejectConfirm(reason);
+          }}
+        />
+      </div>
+    </Card>
+  );
+}

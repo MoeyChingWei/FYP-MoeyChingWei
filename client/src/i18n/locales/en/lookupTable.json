@@ -1,0 +1,27 @@
+{
+  "newValuePlaceholder": "New value",
+  "source": {
+    "builtin": "Built-in",
+    "added": "Added"
+  },
+  "tooltip": {
+    "delete": "Delete this entry",
+    "cannotDelete": "Built-in value — cannot be deleted"
+  },
+  "confirm": {
+    "removeTitle": "Remove this value?"
+  },
+  "aria": {
+    "cannotDelete": "Cannot delete built-in value"
+  },
+  "columns": {
+    "value": "Value",
+    "source": "Source",
+    "actions": "Actions"
+  },
+  "error": {
+    "couldNotLoad": "Could not load",
+    "couldNotAdd": "Could not add",
+    "couldNotDelete": "Could not delete"
+  }
+}

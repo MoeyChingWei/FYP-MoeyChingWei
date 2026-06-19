@@ -1,0 +1,27 @@
+{
+  "title": "Dashboard Overview",
+  "welcome": "Welcome back, {{name}}!",
+  "cards": {
+    "pendingApprovals": "Pending Approvals",
+    "purchaseRequests": "Purchase Requests",
+    "purchaseOrders": "Purchase Orders",
+    "monthlySpending": "Monthly Spending"
+  },
+  "charts": {
+    "purchasingTrend": "Purchasing Trend",
+    "spendingByCategory": "Spending by Category"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "createPurchaseRequest": "Create Purchase Request",
+    "trackingItems": "Tracking Items",
+    "approveRequests": "Approve Requests",
+    "createPurchaseOrder": "Create Purchase Order",
+    "viewPurchaseOrders": "View Purchase Orders"
+  },
+  "recentActivity": {
+    "title": "Recent Activity",
+    "noNewActivity": "No new activity"
+  },
+  "userGuide": "User Guide"
+}

@@ -1,0 +1,15 @@
+{
+  "sidebar": {
+    "overview": "Gambaran Keseluruhan",
+    "purchasing": "Pembelian",
+    "userAccess": "Akses Pengguna",
+    "supplierOverview": "Gambaran Pembekal",
+    "trackingItem": "Penjejakan Item",
+    "chatbot": "Pembantu AI",
+    "settings": "Tetapan"
+  },
+  "breadcrumb": {
+    "home": "Laman Utama",
+    "back": "Kembali"
+  }
+}

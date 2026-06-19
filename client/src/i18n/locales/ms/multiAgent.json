@@ -1,0 +1,39 @@
+{
+  "title": "🤖 Pembantu AI Multi-Agen",
+  "subtitle": "Pilih daripada 6 agen AI khusus dengan 8 ciri canggih",
+  "agents": {
+    "general": "Pembantu Umum",
+    "purchase": "Pakar Pembelian",
+    "analytics": "Penganalisis Data",
+    "approval": "Penasihat Kelulusan",
+    "supplier": "Penyelaras Pembekal",
+    "document": "Pakar Dokumen"
+  },
+  "tabs": {
+    "chat": "Sembang",
+    "statistics": "Statistik"
+  },
+  "tabPane": {
+    "chat": "Sembang AI",
+    "statistics": "Statistik Penggunaan"
+  },
+  "features": {
+    "title": "✨ Ciri-ciri Canggih",
+    "quickReplies": "⚡ Balasan Pantas - Soalan biasa prasetel",
+    "sessionHistory": "📜 Sejarah Sesi - Lihat dan pulihkan perbualan",
+    "exportChat": "💾 Eksport Sembang - Muat turun dalam 4 format",
+    "voiceInput": "🎤 Input Suara - Tuturan ke teks",
+    "smartRecommendations": "🎯 Cadangan Pintar - AI mencadangkan agen",
+    "autoComplete": "💡 Lengkap Automatik - Cadangan pintar",
+    "agentCollaboration": "🤝 Kolaborasi Agen - Penyerahan lancar",
+    "usageStats": "📊 Statistik Penggunaan - Jejaki aktiviti anda"
+  },
+  "tips": {
+    "title": "💡 Petua Pantas",
+    "quickActions": "Klik <strong>Tindakan Pantas</strong> untuk pertanyaan segera",
+    "voiceInput": "Gunakan <strong>Input Suara</strong> (ikon mikrofon)",
+    "history": "Lihat <strong>Sejarah</strong> untuk meneruskan sembang lalu",
+    "collaborate": "Cuba <strong>Bekerjasama</strong> untuk tugas kompleks",
+    "exportConversations": "Eksport perbualan untuk rekod"
+  }
+}

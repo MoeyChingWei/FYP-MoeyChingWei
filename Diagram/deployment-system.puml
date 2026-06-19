@@ -1,0 +1,27 @@
+@startuml
+title Deployment Diagram - Runtime Topology
+left to right direction
+
+node "User Device" {
+  artifact "Web Browser\nReact SPA (:3000 dev)" as Browser
+}
+
+node "Application Server" {
+  artifact "Node.js + Express API\n:4000" as API
+  artifact "Prisma Client\n(runtime ORM layer)" as PrismaClient
+  folder "uploads/" as UploadFolder
+}
+
+node "Database Server" {
+  database "PostgreSQL\nPrisma-managed schema" as PG
+}
+
+cloud "Email Provider SMTP/API" as Mail
+
+Browser --> API : HTTPS/HTTP REST (/api/*)
+API --> PrismaClient : query models
+PrismaClient --> PG : SQL
+API --> UploadFolder : file write/read
+API --> Mail : send notification/reset email
+
+@enduml

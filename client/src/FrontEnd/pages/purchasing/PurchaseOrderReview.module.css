@@ -1,0 +1,86 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.datePicker {
+  width: 180px;
+}
+
+.search {
+  width: 280px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tableWrap :global(.ant-table-wrapper) {
+  width: 100%;
+}
+
+.tableWrap :global(.ant-table) {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.tableWrap :global(.ant-table-thead > tr > th) {
+  background: #f8fafc;
+  color: #374151;
+  font-weight: 700;
+}
+
+.poCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.poMeta {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .datePicker {
+    width: 100%;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .toolbar {
+    width: 100%;
+  }
+}

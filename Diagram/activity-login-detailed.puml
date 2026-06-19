@@ -1,0 +1,39 @@
+@startuml
+title Activity (Detailed) - User Login and Access Routing
+
+start
+:Open Login page;
+:Type email and password;
+:Click "Sign in";
+:System sends POST /api/login;
+
+if (Is email/password provided?) then (Yes)
+  :System standardizes input\n(trim and lowercase email);
+  :Find account by email in database;
+  if (Account found?) then (Yes)
+    :Verify password;
+    if (Password correct?) then (Yes)
+      :Check account active status;
+      if (Account active?) then (Yes)
+        :Return success + basic profile data;
+        :Frontend stores session info;
+        if (Role = Supplier?) then (Yes)
+          :Go to Supplier Overview;
+        else (No)
+          :Go to Overview dashboard;
+        endif
+      else (No)
+        :Show "Account is deactivated";
+      endif
+    else (No)
+      :Show "Invalid email or password";
+    endif
+  else (No)
+    :Show "Invalid email or password";
+  endif
+else (No)
+  :Show "Please fill in required fields";
+endif
+
+stop
+@enduml

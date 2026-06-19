@@ -1,0 +1,93 @@
+{
+  "page": {
+    "title": "追踪项目",
+    "loadingData": "正在加载追踪数据..."
+  },
+  "search": {
+    "placeholder": "搜索请求者姓名...",
+    "clearFilter": "清除筛选",
+    "unreadCount": "未读",
+    "markAllAsRead": "全部标记为已读"
+  },
+  "sections": {
+    "inProgress": "进行中",
+    "completedRejected": "已完成/已拒绝",
+    "noInProgress": "没有进行中的项目。",
+    "noCompleted": "没有已完成的项目。"
+  },
+  "stages": {
+    "pr": {
+      "pending": "待审批采购申请",
+      "complete": "采购申请已批准"
+    },
+    "po": {
+      "pending": "待审批采购订单",
+      "complete": "采购订单已批准"
+    },
+    "ack": {
+      "pending": "待确认订单",
+      "complete": "订单已确认"
+    },
+    "delivery": {
+      "pending": "待交货",
+      "complete": "已交货"
+    },
+    "grn": {
+      "pending": "待收货",
+      "complete": "已收货"
+    },
+    "completed": {
+      "label": "已完成",
+      "complete": "已完成"
+    }
+  },
+  "status": {
+    "rejected": "已拒绝",
+    "completed": "已完成",
+    "discrepancy": "差异"
+  },
+  "descriptions": {
+    "prPending": "采购申请正在等待审批，然后才能创建采购订单。",
+    "prRejected": "采购申请已被拒绝，项目流程在申请阶段停止。",
+    "poApproved": "采购申请已获批准，项目现在正在等待采购订单审批。",
+    "poRejected": "采购订单已被拒绝，项目流程在采购订单阶段停止。",
+    "ackPending": "采购订单已获批准，正在等待供应商确认订单。",
+    "ackRejected": "供应商拒绝了订单确认，项目流程在该阶段停止。",
+    "deliveryPending": "订单已确认，现在正在等待供应商交货。",
+    "grnPending": "交货已完成，收货单正在等待用户确认。",
+    "grnDiscrepancy": "收货单存在差异，仍需要采购跟进。",
+    "completed": "已收到收货单，项目追踪流程已完成。",
+    "rejected": "此项目流程已被拒绝，不会继续到下一个流程阶段。"
+  },
+  "row": {
+    "item": "项目",
+    "status": "状态",
+    "description": "描述",
+    "createdDate": "采购申请创建日期"
+  },
+  "modal": {
+    "trackingDetail": "追踪详情",
+    "rejectDetail": "拒绝详情",
+    "close": "关闭",
+    "viewRejectDetail": "查看拒绝详情"
+  },
+  "details": {
+    "requestNo": "申请编号",
+    "item": "项目",
+    "requester": "申请人",
+    "department": "部门",
+    "currentStatus": "当前状态",
+    "poNumber": "采购订单编号",
+    "ackNumber": "订单确认编号",
+    "deliveryNumber": "交货编号",
+    "grnNumber": "收货单编号",
+    "rejectedBy": "拒绝者",
+    "rejectedStage": "拒绝阶段",
+    "rejectDescription": "拒绝描述",
+    "noRejectDescription": "未提供拒绝描述。",
+    "trackedItem": "追踪项目",
+    "otherItems": "此申请中的其他项目",
+    "noDescription": "未提供描述",
+    "uncategorized": "未分类"
+  }
+}

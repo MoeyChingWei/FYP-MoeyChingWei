@@ -1,0 +1,33 @@
+@startuml
+title Sequence Diagram - Login Flow
+
+actor User
+participant "React Frontend" as FE
+participant "Express Auth Route" as AR
+participant "Auth Controller" as AC
+database "Prisma / PostgreSQL" as DB
+
+User -> FE: Enter email/password + click Login
+FE -> AR: POST /api/login
+AR -> AC: login(req, res)
+AC -> AC: validate email + password format
+AC -> DB: find user by email
+DB --> AC: user record / null
+
+alt invalid payload
+  AC --> FE: 400 bad request
+  FE --> User: Show validation error
+else user exists and password matches
+  AC -> AC: check isActive and role
+  AC --> FE: 200 success + session user
+  alt role = SUPPLIER
+    FE --> User: Navigate to /supplier-overview
+  else role != SUPPLIER
+    FE --> User: Navigate to /overview
+  end
+else invalid credentials / inactive
+  AC --> FE: 401 unauthorized
+  FE --> User: Show login error
+end
+
+@enduml

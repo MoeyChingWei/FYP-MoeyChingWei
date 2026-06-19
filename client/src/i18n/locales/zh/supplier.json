@@ -1,0 +1,332 @@
+{
+  "moduleTitle": "供应商概览",
+  "notifications": {
+    "title": "通知",
+    "hint": "最新的供应商端更新和活动。",
+    "latest": "最新（{{count}}）",
+    "history": "历史（{{count}}）",
+    "markAllRead": "全部标记为已读",
+    "deleteAll": "全部删除",
+    "deleteAllConfirm": "删除所有历史通知？",
+    "deleteOneConfirm": "删除此通知？",
+    "type": {
+      "success": "成功",
+      "warning": "警告",
+      "info": "信息"
+    },
+    "messages": {
+      "noNotifications": "目前没有通知。",
+      "noHistory": "没有通知历史。",
+      "deleted": "通知已删除",
+      "historyDeleted": "历史通知已删除"
+    }
+  },
+  "statusCards": {
+    "pendingOrderAcknowledge": "待确认订单",
+    "pendingDelivery": "待交付",
+    "pendingGrn": "待收货",
+    "discrepancy": "差异",
+    "completed": "已完成"
+  },
+  "modules": {
+    "orderAcknowledge": {
+      "title": "订单确认",
+      "hint": "审查并确认收到的采购订单"
+    },
+    "delivery": {
+      "title": "交付",
+      "hint": "管理交付进度和已提交的发货更新"
+    },
+    "grn": {
+      "title": "收货单",
+      "hint": "从采购部门跟踪收货单状态"
+    }
+  },
+  "orderAcknowledgement": {
+    "title": "订单确认",
+    "list": {
+      "table": {
+        "orderNo": "订单编号",
+        "status": "状态",
+        "supplier": "供应商",
+        "items": "物品",
+        "total": "总计",
+        "action": "操作"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索订单编号、供应商、物品..."
+      },
+      "summary": "{{count}} 条确认记录",
+      "status": {
+        "pendingOrderAcknowledge": "待确认订单",
+        "approved": "已批准",
+        "rejected": "已拒绝"
+      },
+      "actions": {
+        "view": "查看",
+        "approve": "批准",
+        "reject": "拒绝",
+        "back": "返回"
+      },
+      "messages": {
+        "acknowledged": "{{poNumber}} 已确认。",
+        "rejected": "{{poNumber}} 已拒绝。",
+        "noAcknowledgements": "未找到订单确认。"
+      }
+    },
+    "detail": {
+      "title": "订单确认详情",
+      "summary": {
+        "orderNumber": "订单编号",
+        "createdDate": "创建日期",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "确认概览",
+        "sourcePr": "来源采购申请",
+        "purchaseRequester": "采购申请人",
+        "createdBy": "创建人",
+        "supplier": "供应商",
+        "supplierEmail": "供应商电子邮件",
+        "department": "部门",
+        "currentStatus": "当前状态",
+        "companyAddress": "公司地址",
+        "rejectedBy": "拒绝人",
+        "rejectDescription": "拒绝描述"
+      },
+      "items": {
+        "title": "订单物品",
+        "description": "在批准或拒绝此订单确认之前，请审查采购订单物品。",
+        "item": "物品 {{index}}",
+        "fields": {
+          "description": "描述",
+          "quantity": "数量",
+          "unit": "单位",
+          "unitPrice": "单价",
+          "lineTotal": "行总计",
+          "assignedSupplier": "指定供应商",
+          "supplierEmail": "供应商电子邮件",
+          "noDescription": "未提供描述",
+          "noSupplier": "未选择供应商"
+        }
+      },
+      "actions": {
+        "approve": "批准",
+        "reject": "拒绝",
+        "back": "返回"
+      },
+      "status": {
+        "pendingOrderAcknowledge": "待确认订单",
+        "approved": "已批准",
+        "rejected": "已拒绝"
+      },
+      "messages": {
+        "notFound": "未找到订单确认详情。"
+      },
+      "modal": {
+        "rejectTitle": "拒绝订单确认",
+        "rejectLabel": "此订单"
+      }
+    }
+  },
+  "delivery": {
+    "title": "交付",
+    "list": {
+      "table": {
+        "orderNo": "订单编号",
+        "status": "状态",
+        "supplier": "供应商",
+        "items": "物品",
+        "total": "总计",
+        "action": "操作"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索订单编号、供应商、物品..."
+      },
+      "summary": "{{count}} 条交付记录",
+      "status": {
+        "pendingDelivery": "待交付",
+        "delivered": "已交付"
+      },
+      "actions": {
+        "view": "查看",
+        "deliver": "交付",
+        "back": "返回"
+      },
+      "messages": {
+        "delivered": "{{deliveryNo}} 已标记为已交付。",
+        "noDeliveryRecords": "未找到交付记录。"
+      }
+    },
+    "detail": {
+      "title": "交付详情",
+      "summary": {
+        "orderNumber": "订单编号（交付编号）",
+        "createdDate": "创建日期",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "交付概览",
+        "sourcePr": "来源采购申请",
+        "originalOrderNo": "原始订单编号",
+        "purchaseRequester": "采购申请人",
+        "createdBy": "创建人",
+        "supplier": "供应商",
+        "supplierEmail": "供应商电子邮件",
+        "department": "部门",
+        "currentStatus": "当前状态",
+        "companyAddress": "公司地址"
+      },
+      "items": {
+        "title": "交付物品",
+        "description": "审查此订单交付，并在发货完成后将其标记为已交付。"
+      },
+      "actions": {
+        "deliver": "交付",
+        "back": "返回"
+      },
+      "status": {
+        "pendingDelivery": "待交付",
+        "delivered": "已交付"
+      },
+      "messages": {
+        "notFound": "未找到交付详情。"
+      }
+    }
+  },
+  "grnStatus": {
+    "title": "收货单状态",
+    "list": {
+      "table": {
+        "orderNo": "订单编号",
+        "status": "状态",
+        "supplier": "供应商",
+        "items": "物品",
+        "reason": "原因"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索订单编号、供应商、物品..."
+      },
+      "summary": "{{count}} 条收货单记录",
+      "status": {
+        "pendingGrn": "待收货",
+        "completed": "已完成",
+        "discrepancy": "差异"
+      },
+      "actions": {
+        "view": "查看",
+        "back": "返回"
+      },
+      "messages": {
+        "noGrnRecords": "未找到收货单记录。"
+      }
+    },
+    "detail": {
+      "title": "收货单详情",
+      "summary": {
+        "orderNumber": "订单编号",
+        "createdDate": "创建日期",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "收货单概览",
+        "sourcePr": "来源采购申请",
+        "purchaseRequester": "采购申请人",
+        "createdBy": "创建人",
+        "supplier": "供应商",
+        "supplierEmail": "供应商电子邮件",
+        "department": "部门",
+        "currentStatus": "当前状态",
+        "companyAddress": "公司地址",
+        "discrepancyReason": "差异原因"
+      },
+      "items": {
+        "title": "收货单物品",
+        "description": "审查已交付的订单详情和收货单信息。"
+      },
+      "actions": {
+        "createNewDelivery": "创建新交付",
+        "back": "返回"
+      },
+      "status": {
+        "pendingGrn": "待收货",
+        "completed": "已完成",
+        "discrepancy": "差异"
+      },
+      "messages": {
+        "notFound": "未找到收货单详情。"
+      }
+    },
+    "createDelivery": {
+      "title": "创建新交付",
+      "summary": {
+        "orderNumber": "订单编号（交付编号）",
+        "sourcePr": "来源采购申请",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "收货单概览",
+        "sourcePr": "来源采购申请",
+        "originalOrderNo": "原始订单编号",
+        "purchaseRequester": "采购申请人",
+        "supplier": "供应商",
+        "supplierEmail": "供应商电子邮件",
+        "department": "部门",
+        "companyAddress": "公司地址",
+        "discrepancyReason": "差异原因"
+      },
+      "items": {
+        "title": "物品详情（供应商填写）",
+        "description": "更新物品详情并提交以创建新的待交付记录。",
+        "item": "物品 {{index}}",
+        "fields": {
+          "description": "描述",
+          "quantity": "数量",
+          "unit": "单位",
+          "unitPrice": "单价（{{currency}}）"
+        },
+        "validation": {
+          "descriptionRequired": "描述为必填项",
+          "quantityRequired": "数量为必填项",
+          "unitRequired": "单位为必填项",
+          "unitPriceRequired": "单价为必填项"
+        }
+      },
+      "actions": {
+        "submitNewDelivery": "提交新交付",
+        "back": "返回"
+      },
+      "status": {
+        "pendingDelivery": "待交付"
+      },
+      "messages": {
+        "created": "{{deliveryNo}} 已创建为待交付状态。",
+        "notFound": "未找到收货单详情。",
+        "onlyFromDiscrepancy": "只能从差异记录创建新交付。"
+      }
+    }
+  },
+  "common": {
+    "back": "返回",
+    "view": "查看",
+    "approve": "批准",
+    "reject": "拒绝",
+    "deliver": "交付",
+    "cancel": "取消",
+    "delete": "删除",
+    "save": "保存",
+    "submit": "提交",
+    "loading": "加载中...",
+    "noData": "无数据",
+    "actions": "操作",
+    "status": "状态",
+    "uncategorized": "未分类"
+  }
+}

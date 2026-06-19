@@ -1,0 +1,93 @@
+{
+  "page": {
+    "title": "Tracking Item",
+    "loadingData": "Loading tracking data..."
+  },
+  "search": {
+    "placeholder": "Search requester name...",
+    "clearFilter": "Clear Filter",
+    "unreadCount": "unread",
+    "markAllAsRead": "Mark All as Read"
+  },
+  "sections": {
+    "inProgress": "In Progress",
+    "completedRejected": "Completed/Rejected",
+    "noInProgress": "No in progress items.",
+    "noCompleted": "No completed items."
+  },
+  "stages": {
+    "pr": {
+      "pending": "Pending Purchase Request",
+      "complete": "Purchase Request Approved"
+    },
+    "po": {
+      "pending": "Pending Purchase Order",
+      "complete": "Purchase Order Approved"
+    },
+    "ack": {
+      "pending": "Pending Acknowledge Order",
+      "complete": "Order Acknowledged"
+    },
+    "delivery": {
+      "pending": "Pending Delivery",
+      "complete": "Delivered"
+    },
+    "grn": {
+      "pending": "Pending GRN",
+      "complete": "GRN Received"
+    },
+    "completed": {
+      "label": "Completed",
+      "complete": "Completed"
+    }
+  },
+  "status": {
+    "rejected": "Rejected",
+    "completed": "Completed",
+    "discrepancy": "Discrepancy"
+  },
+  "descriptions": {
+    "prPending": "Purchase request is waiting for approval before a purchase order can be created.",
+    "prRejected": "Purchase request was rejected and the item flow stopped at the request stage.",
+    "poApproved": "Purchase request was approved and the item is now waiting for purchase order approval.",
+    "poRejected": "Purchase order was rejected and the item flow stopped at the purchase order stage.",
+    "ackPending": "Purchase order was approved and is waiting for the supplier to acknowledge the order.",
+    "ackRejected": "Supplier rejected the order acknowledgement and the item flow stopped at that stage.",
+    "deliveryPending": "Order was acknowledged and is now waiting for supplier delivery.",
+    "grnPending": "Delivery was completed and the goods received note is waiting for user confirmation.",
+    "grnDiscrepancy": "Goods received note has a discrepancy and still needs purchasing follow-up.",
+    "completed": "Goods received note was received and the item tracking flow is completed.",
+    "rejected": "This item flow was rejected and will not continue to the next process stage."
+  },
+  "row": {
+    "item": "Item",
+    "status": "Status",
+    "description": "Description",
+    "createdDate": "Purchase Request Created Date"
+  },
+  "modal": {
+    "trackingDetail": "Tracking Detail",
+    "rejectDetail": "Reject Detail",
+    "close": "Close",
+    "viewRejectDetail": "View reject detail"
+  },
+  "details": {
+    "requestNo": "Request No",
+    "item": "Item",
+    "requester": "Requester",
+    "department": "Department",
+    "currentStatus": "Current Status",
+    "poNumber": "Purchase Order No",
+    "ackNumber": "Order Acknowledge No",
+    "deliveryNumber": "Delivery No",
+    "grnNumber": "GRN No",
+    "rejectedBy": "Rejected By",
+    "rejectedStage": "Rejected Stage",
+    "rejectDescription": "Reject Description",
+    "noRejectDescription": "No reject description provided.",
+    "trackedItem": "Tracked Item",
+    "otherItems": "Other Items In This Request",
+    "noDescription": "No description provided",
+    "uncategorized": "Uncategorized"
+  }
+}

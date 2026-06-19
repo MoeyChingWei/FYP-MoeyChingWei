@@ -1,0 +1,135 @@
+@startuml
+title ERD (Physical) - OptiMind Core Data Model
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+entity "users" as User {
+  * id : Int <<PK>>
+  --
+  name : String?
+  email : String <<UQ>>
+  password : String
+  role : String
+  department : String?
+  avatarUrl : String?
+  isActive : Boolean
+}
+
+entity "notifications" as Notification {
+  * id : Int <<PK>>
+  --
+  userId : Int <<FK>>
+  title : String
+  message : String
+  type : String
+  channel : String
+  refType : String?
+  refId : String?
+  isRead : Boolean
+  createdAt : DateTime
+  readAt : DateTime?
+}
+
+entity "feedbacks" as Feedback {
+  * id : Int <<PK>>
+  --
+  userId : Int <<FK>>
+  type : String
+  description : String
+  status : String
+  adminComment : String?
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "role_change_audits" as RoleChangeAudit {
+  * id : Int <<PK>>
+  --
+  targetId : Int <<FK>>
+  fromRole : String
+  toRole : String
+  actorEmail : String
+  actorName : String?
+  createdAt : DateTime
+}
+
+entity "password_reset_codes" as PasswordResetCode {
+  * id : Int <<PK>>
+  --
+  userId : Int <<FK>>
+  email : String
+  codeHash : String
+  salt : String
+  attempts : Int
+  expiresAt : DateTime
+  usedAt : DateTime?
+  createdAt : DateTime
+}
+
+entity "supplier_type_assignments" as SupplierTypeAssignment {
+  * id : Int <<PK>>
+  --
+  userId : Int <<FK>>
+  category : String
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "purchasing_lookups" as PurchasingLookup {
+  * id : Int <<PK>>
+  --
+  kind : String
+  value : String
+  createdAt : DateTime
+  (kind, value) : UNIQUE
+}
+
+entity "purchase_request_records" as PurchaseRequestRecord {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "purchase_order_records" as PurchaseOrderRecord {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "supplier_order_acknowledgement_records" as SupplierOrderAckRecord {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "supplier_delivery_records" as SupplierDeliveryRecord {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "supplier_grn_records" as SupplierGrnRecord {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+User ||--o{ Notification
+User ||--o{ Feedback
+User ||--o{ RoleChangeAudit : targetId
+User ||--o{ PasswordResetCode
+User ||--o{ SupplierTypeAssignment
+
+@enduml

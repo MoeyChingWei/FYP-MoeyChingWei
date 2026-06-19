@@ -1,0 +1,57 @@
+{
+  "page": {
+    "title": "个人资料",
+    "subtitle": "您在OptiMind中的帐户详情。"
+  },
+  "avatar": {
+    "changePhoto": "更改头像",
+    "clickToUpload": "点击上传"
+  },
+  "fields": {
+    "name": "名称",
+    "email": "电子邮件",
+    "department": "部门",
+    "role": "角色",
+    "userId": "用户ID",
+    "status": "状态"
+  },
+  "status": {
+    "active": "活跃",
+    "inactive": "未激活"
+  },
+  "buttons": {
+    "resetPassword": "重置密码"
+  },
+  "messages": {
+    "notSignedIn": "未登录",
+    "couldNotLoadProfile": "无法加载个人资料",
+    "avatarUpdated": "头像已更新",
+    "uploadFailed": "上传失败"
+  },
+  "resetPassword": {
+    "title": "重置密码",
+    "subtitle": "向您的帐户邮箱发送验证码，然后设置新密码。此页面位于OptiMind内部（而非公共登录屏幕）。",
+    "backToProfile": "返回个人资料",
+    "accountEmail": "帐户邮箱",
+    "sendCode": "发送验证码",
+    "smtpNote": "如果未配置SMTP，请检查后端终端以获取验证码。",
+    "verificationCodeLabel": "验证码",
+    "verificationCodePlaceholder": "6位验证码",
+    "verificationCodeRequired": "请输入验证码",
+    "newPasswordLabel": "新密码",
+    "newPasswordPlaceholder": "新密码",
+    "newPasswordRequired": "请输入新密码",
+    "newPasswordMinLength": "至少6个字符",
+    "confirmPasswordLabel": "确认密码",
+    "confirmPasswordPlaceholder": "确认密码",
+    "confirmPasswordRequired": "请确认您的密码",
+    "passwordMismatch": "两次输入的密码不匹配",
+    "updateButton": "更新密码",
+    "codeSentSuccess": "如果此邮箱已注册，验证码已发送。",
+    "codeSendFailed": "无法发送验证码。后端是否正在运行？",
+    "passwordsDoNotMatch": "密码不匹配",
+    "passwordUpdated": "密码已更新",
+    "resetFailed": "无法重置密码",
+    "pleaseSignInFirst": "请先登录"
+  }
+}

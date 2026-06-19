@@ -1,0 +1,76 @@
+{
+  "required": "Medan ini diperlukan",
+  "requiredField": "{field} diperlukan",
+  "email": {
+    "required": "E-mel diperlukan",
+    "invalid": "Sila masukkan alamat e-mel yang sah",
+    "format": "Format e-mel tidak sah"
+  },
+  "password": {
+    "required": "Kata laluan diperlukan",
+    "minLength": "Kata laluan mestilah sekurang-kurangnya {min} aksara",
+    "maxLength": "Kata laluan tidak boleh melebihi {max} aksara",
+    "match": "Kata laluan tidak sepadan",
+    "weak": "Kata laluan terlalu lemah",
+    "confirmRequired": "Sila sahkan kata laluan anda",
+    "mismatch": "Kedua-dua kata laluan tidak sepadan"
+  },
+  "code": {
+    "required": "Masukkan kod daripada e-mel"
+  },
+  "confirmPassword": {
+    "required": "Sahkan kata laluan anda"
+  },
+  "feedback": {
+    "typeRequired": "Pilih jenis maklum balas",
+    "descriptionRequired": "Terangkan maklum balas anda",
+    "minLength": "Sekurang-kurangnya 5 aksara"
+  },
+  "string": {
+    "minLength": "Mestilah sekurang-kurangnya {min} aksara",
+    "maxLength": "Tidak boleh melebihi {max} aksara",
+    "pattern": "Format tidak sah",
+    "empty": "Tidak boleh kosong"
+  },
+  "number": {
+    "required": "Sila masukkan nombor",
+    "min": "Mestilah sekurang-kurangnya {min}",
+    "max": "Tidak boleh melebihi {max}",
+    "positive": "Mestilah nombor positif",
+    "integer": "Mestilah integer"
+  },
+  "date": {
+    "required": "Tarikh diperlukan",
+    "invalid": "Format tarikh tidak sah",
+    "past": "Tarikh tidak boleh pada masa lalu",
+    "future": "Tarikh tidak boleh pada masa hadapan",
+    "range": "Tarikh mestilah antara {start} dan {end}"
+  },
+  "file": {
+    "required": "Sila pilih fail",
+    "size": "Saiz fail tidak boleh melebihi {max}",
+    "type": "Jenis fail tidak sah. Dibenarkan: {types}",
+    "upload": "Muat naik fail gagal"
+  },
+  "select": {
+    "required": "Sila pilih satu pilihan",
+    "multiple": "Sila pilih sekurang-kurangnya satu pilihan"
+  },
+  "phone": {
+    "required": "Nombor telefon diperlukan",
+    "invalid": "Format nombor telefon tidak sah"
+  },
+  "url": {
+    "invalid": "Sila masukkan URL yang sah"
+  },
+  "name": {
+    "required": "Nama diperlukan"
+  },
+  "role": {
+    "required": "Peranan diperlukan"
+  },
+  "department": {
+    "required": "Jabatan diperlukan"
+  },
+  "atLeastOne": "Sila tambah sekurang-kurangnya satu item"
+}

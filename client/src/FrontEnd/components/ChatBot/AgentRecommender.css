@@ -1,0 +1,61 @@
+.agent-recommender-card {
+  margin-bottom: 12px;
+  border: 1px solid #faad14;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fffbf0 0%, #fff7e6 100%);
+  animation: slideIn 0.3s ease-out;
+}
+
+.agent-recommender-card .ant-card-body {
+  padding: 12px 16px;
+}
+
+.recommender-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.recommender-icon {
+  flex-shrink: 0;
+}
+
+.recommender-text {
+  flex: 1;
+}
+
+.recommender-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.recommender-message {
+  font-size: 12px;
+  color: #595959;
+  line-height: 1.4;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式 */
+@media (max-width: 576px) {
+  .recommender-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .recommender-content button {
+    width: 100%;
+  }
+}

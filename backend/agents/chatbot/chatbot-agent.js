@@ -1,0 +1,1156 @@
+import deepseekService from '../../services/deepseek-ai-service.js';
+import titleGenerator from '../../services/title-generator.js';
+import prisma from '../../config/prisma.js';
+import { v4 as uuidv4 } from 'uuid';
+import { generatePRNumber } from '../../utils/pr-number-generator.js';
+
+const COMMON_CATEGORIES = [
+  'Office Supplies / Stationery',
+  'IT Equipment / Hardware',
+  'Raw Materials',
+  'Cleaning Supplies',
+  'Furniture',
+  'Safety Equipment'
+];
+
+const COMMON_UNITS = [
+  'box', 'piece', 'kg', 'liter', 'set', 'pack', 'unit'
+];
+
+const CREATE_PR_INTENTS = [
+  'create purchase request',
+  'new purchase request',
+  'make a request',
+  'create pr',
+  'new pr',
+  '我要申请',
+  '创建采购申请',
+  '建立采购申请'
+];
+
+const CANCEL_WORDS = ['cancel', 'stop', 'nevermind', 'quit', '取消', '不要了'];
+const YES_WORDS = ['yes', 'y', 'add', 'another', 'add another', '继续', '再加', '加多一个'];
+const DONE_WORDS = ['no', 'n', 'done', 'finish', 'submit', 'create', '完成', '提交', '好了'];
+const SKIP_WORDS = ['skip', 'no', 'none', 'n/a', '-', '没有', '不用'];
+
+/**
+ * Format purchase requests with summary cards and table
+ */
+function formatPurchaseRequestsAsMarkdown(requests, total, statistics) {
+  if (!requests || requests.length === 0) {
+    return "You don't have any purchase requests yet.";
+  }
+
+  const statusEmoji = {
+    'PENDING': '🔴',
+    'APPROVED': '🟢',
+    'REJECTED': '⚫',
+    'SUBMITTED': '🟡'
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const formatItems = (items) => {
+    if (!items || items.length === 0) return 'N/A';
+    if (items.length === 1) {
+      const item = items[0];
+      const name = (item.itemName || 'Item').substring(0, 25);
+      return `${name} (${item.quantity || 0} ${item.unitOfMeasurement || 'pcs'})`;
+    }
+    const firstItem = (items[0].itemName || 'Item').substring(0, 20);
+    return `${firstItem}... +${items.length - 1} more`;
+  };
+
+  // Build summary using simple boxes
+  let output = '**📊 Purchase Request Summary**\n\n';
+  output += '```\n';
+  output += '╔═════════════╦═════════════╦═════════════╦═════════════╗\n';
+  output += '║  Total PR   ║   Pending   ║  Submitted  ║  Approved   ║\n';
+  const totalStr = String(statistics?.total || total).padStart(2, ' ');
+  const pendingStr = String(statistics?.pending || 0).padStart(2, ' ');
+  const submittedStr = String(statistics?.submitted || 0).padStart(2, ' ');
+  const approvedStr = String(statistics?.approved || 0).padStart(2, ' ');
+  output += `║     ${totalStr}      ║      ${pendingStr}     ║      ${submittedStr}     ║      ${approvedStr}     ║\n`;
+  output += '╚═════════════╩═════════════╩═════════════╩═════════════╝\n';
+  output += '```\n\n';
+
+  // Build standard Markdown table
+  output += '**📋 Recent Purchase Requests**\n\n';
+  output += '| PR Number | Status | Items | Date |\n';
+  output += '|-----------|--------|-------|------|\n';
+
+  requests.slice(0, 10).forEach((req) => {
+    const status = req.status || 'PENDING';
+    const emoji = statusEmoji[status] || '❓';
+    const prNum = req.prNumber || 'N/A';
+    const statusText = `${emoji} ${status}`;
+    const items = formatItems(req.lineItems || req.items);
+    const date = formatDate(req.createdAt);
+
+    output += `| ${prNum} | ${statusText} | ${items} | ${date} |\n`;
+  });
+
+  output += '\n';
+
+  return output;
+}
+
+const CHATBOT_SYSTEM_PROMPT = `You are the AI assistant for OptiMind ERP system.
+
+Your responsibilities:
+1. Answer user questions about system usage
+2. Help users query data (purchase requests, orders, spending statistics, etc.)
+3. Guide users through operations
+4. Provide a friendly user experience
+
+Current user information:
+- Name: {userName}
+- Role: {userRole}
+- Department: {userDepartment}
+
+## Creating Purchase Requests
+
+When users say "create", "new purchase request", "make a request", or similar, guide them through creating a purchase request step-by-step:
+
+1. Ask for item name: "What item do you need to purchase?"
+
+2. Ask for category with options:
+   "Which category does this item belong to?
+
+   OPTIONS:
+   - Office Supplies / Stationery
+   - IT Equipment / Hardware
+   - Raw Materials
+   - Cleaning Supplies
+   - Furniture
+   - Safety Equipment
+   - Other (type your own)"
+
+3. Ask for quantity: "How many units do you need?" (must be a positive number)
+
+4. Ask for unit of measurement with options:
+   "What's the unit of measurement?
+
+   OPTIONS:
+   - box
+   - piece
+   - kg
+   - liter
+   - set
+   - pack
+   - unit
+   - Other (type your own)"
+
+5. Ask for optional description: "Any additional details for this item? (Optional - press Enter to skip)"
+   - If user provides text, format as: "Buy {itemName} - {userText}"
+   - If user skips (says "skip", "no", or empty), format as: "Buy {itemName}"
+
+6. Ask if more items needed: "Item added! Would you like to add another item?"
+   - If yes, repeat from step 1
+   - If no, proceed to preview
+
+7. Show preview:
+   "Purchase Request Summary:
+   1. Item: {itemName}
+      Category: {category}
+      Quantity: {quantity} {unit}
+      Description: {description}
+
+   [... more items ...]
+
+   Department: {department}
+   Requested by: {userName}
+   Email: {email}
+
+   Ready to submit?"
+
+8. On confirm, call create_purchase_request tool with all collected items
+
+9. After success, show:
+   "✅ Purchase request created successfully!
+
+   PR Number: {prNumber}
+   Status: Pending Approval
+   Items: {count} items
+   Department: {department}
+
+   Your request has been submitted and is awaiting approval.
+   You'll receive a notification when it's processed."
+
+## State Management
+
+To maintain state across conversation turns:
+- At the start of each turn, retrieve previous state from the last message metadata
+- Use state to track collected items: { collectedItems: [...] }
+- After each step, save updated state in your response metadata
+- When user adds items, append to collectedItems array (don't overwrite)
+- When user says "done", pass ALL items from collectedItems to create_purchase_request
+
+Example state structure:
+{
+  "collectedItems": [
+    {"itemName": "laptop", "itemCategory": "IT Equipment", "quantity": 3, "unitOfMeasurement": "piece", "itemDescription": "Buy laptop - urgent"},
+    {"itemName": "mouse", "itemCategory": "IT Equipment", "quantity": 10, "unitOfMeasurement": "piece", "itemDescription": "Buy mouse"}
+  ]
+}
+
+## Input Handling
+
+- Accept numbered options (1, 2, etc.) or full text ("Office Supplies")
+- Validate quantity is a positive number
+- Allow custom categories/units if user types "Other" or custom text
+- Handle cancel keywords: "cancel", "stop", "nevermind", "quit"
+
+## Available Tools
+
+- get_purchase_requests: Get user's purchase request list
+- get_purchase_orders: Get purchase order list
+- get_dashboard_stats: Get dashboard statistics
+- get_notifications: Get user notifications
+- get_lookup_options: Get available categories or units
+- create_purchase_request: Create new purchase request (MUST be called after collecting all item data)
+
+## CRITICAL: Data Presentation Format
+
+**When get_purchase_requests tool returns data, it includes a 'markdown' field with pre-formatted output.**
+
+You MUST use the 'markdown' field DIRECTLY in your response. Do NOT reformat, recreate, or transform it.
+
+Example response when user asks for purchase requests:
+
+"Here are your purchase requests, {userName}!
+
+[Insert the 'markdown' field from tool response here - copy it EXACTLY]
+
+Would you like me to help you with any of these requests?"
+
+**Important:**
+- Copy the markdown field EXACTLY as returned
+- Do NOT try to create your own table
+- Do NOT reformat the data
+- Just use the markdown string directly
+
+Please respond in friendly, professional English. Use OPTIONS: format for presenting choices.`;
+
+class ChatBotAgent {
+  constructor() {
+    this.agentType = 'chatbot';
+    this.tools = this.defineTools();
+    this.toolHandlers = this.defineToolHandlers();
+  }
+
+  defineTools() {
+    return [
+      {
+        name: 'get_purchase_requests',
+        description: '[MUST USE] When users ask about purchase requests, purchase records, request count, or request list, call this tool to get real-time data. Do not guess - always call the tool.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            userId: {
+              type: 'number',
+              description: 'User ID'
+            },
+            limit: {
+              type: 'number',
+              description: 'Limit number of results (default 10)'
+            },
+          },
+          required: ['userId'],
+        },
+      },
+      {
+        name: 'get_purchase_orders',
+        description: '[MUST USE] When users ask about purchase orders, order count, or order list, call this tool to get real-time data.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Limit number of results (default 10)'
+            },
+          },
+        },
+      },
+      {
+        name: 'get_dashboard_stats',
+        description: '[MUST USE] When users ask about statistics, spending, totals, or dashboard data, call this tool to get real-time statistics.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            department: {
+              type: 'string',
+              description: 'Department name (empty for all departments)'
+            },
+          },
+        },
+      },
+      {
+        name: 'get_notifications',
+        description: '[MUST USE] When users ask about notifications, messages, or alerts, call this tool to get user notification list.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            userId: {
+              type: 'number',
+              description: 'User ID'
+            },
+            limit: {
+              type: 'number',
+              description: 'Limit number of results (default 10)'
+            },
+          },
+          required: ['userId'],
+        },
+      },
+      {
+        name: 'get_lookup_options',
+        description: 'Get available categories or units of measurement for purchase requests',
+        input_schema: {
+          type: 'object',
+          properties: {
+            kind: {
+              type: 'string',
+              enum: ['category', 'unit'],
+              description: 'Type of options to retrieve'
+            }
+          },
+          required: ['kind'],
+        },
+      },
+      {
+        name: 'create_purchase_request',
+        description: 'Create a new purchase request with collected line items. Call this after gathering all item details from the user.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            lineItems: {
+              type: 'array',
+              description: 'List of items to purchase',
+              items: {
+                type: 'object',
+                properties: {
+                  itemName: { type: 'string', description: 'Name of the item' },
+                  itemCategory: { type: 'string', description: 'Category of the item' },
+                  quantity: { type: 'number', description: 'Quantity to purchase' },
+                  unitOfMeasurement: { type: 'string', description: 'Unit of measurement' },
+                  itemDescription: { type: 'string', description: 'Description of the item' }
+                },
+                required: ['itemName', 'itemCategory', 'quantity', 'unitOfMeasurement', 'itemDescription']
+              }
+            }
+          },
+          required: ['lineItems'],
+        },
+      },
+    ];
+  }
+
+  defineToolHandlers() {
+    return {
+      get_purchase_requests: async (input) => {
+        const { userId, limit = 10 } = input;
+
+        const records = await prisma.purchaseRequestRecord.findMany({
+          take: 100, // Get more for statistics
+          orderBy: { createdAt: 'desc' },
+        });
+
+        // 过滤属于该用户部门的申请
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { department: true, role: true },
+        });
+
+        let filteredRecords = records;
+
+        if (user?.department && user.role !== 'Super Admin') {
+          filteredRecords = records.filter(record => {
+            const payload = record.payload;
+            return payload.department === user.department;
+          });
+        }
+
+        // Calculate statistics
+        const statistics = {
+          total: filteredRecords.length,
+          pending: filteredRecords.filter(r => r.payload.status === 'PENDING').length,
+          submitted: filteredRecords.filter(r => r.payload.status === 'SUBMITTED').length,
+          approved: filteredRecords.filter(r => r.payload.status === 'APPROVED').length,
+          rejected: filteredRecords.filter(r => r.payload.status === 'REJECTED').length,
+        };
+
+        const requests = filteredRecords.slice(0, limit).map(r => ({
+          id: r.localId,
+          ...r.payload,
+          createdAt: r.createdAt,
+        }));
+
+        return {
+          markdown: formatPurchaseRequestsAsMarkdown(requests, filteredRecords.length, statistics),
+          total: filteredRecords.length,
+          statistics,
+          requests,
+        };
+      },
+
+      get_purchase_orders: async (input) => {
+        const { limit = 10 } = input;
+
+        const records = await prisma.purchaseOrderRecord.findMany({
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        });
+
+        return {
+          total: records.length,
+          orders: records.map(r => ({
+            id: r.localId,
+            ...r.payload,
+            createdAt: r.createdAt,
+          })),
+        };
+      },
+
+      get_dashboard_stats: async (input) => {
+        const { department } = input;
+
+        // 获取采购申请
+        const requestRecords = await prisma.purchaseRequestRecord.findMany();
+        const orderRecords = await prisma.purchaseOrderRecord.findMany();
+
+        let filteredRequests = requestRecords;
+        let filteredOrders = orderRecords;
+
+        if (department) {
+          filteredRequests = requestRecords.filter(r => r.payload.department === department);
+          filteredOrders = orderRecords.filter(r => r.payload.department === department);
+        }
+
+        // 计算统计数据
+        const totalRequests = filteredRequests.length;
+        const totalOrders = filteredOrders.length;
+
+        // 计算支出
+        let totalSpending = 0;
+        filteredOrders.forEach(order => {
+          if (order.payload.items && Array.isArray(order.payload.items)) {
+            order.payload.items.forEach(item => {
+              const amount = parseFloat(item.totalPrice || 0);
+              if (!isNaN(amount)) {
+                totalSpending += amount;
+              }
+            });
+          }
+        });
+
+        // 待审批数量
+        const pendingApprovals = filteredRequests.filter(r => r.payload.status === 'pending').length;
+
+        return {
+          department: department || 'All Departments',
+          totalRequests,
+          totalOrders,
+          totalSpending: totalSpending.toFixed(2),
+          pendingApprovals,
+        };
+      },
+
+      get_notifications: async (input) => {
+        const { userId, limit = 10 } = input;
+
+        const notifications = await prisma.notification.findMany({
+          where: { userId },
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        });
+
+        return {
+          total: notifications.length,
+          unreadCount: notifications.filter(n => !n.isRead).length,
+          notifications: notifications.map(n => ({
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            type: n.type,
+            isRead: n.isRead,
+            createdAt: n.createdAt,
+          })),
+        };
+      },
+
+      get_lookup_options: async (input) => {
+        const { kind } = input;
+
+        // Get database options
+        const dbOptions = await prisma.purchasingLookup.findMany({
+          where: { kind },
+          select: { value: true },
+        });
+
+        // Get common options based on kind
+        const commonOptions = kind === 'category' ? COMMON_CATEGORIES : COMMON_UNITS;
+
+        // Merge and deduplicate
+        const allOptions = [
+          ...commonOptions,
+          ...dbOptions.map(opt => opt.value)
+        ];
+
+        const uniqueOptions = [...new Set(allOptions)];
+
+        return {
+          kind,
+          options: uniqueOptions,
+        };
+      },
+
+      create_purchase_request: async (input) => {
+        const { lineItems, userId } = input;
+
+        // Validate lineItems
+        if (!lineItems || lineItems.length === 0) {
+          return { success: false, error: 'At least one item required' };
+        }
+
+        // Get user info
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { name: true, email: true, department: true },
+        });
+
+        if (!user) {
+          return { success: false, error: 'User not found' };
+        }
+
+        // Generate IDs
+        const localId = uuidv4();
+        const prNumber = generatePRNumber();
+        const today = new Date().toISOString().split('T')[0];
+
+        // Build line items with tempIds
+        const formattedLineItems = lineItems.map(item => ({
+          tempId: uuidv4(),
+          itemName: item.itemName,
+          itemCategory: item.itemCategory,
+          quantity: item.quantity,
+          unitOfMeasurement: item.unitOfMeasurement,
+          itemDescription: item.itemDescription,
+          unitPrice: 0,
+          supplierId: null,
+          supplierName: null,
+          supplierEmail: null,
+        }));
+
+        // Build payload
+        const payload = {
+          localId,
+          status: 'PENDING',
+          prNumber,
+          requestBy: user.name || 'Unknown',
+          department: user.department || 'Unknown',
+          requestDate: today,
+          createdByEmail: user.email,
+          createdByUserId: userId,
+          currency: 'MYR',
+          lineItems: formattedLineItems,
+        };
+
+        // Save to database
+        try {
+          await prisma.purchaseRequestRecord.create({
+            data: {
+              localId,
+              payload,
+            },
+          });
+        } catch (error) {
+          return { success: false, error: 'Failed to create purchase request' };
+        }
+
+        return {
+          success: true,
+          prNumber,
+          status: 'PENDING',
+          itemCount: lineItems.length,
+          department: user.department,
+        };
+      },
+    };
+  }
+
+  buildSystemPrompt(user) {
+    return CHATBOT_SYSTEM_PROMPT
+      .replace('{userName}', user.name || 'User')
+      .replace('{userRole}', user.role || 'Employee')
+      .replace('{userDepartment}', user.department || 'Not set');
+  }
+
+  async chat({ userId, message, sessionId }) {
+    // 1. 加载用户信息
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true, role: true, department: true },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+
+    // 2. 确保会话存在
+    await this.ensureSession(sessionId, userId);
+
+    const guidedResponse = await this.handlePurchaseRequestFlow({
+      userId,
+      user,
+      sessionId,
+      message,
+    });
+
+    if (guidedResponse) {
+      return guidedResponse;
+    }
+
+    // 3. 加载会话历史
+    const history = await this.loadSessionHistory(sessionId);
+
+    // 4. 构建系统提示词
+    const sourceContext = await this.loadRelevantSourceContext(userId, sessionId, message);
+    const systemPrompt = `${this.buildSystemPrompt(user)}${sourceContext}`;
+
+    // 5. 构建消息数组（注入userId到工具调用中）
+    const messages = [
+      ...history,
+      {
+        role: 'user',
+        content: message,
+      },
+    ];
+
+    // 6. 调用DeepSeek API（带工具调用）
+    const response = await deepseekService.chatWithTools({
+      agentType: this.agentType,
+      systemPrompt,
+      messages,
+      availableTools: this.tools,
+      toolHandlers: this.enrichToolHandlers(userId),
+    });
+
+    // 7. 保存对话历史
+    await this.saveMessage(sessionId, 'user', message);
+    await this.generateSessionTitle(sessionId, message);
+
+    if (response.success) {
+      await this.saveMessage(sessionId, 'assistant', response.content);
+    }
+
+    return response;
+  }
+
+  enrichToolHandlers(userId) {
+    // 为工具注入userId
+    const enriched = {};
+    for (const [name, handler] of Object.entries(this.toolHandlers)) {
+      enriched[name] = (input) => handler({ ...input, userId });
+    }
+    return enriched;
+  }
+
+  async chatStream({ userId, message, sessionId }) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true, role: true, department: true },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this.ensureSession(sessionId, userId);
+    const history = await this.loadSessionHistory(sessionId);
+    const sourceContext = await this.loadRelevantSourceContext(userId, sessionId, message);
+    const systemPrompt = `${this.buildSystemPrompt(user)}${sourceContext}`;
+
+    // 保存用户消息
+    await this.saveMessage(sessionId, 'user', message);
+    await this.generateSessionTitle(sessionId, message);
+
+    return deepseekService.chatStream({
+      agentType: this.agentType,
+      systemPrompt,
+      messages: [
+        ...history,
+        { role: 'user', content: message },
+      ],
+    });
+  }
+
+  async ensureSession(sessionId, userId) {
+    const exists = await prisma.chatSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!exists) {
+      await prisma.chatSession.create({
+        data: {
+          id: sessionId,
+          userId,
+          title: 'New Conversation',
+        },
+      });
+    }
+  }
+
+  async loadSessionHistory(sessionId, limit = 20) {
+    const messages = await prisma.chatMessage.findMany({
+      where: { sessionId },
+      orderBy: { createdAt: 'asc' },
+      take: limit,
+    });
+
+    return messages.map(msg => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+  }
+
+  async saveMessage(sessionId, role, content, metadata = null) {
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+
+    await prisma.chatMessage.create({
+      data: {
+        sessionId,
+        role,
+        content: contentStr,
+        metadata: metadata ? metadata : undefined,
+      },
+    });
+
+    await prisma.chatSession.update({
+      where: { id: sessionId },
+      data: { updatedAt: new Date() },
+    });
+  }
+
+  async getLastMessageMetadata(sessionId) {
+    const lastMessage = await prisma.chatMessage.findFirst({
+      where: { sessionId },
+      orderBy: { createdAt: 'desc' },
+      select: { metadata: true },
+    });
+
+    return lastMessage?.metadata || null;
+  }
+
+  async handlePurchaseRequestFlow({ userId, user, sessionId, message }) {
+    const rawText = String(message || '').trim();
+    const normalized = rawText.toLowerCase();
+    const previousState = await this.getLastPurchaseFlowState(sessionId);
+    const active = previousState?.flow === 'purchase_request';
+
+    if (!active && !this.isCreatePurchaseRequestIntent(normalized)) {
+      return null;
+    }
+
+    let state = active
+      ? previousState
+      : {
+          flow: 'purchase_request',
+          step: 'itemName',
+          currentItem: {},
+          collectedItems: [],
+          startedAt: new Date().toISOString(),
+        };
+
+    if (this.matchesAny(normalized, CANCEL_WORDS)) {
+      const response = 'Purchase request creation cancelled. Your draft has not been saved.';
+      await this.saveGuidedTurn(sessionId, rawText, response, null);
+      return { success: true, content: response, usage: null };
+    }
+
+    let response;
+
+    if (!active) {
+      response = "I'll help you create a purchase request. What item do you need to purchase?";
+      await this.saveGuidedTurn(sessionId, rawText, response, state);
+      return { success: true, content: response, usage: null };
+    }
+
+    switch (state.step) {
+      case 'itemName': {
+        if (!rawText) {
+          response = 'Item name is required. What item do you need to purchase?';
+          break;
+        }
+        state.currentItem = { itemName: rawText };
+        state.step = 'category';
+        response = this.formatOptions('Which category does this item belong to?', COMMON_CATEGORIES);
+        break;
+      }
+
+      case 'category': {
+        const category = this.resolveOption(rawText, COMMON_CATEGORIES);
+        if (!category) {
+          response = this.formatOptions('Please choose a category, or type your own category.', COMMON_CATEGORIES);
+          break;
+        }
+        if (category === 'Other (type your own)') {
+          state.step = 'customCategory';
+          response = 'Please type the custom category for this item.';
+          break;
+        }
+        state.currentItem.itemCategory = category;
+        state.step = 'quantity';
+        response = 'How many units do you need?';
+        break;
+      }
+
+      case 'customCategory': {
+        if (!rawText) {
+          response = 'Please type the custom category for this item.';
+          break;
+        }
+        state.currentItem.itemCategory = rawText;
+        state.step = 'quantity';
+        response = 'How many units do you need?';
+        break;
+      }
+
+      case 'quantity': {
+        const quantity = this.parsePositiveNumber(rawText);
+        if (!quantity) {
+          response = 'Please enter a valid positive number for quantity.';
+          break;
+        }
+        state.currentItem.quantity = quantity;
+        state.step = 'unit';
+        response = this.formatOptions("What's the unit of measurement?", COMMON_UNITS);
+        break;
+      }
+
+      case 'unit': {
+        const unit = this.resolveOption(rawText, COMMON_UNITS);
+        if (!unit) {
+          response = this.formatOptions('Please choose a unit, or type your own unit.', COMMON_UNITS);
+          break;
+        }
+        if (unit === 'Other (type your own)') {
+          state.step = 'customUnit';
+          response = 'Please type the custom unit of measurement.';
+          break;
+        }
+        state.currentItem.unitOfMeasurement = unit;
+        state.step = 'description';
+        response = 'Any additional details for this item? Type "skip" if there is nothing to add.';
+        break;
+      }
+
+      case 'customUnit': {
+        if (!rawText) {
+          response = 'Please type the custom unit of measurement.';
+          break;
+        }
+        state.currentItem.unitOfMeasurement = rawText;
+        state.step = 'description';
+        response = 'Any additional details for this item? Type "skip" if there is nothing to add.';
+        break;
+      }
+
+      case 'description': {
+        const itemName = state.currentItem.itemName;
+        state.currentItem.itemDescription = this.matchesAny(normalized, SKIP_WORDS)
+          ? `Buy ${itemName}`
+          : `Buy ${itemName} - ${rawText}`;
+        state.collectedItems = [...(state.collectedItems || []), state.currentItem];
+        state.currentItem = {};
+        state.step = 'addMore';
+        response = this.formatOptions('Item added. Would you like to add another item?', [
+          'Add another item',
+          'Done, create request',
+        ], false);
+        break;
+      }
+
+      case 'addMore': {
+        if (this.matchesAny(normalized, YES_WORDS) || normalized === '1') {
+          state.step = 'itemName';
+          state.currentItem = {};
+          response = 'What item do you need to purchase next?';
+          break;
+        }
+        if (this.matchesAny(normalized, DONE_WORDS) || normalized === '2') {
+          state.step = 'preview';
+          response = `${this.formatPurchaseRequestPreview(state, user)}\n\n${this.formatOptions('Ready to submit?', ['Submit', 'Cancel', 'Edit from start'], false)}`;
+          break;
+        }
+        response = this.formatOptions('Please choose what to do next.', [
+          'Add another item',
+          'Done, create request',
+        ], false);
+        break;
+      }
+
+      case 'preview': {
+        if (normalized === 'edit' || normalized === '3') {
+          state.step = 'itemName';
+          state.currentItem = {};
+          state.collectedItems = [];
+          response = 'No problem. Let us start again. What item do you need to purchase?';
+          break;
+        }
+        if (normalized === 'submit' || normalized === '1' || normalized === 'yes') {
+          const result = await this.toolHandlers.create_purchase_request({ lineItems: state.collectedItems, userId });
+          if (!result.success) {
+            response = `Sorry, I could not save your request right now. ${result.error || 'Please try again later.'}`;
+            break;
+          }
+          response = [
+            'Purchase request created successfully!',
+            '',
+            `PR Number: ${result.prNumber}`,
+            `Status: ${result.status}`,
+            `Items: ${result.itemCount}`,
+            `Department: ${result.department || user.department || 'Not set'}`,
+            '',
+            'Your request has been submitted and is awaiting approval.',
+          ].join('\n');
+          await this.saveGuidedTurn(sessionId, rawText, response, null);
+          return { success: true, content: response, usage: null };
+        }
+        response = this.formatOptions('Ready to submit?', ['Submit', 'Cancel', 'Edit from start'], false);
+        break;
+      }
+
+      default:
+        state.step = 'itemName';
+        response = 'Let us continue creating your purchase request. What item do you need to purchase?';
+    }
+
+    state.updatedAt = new Date().toISOString();
+    await this.saveGuidedTurn(sessionId, rawText, response, state);
+    return { success: true, content: response, usage: null };
+  }
+
+  async saveGuidedTurn(sessionId, userMessage, assistantMessage, state) {
+    await this.saveMessage(sessionId, 'user', userMessage);
+    await this.generateSessionTitle(sessionId, userMessage);
+    await this.saveMessage(
+      sessionId,
+      'assistant',
+      assistantMessage,
+      state ? { purchaseRequestFlow: state } : { purchaseRequestFlow: null }
+    );
+  }
+
+  async getLastPurchaseFlowState(sessionId) {
+    const metadata = await this.getLastMessageMetadata(sessionId);
+    return metadata?.purchaseRequestFlow || null;
+  }
+
+  isCreatePurchaseRequestIntent(normalized) {
+    return CREATE_PR_INTENTS.some(intent => normalized.includes(intent));
+  }
+
+  matchesAny(normalized, words) {
+    return words.some(word => normalized === word || normalized.includes(word));
+  }
+
+  resolveOption(input, options) {
+    const normalized = input.trim().toLowerCase();
+    const withOther = [...options, 'Other (type your own)'];
+    const numericChoice = Number(normalized);
+
+    if (Number.isInteger(numericChoice) && numericChoice >= 1 && numericChoice <= withOther.length) {
+      return withOther[numericChoice - 1];
+    }
+
+    if (normalized === 'other') {
+      return 'Other (type your own)';
+    }
+
+    return withOther.find(option => option.toLowerCase() === normalized)
+      || options.find(option => option.toLowerCase().includes(normalized) || normalized.includes(option.toLowerCase()))
+      || input.trim();
+  }
+
+  parsePositiveNumber(input) {
+    const match = String(input).match(/\d+(\.\d+)?/);
+    if (!match) return null;
+    const value = Number(match[0]);
+    return value > 0 ? value : null;
+  }
+
+  formatOptions(question, options, includeOther = true) {
+    const visibleOptions = includeOther ? [...options, 'Other (type your own)'] : options;
+    return `${question}\n\nOPTIONS:\n${visibleOptions.map(option => `- ${option}`).join('\n')}`;
+  }
+
+  formatPurchaseRequestPreview(state, user) {
+    const itemLines = (state.collectedItems || []).map((item, index) => [
+      `${index + 1}. Item: ${item.itemName}`,
+      `   Category: ${item.itemCategory}`,
+      `   Quantity: ${item.quantity} ${item.unitOfMeasurement}`,
+      `   Description: ${item.itemDescription}`,
+    ].join('\n')).join('\n\n');
+
+    return [
+      'Purchase Request Summary:',
+      itemLines,
+      '',
+      `Department: ${user.department || 'Not set'}`,
+      `Requested by: ${user.name || 'User'}`,
+      `Email: ${user.email || 'Not set'}`,
+    ].join('\n');
+  }
+
+  async loadRelevantSourceContext(userId, sessionId, message) {
+    const queryTerms = this.extractQueryTerms(message);
+    if (queryTerms.length === 0) return '';
+
+    const chunks = await prisma.sourceChunk.findMany({
+      where: {
+        source: {
+          userId,
+          OR: [
+            { sessionId: null },
+            { sessionId },
+          ],
+        },
+      },
+      include: {
+        source: {
+          select: { fileName: true },
+        },
+      },
+      take: 200,
+    });
+
+    const scored = chunks
+      .map(chunk => ({
+        chunk,
+        score: this.scoreChunk(chunk.content, queryTerms),
+      }))
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+
+    if (scored.length === 0) return '';
+
+    const context = scored.map(({ chunk }, index) => (
+      `[Source ${index + 1}: ${chunk.source.fileName}]\n${chunk.content.slice(0, 1200)}`
+    )).join('\n\n');
+
+    return `\n\n## Uploaded Training Sources\nUse these user-uploaded source excerpts when they are relevant. If the sources do not answer the question, say so and use general system knowledge.\n\n${context}`;
+  }
+
+  extractQueryTerms(message) {
+    return String(message || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(term => term.length >= 3)
+      .slice(0, 20);
+  }
+
+  scoreChunk(content, queryTerms) {
+    const text = String(content || '').toLowerCase();
+    return queryTerms.reduce((score, term) => score + (text.includes(term) ? 1 : 0), 0);
+  }
+
+  async getUserSessions(userId, limit = 100) {
+    const sessions = await prisma.chatSession.findMany({
+      where: { userId },
+      orderBy: { updatedAt: 'desc' },
+      take: limit,
+      include: {
+        _count: {
+          select: { messages: true },
+        },
+      },
+    });
+
+    await this.generateMissingTitles(sessions);
+
+    return await prisma.chatSession.findMany({
+      where: { userId },
+      orderBy: { updatedAt: 'desc' },
+      take: limit,
+      include: {
+        _count: {
+          select: { messages: true },
+        },
+      },
+    });
+  }
+
+  async generateSessionTitle(sessionId, message) {
+    try {
+      const session = await prisma.chatSession.findUnique({
+        where: { id: sessionId },
+        select: { title: true },
+      });
+
+      if (!session || !titleGenerator.shouldGenerateTitle(session.title)) {
+        return;
+      }
+
+      const title = await titleGenerator.generateTitle(String(message || ''));
+
+      await prisma.chatSession.update({
+        where: { id: sessionId },
+        data: { title },
+      });
+    } catch (error) {
+      console.warn(`Title generation failed for session ${sessionId}:`, error.message);
+    }
+  }
+
+  async generateMissingTitles(sessions) {
+    const sessionsToTitle = sessions
+      .filter((session) => titleGenerator.shouldGenerateTitle(session.title) && session._count?.messages > 0)
+      .slice(0, 10);
+
+    await Promise.all(sessionsToTitle.map(async (session) => {
+      const firstUserMessage = await prisma.chatMessage.findFirst({
+        where: {
+          sessionId: session.id,
+          role: 'user',
+        },
+        orderBy: { createdAt: 'asc' },
+        select: { content: true },
+      });
+
+      if (firstUserMessage?.content) {
+        await this.generateSessionTitle(session.id, firstUserMessage.content);
+      }
+    }));
+  }
+
+  async deleteSession(sessionId) {
+    await prisma.chatSession.delete({
+      where: { id: sessionId },
+    });
+  }
+
+  async deleteAllUserSessions(userId) {
+    await prisma.chatMessage.deleteMany({
+      where: {
+        session: { userId },
+      },
+    });
+
+    const result = await prisma.chatSession.deleteMany({
+      where: { userId },
+    });
+
+    return result.count;
+  }
+}
+
+export default new ChatBotAgent();

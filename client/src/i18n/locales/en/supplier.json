@@ -1,0 +1,332 @@
+{
+  "moduleTitle": "Supplier Overview",
+  "notifications": {
+    "title": "Notifications",
+    "hint": "Latest supplier-side updates and activity.",
+    "latest": "Latest ({{count}})",
+    "history": "History ({{count}})",
+    "markAllRead": "Mark all read",
+    "deleteAll": "Delete all",
+    "deleteAllConfirm": "Delete all history notifications?",
+    "deleteOneConfirm": "Delete this notification?",
+    "type": {
+      "success": "success",
+      "warning": "warning",
+      "info": "info"
+    },
+    "messages": {
+      "noNotifications": "No notifications right now.",
+      "noHistory": "No notification history.",
+      "deleted": "Notification deleted",
+      "historyDeleted": "History notifications deleted"
+    }
+  },
+  "statusCards": {
+    "pendingOrderAcknowledge": "Pending Order Acknowledge",
+    "pendingDelivery": "Pending Delivery",
+    "pendingGrn": "Pending GRN",
+    "discrepancy": "Discrepancy",
+    "completed": "Completed"
+  },
+  "modules": {
+    "orderAcknowledge": {
+      "title": "Order Acknowledge",
+      "hint": "Review and acknowledge incoming purchase orders"
+    },
+    "delivery": {
+      "title": "Delivery",
+      "hint": "Manage delivery progress and submitted shipment updates"
+    },
+    "grn": {
+      "title": "GRN",
+      "hint": "Track goods received note status from purchasing"
+    }
+  },
+  "orderAcknowledgement": {
+    "title": "Order Acknowledgement",
+    "list": {
+      "table": {
+        "orderNo": "Order No",
+        "status": "Status",
+        "supplier": "Supplier",
+        "items": "Items",
+        "total": "Total",
+        "action": "Action"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search order no, supplier, item..."
+      },
+      "summary": "{{count}} acknowledgement record(s)",
+      "status": {
+        "pendingOrderAcknowledge": "Pending Order Acknowledge",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "actions": {
+        "view": "View",
+        "approve": "Approve",
+        "reject": "Reject",
+        "back": "Back"
+      },
+      "messages": {
+        "acknowledged": "{{poNumber}} acknowledged.",
+        "rejected": "{{poNumber}} rejected.",
+        "noAcknowledgements": "No order acknowledgements found."
+      }
+    },
+    "detail": {
+      "title": "Order Acknowledgement Details",
+      "summary": {
+        "orderNumber": "Order Number",
+        "createdDate": "Created Date",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "Acknowledgement Overview",
+        "sourcePr": "Source PR",
+        "purchaseRequester": "Purchase Requester",
+        "createdBy": "Created By",
+        "supplier": "Supplier",
+        "supplierEmail": "Supplier Email",
+        "department": "Department",
+        "currentStatus": "Current Status",
+        "companyAddress": "Company Address",
+        "rejectedBy": "Rejected By",
+        "rejectDescription": "Reject Description"
+      },
+      "items": {
+        "title": "Order Items",
+        "description": "Review the purchase order items before approving or rejecting this order acknowledgement.",
+        "item": "Item {{index}}",
+        "fields": {
+          "description": "Description",
+          "quantity": "Quantity",
+          "unit": "Unit",
+          "unitPrice": "Unit Price",
+          "lineTotal": "Line Total",
+          "assignedSupplier": "Assigned Supplier",
+          "supplierEmail": "Supplier Email",
+          "noDescription": "No description provided",
+          "noSupplier": "No supplier selected"
+        }
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "back": "Back"
+      },
+      "status": {
+        "pendingOrderAcknowledge": "Pending Order Acknowledgement",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "messages": {
+        "notFound": "Order acknowledgement details not found."
+      },
+      "modal": {
+        "rejectTitle": "Reject Order Acknowledgement",
+        "rejectLabel": "this order"
+      }
+    }
+  },
+  "delivery": {
+    "title": "Delivery",
+    "list": {
+      "table": {
+        "orderNo": "Order No",
+        "status": "Status",
+        "supplier": "Supplier",
+        "items": "Items",
+        "total": "Total",
+        "action": "Action"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search order no, supplier, item..."
+      },
+      "summary": "{{count}} delivery record(s)",
+      "status": {
+        "pendingDelivery": "Pending Delivery",
+        "delivered": "Delivered"
+      },
+      "actions": {
+        "view": "View",
+        "deliver": "Deliver",
+        "back": "Back"
+      },
+      "messages": {
+        "delivered": "{{deliveryNo}} marked as delivered.",
+        "noDeliveryRecords": "No delivery records found."
+      }
+    },
+    "detail": {
+      "title": "Delivery Details",
+      "summary": {
+        "orderNumber": "Order Number (Delivery No)",
+        "createdDate": "Created Date",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "Delivery Overview",
+        "sourcePr": "Source PR",
+        "originalOrderNo": "Original Order Number",
+        "purchaseRequester": "Purchase Requester",
+        "createdBy": "Created By",
+        "supplier": "Supplier",
+        "supplierEmail": "Supplier Email",
+        "department": "Department",
+        "currentStatus": "Current Status",
+        "companyAddress": "Company Address"
+      },
+      "items": {
+        "title": "Delivery Items",
+        "description": "Review this order delivery and mark it as delivered once shipment is completed."
+      },
+      "actions": {
+        "deliver": "Deliver",
+        "back": "Back"
+      },
+      "status": {
+        "pendingDelivery": "Pending Delivery",
+        "delivered": "Delivered"
+      },
+      "messages": {
+        "notFound": "Delivery details not found."
+      }
+    }
+  },
+  "grnStatus": {
+    "title": "GRN Status",
+    "list": {
+      "table": {
+        "orderNo": "Order No",
+        "status": "Status",
+        "supplier": "Supplier",
+        "items": "Items",
+        "reason": "Reason"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search order no, supplier, item..."
+      },
+      "summary": "{{count}} GRN record(s)",
+      "status": {
+        "pendingGrn": "Pending GRN",
+        "completed": "Completed",
+        "discrepancy": "Discrepancy"
+      },
+      "actions": {
+        "view": "View",
+        "back": "Back"
+      },
+      "messages": {
+        "noGrnRecords": "No GRN records found."
+      }
+    },
+    "detail": {
+      "title": "GRN Details",
+      "summary": {
+        "orderNumber": "Order Number",
+        "createdDate": "Created Date",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "GRN Overview",
+        "sourcePr": "Source PR",
+        "purchaseRequester": "Purchase Requester",
+        "createdBy": "Created By",
+        "supplier": "Supplier",
+        "supplierEmail": "Supplier Email",
+        "department": "Department",
+        "currentStatus": "Current Status",
+        "companyAddress": "Company Address",
+        "discrepancyReason": "Discrepancy Reason"
+      },
+      "items": {
+        "title": "GRN Items",
+        "description": "Review the delivered order details and goods received note information."
+      },
+      "actions": {
+        "createNewDelivery": "Create New Delivery",
+        "back": "Back"
+      },
+      "status": {
+        "pendingGrn": "Pending GRN",
+        "completed": "Completed",
+        "discrepancy": "Discrepancy"
+      },
+      "messages": {
+        "notFound": "GRN details not found."
+      }
+    },
+    "createDelivery": {
+      "title": "Create New Delivery",
+      "summary": {
+        "orderNumber": "Order Number (Delivery No)",
+        "sourcePr": "Source PR",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "GRN Overview",
+        "sourcePr": "Source PR",
+        "originalOrderNo": "Original Order Number",
+        "purchaseRequester": "Purchase Requester",
+        "supplier": "Supplier",
+        "supplierEmail": "Supplier Email",
+        "department": "Department",
+        "companyAddress": "Company Address",
+        "discrepancyReason": "Discrepancy Reason"
+      },
+      "items": {
+        "title": "Item Detail (Supplier Fill)",
+        "description": "Update item details and submit to create a new Pending Delivery record.",
+        "item": "Item {{index}}",
+        "fields": {
+          "description": "Description",
+          "quantity": "Quantity",
+          "unit": "Unit",
+          "unitPrice": "Unit Price ({{currency}})"
+        },
+        "validation": {
+          "descriptionRequired": "Description is required",
+          "quantityRequired": "Quantity is required",
+          "unitRequired": "Unit is required",
+          "unitPriceRequired": "Unit price is required"
+        }
+      },
+      "actions": {
+        "submitNewDelivery": "Submit New Delivery",
+        "back": "Back"
+      },
+      "status": {
+        "pendingDelivery": "Pending Delivery"
+      },
+      "messages": {
+        "created": "{{deliveryNo}} created with Pending Delivery status.",
+        "notFound": "GRN detail not found.",
+        "onlyFromDiscrepancy": "New delivery can only be created from discrepancy records."
+      }
+    }
+  },
+  "common": {
+    "back": "Back",
+    "view": "View",
+    "approve": "Approve",
+    "reject": "Reject",
+    "deliver": "Deliver",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Action",
+    "status": "Status",
+    "uncategorized": "Uncategorized"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "required": "This field is required",
+  "requiredField": "{field} is required",
+  "email": {
+    "required": "Email is required",
+    "invalid": "Please enter a valid email address",
+    "format": "Invalid email format"
+  },
+  "password": {
+    "required": "Password is required",
+    "minLength": "Password must be at least {min} characters",
+    "maxLength": "Password must not exceed {max} characters",
+    "match": "Passwords do not match",
+    "weak": "Password is too weak",
+    "confirmRequired": "Please confirm your password",
+    "mismatch": "The two passwords do not match"
+  },
+  "code": {
+    "required": "Enter the code from email"
+  },
+  "confirmPassword": {
+    "required": "Confirm your password"
+  },
+  "feedback": {
+    "typeRequired": "Select feedback type",
+    "descriptionRequired": "Describe your feedback",
+    "minLength": "At least 5 characters"
+  },
+  "string": {
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must not exceed {max} characters",
+    "pattern": "Invalid format",
+    "empty": "Cannot be empty"
+  },
+  "number": {
+    "required": "Please enter a number",
+    "min": "Must be at least {min}",
+    "max": "Must not exceed {max}",
+    "positive": "Must be a positive number",
+    "integer": "Must be an integer"
+  },
+  "date": {
+    "required": "Date is required",
+    "invalid": "Invalid date format",
+    "past": "Date cannot be in the past",
+    "future": "Date cannot be in the future",
+    "range": "Date must be between {start} and {end}"
+  },
+  "file": {
+    "required": "Please select a file",
+    "size": "File size must not exceed {max}",
+    "type": "Invalid file type. Allowed: {types}",
+    "upload": "File upload failed"
+  },
+  "select": {
+    "required": "Please select an option",
+    "multiple": "Please select at least one option"
+  },
+  "phone": {
+    "required": "Phone number is required",
+    "invalid": "Invalid phone number format"
+  },
+  "url": {
+    "invalid": "Please enter a valid URL"
+  },
+  "name": {
+    "required": "Name is required"
+  },
+  "role": {
+    "required": "Role is required"
+  },
+  "department": {
+    "required": "Department is required"
+  },
+  "atLeastOne": "Please add at least one item"
+}

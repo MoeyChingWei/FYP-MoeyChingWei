@@ -1,0 +1,250 @@
+import express from 'express';
+import chatbotAgent from '../agents/chatbot/chatbot-agent.js';
+import { v4 as uuidv4 } from 'uuid';
+
+const router = express.Router();
+
+/**
+ * POST /api/chatbot/chat
+ * 标准ChatBot对话接口
+ */
+router.post('/chat', async (req, res) => {
+  try {
+    const { message, userId, sessionId } = req.body;
+
+    // Validate required parameters
+    if (!message || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: message and userId',
+      });
+    }
+
+    // Create new session if no sessionId provided
+    const actualSessionId = sessionId || uuidv4();
+
+    console.log(`💬 ChatBot request from user ${userId}, session ${actualSessionId}`);
+
+    const response = await chatbotAgent.chat({
+      userId,
+      message,
+      sessionId: actualSessionId,
+    });
+
+    if (!response.success) {
+      return res.status(500).json({
+        success: false,
+        message: 'Processing failed',
+        error: response.error,
+      });
+    }
+
+    res.json({
+      success: true,
+      sessionId: actualSessionId,
+      message: response.content,
+      usage: response.usage,
+    });
+  } catch (error) {
+    console.error('❌ ChatBot Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Processing failed',
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * POST /api/chatbot/chat/stream
+ * 流式对话接口（SSE - Server-Sent Events）
+ */
+router.post('/chat/stream', async (req, res) => {
+  try {
+    const { message, userId, sessionId } = req.body;
+
+    if (!message || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters',
+      });
+    }
+
+    const actualSessionId = sessionId || uuidv4();
+
+    // Set SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+
+    console.log(`💬 ChatBot stream request from user ${userId}`);
+
+    // Send sessionId
+    res.write(`data: ${JSON.stringify({ type: 'session', sessionId: actualSessionId })}\n\n`);
+
+    const stream = await chatbotAgent.chatStream({
+      userId,
+      message,
+      sessionId: actualSessionId,
+    });
+
+    let fullResponse = '';
+
+    for await (const chunk of stream) {
+      fullResponse += chunk;
+      res.write(`data: ${JSON.stringify({ type: 'chunk', text: chunk })}\n\n`);
+    }
+
+    // Save complete response
+    await chatbotAgent.saveMessage(actualSessionId, 'assistant', fullResponse);
+
+    res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+    res.end();
+  } catch (error) {
+    console.error('❌ ChatBot Stream Error:', error);
+    res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+    res.end();
+  }
+});
+
+/**
+ * GET /api/chatbot/sessions
+ * 获取用户的会话列表
+ */
+router.get('/sessions', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing userId parameter',
+      });
+    }
+
+    const sessions = await chatbotAgent.getUserSessions(parseInt(userId));
+
+    res.json({
+      success: true,
+      sessions,
+    });
+  } catch (error) {
+    console.error('❌ Get Sessions Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve sessions',
+    });
+  }
+});
+
+/**
+ * GET /api/chatbot/history/:sessionId
+ * Get session history
+ */
+router.get('/history/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const messages = await chatbotAgent.loadSessionHistory(sessionId, 100);
+
+    res.json({
+      success: true,
+      messages,
+    });
+  } catch (error) {
+    console.error('❌ Get History Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve history',
+    });
+  }
+});
+
+/**
+ * DELETE /api/chatbot/session/:sessionId
+ * Delete session
+ */
+router.delete('/session/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    await chatbotAgent.deleteSession(sessionId);
+
+    res.json({
+      success: true,
+      message: 'Session deleted',
+    });
+  } catch (error) {
+    console.error('❌ Delete Session Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete session',
+    });
+  }
+});
+
+/**
+ * DELETE /api/chatbot/sessions
+ * Delete all sessions for a user
+ */
+router.delete('/sessions', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing userId parameter',
+      });
+    }
+
+    const deletedCount = await chatbotAgent.deleteAllUserSessions(parseInt(userId));
+
+    res.json({
+      success: true,
+      message: 'All chat history deleted',
+      deletedCount,
+    });
+  } catch (error) {
+    console.error('âŒ Delete All Sessions Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete all sessions',
+    });
+  }
+});
+
+/**
+ * POST /api/chatbot/new-session
+ * Create new session
+ */
+router.post('/new-session', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing userId parameter',
+      });
+    }
+
+    const sessionId = uuidv4();
+
+    await chatbotAgent.ensureSession(sessionId, userId);
+
+    res.json({
+      success: true,
+      sessionId,
+    });
+  } catch (error) {
+    console.error('❌ New Session Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create session',
+    });
+  }
+});
+
+export default router;

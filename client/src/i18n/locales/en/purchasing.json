@@ -1,0 +1,486 @@
+{
+  "moduleTitle": "Purchasing Module",
+  "purchaseRequest": {
+    "title": "Purchase Request",
+    "review": {
+      "title": "PR Review",
+      "hint": "Review submitted request data",
+      "table": {
+        "prNo": "PR No",
+        "status": "Status",
+        "itemSummary": "Item Summary",
+        "department": "Department",
+        "requester": "Requester",
+        "items": "Items",
+        "total": "Total",
+        "moreItems": "+ {{count}} more item(s)"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search PR no, item, status..."
+      },
+      "section": {
+        "draft": "Draft",
+        "otherStatus": "Other Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "pendingApproval": "Pending Approval",
+        "ordered": "Ordered",
+        "closed": "Closed"
+      },
+      "actions": {
+        "view": "View",
+        "create": "Create",
+        "delete": "Delete",
+        "deleteSelected": "Delete selected purchase requests?"
+      },
+      "messages": {
+        "deleteSuccess": "Selected purchase requests deleted.",
+        "noPurchaseRequestsFound": "No purchase requests found."
+      }
+    },
+    "approval": {
+      "title": "Purchase Request Approval",
+      "hint": "Approve purchase requests",
+      "table": {
+        "prNo": "PR No",
+        "status": "Status",
+        "requester": "Requester",
+        "department": "Department",
+        "items": "Items",
+        "total": "Total"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search PR no, requester, item..."
+      },
+      "summary": "{{count}} submitted request(s)",
+      "actions": {
+        "view": "View",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "messages": {
+        "approved": "{{prNumber}} approved.",
+        "rejected": "{{prNumber}} rejected.",
+        "noPendingApprovals": "No pending purchase request approvals."
+      }
+    },
+    "detail": {
+      "title": "Purchase Request Details",
+      "approvalTitle": "Purchase Request Approval Details",
+      "summary": {
+        "prNumber": "PR Number",
+        "requestDate": "Request Date",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "Request Information",
+        "approvalTitle": "Approval Overview",
+        "requester": "Requester",
+        "department": "Department",
+        "status": "Status",
+        "currentStatus": "Current Status",
+        "matchedSuppliers": "Matched Suppliers"
+      },
+      "items": {
+        "title": "Item Breakdown",
+        "submittedTitle": "Submitted Items",
+        "description": "Review each requested item, selected supplier, quantity, and pricing before sending this request forward.",
+        "approvalDescription": "Review all requested items, assigned suppliers, and pricing before approving this purchase request. Approving will generate a draft purchase order.",
+        "item": "Item {{index}}",
+        "fields": {
+          "description": "Description",
+          "quantity": "Quantity",
+          "unit": "Unit",
+          "unitPrice": "Unit Price",
+          "lineTotal": "Line Total",
+          "assignedSupplier": "Assigned Supplier",
+          "supplierEmail": "Supplier Email",
+          "noDescription": "No description provided",
+          "noSupplier": "No supplier selected"
+        }
+      },
+      "actions": {
+        "edit": "Edit",
+        "submit": "Submit",
+        "approve": "Approve",
+        "reject": "Reject",
+        "back": "Back"
+      },
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted"
+      },
+      "messages": {
+        "submitted": "{{prNumber}} submitted.",
+        "approved": "{{prNumber}} approved.",
+        "rejected": "{{prNumber}} rejected.",
+        "notFound": "Purchase request details not found."
+      },
+      "modal": {
+        "rejectTitle": "Reject Purchase Request",
+        "rejectLabel": "this purchase request"
+      }
+    },
+    "creation": {
+      "title": "Purchase Request Creation",
+      "editTitle": "Edit Purchase Request",
+      "form": {
+        "prNumber": "PR Number",
+        "requestDate": "Request date",
+        "requestBy": "Request by",
+        "department": "Department",
+        "itemDetails": "Item details",
+        "itemDetail": "Item detail {{index}}",
+        "itemName": "Item name",
+        "itemCategory": "Item category",
+        "itemDescription": "Item description",
+        "quantity": "Quantity",
+        "unitOfMeasurement": "Unit of measurement",
+        "estimatedUnitPrice": "Estimated unit price",
+        "lineTotal": "Line total (this item)",
+        "requestTotal": "Estimated request total (all items)",
+        "supplierDetail": "Supplier detail",
+        "placeholders": {
+          "itemName": "e.g. USB-C hub",
+          "itemCategory": "Select or add category",
+          "itemDescription": "Specifications, purpose, etc.",
+          "unitOfMeasurement": "Select or add unit"
+        },
+        "validation": {
+          "itemNameRequired": "Enter item name",
+          "categoryRequired": "Select a category",
+          "descriptionRequired": "Enter description",
+          "quantityRequired": "Enter quantity",
+          "quantityPositive": "Quantity must be greater than 0",
+          "unitRequired": "Select unit",
+          "unitPriceRequired": "Enter unit price",
+          "unitPriceNonNegative": "Unit price cannot be negative",
+          "atLeastOneItem": "Add at least one item detail."
+        }
+      },
+      "supplier": {
+        "selectCategory": "Select item category to view matching suppliers.",
+        "multipleMatched": "Multiple suppliers matched this category. Please choose one.",
+        "noMatch": "No supplier type matched for category \"{{category}}.",
+        "noDepartment": "No department"
+      },
+      "actions": {
+        "clearAll": "Clear all",
+        "remove": "Remove",
+        "addItemDetail": "Add item detail",
+        "calculateTotal": "Calculate total",
+        "saveAsDraft": "Save as draft",
+        "submit": "Submit",
+        "back": "Back"
+      },
+      "messages": {
+        "draftSaved": "Draft saved locally (DRAFT).",
+        "draftUpdated": "Purchase request draft updated.",
+        "submitted": "Purchase request submitted (saved locally as SUBMITTED).",
+        "updatedAndSubmitted": "Purchase request updated and submitted.",
+        "totalCalculated": "Request total: {{currency}} {{total}} (all lines)",
+        "draftNotFound": "Draft not found."
+      }
+    }
+  },
+  "purchaseOrder": {
+    "title": "Purchase Order",
+    "review": {
+      "title": "PO Review",
+      "hint": "Review purchase orders",
+      "table": {
+        "poNo": "PO No",
+        "status": "Status",
+        "itemSummary": "Item Summary",
+        "department": "Department",
+        "createdBy": "Created By",
+        "items": "Items",
+        "total": "Total",
+        "moreItems": "+ {{count}} more item(s)"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search PO no, item, status..."
+      },
+      "section": {
+        "draft": "Draft",
+        "otherStatus": "Other Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "actions": {
+        "view": "View",
+        "create": "Create",
+        "delete": "Delete",
+        "deleteSelected": "Delete selected purchase orders?"
+      },
+      "messages": {
+        "deleteSuccess": "Selected purchase orders deleted.",
+        "noPurchaseOrdersFound": "No purchase orders found."
+      }
+    },
+    "approval": {
+      "title": "Purchase Order Approval",
+      "hint": "Approve purchase orders",
+      "table": {
+        "poNo": "PO No",
+        "status": "Status",
+        "createdBy": "Created By",
+        "department": "Department",
+        "items": "Items",
+        "total": "Total"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search PO no, created by, item..."
+      },
+      "summary": "{{count}} submitted order(s)",
+      "actions": {
+        "view": "View",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "messages": {
+        "approved": "{{poNumber}} approved.",
+        "approvedWithAcknowledgements": "{{poNumber}} approved. {{count}} order acknowledgements were sent to the matched suppliers.",
+        "approvedWithAcknowledgement": "{{poNumber}} approved. 1 order acknowledgement was sent to the matched supplier.",
+        "approvedNoAcknowledgement": "{{poNumber}} approved, but no order acknowledgement was created because no supplier was assigned in the PO items.",
+        "rejected": "{{poNumber}} rejected.",
+        "noPendingApprovals": "No pending purchase order approvals."
+      }
+    },
+    "detail": {
+      "title": "Purchase Order Details",
+      "approvalTitle": "Purchase Order Approval Details",
+      "summary": {
+        "poNumber": "PO Number",
+        "createdDate": "Created Date",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "Order Information",
+        "approvalTitle": "Approval Overview",
+        "sourcePr": "Source PR",
+        "prRequester": "PR Requester",
+        "createdBy": "Created By",
+        "department": "Department",
+        "status": "Status",
+        "currentStatus": "Current Status",
+        "matchedSuppliers": "Matched Suppliers",
+        "currency": "Currency",
+        "rejectedBy": "Rejected By",
+        "rejectDescription": "Reject Description"
+      },
+      "items": {
+        "title": "Ordered Items",
+        "submittedTitle": "Submitted PO Items",
+        "description": "Review the PO line items, supplier assignment, and pricing before sending this order for approval.",
+        "approvalDescription": "Review this purchase order before deciding to approve or reject it. When approved, the system will generate supplier-specific order acknowledgement records from the assigned suppliers in these PO items.",
+        "item": "Item {{index}}"
+      },
+      "actions": {
+        "edit": "Edit",
+        "submit": "Submit",
+        "approve": "Approve",
+        "reject": "Reject",
+        "back": "Back"
+      },
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted"
+      },
+      "messages": {
+        "submitted": "{{poNumber}} submitted.",
+        "notFound": "Purchase order details not found."
+      },
+      "modal": {
+        "rejectTitle": "Reject Purchase Order",
+        "rejectLabel": "this purchase order"
+      }
+    },
+    "creation": {
+      "title": "Purchase Order Creation",
+      "editTitle": "Edit Purchase Order",
+      "form": {
+        "poNumber": "PO Number",
+        "createdDate": "Created date",
+        "createdBy": "Created by",
+        "department": "Department",
+        "poDetails": "PO details",
+        "poItem": "PO item {{index}}",
+        "sourcePrNumber": "Source PR Number",
+        "prRequester": "PR Requester",
+        "itemName": "Item name",
+        "itemCategory": "Item category",
+        "itemDescription": "Item description",
+        "supplierName": "Supplier name",
+        "supplierEmail": "Supplier email",
+        "quantity": "Quantity",
+        "unitOfMeasurement": "Unit of measurement",
+        "estimatedUnitPrice": "Estimated unit price",
+        "lineTotal": "Line total (this item)",
+        "poTotal": "Estimated PO total (all items)",
+        "placeholders": {
+          "sourcePrNumber": "e.g. PR-20260414-ABCD",
+          "prRequester": "Requester from approved PR",
+          "itemName": "e.g. Monitor stand",
+          "itemCategory": "Select or add category",
+          "itemDescription": "Specifications, purpose, etc.",
+          "supplierName": "Assigned supplier name",
+          "supplierEmail": "supplier@email.com",
+          "unitOfMeasurement": "Select or add unit"
+        },
+        "validation": {
+          "sourcePrNumberRequired": "Enter source PR number",
+          "itemNameRequired": "Enter item name",
+          "categoryRequired": "Select a category",
+          "descriptionRequired": "Enter description",
+          "quantityRequired": "Enter quantity",
+          "quantityPositive": "Quantity must be greater than 0",
+          "unitRequired": "Select unit",
+          "unitPriceRequired": "Enter unit price",
+          "unitPriceNonNegative": "Unit price cannot be negative",
+          "atLeastOneItem": "Add at least one PO item."
+        }
+      },
+      "actions": {
+        "clearAll": "Clear all",
+        "remove": "Remove",
+        "addPoItem": "Add PO item",
+        "calculateTotal": "Calculate total",
+        "saveAsDraft": "Save as draft",
+        "submit": "Submit",
+        "back": "Back"
+      },
+      "messages": {
+        "draftSaved": "Purchase order saved as draft.",
+        "draftUpdated": "Purchase order draft updated.",
+        "submitted": "Purchase order submitted.",
+        "updatedAndSubmitted": "Purchase order updated and submitted.",
+        "totalCalculated": "PO total: {{currency}} {{total}} (all lines)",
+        "draftNotFound": "Purchase order draft not found."
+      }
+    }
+  },
+  "delivery": {
+    "title": "Delivery",
+    "description": "Track purchasing-related deliveries, update delivery status, and record proof of delivery."
+  },
+  "grn": {
+    "title": "GRN",
+    "fullTitle": "Goods Received Note",
+    "hint": "Goods Received Note",
+    "list": {
+      "title": "Goods Received Note",
+      "table": {
+        "orderNo": "Order No (Delivery No)",
+        "status": "Status",
+        "requester": "Requester",
+        "supplier": "Supplier",
+        "items": "Items",
+        "reason": "Reason"
+      },
+      "filter": {
+        "filterByDate": "Filter by date",
+        "searchPlaceholder": "Search order no, requester, supplier..."
+      },
+      "section": {
+        "myGrnData": "My GRN Data",
+        "otherGrnData": "Other GRN Data",
+        "searchMyGrn": "Search my GRN data...",
+        "searchOtherGrn": "Search other GRN data..."
+      },
+      "status": {
+        "pendingGrn": "Pending GRN",
+        "completed": "Completed",
+        "discrepancy": "Discrepancy"
+      },
+      "actions": {
+        "view": "View",
+        "back": "Back"
+      },
+      "messages": {
+        "noGrnRecordsInMy": "No GRN records found in My GRN Data.",
+        "noGrnRecordsInOther": "No GRN records found in Other GRN Data.",
+        "noGrnRecords": "No GRN records found."
+      }
+    },
+    "detail": {
+      "title": "GRN Details",
+      "summary": {
+        "orderNumber": "Order Number (Delivery No)",
+        "createdDate": "Created Date",
+        "items": "Items",
+        "total": "Total"
+      },
+      "info": {
+        "title": "GRN Overview",
+        "sourcePr": "Source PR",
+        "originalOrderNo": "Original Order Number",
+        "purchaseRequester": "Purchase Requester",
+        "createdBy": "Created By",
+        "supplier": "Supplier",
+        "supplierEmail": "Supplier Email",
+        "department": "Department",
+        "currentStatus": "Current Status",
+        "companyAddress": "Company Address",
+        "discrepancyReason": "Discrepancy Reason"
+      },
+      "items": {
+        "title": "GRN Items",
+        "description": "Review the delivered order details and update the GRN result as received or discrepancy."
+      },
+      "actions": {
+        "received": "Received",
+        "discrepancy": "Discrepancy",
+        "back": "Back"
+      },
+      "modal": {
+        "discrepancyTitle": "Enter discrepancy reason",
+        "discrepancyPlaceholder": "Describe what is missing/wrong in the delivered items...",
+        "submitDiscrepancy": "Submit Discrepancy"
+      },
+      "messages": {
+        "received": "{{poNumber}} marked as received.",
+        "discrepancyUpdated": "{{poNumber}} updated with discrepancy reason.",
+        "discrepancyReasonRequired": "Please enter discrepancy reason",
+        "notFound": "GRN details not found."
+      }
+    }
+  },
+  "common": {
+    "back": "Back",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "submit": "Submit",
+    "approve": "Approve",
+    "reject": "Reject",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Action",
+    "status": "Status",
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "uncategorized": "Uncategorized"
+  }
+}

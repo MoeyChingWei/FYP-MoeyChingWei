@@ -1,0 +1,30 @@
+{
+  "title": "Pemberitahuan",
+  "subtitle": "Makluman berasaskan peranan dan kemas kini pemohon",
+  "markAllAsRead": "Tandakan semua sebagai dibaca",
+  "markRead": "Tandakan dibaca",
+  "filterByType": "Tapis mengikut Jenis:",
+  "status": {
+    "all": "Semua",
+    "unread": "Belum dibaca",
+    "read": "Dibaca"
+  },
+  "searchPlaceholder": "Cari pemberitahuan mengikut tajuk atau mesej...",
+  "showingCount": "Menunjukkan {{filtered}} daripada {{total}} pemberitahuan",
+  "clearFilters": "Kosongkan semua penapis",
+  "new": "Baharu",
+  "type": {
+    "approval": "Kelulusan",
+    "created": "Dicipta",
+    "update": "Kemas kini",
+    "delivery": "Penghantaran",
+    "completed": "Selesai",
+    "feedback": "Maklum balas",
+    "discrepancy": "Percanggahan",
+    "other": "Lain-lain"
+  },
+  "empty": {
+    "noNotifications": "Tiada pemberitahuan lagi",
+    "noMatches": "Tiada pemberitahuan yang sepadan dengan penapis anda"
+  }
+}

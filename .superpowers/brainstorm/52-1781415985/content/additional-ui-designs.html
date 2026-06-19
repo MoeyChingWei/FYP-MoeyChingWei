@@ -1,0 +1,212 @@
+<h2>Additional UI Designs Needed</h2>
+<p class="subtitle">Select which screens you'd like to see designed</p>
+
+<div class="options" data-multiselect>
+
+  <div class="option" data-choice="sub-agents-grid" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Sub Agents Grid View</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">What happens when user clicks a Main Agent card</p>
+
+      <div class="mockup" style="max-width: 500px; margin-top: 16px;">
+        <div class="mockup-header">After clicking "Procurement Planning"</div>
+        <div class="mockup-body" style="padding: 20px; background: #f8f9fa;">
+          <div style="margin-bottom: 16px;">
+            <h4 style="margin: 0 0 4px 0;">📋 Procurement Planning</h4>
+            <p style="margin: 0; font-size: 13px; color: #666;">5 Sub Agents available</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div style="background: white; padding: 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+              <div style="font-size: 36px; margin-bottom: 8px;">📊</div>
+              <h5 style="margin: 0 0 4px 0; font-size: 14px;">Smart Procurement</h5>
+              <p style="margin: 0; font-size: 12px; color: #999;">Analyze historical data...</p>
+              <button style="margin-top: 12px; padding: 6px 12px; background: #1890ff; color: white; border: none; border-radius: 4px; font-size: 12px;">View Details</button>
+            </div>
+            <div style="background: white; padding: 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+              <div style="font-size: 36px; margin-bottom: 8px;">📈</div>
+              <h5 style="margin: 0 0 4px 0; font-size: 14px;">Demand Forecasting</h5>
+              <p style="margin: 0; font-size: 12px; color: #999;">Predict future demand...</p>
+              <button style="margin-top: 12px; padding: 6px 12px; background: #1890ff; color: white; border: none; border-radius: 4px; font-size: 12px;">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">Shows tree-structured grid of all Sub Agents under the selected Main Agent</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="modal-detail" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Modal Detail View</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">Full agent information in modal dialog</p>
+
+      <div style="max-width: 400px; margin: 16px auto; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+          <div style="display: flex; gap: 12px;">
+            <div style="font-size: 48px;">📊</div>
+            <div>
+              <h4 style="margin: 0 0 4px 0; font-size: 18px;">Smart Procurement Agent</h4>
+              <p style="margin: 0; font-size: 13px; color: #999;">Analyze historical data and recommend...</p>
+            </div>
+          </div>
+          <button style="background: none; border: none; font-size: 24px; color: #999;">×</button>
+        </div>
+
+        <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <h5 style="margin: 0 0 12px 0; font-size: 14px;">Workflow</h5>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 24px;">
+            📊 → 🔍 → 🧮 → 💡
+          </div>
+        </div>
+
+        <div>
+          <h5 style="margin: 0 0 8px 0; font-size: 14px;">Use Cases</h5>
+          <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #666;">
+            <li>Inventory planning</li>
+            <li>Budget allocation</li>
+            <li>Seasonal purchasing</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">Complete agent details with workflow, description, and use cases</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="mobile-responsive" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Mobile Responsive Layout</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">How the design adapts to mobile screens</p>
+
+      <div style="display: flex; justify-content: center; gap: 20px; margin: 16px 0;">
+        <div style="width: 180px; background: white; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <p style="margin: 0 0 12px 0; font-size: 11px; color: #999; text-align: center;">Mobile (375px)</p>
+          <div style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin-bottom: 8px;">
+            <div style="font-size: 32px; text-align: center;">📋</div>
+            <p style="margin: 4px 0 0 0; font-size: 11px; text-align: center; font-weight: 600;">Procurement Planning</p>
+          </div>
+          <div style="background: #f5f5f5; padding: 12px; border-radius: 4px;">
+            <div style="font-size: 32px; text-align: center;">🏢</div>
+            <p style="margin: 4px 0 0 0; font-size: 11px; text-align: center; font-weight: 600;">Supplier Management</p>
+          </div>
+        </div>
+
+        <div style="width: 280px; background: white; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <p style="margin: 0 0 12px 0; font-size: 11px; color: #999; text-align: center;">Tablet (768px)</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: center;">
+              <div style="font-size: 24px;">📋</div>
+              <p style="margin: 4px 0 0 0; font-size: 10px; font-weight: 600;">Procurement</p>
+            </div>
+            <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: center;">
+              <div style="font-size: 24px;">🏢</div>
+              <p style="margin: 4px 0 0 0; font-size: 10px; font-weight: 600;">Supplier</p>
+            </div>
+            <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: center;">
+              <div style="font-size: 24px;">📦</div>
+              <p style="margin: 4px 0 0 0; font-size: 10px; font-weight: 600;">Order</p>
+            </div>
+            <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: center;">
+              <div style="font-size: 24px;">🎯</div>
+              <p style="margin: 4px 0 0 0; font-size: 10px; font-weight: 600;">Quality</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">Cards stack vertically on mobile, 2-column on tablet, 3-column on desktop</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="interactions" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Interactive States & Animations</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">Hover effects, loading states, transitions</p>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;">
+        <div>
+          <div style="background: white; padding: 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;">
+            <div style="font-size: 32px; margin-bottom: 8px;">📋</div>
+            <p style="margin: 0; font-size: 12px; color: #666;">Default</p>
+          </div>
+        </div>
+        <div>
+          <div style="background: white; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(24,144,255,0.15); text-align: center; border: 2px solid #1890ff; transform: translateY(-4px);">
+            <div style="font-size: 32px; margin-bottom: 8px;">📋</div>
+            <p style="margin: 0; font-size: 12px; color: #1890ff; font-weight: 600;">Hover</p>
+          </div>
+        </div>
+        <div>
+          <div style="background: white; padding: 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; opacity: 0.6;">
+            <div style="font-size: 32px; margin-bottom: 8px;">⏳</div>
+            <p style="margin: 0; font-size: 12px; color: #999;">Loading</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">Smooth transitions, hover lift effect, loading spinners, fade-in animations</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="empty-state" onclick="toggleSelect(this)">
+    <div class="letter">E</div>
+    <div class="content">
+      <h3>Empty & Error States</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">What users see when things go wrong</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0;">
+        <div style="background: #f9f9f9; padding: 24px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
+          <h5 style="margin: 0 0 8px 0; font-size: 14px;">No Agents Found</h5>
+          <p style="margin: 0; font-size: 12px; color: #999;">No AI agents are currently available</p>
+        </div>
+
+        <div style="background: #fff2f0; padding: 24px; border-radius: 8px; text-align: center; border: 1px solid #ffccc7;">
+          <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+          <h5 style="margin: 0 0 8px 0; font-size: 14px; color: #cf1322;">Failed to Load</h5>
+          <p style="margin: 0 0 12px 0; font-size: 12px; color: #999;">Unable to load agents</p>
+          <button style="padding: 6px 16px; background: #ff4d4f; color: white; border: none; border-radius: 4px; font-size: 12px;">Retry</button>
+        </div>
+      </div>
+
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">Friendly messages with clear next steps</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="navigation" onclick="toggleSelect(this)">
+    <div class="letter">F</div>
+    <div class="content">
+      <h3>Navigation & Breadcrumbs</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">How users navigate between levels</p>
+
+      <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin: 16px 0;">
+        <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0; margin-bottom: 16px;">
+          <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #666;">←</button>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #666;">
+            <span style="color: #1890ff; cursor: pointer;">Settings</span>
+            <span>/</span>
+            <span style="color: #1890ff; cursor: pointer;">AI Assistant</span>
+            <span>/</span>
+            <span style="font-weight: 600; color: #262626;">Procurement Planning</span>
+          </div>
+        </div>
+
+        <h3 style="margin: 0; font-size: 20px;">📋 Procurement Planning</h3>
+      </div>
+
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">Breadcrumb trail with back button for easy navigation</p>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top: 40px; padding: 24px; background: #f0f5ff; border-radius: 12px; border-left: 4px solid #1890ff;">
+  <h4 style="margin: 0 0 12px 0; color: #0958d9;">Select Multiple</h4>
+  <p style="margin: 0; font-size: 14px; color: #1890ff;">Click on any designs you'd like to see. I'll create detailed mockups for your selections.</p>
+</div>

@@ -1,0 +1,179 @@
+{
+  "layout": {
+    "tabs": {
+      "userManagement": "Pengurusan Pengguna",
+      "rbac": "Kawalan Akses Berasaskan Peranan"
+    }
+  },
+  "userManagement": {
+    "title": "Pengurusan Pengguna",
+    "tabs": {
+      "userList": "Senarai pengguna",
+      "createUser": "Cipta pengguna",
+      "supplierTypes": "Jenis Pembekal"
+    }
+  },
+  "userList": {
+    "title": "Senarai pengguna",
+    "table": {
+      "id": "ID",
+      "name": "Nama",
+      "email": "E-mel",
+      "department": "Jabatan",
+      "role": "Peranan",
+      "status": "Status",
+      "action": "Tindakan",
+      "noDepartment": "(Tiada jabatan)"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Tidak Aktif"
+    },
+    "actions": {
+      "edit": "Edit",
+      "activate": "Aktifkan",
+      "deactivate": "Nyahaktifkan"
+    },
+    "modal": {
+      "editTitle": "Edit pengguna #{{id}}",
+      "editTitleGeneric": "Edit pengguna",
+      "deactivateConfirm": "Nyahaktifkan pengguna ini?",
+      "deactivateDescription": "Mereka tidak akan dapat log masuk.",
+      "activateConfirm": "Aktifkan pengguna ini?",
+      "cancel": "Batal",
+      "save": "Simpan"
+    },
+    "form": {
+      "name": "Nama",
+      "email": "E-mel",
+      "department": "Jabatan",
+      "role": "Peranan pengguna",
+      "password": "Kata laluan (biarkan kosong untuk mengekalkan)",
+      "placeholders": {
+        "department": "Pilih jabatan",
+        "password": "••••••••"
+      },
+      "validation": {
+        "nameRequired": "Sila masukkan nama",
+        "emailRequired": "Sila masukkan e-mel",
+        "emailInvalid": "Format e-mel tidak sah",
+        "roleRequired": "Sila pilih peranan",
+        "passwordMinLength": "Sekurang-kurangnya 6 aksara"
+      }
+    },
+    "messages": {
+      "loadFailed": "Gagal memuatkan pengguna",
+      "updateSuccess": "Pengguna dikemas kini",
+      "updateFailed": "Gagal mengemas kini pengguna",
+      "activateSuccess": "Pengguna diaktifkan",
+      "deactivateSuccess": "Pengguna dinyahaktifkan",
+      "statusUpdateFailed": "Gagal mengemas kini status"
+    }
+  },
+  "createUser": {
+    "title": "Cipta pengguna",
+    "form": {
+      "name": "Nama",
+      "email": "E-mel",
+      "password": "Kata laluan",
+      "department": "Jabatan",
+      "role": "Peranan pengguna",
+      "placeholders": {
+        "name": "Ahmad bin Ali",
+        "email": "pengguna@contoh.com",
+        "password": "••••••••",
+        "department": "Pilih jabatan"
+      },
+      "validation": {
+        "nameRequired": "Sila masukkan nama",
+        "emailRequired": "Sila masukkan e-mel",
+        "emailInvalid": "Format e-mel tidak sah",
+        "passwordRequired": "Sila masukkan kata laluan",
+        "passwordMinLength": "Sekurang-kurangnya 6 aksara",
+        "roleRequired": "Sila pilih peranan"
+      }
+    },
+    "actions": {
+      "create": "Cipta"
+    },
+    "messages": {
+      "createSuccess": "Pengguna dicipta",
+      "createFailed": "Gagal mencipta pengguna"
+    }
+  },
+  "supplierTypes": {
+    "title": "Jenis Pembekal",
+    "description": "Tetapkan beberapa kategori bekalan kepada pengguna dengan peranan Pembekal supaya pembekal yang sepadan lebih mudah apabila kategori permintaan pembelian dipilih.",
+    "table": {
+      "supplier": "Pembekal",
+      "department": "Jabatan",
+      "status": "Status",
+      "supplierTypes": "Jenis Pembekal"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Tidak Aktif"
+    },
+    "placeholders": {
+      "selectSupplierTypes": "Pilih jenis pembekal"
+    },
+    "messages": {
+      "loadFailed": "Gagal memuatkan pembekal",
+      "updateSuccess": "Jenis pembekal dikemas kini.",
+      "updateFailed": "Gagal mengemas kini jenis pembekal",
+      "noSuppliers": "Tiada pengguna dengan peranan Pembekal ditemui."
+    }
+  },
+  "rbac": {
+    "title": "Kawalan Akses Berasaskan Peranan",
+    "tabs": {
+      "roles": "Peranan"
+    },
+    "roles": {
+      "title": "Peranan",
+      "table": {
+        "id": "ID",
+        "name": "Nama",
+        "email": "E-mel",
+        "role": "Peranan",
+        "action": "Tindakan"
+      },
+      "search": {
+        "placeholder": "Cari mengikut nama"
+      },
+      "actions": {
+        "save": "Simpan"
+      },
+      "messages": {
+        "loadUsersFailed": "Gagal memuatkan pengguna",
+        "loadAuditsFailed": "Gagal memuatkan log perubahan peranan",
+        "updateSuccess": "Peranan dikemas kini",
+        "updateFailed": "Gagal mengemas kini peranan"
+      }
+    },
+    "roleChangeLog": {
+      "title": "Log perubahan peranan",
+      "table": {
+        "time": "Masa",
+        "actor": "Pelakon",
+        "targetUser": "Pengguna sasaran",
+        "from": "Dari",
+        "to": "Kepada"
+      }
+    }
+  },
+  "common": {
+    "back": "Kembali",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "edit": "Edit",
+    "create": "Cipta",
+    "delete": "Padam",
+    "activate": "Aktifkan",
+    "deactivate": "Nyahaktifkan",
+    "loading": "Memuatkan...",
+    "noData": "Tiada data",
+    "actions": "Tindakan",
+    "status": "Status"
+  }
+}

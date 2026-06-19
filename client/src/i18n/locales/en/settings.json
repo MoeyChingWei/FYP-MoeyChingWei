@@ -1,0 +1,42 @@
+{
+  "title": "Settings",
+  "sections": {
+    "categorySelection": "Category of Selection",
+    "companyAddress": "Company Address",
+    "feedback": "Feedback",
+    "aiAssistant": "AI Assistant"
+  },
+  "actions": {
+    "open": "Open",
+    "manage": "Manage"
+  },
+  "description": "Manage your system preferences and configurations",
+  "companyAddress": {
+    "title": "Company Address",
+    "label": "Delivery / order acknowledgement address",
+    "description": "This address is used when the system generates supplier-facing order acknowledgement details.",
+    "placeholder": "Enter company address",
+    "saveButton": "Save Address"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Submit issue, improvement, or comment. All admins will receive notification.",
+    "submitTitle": "Submit feedback",
+    "allFeedbackTitle": "All feedback",
+    "typeLabel": "Type",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Please describe the issue or idea in detail.",
+    "type": {
+      "issue": "Issue",
+      "improvement": "Improvement",
+      "comment": "Comment"
+    },
+    "table": {
+      "type": "Type",
+      "description": "Description",
+      "from": "From",
+      "status": "Status",
+      "created": "Created"
+    }
+  }
+}

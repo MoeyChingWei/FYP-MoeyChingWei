@@ -1,0 +1,214 @@
+{
+  "modal": {
+    "title": "用户指南",
+    "description": "本指南根据您的角色提供系统使用信息。",
+    "yourRole": "您当前的角色是："
+  },
+  "gettingStarted": {
+    "title": "入门指南",
+    "welcome": "欢迎使用OptiMind ERP！本指南将帮助您导航系统并了解您的功能。",
+    "navigation": "导航",
+    "navItems": {
+      "sidebar": "使用侧边栏菜单访问不同的模块",
+      "profile": "点击右上角的个人资料图标访问设置和登出",
+      "overview": "概览页面显示您可用模块的快速访问磁贴",
+      "notifications": "通知显示在铃铛图标和概览页面中"
+    }
+  },
+  "admin": {
+    "title": "超级管理员指南",
+    "userManagement": "用户管理",
+    "whatYouCanDo": "您可以做什么：",
+    "userCapabilities": {
+      "create": "创建、编辑和管理用户账户",
+      "assignRoles": "分配和更改用户角色",
+      "activate": "激活或停用用户账户",
+      "auditLogs": "查看角色更改的审计日志"
+    },
+    "howToCreateUser": "如何创建新用户：",
+    "createUserSteps": {
+      "step1": "导航至用户与访问 → 用户管理",
+      "step2": "点击\"添加用户\"按钮",
+      "step3": "填写用户详细信息（姓名、电子邮件、角色）",
+      "step4": "设置初始密码",
+      "step5": "点击\"创建用户\""
+    },
+    "categoryManagement": "类别管理",
+    "categoryCapabilities": {
+      "items": "管理物品类别",
+      "units": "管理计量单位",
+      "suppliers": "分配供应商类型/类别"
+    }
+  },
+  "purchasing": {
+    "title": "采购工作流程",
+    "requestCreation": "采购申请创建",
+    "availableFor": "适用于：员工、主管、经理",
+    "whatYouCanDo": "您可以做什么：",
+    "requestCapabilities": {
+      "create": "为所需物品创建采购申请",
+      "specify": "指定物品详细信息、数量和理由",
+      "draft": "保存草稿并在准备好后提交"
+    },
+    "howToCreateRequest": "如何创建采购申请：",
+    "createRequestSteps": {
+      "step1": "导航至采购 → 创建申请",
+      "step2": "填写申请详细信息（优先级、理由、交付日期）",
+      "step3": "添加物品：点击\"添加物品\"并指定详细信息",
+      "step4": "对于每个物品：名称、类别、数量、单位、估计价格",
+      "step5": "保存为草稿或提交审批"
+    },
+    "tips": "提示：",
+    "tipsList": {
+      "draft": "使用草稿功能保存进行中的工作",
+      "justification": "提供详细的理由以加快审批",
+      "dates": "设定实际的预期交付日期"
+    }
+  },
+  "approval": {
+    "title": "申请审批",
+    "requestApproval": "采购申请审批",
+    "availableFor": "适用于：部门主管",
+    "whatYouCanDo": "您可以做什么：",
+    "approvalCapabilities": {
+      "review": "审查待处理的采购申请",
+      "approve": "批准或拒绝申请并附评论",
+      "viewDetails": "查看申请详细信息和理由"
+    },
+    "howToApprove": "如何批准申请：",
+    "approveSteps": {
+      "step1": "导航至采购 → 审批",
+      "step2": "点击待处理的申请以查看详细信息",
+      "step3": "审查物品、数量和理由",
+      "step4": "添加评论（可选）",
+      "step5": "点击\"批准\"或\"拒绝\""
+    },
+    "poCreation": "采购订单创建",
+    "howToCreatePO": "如何创建采购订单：",
+    "createPOSteps": {
+      "step1": "导航至采购 → 创建订单",
+      "step2": "选择已批准的采购申请",
+      "step3": "选择供应商",
+      "step4": "如需要，审查并调整物品详细信息",
+      "step5": "提交给经理审批"
+    }
+  },
+  "poApproval": {
+    "title": "采购订单审批",
+    "reviewApproval": "采购订单审查与批准",
+    "availableFor": "适用于：经理",
+    "whatYouCanDo": "您可以做什么：",
+    "poCapabilities": {
+      "review": "审查待处理的采购订单",
+      "approve": "批准或拒绝订单",
+      "viewDetails": "查看订单详细信息和供应商信息"
+    },
+    "howToApprove": "如何批准采购订单：",
+    "approveSteps": {
+      "step1": "导航至采购 → 订单审批",
+      "step2": "点击待处理的订单以查看详细信息",
+      "step3": "审查物品、定价和供应商",
+      "step4": "添加批准评论（可选）",
+      "step5": "点击\"批准\"或\"拒绝\""
+    },
+    "smartApproval": "智能审批",
+    "configureRules": "配置自动审批规则：",
+    "smartCapabilities": {
+      "threshold": "设置自动批准的阈值金额",
+      "criteria": "定义批准标准",
+      "navigate": "在侧边栏中导航至智能审批"
+    }
+  },
+  "supplier": {
+    "title": "供应商履行",
+    "orderAcknowledgement": "订单确认",
+    "availableFor": "适用于：供应商",
+    "whatYouCanDo": "您可以做什么：",
+    "supplierCapabilities": {
+      "view": "查看分配给您的采购订单",
+      "acknowledge": "确认订单并确认交付日期",
+      "update": "更新订单状态"
+    },
+    "howToAcknowledge": "如何确认订单：",
+    "acknowledgeSteps": {
+      "step1": "导航至供应商概览 → 订单确认",
+      "step2": "点击待处理的订单",
+      "step3": "审查订单详细信息",
+      "step4": "确认预期交付日期",
+      "step5": "点击\"确认订单\""
+    },
+    "deliveryManagement": "交付管理",
+    "howToRecordDelivery": "如何记录交付：",
+    "deliverySteps": {
+      "step1": "导航至供应商概览 → 交付",
+      "step2": "选择已确认的订单",
+      "step3": "输入交付详细信息（日期、跟踪号码）",
+      "step4": "为每个物品指定交付数量",
+      "step5": "提交交付记录"
+    }
+  },
+  "tracking": {
+    "title": "跟踪物品",
+    "itemTracking": "物品跟踪",
+    "whatYouCanDo": "您可以做什么：",
+    "trackingCapabilities": {
+      "requests": "跟踪您的采购申请状态",
+      "orders": "查看采购订单进度",
+      "deliveries": "监控交付和GRN状态",
+      "search": "按状态或日期搜索和筛选"
+    },
+    "howToTrack": "如何跟踪物品：",
+    "trackingSteps": {
+      "step1": "从侧边栏或概览导航至跟踪物品",
+      "step2": "使用筛选器查找您的物品",
+      "step3": "点击物品以查看详细状态",
+      "step4": "查看工作流程进度和当前阶段"
+    }
+  },
+  "profile": {
+    "title": "个人资料与设置",
+    "managing": "管理您的个人资料",
+    "whatYouCanDo": "您可以做什么：",
+    "profileCapabilities": {
+      "update": "更新您的个人资料信息",
+      "password": "更改您的密码",
+      "avatar": "上传个人资料头像",
+      "notifications": "配置通知偏好"
+    },
+    "howToUpdate": "如何更新您的个人资料：",
+    "updateSteps": {
+      "step1": "点击右上角的头像",
+      "step2": "选择\"个人资料\"",
+      "step3": "编辑您的信息",
+      "step4": "点击\"保存更改\""
+    },
+    "howToChangePassword": "如何更改您的密码：",
+    "passwordSteps": {
+      "step1": "转到个人资料 → 重置密码",
+      "step2": "输入当前密码",
+      "step3": "输入新密码（确认输入两次）",
+      "step4": "点击\"更改密码\""
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "understanding": "了解通知",
+    "description": "通知会让您了解重要事件和需要您注意的操作。",
+    "types": "通知类型：",
+    "typesList": {
+      "success": "成功",
+      "successDesc": "操作成功完成",
+      "info": "信息",
+      "infoDesc": "一般信息更新",
+      "warning": "警告",
+      "warningDesc": "需要注意的项目或拒绝"
+    },
+    "managing": "管理通知：",
+    "managingList": {
+      "click": "点击通知以查看详细信息并标记为已读",
+      "markAll": "使用\"全部标记为已读\"来清除最新通知",
+      "history": "在历史记录选项卡中查看通知历史",
+      "delete": "删除单个或所有历史通知"
+    }
+  }
+}

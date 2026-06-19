@@ -1,0 +1,35 @@
+@startuml
+title Sequence Diagram - Request Approval to PO Submission
+
+actor Requester
+actor Executive
+actor Manager
+participant "React Frontend" as FE
+participant "Workflow API\n/api/workflow/*" as WF
+participant "Notification Service" as NS
+database "Prisma / PostgreSQL" as DB
+
+Requester -> FE: Submit purchase request
+FE -> WF: PUT /api/workflow/purchase-requests
+WF -> DB: upsert purchase request rows
+DB --> WF: saved
+WF -> NS: processWorkflowNotifications(...)
+NS -> DB: create notifications (Requester, Executive)
+NS --> Executive: in-app + email alert
+
+Executive -> FE: Open request approval detail
+Executive -> FE: Approve request
+FE -> WF: PUT /api/workflow/purchase-requests (status=approved)
+WF -> DB: update approved request
+WF -> DB: create PO draft in purchase-orders store
+WF -> NS: processWorkflowNotifications(...)
+NS -> DB: notify Requester (approved)
+
+Executive -> FE: Submit PO to Manager
+FE -> WF: PUT /api/workflow/purchase-orders (status=submitted)
+WF -> DB: update PO row
+WF -> NS: processWorkflowNotifications(...)
+NS -> DB: notify Manager (PO pending approval)
+NS --> Manager: in-app + email alert
+
+@enduml

@@ -1,0 +1,42 @@
+{
+  "title": "设置",
+  "sections": {
+    "categorySelection": "选择类别",
+    "companyAddress": "公司地址",
+    "feedback": "反馈",
+    "aiAssistant": "AI助手"
+  },
+  "actions": {
+    "open": "打开",
+    "manage": "管理"
+  },
+  "description": "管理您的系统偏好和配置",
+  "companyAddress": {
+    "title": "公司地址",
+    "label": "交付/订单确认地址",
+    "description": "当系统生成面向供应商的订单确认详细信息时，将使用此地址。",
+    "placeholder": "输入公司地址",
+    "saveButton": "保存地址"
+  },
+  "feedback": {
+    "title": "反馈",
+    "subtitle": "提交问题、改进建议或评论。所有管理员都将收到通知。",
+    "submitTitle": "提交反馈",
+    "allFeedbackTitle": "所有反馈",
+    "typeLabel": "类型",
+    "descriptionLabel": "描述",
+    "descriptionPlaceholder": "请详细描述问题或想法。",
+    "type": {
+      "issue": "问题",
+      "improvement": "改进",
+      "comment": "评论"
+    },
+    "table": {
+      "type": "类型",
+      "description": "描述",
+      "from": "来自",
+      "status": "状态",
+      "created": "创建时间"
+    }
+  }
+}

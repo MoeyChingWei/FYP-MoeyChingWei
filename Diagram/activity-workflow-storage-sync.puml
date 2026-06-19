@@ -1,0 +1,38 @@
+@startuml
+title Activity Diagram - Workflow Storage Sync
+
+start
+:Frontend loads workflow page;
+:GET /api/workflow/{store};
+
+if (Store valid?) then (yes)
+  :Resolve store key in STORES map;
+  note right
+    Supported stores:
+    - purchase-requests
+    - purchase-orders
+    - supplier-order-acks
+    - deliveries
+    - grns
+  end note
+  :Backend reads rows from Prisma model;
+  :Return payload rows;
+  :User edits rows on UI;
+  :PUT /api/workflow/{store} with rows[];
+  if (rows format valid?) then (yes)
+    :Validate every row has localId string;
+    :Load previous rows;
+    :Compute idsToDelete;
+    :Transaction delete + upsert rows;
+    :Return success count;
+    :Trigger async processWorkflowNotifications;
+    :Create in-app notifications (if rules match);
+  else (no)
+    :Return 400 validation error;
+  endif
+else (no)
+  :Return 404 store not found;
+endif
+
+stop
+@enduml

@@ -1,0 +1,203 @@
+<h2>AI Assistant Configuration - Complete Design</h2>
+<p class="subtitle">Redesigned hierarchical structure with Main Agent + Sub Agent architecture</p>
+
+<div class="section">
+  <h3>Design Overview</h3>
+  <p>Two-tier architecture with Main Agents and Sub Agents, using card grid layout and modal dialogs for clear information hierarchy.</p>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Main Page: 6 Main Agent Cards</div>
+  <div class="mockup-body" style="padding: 30px; background: #f5f5f5;">
+
+    <div style="margin-bottom: 30px;">
+      <h2 style="margin: 0 0 8px 0; font-size: 24px;">AI Assistant Configuration</h2>
+      <p style="margin: 0; color: #8c8c8c; font-size: 14px;">Configure and manage AI assistants to automate procurement tasks</p>
+    </div>
+
+    <!-- Main Agent Cards Grid -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+
+      <!-- Card 1: Procurement Planning -->
+      <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='#1890ff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(24,144,255,0.15)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
+        <div style="font-size: 56px; margin-bottom: 16px; text-align: center;">📋</div>
+        <h3 style="margin: 0 0 4px 0; font-size: 18px; text-align: center; color: #262626;">Procurement Planning</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; text-align: center; color: #8c8c8c;">Strategic planning & forecasting</p>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span style="background: #e6f7ff; color: #0958d9; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">5 Sub Agents</span>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+          <span style="font-size: 32px;">📊</span>
+          <span style="font-size: 32px;">📈</span>
+          <span style="font-size: 32px;">💰</span>
+          <span style="font-size: 32px;">📅</span>
+          <span style="font-size: 32px;">🔄</span>
+        </div>
+
+        <div style="text-align: center;">
+          <span style="color: #1890ff; font-size: 14px; font-weight: 500;">Click to view details →</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Supplier Management -->
+      <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='#722ed1'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(114,46,209,0.15)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
+        <div style="font-size: 56px; margin-bottom: 16px; text-align: center;">🏢</div>
+        <h3 style="margin: 0 0 4px 0; font-size: 18px; text-align: center; color: #262626;">Supplier Management</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; text-align: center; color: #8c8c8c;">Vendor evaluation & relationships</p>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span style="background: #f9f0ff; color: #531dab; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">5 Sub Agents</span>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+          <span style="font-size: 32px;">🔍</span>
+          <span style="font-size: 32px;">🤝</span>
+          <span style="font-size: 32px;">📝</span>
+          <span style="font-size: 32px;">⚠️</span>
+          <span style="font-size: 32px;">⚖️</span>
+        </div>
+
+        <div style="text-align: center;">
+          <span style="color: #722ed1; font-size: 14px; font-weight: 500;">Click to view details →</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Order & Collaboration -->
+      <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='#52c41a'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(82,196,26,0.15)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
+        <div style="font-size: 56px; margin-bottom: 16px; text-align: center;">📦</div>
+        <h3 style="margin: 0 0 4px 0; font-size: 18px; text-align: center; color: #262626;">Order & Collaboration</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; text-align: center; color: #8c8c8c;">Execution & team communication</p>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span style="background: #f6ffed; color: #389e0d; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">10 Sub Agents</span>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+          <span style="font-size: 32px;">📍</span>
+          <span style="font-size: 32px;">⏱️</span>
+          <span style="font-size: 32px;">🤖</span>
+          <span style="font-size: 32px;">💬</span>
+          <span style="font-size: 32px;">🌐</span>
+        </div>
+
+        <div style="text-align: center;">
+          <span style="color: #52c41a; font-size: 14px; font-weight: 500;">Click to view details →</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Quality & Risk -->
+      <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='#fa541c'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(250,84,28,0.15)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
+        <div style="font-size: 56px; margin-bottom: 16px; text-align: center;">🎯</div>
+        <h3 style="margin: 0 0 4px 0; font-size: 18px; text-align: center; color: #262626;">Quality & Risk</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; text-align: center; color: #8c8c8c;">Compliance & anomaly detection</p>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span style="background: #fff2e8; color: #d4380d; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">10 Sub Agents</span>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+          <span style="font-size: 32px;">✅</span>
+          <span style="font-size: 32px;">📋</span>
+          <span style="font-size: 32px;">🔐</span>
+          <span style="font-size: 32px;">🚨</span>
+          <span style="font-size: 32px;">🛡️</span>
+        </div>
+
+        <div style="text-align: center;">
+          <span style="color: #fa541c; font-size: 14px; font-weight: 500;">Click to view details →</span>
+        </div>
+      </div>
+
+      <!-- Card 5: Financial & Optimization -->
+      <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='#13c2c2'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(19,194,194,0.15)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
+        <div style="font-size: 56px; margin-bottom: 16px; text-align: center;">💰</div>
+        <h3 style="margin: 0 0 4px 0; font-size: 18px; text-align: center; color: #262626;">Financial & Optimization</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; text-align: center; color: #8c8c8c;">Cost control & process improvement</p>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span style="background: #e6fffb; color: #08979c; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">15 Sub Agents</span>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+          <span style="font-size: 32px;">💵</span>
+          <span style="font-size: 32px;">📊</span>
+          <span style="font-size: 32px;">🚀</span>
+          <span style="font-size: 32px;">🌱</span>
+          <span style="font-size: 32px;">📍</span>
+        </div>
+
+        <div style="text-align: center;">
+          <span style="color: #13c2c2; font-size: 14px; font-weight: 500;">Click to view details →</span>
+        </div>
+      </div>
+
+      <!-- Card 6: Data Analytics -->
+      <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='#eb2f96'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(235,47,150,0.15)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'">
+        <div style="font-size: 56px; margin-bottom: 16px; text-align: center;">📊</div>
+        <h3 style="margin: 0 0 4px 0; font-size: 18px; text-align: center; color: #262626;">Data Analytics</h3>
+        <p style="margin: 0 0 20px 0; font-size: 13px; text-align: center; color: #8c8c8c;">Insights & performance tracking</p>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span style="background: #fff0f6; color: #c41d7f; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;">5 Sub Agents</span>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+          <span style="font-size: 32px;">📈</span>
+          <span style="font-size: 32px;">📉</span>
+          <span style="font-size: 32px;">📑</span>
+          <span style="font-size: 32px;">🎯</span>
+          <span style="font-size: 32px;">💹</span>
+        </div>
+
+        <div style="text-align: center;">
+          <span style="color: #eb2f96; font-size: 14px; font-weight: 500;">Click to view details →</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #e6f7ff; border-radius: 12px; border-left: 4px solid #1890ff;">
+      <p style="margin: 0; font-size: 14px; color: #0958d9;">
+        <strong>💡 Tip:</strong> Click any Main Agent card to view all its Sub Agents
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top: 40px;">
+  <h3>Core Design Features</h3>
+
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px;">
+    <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+      <div style="font-size: 32px; margin-bottom: 12px;">🎯</div>
+      <h4 style="margin: 0 0 8px 0;">Clear Hierarchy</h4>
+      <p style="margin: 0; font-size: 14px; color: #666;">6 Main Agents → 50 Sub Agents. Layered information reduces cognitive load</p>
+    </div>
+
+    <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+      <div style="font-size: 32px; margin-bottom: 12px;">🎨</div>
+      <h4 style="margin: 0 0 8px 0;">Visual Preview</h4>
+      <p style="margin: 0; font-size: 14px; color: #666;">Each Main Agent card shows 5 representative Sub Agent icons for quick understanding</p>
+    </div>
+
+    <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+      <div style="font-size: 32px; margin-bottom: 12px;">💬</div>
+      <h4 style="margin: 0 0 8px 0;">Modal Focus</h4>
+      <p style="margin: 0; font-size: 14px; color: #666;">Details shown in modal dialogs for distraction-free reading experience</p>
+    </div>
+
+    <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+      <div style="font-size: 32px; margin-bottom: 12px;">✨</div>
+      <h4 style="margin: 0 0 8px 0;">Simplified Features</h4>
+      <p style="margin: 0; font-size: 14px; color: #666;">Removed search and status. Focus on showcasing system capabilities and use cases</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 40px; text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+  <h3 style="margin: 0 0 12px 0;">Design Proposal Complete</h3>
+  <p style="margin: 0; opacity: 0.9;">All design decisions confirmed. Ready to proceed to detailed specification</p>
+</div>

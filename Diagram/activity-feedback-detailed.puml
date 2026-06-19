@@ -1,0 +1,26 @@
+@startuml
+title Activity (Detailed) - Feedback Submission and Admin Visibility
+
+start
+:User opens Settings > Feedback;
+:Choose feedback type\n(ISSUE / IMPROVEMENT / COMMENT);
+:Write description and submit;
+:System sends POST /api/feedback;
+
+if (Input valid?) then (Yes)
+  :Check user exists;
+  if (User exists?) then (Yes)
+    :Create feedback record in feedbacks table;
+    :Trigger admin notification event;
+    :Show success message to submitter;
+    :Admins open feedback list (GET /api/feedback);
+    :Admins review feedback details\nwith user info and timestamp;
+  else (No)
+    :Show "User not found";
+  endif
+else (No)
+  :Show validation error\n(type/description/userId required);
+endif
+
+stop
+@enduml

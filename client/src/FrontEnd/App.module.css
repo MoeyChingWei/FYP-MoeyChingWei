@@ -1,0 +1,13 @@
+.contentRoot :global(h3.ant-typography) {
+  margin-bottom: 0 !important;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  color: #0f172a;
+}
+
+.chatbotContentRoot {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}

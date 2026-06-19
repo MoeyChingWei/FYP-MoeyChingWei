@@ -1,0 +1,27 @@
+{
+  "newValuePlaceholder": "Nilai baharu",
+  "source": {
+    "builtin": "Terbina dalam",
+    "added": "Ditambah"
+  },
+  "tooltip": {
+    "delete": "Padam entri ini",
+    "cannotDelete": "Nilai terbina dalam — tidak boleh dipadam"
+  },
+  "confirm": {
+    "removeTitle": "Padam nilai ini?"
+  },
+  "aria": {
+    "cannotDelete": "Tidak boleh memadam nilai terbina dalam"
+  },
+  "columns": {
+    "value": "Nilai",
+    "source": "Sumber",
+    "actions": "Tindakan"
+  },
+  "error": {
+    "couldNotLoad": "Tidak dapat dimuatkan",
+    "couldNotAdd": "Tidak dapat ditambah",
+    "couldNotDelete": "Tidak dapat dipadam"
+  }
+}

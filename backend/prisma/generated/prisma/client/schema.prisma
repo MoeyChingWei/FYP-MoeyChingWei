@@ -1,0 +1,256 @@
+datasource db {
+  provider = "postgresql"
+}
+
+enum Language {
+  en // English
+  zh // 简体中文 (Simplified Chinese)
+  ms // Bahasa Malaysia
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  name              String?
+  email             String   @unique
+  password          String
+  role              String   @default("Employee")
+  department        String?
+  avatarUrl         String?
+  isActive          Boolean  @default(true)
+  preferredLanguage Language @default(en)
+
+  roleChangeAuditsAsTarget RoleChangeAudit[]        @relation("RoleChangeTarget")
+  passwordResetCodes       PasswordResetCode[]
+  supplierTypeAssignments  SupplierTypeAssignment[]
+  notifications            Notification[]
+  feedbacks                Feedback[]
+  chatSessions             ChatSession[]
+  sources                  Source[]
+
+  @@map("users")
+}
+
+model Notification {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  type      String    @default("INFO")
+  channel   String    @default("IN_APP")
+  refType   String?
+  refId     String?
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model Feedback {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  type         String
+  description  String
+  status       String   @default("OPEN")
+  adminComment String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@map("feedbacks")
+}
+
+model RoleChangeAudit {
+  id         Int      @id @default(autoincrement())
+  targetId   Int
+  fromRole   String
+  toRole     String
+  actorEmail String
+  actorName  String?
+  createdAt  DateTime @default(now())
+
+  target User @relation("RoleChangeTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([targetId])
+  @@index([createdAt])
+  @@map("role_change_audits")
+}
+
+model PasswordResetCode {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  email     String
+  codeHash  String
+  salt      String
+  attempts  Int       @default(0)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([createdAt])
+  @@map("password_reset_codes")
+}
+
+/**
+ * User-added item categories and units of measure for purchasing forms.
+ */
+model PurchasingLookup {
+  id        Int      @id @default(autoincrement())
+  kind      String
+  value     String
+  createdAt DateTime @default(now())
+
+  @@unique([kind, value])
+  @@index([kind])
+  @@map("purchasing_lookups")
+}
+
+model SupplierTypeAssignment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
+  @@index([category])
+  @@map("supplier_type_assignments")
+}
+
+model PurchaseRequestRecord {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([createdAt])
+  @@map("purchase_request_records")
+}
+
+model PurchaseOrderRecord {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([createdAt])
+  @@map("purchase_order_records")
+}
+
+model SupplierOrderAcknowledgementRecord {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([createdAt])
+  @@map("supplier_order_acknowledgement_records")
+}
+
+model SupplierDeliveryRecordStore {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([createdAt])
+  @@map("supplier_delivery_records")
+}
+
+model SupplierGrnRecordStore {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([createdAt])
+  @@map("supplier_grn_records")
+}
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  userId    Int
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
+  sources  Source[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  sessionId String
+  role      String
+  content   String   @db.Text
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+model Source {
+  id         String   @id @default(uuid())
+  userId     Int
+  sessionId  String?
+  fileName   String
+  filePath   String
+  fileType   String
+  fileSize   Int
+  uploadedAt DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session ChatSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  chunks  SourceChunk[]
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([uploadedAt])
+  @@map("sources")
+}
+
+model SourceChunk {
+  id         String @id @default(uuid())
+  sourceId   String
+  content    String @db.Text
+  chunkIndex Int
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([sourceId])
+  @@map("source_chunks")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma/client"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "fyp-moeychingwei",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix client run start",
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "backend": "npm --prefix backend run dev"
+  }
+}
+

@@ -1,0 +1,149 @@
+.page {
+  width: 100%;
+}
+
+.shell {
+  display: block;
+  min-height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.title {
+  margin: 0 !important;
+  color: #0f172a !important;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 260px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.mainStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionCard,
+.grnCard {
+  border-radius: 24px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+}
+
+.sectionCard :global(.ant-card-body),
+.grnCard :global(.ant-card-body) {
+  padding: 22px;
+}
+
+.sectionHeader {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.sectionTitle {
+  margin: 0 !important;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.moduleButton,
+.grnButton {
+  height: auto !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+  padding: 18px 16px !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  text-align: left;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.moduleButton:hover,
+.grnButton:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 197, 94, 0.28) !important;
+  box-shadow: 0 14px 28px rgba(34, 197, 94, 0.12);
+}
+
+.moduleIcon,
+.grnIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  font-size: 20px;
+  box-shadow: 0 12px 22px rgba(34, 197, 94, 0.24);
+}
+
+.moduleTitle,
+.grnTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.moduleHint,
+.grnHint {
+  font-size: 14px;
+  color: #64748b;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.grnCard {
+  display: flex;
+}
+
+.grnCard :global(.ant-card-body) {
+  width: 100%;
+  display: flex;
+}
+
+.grnButton {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .page {
+    min-height: auto;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,37 @@
+@startuml
+title Activity (Part 2 - Draft Rewrite) - Save Draft, Rewrite, and Submit
+
+|Requester|
+start
+:Open Purchasing > Creation;
+:Enter or update request data;
+:Click Save Draft;
+
+|System|
+:Save request with status = draft;
+:Keep draft in purchase-requests store;
+
+|Requester|
+:Open draft request later;
+:Rewrite data (item/quantity/unit/justification);
+
+if (Submit now?) then (Yes)
+  :Click Submit;
+  |System|
+  if (Required fields complete?) then (Yes)
+    :Update same localId record;
+    :Request appears in Review list;
+    :Flow ends for requester;
+    stop
+  else (No)
+    |Requester|
+    :Show validation message;
+    :Continue editing draft;
+    stop
+  endif
+else (No)
+  :Keep as draft for later editing;
+  stop
+endif
+
+@enduml

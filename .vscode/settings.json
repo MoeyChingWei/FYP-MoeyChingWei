@@ -1,0 +1,10 @@
+{
+  // Use PlantUML server so preview works without local Java/Graphviz.
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.server": "https://www.plantuml.com/plantuml",
+
+  // Nice defaults for exports.
+  "plantuml.exportFormat": "png",
+  "plantuml.exportSubFolder": "docs/diagram-generation/output"
+}
+

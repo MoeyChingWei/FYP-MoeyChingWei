@@ -1,0 +1,150 @@
+/* AI Assistant Submodule Container */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header Section */
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* Search Bar */
+.searchBar {
+  margin-bottom: 24px;
+  max-width: 600px;
+}
+
+/* Tabs */
+.tabs {
+  margin-bottom: 24px;
+}
+
+.tabs :global(.ant-tabs-nav) {
+  margin-bottom: 16px;
+}
+
+.tabs :global(.ant-tabs-tab) {
+  padding: 8px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.tabs :global(.ant-tabs-tab:hover) {
+  color: #1890ff;
+}
+
+.tabs :global(.ant-tabs-tab-active) {
+  background-color: #e6f7ff;
+  border-color: #1890ff;
+}
+
+/* Agent List */
+.agentList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+/* Error State */
+.errorContainer {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.retryButton {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.retryButton:hover {
+  background-color: #40a9ff;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.emptyState p {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.clearSearchButton {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #d9d9d9;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.clearSearchButton:hover {
+  background-color: #e6e6e6;
+  border-color: #bfbfbf;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .searchBar {
+    max-width: 100%;
+  }
+
+  .tabs :global(.ant-tabs-nav) {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .tabs :global(.ant-tabs-tab) {
+    padding: 6px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}

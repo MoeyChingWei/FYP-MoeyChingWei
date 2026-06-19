@@ -1,0 +1,15 @@
+{
+  "sidebar": {
+    "overview": "Overview",
+    "purchasing": "Purchasing",
+    "userAccess": "User Access",
+    "supplierOverview": "Supplier Overview",
+    "trackingItem": "Tracking Item",
+    "chatbot": "AI Assistant",
+    "settings": "Settings"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "back": "Back"
+  }
+}

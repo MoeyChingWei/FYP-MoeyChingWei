@@ -1,0 +1,214 @@
+{
+  "modal": {
+    "title": "User Guide",
+    "description": "This guide provides information on how to use the system based on your role.",
+    "yourRole": "Your current role is:"
+  },
+  "gettingStarted": {
+    "title": "Getting Started",
+    "welcome": "Welcome to OptiMind ERP! This guide will help you navigate the system and understand your capabilities.",
+    "navigation": "Navigation",
+    "navItems": {
+      "sidebar": "Use the sidebar menu to access different modules",
+      "profile": "Click your profile icon (top-right) to access settings and logout",
+      "overview": "The Overview page shows quick access tiles for your available modules",
+      "notifications": "Notifications appear in the bell icon and Overview page"
+    }
+  },
+  "admin": {
+    "title": "Super Admin Guide",
+    "userManagement": "User Management",
+    "whatYouCanDo": "What you can do:",
+    "userCapabilities": {
+      "create": "Create, edit, and manage user accounts",
+      "assignRoles": "Assign and change user roles",
+      "activate": "Activate or deactivate user accounts",
+      "auditLogs": "View audit logs for role changes"
+    },
+    "howToCreateUser": "How to create a new user:",
+    "createUserSteps": {
+      "step1": "Navigate to User & Access → User Management",
+      "step2": "Click \"Add User\" button",
+      "step3": "Fill in user details (name, email, role)",
+      "step4": "Set initial password",
+      "step5": "Click \"Create User\""
+    },
+    "categoryManagement": "Category Management",
+    "categoryCapabilities": {
+      "items": "Manage item categories",
+      "units": "Manage units of measurement",
+      "suppliers": "Assign supplier types/categories"
+    }
+  },
+  "purchasing": {
+    "title": "Purchasing Workflow",
+    "requestCreation": "Purchase Request Creation",
+    "availableFor": "Available for: Employee, Executive, Manager",
+    "whatYouCanDo": "What you can do:",
+    "requestCapabilities": {
+      "create": "Create purchase requests for items needed",
+      "specify": "Specify item details, quantity, and justification",
+      "draft": "Save drafts and submit when ready"
+    },
+    "howToCreateRequest": "How to create a purchase request:",
+    "createRequestSteps": {
+      "step1": "Navigate to Purchasing → Create Request",
+      "step2": "Fill in request details (priority, justification, delivery date)",
+      "step3": "Add items: Click \"Add Item\" and specify details",
+      "step4": "For each item: name, category, quantity, unit, estimated price",
+      "step5": "Save as draft or Submit for approval"
+    },
+    "tips": "Tips:",
+    "tipsList": {
+      "draft": "Use the draft feature to save work in progress",
+      "justification": "Provide detailed justification to speed up approval",
+      "dates": "Set realistic expected delivery dates"
+    }
+  },
+  "approval": {
+    "title": "Request Approval",
+    "requestApproval": "Purchase Request Approval",
+    "availableFor": "Available for: Department Executive",
+    "whatYouCanDo": "What you can do:",
+    "approvalCapabilities": {
+      "review": "Review pending purchase requests",
+      "approve": "Approve or reject requests with comments",
+      "viewDetails": "View request details and justification"
+    },
+    "howToApprove": "How to approve a request:",
+    "approveSteps": {
+      "step1": "Navigate to Purchasing → Approval",
+      "step2": "Click on a pending request to view details",
+      "step3": "Review items, quantities, and justification",
+      "step4": "Add comments (optional)",
+      "step5": "Click \"Approve\" or \"Reject\""
+    },
+    "poCreation": "Purchase Order Creation",
+    "howToCreatePO": "How to create a purchase order:",
+    "createPOSteps": {
+      "step1": "Navigate to Purchasing → Create Order",
+      "step2": "Select an approved purchase request",
+      "step3": "Select a supplier",
+      "step4": "Review and adjust item details if needed",
+      "step5": "Submit for manager approval"
+    }
+  },
+  "poApproval": {
+    "title": "Purchase Order Approval",
+    "reviewApproval": "Purchase Order Review & Approval",
+    "availableFor": "Available for: Manager",
+    "whatYouCanDo": "What you can do:",
+    "poCapabilities": {
+      "review": "Review pending purchase orders",
+      "approve": "Approve or reject orders",
+      "viewDetails": "View order details and supplier information"
+    },
+    "howToApprove": "How to approve a purchase order:",
+    "approveSteps": {
+      "step1": "Navigate to Purchasing → Order Approval",
+      "step2": "Click on a pending order to view details",
+      "step3": "Review items, pricing, and supplier",
+      "step4": "Add approval comments (optional)",
+      "step5": "Click \"Approve\" or \"Reject\""
+    },
+    "smartApproval": "Smart Approval",
+    "configureRules": "Configure automatic approval rules:",
+    "smartCapabilities": {
+      "threshold": "Set threshold amounts for auto-approval",
+      "criteria": "Define approval criteria",
+      "navigate": "Navigate to Smart Approval in the sidebar"
+    }
+  },
+  "supplier": {
+    "title": "Supplier Fulfillment",
+    "orderAcknowledgement": "Order Acknowledgement",
+    "availableFor": "Available for: Supplier",
+    "whatYouCanDo": "What you can do:",
+    "supplierCapabilities": {
+      "view": "View purchase orders assigned to you",
+      "acknowledge": "Acknowledge orders and confirm delivery dates",
+      "update": "Update order status"
+    },
+    "howToAcknowledge": "How to acknowledge an order:",
+    "acknowledgeSteps": {
+      "step1": "Navigate to Supplier Overview → Order Acknowledgement",
+      "step2": "Click on a pending order",
+      "step3": "Review order details",
+      "step4": "Confirm expected delivery date",
+      "step5": "Click \"Acknowledge Order\""
+    },
+    "deliveryManagement": "Delivery Management",
+    "howToRecordDelivery": "How to record a delivery:",
+    "deliverySteps": {
+      "step1": "Navigate to Supplier Overview → Delivery",
+      "step2": "Select the acknowledged order",
+      "step3": "Enter delivery details (date, tracking number)",
+      "step4": "Specify quantities delivered for each item",
+      "step5": "Submit delivery record"
+    }
+  },
+  "tracking": {
+    "title": "Tracking Items",
+    "itemTracking": "Item Tracking",
+    "whatYouCanDo": "What you can do:",
+    "trackingCapabilities": {
+      "requests": "Track status of your purchase requests",
+      "orders": "View purchase orders progress",
+      "deliveries": "Monitor deliveries and GRN status",
+      "search": "Search and filter by status or date"
+    },
+    "howToTrack": "How to track an item:",
+    "trackingSteps": {
+      "step1": "Navigate to Tracking Item from sidebar or Overview",
+      "step2": "Use filters to find your items",
+      "step3": "Click on an item to view detailed status",
+      "step4": "View workflow progress and current stage"
+    }
+  },
+  "profile": {
+    "title": "Profile & Settings",
+    "managing": "Managing Your Profile",
+    "whatYouCanDo": "What you can do:",
+    "profileCapabilities": {
+      "update": "Update your profile information",
+      "password": "Change your password",
+      "avatar": "Upload profile avatar",
+      "notifications": "Configure notification preferences"
+    },
+    "howToUpdate": "How to update your profile:",
+    "updateSteps": {
+      "step1": "Click your avatar in the top-right corner",
+      "step2": "Select \"Profile\"",
+      "step3": "Edit your information",
+      "step4": "Click \"Save Changes\""
+    },
+    "howToChangePassword": "How to change your password:",
+    "passwordSteps": {
+      "step1": "Go to Profile → Reset Password",
+      "step2": "Enter current password",
+      "step3": "Enter new password (twice for confirmation)",
+      "step4": "Click \"Change Password\""
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "understanding": "Understanding Notifications",
+    "description": "Notifications keep you informed about important events and actions that require your attention.",
+    "types": "Notification Types:",
+    "typesList": {
+      "success": "Success",
+      "successDesc": "Actions completed successfully",
+      "info": "Info",
+      "infoDesc": "General information updates",
+      "warning": "Warning",
+      "warningDesc": "Items requiring attention or rejections"
+    },
+    "managing": "Managing Notifications:",
+    "managingList": {
+      "click": "Click on a notification to view details and mark as read",
+      "markAll": "Use \"Mark all read\" to clear latest notifications",
+      "history": "View notification history in the History tab",
+      "delete": "Delete individual or all history notifications"
+    }
+  }
+}

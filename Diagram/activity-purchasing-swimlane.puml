@@ -1,0 +1,70 @@
+@startuml
+title Swimlane Activity - Purchasing End-to-End (Overview)
+
+|Requester|
+start
+:Create purchase request (/purchasing/creation);
+:Save draft or submit request;
+
+if (Submit request?) then (yes)
+  |System|
+  :Notify Requester + Executive\n(in-app + Gmail);
+  |Executive|
+  :Review request approval detail;
+  if (Approve request?) then (yes)
+    |System|
+    :Generate PO Draft;
+    :Notify Requester request approved;
+  else (no)
+    |System|
+    :Send reject reason to Requester;
+    stop
+  endif
+else (no)
+  |Requester|
+  :Keep request as draft;
+  stop
+endif
+
+|Executive|
+:Submit PO to Manager;
+|System|
+:Notify Manager (in-app + Gmail);
+|Manager|
+:Review PO approval item;
+if (Manager approves?) then (yes)
+  |System|
+  :Notify Requester + Supplier\n(acknowledgement needed);
+else (no)
+  |System|
+  :Send reject reason to Requester;
+  stop
+endif
+
+|Supplier|
+:Acknowledge order (approve/reject);
+if (Supplier approves?) then (yes)
+  |System|
+  :Generate delivery as Pending;
+  |Supplier|
+  :Deliver goods;
+  |System|
+  :Notify Requester and generate GRN check;
+  |Requester|
+  :Verify goods and confirm received/discrepancy;
+  if (Discrepancy?) then (yes)
+    |System|
+    :Notify Supplier to resend;
+    |Supplier|
+    :Create delivery for resend;
+    |Requester|
+    :Re-check goods;
+  endif
+else (no)
+  |System|
+  :Send reject reason to Requester;
+endif
+
+stop
+
+@enduml

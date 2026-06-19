@@ -1,0 +1,40 @@
+@startuml
+title Activity (Detailed) - Executive Request Decision and PO Draft Handoff
+
+|System|
+start
+:Detect new submitted purchase request;
+:Send notification to Executive (in-app + Gmail);
+
+|Executive|
+:Open notification panel;
+:Open Request Approval module;
+:Review request details;
+
+if (Executive approves request?) then (Yes)
+  |System|
+  :Update request status to approved;
+  :Send approval notification to Requester\n(in-app + Gmail);
+  :Auto-generate Purchase Order as Draft;
+  :Link PO Draft to approved request;
+  :Open PO Review context for Executive;
+
+  |Executive|
+  :Open generated PO Draft;
+  :Review PO item details;
+  :Submit PO to Manager;
+
+  |System|
+  :Send notification to Manager\n(in-app + Gmail, PO pending approval);
+  :Move PO into manager review queue;
+  stop
+else (No)
+  |Executive|
+  :Write rejection reason;
+  |System|
+  :Update request status = rejected;
+  :Send rejection reason to Requester\n(in-app + Gmail);
+  stop
+endif
+
+@enduml

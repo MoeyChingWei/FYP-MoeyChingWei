@@ -1,0 +1,10 @@
+@startuml
+title Activity - Basic Logout Flow
+
+start
+:User clicks "Sign out";
+:System clears current session;
+:System redirects user to Login page;
+:User sees Login screen;
+stop
+@enduml

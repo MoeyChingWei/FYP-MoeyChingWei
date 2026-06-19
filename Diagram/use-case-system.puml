@@ -1,0 +1,57 @@
+@startuml
+title Use Case Diagram - OptiMind Portal (Detailed)
+left to right direction
+
+actor Employee
+actor Admin
+actor Supplier
+
+rectangle "FYP MoeyChingWei System" {
+  usecase "Login" as UC1
+  usecase "View Overview" as UC2
+  usecase "Manage Profile" as UC3
+  usecase "Create Purchase Request" as UC4
+  usecase "Review Purchase Request" as UC5
+  usecase "Create/Approve Purchase Order" as UC6
+  usecase "Submit Order Acknowledgement" as UC7
+  usecase "Submit Delivery" as UC8
+  usecase "Check GRN Status" as UC14
+  usecase "Receive In-App Notifications" as UC9
+  usecase "Submit Feedback" as UC10
+  usecase "Manage Users & Roles (RBAC)" as UC11
+  usecase "Manage Supplier Types" as UC12
+  usecase "Manage Purchasing Lookups" as UC13
+  usecase "Track Item Status" as UC15
+}
+
+Employee --> UC1
+Employee --> UC2
+Employee --> UC3
+Employee --> UC4
+Employee --> UC5
+Employee --> UC9
+Employee --> UC10
+Employee --> UC15
+
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC6
+Admin --> UC9
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+
+Supplier --> UC1
+Supplier --> UC2
+Supplier --> UC7
+Supplier --> UC8
+Supplier --> UC14
+Supplier --> UC9
+
+UC5 .> UC9 : <<include>>
+UC6 .> UC9 : <<include>>
+UC10 .> UC9 : <<include>>
+UC8 .> UC14 : <<extend>>
+
+@enduml

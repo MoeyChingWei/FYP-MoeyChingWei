@@ -1,0 +1,52 @@
+@startuml
+title Data Flow Diagram (Level 0 - Detailed)
+left to right direction
+
+actor Employee
+actor Admin
+actor "Department Executive" as DeptExecutive
+actor Supplier
+
+rectangle "P1 Auth & User Access" as P1
+rectangle "P2 Purchasing/Supplier Workflow" as P2
+rectangle "P3 Notification Service" as P3
+rectangle "P4 Feedback Management" as P4
+rectangle "P5 Admin Configuration" as P5
+
+database "D1 Users" as D1
+database "D2 Workflow Stores" as D2
+database "D3 Notifications" as D3
+database "D4 Feedbacks" as D4
+database "D5 Lookups/Supplier Types" as D5
+
+Employee --> P1 : credentials/profile updates
+Admin --> P1 : credentials/profile updates
+DeptExecutive --> P1 : credentials/profile updates
+Supplier --> P1 : credentials/profile updates
+P1 --> D1 : read/write user data
+
+Employee --> P2 : request/review data
+DeptExecutive --> P2 : request approval + PO review actions
+Admin --> P2 : PO approval oversight actions
+Supplier --> P2 : order ack/delivery/grn-status data
+P2 --> D2 : read/write workflow records
+P2 --> P3 : workflow event trigger
+P2 --> D5 : read purchasing lookups
+
+P3 --> D3 : create/read/update notifications
+P3 --> Employee : in-app notifications
+P3 --> Admin : in-app notifications
+P3 --> DeptExecutive : in-app notifications
+P3 --> Supplier : in-app notifications
+
+Employee --> P4 : submit feedback
+Admin --> P4 : view feedback list
+P4 --> D4 : create/read feedback
+P4 --> P3 : notify admin for new feedback
+
+Admin --> P5 : manage roles/types/lookups
+P5 --> D1 : user role updates
+P5 --> D5 : lookup/type updates
+P5 --> P3 : optional admin change notifications
+
+@enduml

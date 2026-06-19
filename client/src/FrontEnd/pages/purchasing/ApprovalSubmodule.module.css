@@ -1,0 +1,50 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fafcff;
+}
+
+.summaryText {
+  color: #111827;
+  font-weight: 700;
+}
+
+.tableWrap :global(.ant-table) {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.tableWrap :global(.ant-table-thead > tr > th) {
+  background: #f8fafc;
+  color: #374151;
+  font-weight: 700;
+}
+
+.prCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prMeta {
+  color: #9ca3af;
+  font-size: 12px;
+}

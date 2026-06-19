@@ -1,0 +1,119 @@
+@startuml
+title Activity (Detailed) - Full Purchasing Flow (Requester -> Executive -> Manager -> Supplier)
+
+|Requester|
+start
+:Open Purchasing module;
+:Create or review purchase request item;
+:Choose action: Save Draft or Submit;
+
+if (Submit request?) then (Yes)
+  |System|
+  :Detect request status = submitted;
+  :Create in-app notification for Requester;
+  :Send email to Requester (Gmail);
+  :Create in-app notification for Executive;
+  :Send email to Executive (new approval request);
+
+  |Executive|
+  :Open system notification;
+  :Open Request Approval details;
+  :Approve or Reject request;
+
+  if (Executive rejects?) then (Yes)
+    |Executive|
+    :Write rejection reason;
+    |System|
+    :Send rejection notification to Requester (in-app);
+    :Send rejection email to Requester (Gmail);
+    stop
+  else (No, approved)
+    |System|
+    :Update request status = approved;
+    :Generate Purchase Order as Draft;
+    :Open Purchase Order Review context for Executive;
+    :Send approval notification to Requester (in-app);
+    :Send approval email to Requester (Gmail);
+
+    |Executive|
+    :Review PO Draft items;
+    :Submit Purchase Order to Manager;
+
+    |System|
+    :Detect PO submitted to manager;
+    :Send notification to Manager (in-app);
+    :Send email to Manager (new approval);
+
+    |Manager|
+    :Open PO Approval module;
+    :Review PO items;
+    :Approve or Reject;
+
+    if (Manager rejects?) then (Yes)
+      |Manager|
+      :Write rejection reason;
+      |System|
+      :Send rejection notification to Requester (in-app);
+      :Send rejection email to Requester (Gmail);
+      stop
+    else (No, approved)
+      |System|
+      :Set PO approved;
+      :Notify Requester that PO is approved and waiting supplier acknowledgement;
+      :Notify Supplier (in-app + Gmail) about new order acknowledgement required;
+
+      |Supplier|
+      :Open Order Acknowledge module;
+      :Approve or Reject order;
+
+      if (Supplier rejects?) then (Yes)
+        |Supplier|
+        :Write rejection reason;
+        |System|
+        :Send rejection notification to Requester (in-app + Gmail);
+        stop
+      else (No, acknowledged)
+        |System|
+        :Send acknowledgement notification to Requester;
+        :Auto-generate Delivery record as Pending Delivery;
+
+        |Supplier|
+        :Deliver goods in Delivery submodule;
+
+        |System|
+        :Detect delivery action;
+        :Notify Requester;
+        :Generate GRN task for Requester to verify goods;
+
+        |Requester|
+        :Check received goods;
+        if (Goods correct?) then (Yes)
+          :Action = Received;
+          |System|
+          :Notify Requester and Supplier item completed;
+          stop
+        else (No, discrepancy)
+          :Mark discrepancy;
+          |System|
+          :Notify Supplier to resend correct items;
+
+          |Supplier|
+          :Open GRN discrepancy item;
+          :Click Create Delivery (resend);
+          |System|
+          :Repeat Delivery -> GRN verification cycle;
+          |Requester|
+          :Re-check until goods are correct;
+          stop
+        endif
+      endif
+    endif
+  endif
+else (No, draft only)
+  |System|
+  :Save request as draft;
+  :No approval notification is sent;
+  stop
+endif
+
+@enduml

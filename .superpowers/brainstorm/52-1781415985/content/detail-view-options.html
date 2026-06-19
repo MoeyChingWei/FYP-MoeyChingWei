@@ -1,0 +1,257 @@
+<h2>View Details 交互方式对比</h2>
+<p class="subtitle">选择你更喜欢的展示方式</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>选项A：页面内展开</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">点击后在当前位置展开显示详细内容</p>
+
+      <div class="mockup" style="max-width: 600px;">
+        <div class="mockup-header">Main Agent: 采购规划</div>
+        <div class="mockup-body" style="padding: 20px; background: #f8f9fa;">
+
+          <!-- Sub Agent Card - Collapsed -->
+          <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="font-size: 48px;">📊</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 8px 0; font-size: 18px;">Smart Procurement Agent</h4>
+                <p style="margin: 0; font-size: 14px; color: #666;">分析历史数据并推荐最佳采购时机和数量</p>
+              </div>
+              <button class="mock-button" style="background: #1890ff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          <!-- Sub Agent Card - Expanded (after click) -->
+          <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid #1890ff;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+              <div style="font-size: 48px;">📈</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 8px 0; font-size: 18px;">Demand Forecasting Agent</h4>
+                <p style="margin: 0; font-size: 14px; color: #666;">预测未来需求基于历史趋势和市场指标</p>
+              </div>
+              <button class="mock-button" style="background: #f0f0f0; color: #666; border: none; padding: 8px 16px; border-radius: 6px;">
+                Hide Details
+              </button>
+            </div>
+
+            <!-- Expanded Content with smooth animation -->
+            <div style="border-top: 1px solid #e8e8e8; padding-top: 20px; animation: slideDown 0.3s ease-out;">
+              <div style="margin-bottom: 20px;">
+                <h5 style="margin: 0 0 12px 0; font-size: 16px; color: #262626;">详细说明</h5>
+                <p style="font-size: 14px; color: #595959; line-height: 1.6;">
+                  使用先进的分析技术预测未来需求模式。分析历史销售数据、季节性趋势、市场指标和外部因素，提供准确的需求预测，帮助维持最佳库存水平。
+                </p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h5 style="margin: 0 0 12px 0; font-size: 16px; color: #262626;">工作流程</h5>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 16px; background: #f9fafb; border-radius: 8px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 4px;">📊</div>
+                    <div style="font-size: 12px; color: #666;">收集数据</div>
+                  </div>
+                  <div style="color: #d9d9d9; font-size: 20px;">→</div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 4px;">🔍</div>
+                    <div style="font-size: 12px; color: #666;">识别模式</div>
+                  </div>
+                  <div style="color: #d9d9d9; font-size: 20px;">→</div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 4px;">🧮</div>
+                    <div style="font-size: 12px; color: #666;">预测需求</div>
+                  </div>
+                  <div style="color: #d9d9d9; font-size: 20px;">→</div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 4px;">📋</div>
+                    <div style="font-size: 12px; color: #666;">生成报告</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h5 style="margin: 0 0 12px 0; font-size: 16px; color: #262626;">使用场景</h5>
+                <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #595959; line-height: 1.8;">
+                  <li>库存规划和补货决策</li>
+                  <li>预算分配和财务预测</li>
+                  <li>季节性采购准备</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="pros-cons" style="margin-top: 20px;">
+        <div class="pros">
+          <h4>优点</h4>
+          <ul>
+            <li>用户保持在当前页面，不会打断浏览流程</li>
+            <li>可以同时看到其他agents，便于对比</li>
+            <li>展开动画流畅，视觉连贯性好</li>
+            <li>适合快速浏览多个agents</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>缺点</h4>
+          <ul>
+            <li>展开后页面变长，需要滚动</li>
+            <li>一次只能展开一个，切换需要收起再展开</li>
+            <li>详细内容多时可能挤压其他卡片</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>选项B：Modal弹窗</h3>
+      <p class="subtitle" style="margin-top: 8px; margin-bottom: 16px;">点击后打开一个居中的弹窗显示详细信息</p>
+
+      <div class="mockup" style="max-width: 600px;">
+        <div class="mockup-header">Main Agent: 采购规划</div>
+        <div class="mockup-body" style="padding: 20px; background: #f8f9fa; position: relative;">
+
+          <!-- Sub Agents Grid (background, dimmed) -->
+          <div style="filter: brightness(0.6); pointer-events: none;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+              <div style="background: white; border-radius: 12px; padding: 16px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">📊</div>
+                <h4 style="margin: 0 0 4px 0; font-size: 14px;">Smart Procurement</h4>
+                <p style="margin: 0; font-size: 12px; color: #999;">分析历史数据...</p>
+              </div>
+              <div style="background: white; border-radius: 12px; padding: 16px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">📈</div>
+                <h4 style="margin: 0 0 4px 0; font-size: 14px;">Demand Forecasting</h4>
+                <p style="margin: 0; font-size: 12px; color: #999;">预测未来需求...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Overlay (appears on top) -->
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 16px; padding: 32px; width: 90%; max-width: 500px; box-shadow: 0 8px 32px rgba(0,0,0,0.24); animation: fadeIn 0.2s ease-out;">
+
+            <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px;">
+              <div style="font-size: 56px;">📈</div>
+              <div style="flex: 1;">
+                <h3 style="margin: 0 0 8px 0; font-size: 22px; color: #262626;">Demand Forecasting Agent</h3>
+                <p style="margin: 0; font-size: 14px; color: #8c8c8c;">预测未来需求基于历史趋势和市场指标</p>
+              </div>
+              <button style="background: none; border: none; font-size: 24px; color: #999; cursor: pointer; padding: 0; line-height: 1;">×</button>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
+              <div style="margin-bottom: 24px;">
+                <h5 style="margin: 0 0 12px 0; font-size: 16px; color: #262626;">详细说明</h5>
+                <p style="font-size: 14px; color: #595959; line-height: 1.6; margin: 0;">
+                  使用先进的分析技术预测未来需求模式。分析历史销售数据、季节性趋势、市场指标和外部因素。
+                </p>
+              </div>
+
+              <div style="margin-bottom: 24px;">
+                <h5 style="margin: 0 0 12px 0; font-size: 16px; color: #262626;">工作流程</h5>
+                <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+                  <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <div style="font-size: 28px;">📊</div>
+                      <div>
+                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">收集数据</div>
+                        <div style="font-size: 12px; color: #8c8c8c;">收集历史销售和需求数据</div>
+                      </div>
+                    </div>
+                    <div style="margin-left: 20px; border-left: 2px dashed #d9d9d9; height: 20px;"></div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <div style="font-size: 28px;">🔍</div>
+                      <div>
+                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">识别模式</div>
+                        <div style="font-size: 12px; color: #8c8c8c;">识别季节性和周期性模式</div>
+                      </div>
+                    </div>
+                    <div style="margin-left: 20px; border-left: 2px dashed #d9d9d9; height: 20px;"></div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <div style="font-size: 28px;">🧮</div>
+                      <div>
+                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">预测需求</div>
+                        <div style="font-size: 12px; color: #8c8c8c;">使用统计模型生成预测</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h5 style="margin: 0 0 12px 0; font-size: 16px; color: #262626;">使用场景</h5>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                  <span style="background: #e6f7ff; color: #0958d9; padding: 4px 12px; border-radius: 16px; font-size: 13px;">库存规划</span>
+                  <span style="background: #e6f7ff; color: #0958d9; padding: 4px 12px; border-radius: 16px; font-size: 13px;">预算分配</span>
+                  <span style="background: #e6f7ff; color: #0958d9; padding: 4px 12px; border-radius: 16px; font-size: 13px;">季节性采购</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0f0f0; text-align: right;">
+              <button class="mock-button" style="background: #1890ff; color: white; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                知道了
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="pros-cons" style="margin-top: 20px;">
+        <div class="pros">
+          <h4>优点</h4>
+          <ul>
+            <li>专注阅读，不受其他内容干扰</li>
+            <li>可以显示更多详细信息，有滚动条</li>
+            <li>页面长度保持不变，不需要滚动主页面</li>
+            <li>视觉焦点清晰，Modal有遮罩层</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>缺点</h4>
+          <ul>
+            <li>打断当前浏览，需要关闭才能继续</li>
+            <li>无法同时看到其他agents进行对比</li>
+            <li>额外的打开/关闭步骤</li>
+            <li>移动端Modal占满屏幕</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+</style>

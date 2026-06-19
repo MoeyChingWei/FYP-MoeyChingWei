@@ -1,0 +1,39 @@
+@startuml
+title Sequence Diagram - Supplier Delivery, GRN, and Discrepancy Loop
+
+actor Supplier
+actor Requester
+participant "React Frontend" as FE
+participant "Workflow API\n/api/workflow/*" as WF
+participant "Notification Service" as NS
+database "Prisma / PostgreSQL" as DB
+
+Supplier -> FE: Approve order acknowledgement
+FE -> WF: PUT /api/workflow/supplier-order-acks
+WF -> DB: save acknowledgement row
+WF -> DB: create delivery row (pending delivery)
+WF -> NS: processWorkflowNotifications(...)
+NS -> DB: notify Requester (acknowledged)
+
+Supplier -> FE: Submit delivery
+FE -> WF: PUT /api/workflow/deliveries
+WF -> DB: save delivery row
+WF -> NS: processWorkflowNotifications(...)
+NS -> DB: notify Requester (delivery submitted)
+
+Requester -> FE: Record GRN verification
+FE -> WF: PUT /api/workflow/grns
+WF -> DB: save GRN row
+
+alt Goods correct
+  WF -> NS: processWorkflowNotifications(...)
+  NS -> DB: notify Supplier + Requester (completed)
+else Discrepancy found
+  WF -> NS: processWorkflowNotifications(...)
+  NS -> DB: notify Supplier (resend required)
+  Supplier -> FE: Create delivery from discrepancy item
+  FE -> WF: PUT /api/workflow/deliveries (resend)
+  WF -> DB: update delivery cycle
+end
+
+@enduml

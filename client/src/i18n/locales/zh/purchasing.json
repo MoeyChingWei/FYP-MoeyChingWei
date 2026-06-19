@@ -1,0 +1,486 @@
+{
+  "moduleTitle": "采购模块",
+  "purchaseRequest": {
+    "title": "采购申请",
+    "review": {
+      "title": "采购申请审查",
+      "hint": "审查已提交的申请数据",
+      "table": {
+        "prNo": "采购申请编号",
+        "status": "状态",
+        "itemSummary": "物品摘要",
+        "department": "部门",
+        "requester": "申请人",
+        "items": "物品",
+        "total": "总计",
+        "moreItems": "+ {{count}} 个物品"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索采购申请编号、物品、状态..."
+      },
+      "section": {
+        "draft": "草稿",
+        "otherStatus": "其他状态"
+      },
+      "status": {
+        "draft": "草稿",
+        "submitted": "已提交",
+        "approved": "已批准",
+        "rejected": "已拒绝",
+        "pendingApproval": "待批准",
+        "ordered": "已订购",
+        "closed": "已关闭"
+      },
+      "actions": {
+        "view": "查看",
+        "create": "创建",
+        "delete": "删除",
+        "deleteSelected": "删除选定的采购申请？"
+      },
+      "messages": {
+        "deleteSuccess": "已删除选定的采购申请。",
+        "noPurchaseRequestsFound": "未找到采购申请。"
+      }
+    },
+    "approval": {
+      "title": "采购申请批准",
+      "hint": "批准采购申请",
+      "table": {
+        "prNo": "采购申请编号",
+        "status": "状态",
+        "requester": "申请人",
+        "department": "部门",
+        "items": "物品",
+        "total": "总计"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索采购申请编号、申请人、物品..."
+      },
+      "summary": "{{count}} 个已提交的申请",
+      "actions": {
+        "view": "查看",
+        "approve": "批准",
+        "reject": "拒绝"
+      },
+      "messages": {
+        "approved": "{{prNumber}} 已批准。",
+        "rejected": "{{prNumber}} 已拒绝。",
+        "noPendingApprovals": "没有待批准的采购申请。"
+      }
+    },
+    "detail": {
+      "title": "采购申请详情",
+      "approvalTitle": "采购申请批准详情",
+      "summary": {
+        "prNumber": "采购申请编号",
+        "requestDate": "申请日期",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "申请信息",
+        "approvalTitle": "批准概览",
+        "requester": "申请人",
+        "department": "部门",
+        "status": "状态",
+        "currentStatus": "当前状态",
+        "matchedSuppliers": "匹配的供应商"
+      },
+      "items": {
+        "title": "物品明细",
+        "submittedTitle": "已提交的物品",
+        "description": "在提交此申请之前，请审查每个申请的物品、选定的供应商、数量和定价。",
+        "approvalDescription": "在批准此采购申请之前，请审查所有申请的物品、指定的供应商和定价。批准后将生成草稿采购订单。",
+        "item": "物品 {{index}}",
+        "fields": {
+          "description": "描述",
+          "quantity": "数量",
+          "unit": "单位",
+          "unitPrice": "单价",
+          "lineTotal": "行总计",
+          "assignedSupplier": "指定供应商",
+          "supplierEmail": "供应商电子邮件",
+          "noDescription": "未提供描述",
+          "noSupplier": "未选择供应商"
+        }
+      },
+      "actions": {
+        "edit": "编辑",
+        "submit": "提交",
+        "approve": "批准",
+        "reject": "拒绝",
+        "back": "返回"
+      },
+      "status": {
+        "draft": "草稿",
+        "submitted": "已提交"
+      },
+      "messages": {
+        "submitted": "{{prNumber}} 已提交。",
+        "approved": "{{prNumber}} 已批准。",
+        "rejected": "{{prNumber}} 已拒绝。",
+        "notFound": "未找到采购申请详情。"
+      },
+      "modal": {
+        "rejectTitle": "拒绝采购申请",
+        "rejectLabel": "此采购申请"
+      }
+    },
+    "creation": {
+      "title": "创建采购申请",
+      "editTitle": "编辑采购申请",
+      "form": {
+        "prNumber": "采购申请编号",
+        "requestDate": "申请日期",
+        "requestBy": "申请人",
+        "department": "部门",
+        "itemDetails": "物品详情",
+        "itemDetail": "物品详情 {{index}}",
+        "itemName": "物品名称",
+        "itemCategory": "物品类别",
+        "itemDescription": "物品描述",
+        "quantity": "数量",
+        "unitOfMeasurement": "计量单位",
+        "estimatedUnitPrice": "估计单价",
+        "lineTotal": "行总计（此物品）",
+        "requestTotal": "估计申请总额（所有物品）",
+        "supplierDetail": "供应商详情",
+        "placeholders": {
+          "itemName": "例如：USB-C 集线器",
+          "itemCategory": "选择或添加类别",
+          "itemDescription": "规格、用途等",
+          "unitOfMeasurement": "选择或添加单位"
+        },
+        "validation": {
+          "itemNameRequired": "输入物品名称",
+          "categoryRequired": "选择一个类别",
+          "descriptionRequired": "输入描述",
+          "quantityRequired": "输入数量",
+          "quantityPositive": "数量必须大于 0",
+          "unitRequired": "选择单位",
+          "unitPriceRequired": "输入单价",
+          "unitPriceNonNegative": "单价不能为负数",
+          "atLeastOneItem": "至少添加一个物品详情。"
+        }
+      },
+      "supplier": {
+        "selectCategory": "选择物品类别以查看匹配的供应商。",
+        "multipleMatched": "多个供应商匹配此类别。请选择一个。",
+        "noMatch": "没有供应商类型匹配类别\"{{category}}。",
+        "noDepartment": "无部门"
+      },
+      "actions": {
+        "clearAll": "全部清除",
+        "remove": "删除",
+        "addItemDetail": "添加物品详情",
+        "calculateTotal": "计算总额",
+        "saveAsDraft": "保存为草稿",
+        "submit": "提交",
+        "back": "返回"
+      },
+      "messages": {
+        "draftSaved": "草稿已本地保存（草稿）。",
+        "draftUpdated": "采购申请草稿已更新。",
+        "submitted": "采购申请已提交（本地保存为已提交）。",
+        "updatedAndSubmitted": "采购申请已更新并提交。",
+        "totalCalculated": "申请总额：{{currency}} {{total}}（所有行）",
+        "draftNotFound": "未找到草稿。"
+      }
+    }
+  },
+  "purchaseOrder": {
+    "title": "采购订单",
+    "review": {
+      "title": "采购订单审查",
+      "hint": "审查采购订单",
+      "table": {
+        "poNo": "采购订单编号",
+        "status": "状态",
+        "itemSummary": "物品摘要",
+        "department": "部门",
+        "createdBy": "创建人",
+        "items": "物品",
+        "total": "总计",
+        "moreItems": "+ {{count}} 个物品"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索采购订单编号、物品、状态..."
+      },
+      "section": {
+        "draft": "草稿",
+        "otherStatus": "其他状态"
+      },
+      "status": {
+        "draft": "草稿",
+        "submitted": "已提交",
+        "approved": "已批准",
+        "rejected": "已拒绝"
+      },
+      "actions": {
+        "view": "查看",
+        "create": "创建",
+        "delete": "删除",
+        "deleteSelected": "删除选定的采购订单？"
+      },
+      "messages": {
+        "deleteSuccess": "已删除选定的采购订单。",
+        "noPurchaseOrdersFound": "未找到采购订单。"
+      }
+    },
+    "approval": {
+      "title": "采购订单批准",
+      "hint": "批准采购订单",
+      "table": {
+        "poNo": "采购订单编号",
+        "status": "状态",
+        "createdBy": "创建人",
+        "department": "部门",
+        "items": "物品",
+        "total": "总计"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索采购订单编号、创建人、物品..."
+      },
+      "summary": "{{count}} 个已提交的订单",
+      "actions": {
+        "view": "查看",
+        "approve": "批准",
+        "reject": "拒绝"
+      },
+      "messages": {
+        "approved": "{{poNumber}} 已批准。",
+        "approvedWithAcknowledgements": "{{poNumber}} 已批准。已向匹配的供应商发送 {{count}} 个订单确认。",
+        "approvedWithAcknowledgement": "{{poNumber}} 已批准。已向匹配的供应商发送 1 个订单确认。",
+        "approvedNoAcknowledgement": "{{poNumber}} 已批准，但未创建订单确认，因为采购订单项目中未指定供应商。",
+        "rejected": "{{poNumber}} 已拒绝。",
+        "noPendingApprovals": "没有待批准的采购订单。"
+      }
+    },
+    "detail": {
+      "title": "采购订单详情",
+      "approvalTitle": "采购订单批准详情",
+      "summary": {
+        "poNumber": "采购订单编号",
+        "createdDate": "创建日期",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "订单信息",
+        "approvalTitle": "批准概览",
+        "sourcePr": "来源采购申请",
+        "prRequester": "采购申请人",
+        "createdBy": "创建人",
+        "department": "部门",
+        "status": "状态",
+        "currentStatus": "当前状态",
+        "matchedSuppliers": "匹配的供应商",
+        "currency": "货币",
+        "rejectedBy": "拒绝人",
+        "rejectDescription": "拒绝描述"
+      },
+      "items": {
+        "title": "订购物品",
+        "submittedTitle": "已提交的采购订单物品",
+        "description": "在提交此订单以供批准之前，请审查采购订单行项目、供应商分配和定价。",
+        "approvalDescription": "在决定批准或拒绝此采购订单之前，请审查此采购订单。批准后，系统将从这些采购订单物品中指定的供应商生成特定于供应商的订单确认记录。",
+        "item": "物品 {{index}}"
+      },
+      "actions": {
+        "edit": "编辑",
+        "submit": "提交",
+        "approve": "批准",
+        "reject": "拒绝",
+        "back": "返回"
+      },
+      "status": {
+        "draft": "草稿",
+        "submitted": "已提交"
+      },
+      "messages": {
+        "submitted": "{{poNumber}} 已提交。",
+        "notFound": "未找到采购订单详情。"
+      },
+      "modal": {
+        "rejectTitle": "拒绝采购订单",
+        "rejectLabel": "此采购订单"
+      }
+    },
+    "creation": {
+      "title": "创建采购订单",
+      "editTitle": "编辑采购订单",
+      "form": {
+        "poNumber": "采购订单编号",
+        "createdDate": "创建日期",
+        "createdBy": "创建人",
+        "department": "部门",
+        "poDetails": "采购订单详情",
+        "poItem": "采购订单物品 {{index}}",
+        "sourcePrNumber": "来源采购申请编号",
+        "prRequester": "采购申请人",
+        "itemName": "物品名称",
+        "itemCategory": "物品类别",
+        "itemDescription": "物品描述",
+        "supplierName": "供应商名称",
+        "supplierEmail": "供应商电子邮件",
+        "quantity": "数量",
+        "unitOfMeasurement": "计量单位",
+        "estimatedUnitPrice": "估计单价",
+        "lineTotal": "行总计（此物品）",
+        "poTotal": "估计采购订单总额（所有物品）",
+        "placeholders": {
+          "sourcePrNumber": "例如：PR-20260414-ABCD",
+          "prRequester": "来自已批准采购申请的申请人",
+          "itemName": "例如：显示器支架",
+          "itemCategory": "选择或添加类别",
+          "itemDescription": "规格、用途等",
+          "supplierName": "指定的供应商名称",
+          "supplierEmail": "supplier@email.com",
+          "unitOfMeasurement": "选择或添加单位"
+        },
+        "validation": {
+          "sourcePrNumberRequired": "输入来源采购申请编号",
+          "itemNameRequired": "输入物品名称",
+          "categoryRequired": "选择一个类别",
+          "descriptionRequired": "输入描述",
+          "quantityRequired": "输入数量",
+          "quantityPositive": "数量必须大于 0",
+          "unitRequired": "选择单位",
+          "unitPriceRequired": "输入单价",
+          "unitPriceNonNegative": "单价不能为负数",
+          "atLeastOneItem": "至少添加一个采购订单物品。"
+        }
+      },
+      "actions": {
+        "clearAll": "全部清除",
+        "remove": "删除",
+        "addPoItem": "添加采购订单物品",
+        "calculateTotal": "计算总额",
+        "saveAsDraft": "保存为草稿",
+        "submit": "提交",
+        "back": "返回"
+      },
+      "messages": {
+        "draftSaved": "采购订单已保存为草稿。",
+        "draftUpdated": "采购订单草稿已更新。",
+        "submitted": "采购订单已提交。",
+        "updatedAndSubmitted": "采购订单已更新并提交。",
+        "totalCalculated": "采购订单总额：{{currency}} {{total}}（所有行）",
+        "draftNotFound": "未找到采购订单草稿。"
+      }
+    }
+  },
+  "delivery": {
+    "title": "交付",
+    "description": "跟踪与采购相关的交付，更新交付状态，并记录交付证明。"
+  },
+  "grn": {
+    "title": "收货单",
+    "fullTitle": "收货单",
+    "hint": "收货单",
+    "list": {
+      "title": "收货单",
+      "table": {
+        "orderNo": "订单编号（交付编号）",
+        "status": "状态",
+        "requester": "申请人",
+        "supplier": "供应商",
+        "items": "物品",
+        "reason": "原因"
+      },
+      "filter": {
+        "filterByDate": "按日期筛选",
+        "searchPlaceholder": "搜索订单编号、申请人、供应商..."
+      },
+      "section": {
+        "myGrnData": "我的收货单数据",
+        "otherGrnData": "其他收货单数据",
+        "searchMyGrn": "搜索我的收货单数据...",
+        "searchOtherGrn": "搜索其他收货单数据..."
+      },
+      "status": {
+        "pendingGrn": "待收货",
+        "completed": "已完成",
+        "discrepancy": "差异"
+      },
+      "actions": {
+        "view": "查看",
+        "back": "返回"
+      },
+      "messages": {
+        "noGrnRecordsInMy": "我的收货单数据中未找到收货单记录。",
+        "noGrnRecordsInOther": "其他收货单数据中未找到收货单记录。",
+        "noGrnRecords": "未找到收货单记录。"
+      }
+    },
+    "detail": {
+      "title": "收货单详情",
+      "summary": {
+        "orderNumber": "订单编号（交付编号）",
+        "createdDate": "创建日期",
+        "items": "物品",
+        "total": "总计"
+      },
+      "info": {
+        "title": "收货单概览",
+        "sourcePr": "来源采购申请",
+        "originalOrderNo": "原始订单编号",
+        "purchaseRequester": "采购申请人",
+        "createdBy": "创建人",
+        "supplier": "供应商",
+        "supplierEmail": "供应商电子邮件",
+        "department": "部门",
+        "currentStatus": "当前状态",
+        "companyAddress": "公司地址",
+        "discrepancyReason": "差异原因"
+      },
+      "items": {
+        "title": "收货单物品",
+        "description": "审查已交付的订单详情，并将收货单结果更新为已收货或差异。"
+      },
+      "actions": {
+        "received": "已收货",
+        "discrepancy": "差异",
+        "back": "返回"
+      },
+      "modal": {
+        "discrepancyTitle": "输入差异原因",
+        "discrepancyPlaceholder": "描述已交付物品中缺少或错误的内容...",
+        "submitDiscrepancy": "提交差异"
+      },
+      "messages": {
+        "received": "{{poNumber}} 已标记为已收货。",
+        "discrepancyUpdated": "{{poNumber}} 已更新差异原因。",
+        "discrepancyReasonRequired": "请输入差异原因",
+        "notFound": "未找到收货单详情。"
+      }
+    }
+  },
+  "common": {
+    "back": "返回",
+    "view": "查看",
+    "edit": "编辑",
+    "delete": "删除",
+    "create": "创建",
+    "submit": "提交",
+    "approve": "批准",
+    "reject": "拒绝",
+    "cancel": "取消",
+    "save": "保存",
+    "close": "关闭",
+    "confirm": "确认",
+    "loading": "加载中...",
+    "noData": "无数据",
+    "actions": "操作",
+    "status": "状态",
+    "draft": "草稿",
+    "submitted": "已提交",
+    "approved": "已批准",
+    "rejected": "已拒绝",
+    "uncategorized": "未分类"
+  }
+}

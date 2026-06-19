@@ -1,0 +1,15 @@
+{
+  "sidebar": {
+    "overview": "概览",
+    "purchasing": "采购管理",
+    "userAccess": "用户权限",
+    "supplierOverview": "供应商概览",
+    "trackingItem": "物品跟踪",
+    "chatbot": "AI助手",
+    "settings": "设置"
+  },
+  "breadcrumb": {
+    "home": "首页",
+    "back": "返回"
+  }
+}
