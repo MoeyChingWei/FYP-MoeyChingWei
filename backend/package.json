@@ -10,7 +10,8 @@
     "prisma:studio": "prisma studio",
     "prisma:migrate": "prisma migrate dev",
     "admin:create": "node scripts/createSuperAdmin.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -24,14 +25,17 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "mime-types": "^3.0.2",
     "multer": "^2.1.1",
     "nodemailer": "^8.0.5",
     "openai": "^6.42.0",
     "pg": "^8.16.3",
+    "sharp": "^0.35.2",
     "uuid": "^14.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
-    "prisma": "7.0.0"
+    "prisma": "7.0.0",
+    "vitest": "^4.1.9"
   }
 }
