@@ -1,24 +1,62 @@
-import OpenAI from 'openai';
 import logger from './simple-logger.js';
 
 class VisionAIService {
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY;
-    this.model = process.env.VISION_MODEL || 'gpt-4-turbo';
+    this.provider = process.env.VISION_PROVIDER || 'openai'; // 'openai' or 'google'
+    this.enabled = false;
 
-    if (!this.apiKey) {
-      logger.warn('VisionAIService', 'OPENAI_API_KEY not configured - vision analysis disabled');
-      this.enabled = false;
-      return;
+    if (this.provider === 'google') {
+      this.initializeGoogleVision();
+    } else if (this.provider === 'openai') {
+      this.initializeOpenAI();
+    } else {
+      logger.warn('VisionAIService', 'No valid vision provider configured - vision analysis disabled');
     }
+  }
 
-    this.client = new OpenAI({
-      apiKey: this.apiKey,
-      timeout: 30000,
-    });
+  async initializeGoogleVision() {
+    try {
+      // Dynamic import for Google Vision
+      const vision = await import('@google-cloud/vision');
 
-    this.enabled = true;
-    logger.success('VisionAIService', `Initialized with model: ${this.model}`);
+      // Check if credentials are configured
+      const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+      if (!credPath) {
+        logger.warn('VisionAIService', 'GOOGLE_APPLICATION_CREDENTIALS not configured - vision analysis disabled');
+        return;
+      }
+
+      this.client = new vision.ImageAnnotatorClient();
+      this.enabled = true;
+      logger.success('VisionAIService', 'Initialized with Google Cloud Vision API');
+    } catch (error) {
+      logger.error('VisionAIService', `Failed to initialize Google Vision: ${error.message}`);
+      logger.warn('VisionAIService', 'Install @google-cloud/vision: npm install @google-cloud/vision');
+    }
+  }
+
+  async initializeOpenAI() {
+    try {
+      const OpenAI = (await import('openai')).default;
+
+      this.apiKey = process.env.OPENAI_API_KEY;
+      this.model = process.env.VISION_MODEL || 'gpt-4-turbo';
+
+      if (!this.apiKey) {
+        logger.warn('VisionAIService', 'OPENAI_API_KEY not configured - vision analysis disabled');
+        return;
+      }
+
+      this.client = new OpenAI({
+        apiKey: this.apiKey,
+        timeout: 30000,
+      });
+
+      this.enabled = true;
+      logger.success('VisionAIService', `Initialized with OpenAI Vision (${this.model})`);
+    } catch (error) {
+      logger.error('VisionAIService', `Failed to initialize OpenAI: ${error.message}`);
+    }
   }
 
   /**
@@ -55,12 +93,149 @@ class VisionAIService {
   }
 
   /**
-   * Analyze an image using OpenAI Vision API
-   * @param {string} imageUrl - Public URL to the image
+   * Analyze an image using the configured vision provider
+   * @param {string} imageUrl - Public URL to the image or local file path
    * @param {string} fileName - Original file name for context
    * @returns {Promise<Object>} Analysis result
    */
   async analyzeImage(imageUrl, fileName = 'image') {
+    if (!this.enabled) {
+      return {
+        success: false,
+        error: `Vision service not available - ${this.provider} not configured`,
+      };
+    }
+
+    if (this.provider === 'google') {
+      return this.analyzeImageWithGoogle(imageUrl, fileName);
+    } else {
+      return this.analyzeImageWithOpenAI(imageUrl, fileName);
+    }
+  }
+
+  /**
+   * Analyze image using Google Cloud Vision API
+   */
+  async analyzeImageWithGoogle(imageUrl, fileName) {
+    const startTime = Date.now();
+
+    try {
+      logger.debug('GoogleVision', `Analyzing image: ${fileName}`, { url: imageUrl });
+
+      // Convert URL to local path if needed
+      let imagePath = imageUrl;
+      if (imageUrl.startsWith('/uploads/')) {
+        imagePath = '.' + imageUrl; // Convert to relative path
+      }
+
+      // Perform label detection, text detection, and web detection
+      const [result] = await this.client.annotateImage({
+        image: { source: { filename: imagePath } },
+        features: [
+          { type: 'LABEL_DETECTION', maxResults: 10 },
+          { type: 'TEXT_DETECTION' },
+          { type: 'IMAGE_PROPERTIES' },
+          { type: 'OBJECT_LOCALIZATION', maxResults: 5 },
+        ],
+      });
+
+      const duration = Date.now() - startTime;
+      logger.logAPICall('Google Vision', 'annotateImage', duration, true);
+
+      // Build comprehensive description
+      const description = this.buildGoogleVisionDescription(result);
+
+      return {
+        success: true,
+        analysis: description,
+        provider: 'google',
+        rawData: {
+          labels: result.labelAnnotations?.map(l => l.description) || [],
+          text: result.textAnnotations?.[0]?.description || null,
+          colors: result.imagePropertiesAnnotation?.dominantColors?.colors?.slice(0, 3) || [],
+        },
+      };
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logAPICall('Google Vision', 'annotateImage', duration, false);
+
+      logger.error('GoogleVision', `Analysis failed for ${fileName}: ${error.message}`, {
+        error: error.message,
+      });
+
+      return {
+        success: false,
+        error: error.message,
+        reason: 'API_ERROR',
+      };
+    }
+  }
+
+  /**
+   * Build human-readable description from Google Vision results
+   */
+  buildGoogleVisionDescription(result) {
+    const parts = [];
+
+    // Labels (what's in the image)
+    if (result.labelAnnotations && result.labelAnnotations.length > 0) {
+      const labels = result.labelAnnotations
+        .slice(0, 5)
+        .map(l => l.description)
+        .join(', ');
+      parts.push(`Image contains: ${labels}`);
+    }
+
+    // Objects detected
+    if (result.localizedObjectAnnotations && result.localizedObjectAnnotations.length > 0) {
+      const objects = result.localizedObjectAnnotations
+        .map(o => o.name)
+        .join(', ');
+      parts.push(`Objects detected: ${objects}`);
+    }
+
+    // Text in image
+    if (result.textAnnotations && result.textAnnotations.length > 0) {
+      const text = result.textAnnotations[0].description.trim();
+      if (text) {
+        parts.push(`Text found: "${text.substring(0, 200)}${text.length > 200 ? '...' : ''}"`);
+      }
+    }
+
+    // Dominant colors
+    if (result.imagePropertiesAnnotation?.dominantColors?.colors) {
+      const colors = result.imagePropertiesAnnotation.dominantColors.colors.slice(0, 3);
+      const colorNames = colors.map(c => {
+        const { red, green, blue } = c.color;
+        return this.getColorName(red, green, blue);
+      }).join(', ');
+      parts.push(`Dominant colors: ${colorNames}`);
+    }
+
+    return parts.length > 0
+      ? parts.join('. ') + '.'
+      : 'Image analyzed successfully.';
+  }
+
+  /**
+   * Get approximate color name from RGB
+   */
+  getColorName(r, g, b) {
+    if (r > 200 && g > 200 && b > 200) return 'white';
+    if (r < 50 && g < 50 && b < 50) return 'black';
+    if (r > g && r > b) return 'red';
+    if (g > r && g > b) return 'green';
+    if (b > r && b > g) return 'blue';
+    if (r > 150 && g > 150 && b < 100) return 'yellow';
+    if (r > 150 && g < 100 && b > 150) return 'purple';
+    if (r < 100 && g > 150 && b > 150) return 'cyan';
+    return 'mixed';
+  }
+
+  /**
+   * Analyze image using OpenAI Vision API
+   */
+  async analyzeImageWithOpenAI(imageUrl, fileName) {
     if (!this.enabled) {
       return {
         success: false,
@@ -71,7 +246,7 @@ class VisionAIService {
     const startTime = Date.now();
 
     try {
-      logger.debug('VisionAPI', `Analyzing image: ${fileName}`, { url: imageUrl });
+      logger.debug('OpenAIVision', `Analyzing image: ${fileName}`, { url: imageUrl });
 
       const response = await this.client.chat.completions.create({
         model: this.model,
@@ -103,6 +278,7 @@ class VisionAIService {
       return {
         success: true,
         analysis,
+        provider: 'openai',
         model: this.model,
         usage: {
           prompt_tokens: response.usage.prompt_tokens,
@@ -114,7 +290,7 @@ class VisionAIService {
       const duration = Date.now() - startTime;
       logger.logAPICall('OpenAI Vision', 'chat.completions', duration, false);
 
-      logger.error('VisionAPI', `Analysis failed for ${fileName}: ${error.message}`, {
+      logger.error('OpenAIVision', `Analysis failed for ${fileName}: ${error.message}`, {
         error: error.message,
         code: error.code,
         status: error.status,

@@ -107,7 +107,8 @@
       "Bash(dir)",
       "PowerShell(if \\(-not \\(Test-Path \"C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend\\\\uploads\\\\temp\"\\)\\) { New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend\\\\uploads\\\\temp\" | Out-Null; Write-Output \"Created uploads/temp directory\" } else { Write-Output \"uploads/temp directory already exists\" })",
       "Bash(npm test *)",
-      "Bash(dd if=/dev/zero of=/tmp/large-file.bin bs=1M count=11)"
+      "Bash(dd if=/dev/zero of=/tmp/large-file.bin bs=1M count=11)",
+      "WebFetch(domain:api-docs.deepseek.com)"
     ]
   },
   "enabledPlugins": {}
