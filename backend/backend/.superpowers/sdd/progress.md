@@ -3,3 +3,4 @@ Task 5: complete (commits 0e5f739, a3c23ec, 4e99943 - AttachmentPreview with 19 
 Task 6: complete (commit 0dffd4f, MessageAttachment with 17 tests)
 Task 7: complete (commits b8970ba, af827e2 - Full integration into ChatBotPage)
 Task 8: complete (commit 80a2a27 - OpenAI Vision API integration)
+Task 8 (updated): Added Google Cloud Vision API support (commit 99412d7)

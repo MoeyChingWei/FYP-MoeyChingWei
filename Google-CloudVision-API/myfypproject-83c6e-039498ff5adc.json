@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "myfypproject-83c6e",
+  "private_key_id": "039498ff5adc94ce5a59dc7e84342c643e82b1d0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDMcTjgeX6+nDrn\nNkYibwGhEMwhxo5FDl5ji6CKtD//9F9qqFPP/P6vW1DOlc4peZmuGIph4g1EkIwW\nr1Ksfy4s8t8bzGSAsknJ+rVfapqwlNjiqBlGX6TubDK+4j4AIhsDOA1ja+aOqiUz\nZH4NBTobzSkdshkDX3tTNCf2AzKSUmFR4K7/njjlq1rd3DkO7VM65aLgE4iewV6O\nlo+h8OlPBhOlHLNcrNVFaAHk+yW+67AeDkX8GG+tIuevp/H2/qBK/iLncHq8hKYZ\n7fJSoJSBrZOC4vSfxpV8vaJQfEdAouXd5XHqXpoNlA8S8nPKMYfgFtmdC3YyZN9i\nL5kK4xdBAgMBAAECggEABREtVWBNhDs/uSlUNa2bVGWj2ZZ1QkA9QKmznJx5FZv1\n8svMlVQc7+Bghq5EgiynDXSYQXLRMgjZyq96ahdripD+d07qksdYeC7EPg2DW1W6\ncRZfgf9ZiXtEYAzKzUVgdq+goqfdpV2RjHjffZfKkpPULWM+UXdqtBY6g1Ny9m4U\nM9/75119Ghpi0DvydNCcsKm1MVhB8MW/vm1PSiPlL2AgNkFg8xM+/TUoMsHYBaXy\nospHcSEriCI7v2c603z51ddDCBT+keZ2i1qTotFr/B1K0egbmNxl7nC7iaTCpcPv\nyDww4o9+dj0wCKHieIU1bg/Y0ccmmFue7vVcrj0ZQQKBgQD+85bdSfBxAOzySwww\n5Sqjm9gVolkjJXhp4s/uZkEQEqFWfgQly9zBTMD0WZSp15ViRooeNdsPENsVlFfD\nJ6l32OEj3ZnLfq+FANg8QmU9HqSemFgTFr0nWUVcbCuVbY+eKMsofpo/XBlmkZbZ\nnHOsDak5ol5A4HEE1hJfGHQZ2QKBgQDNSHUJjRzsJ3AlO1P+ljuyuuLPvcnZXB/z\nOY7HJQP1FshN0yhwSPetxeGeBw9CWn9J4/rzmIshDG0IpGECntJ0OqyXwRMMgbOl\nuT43f5h2nOJaskohvLs9QSb0CVuF+wOyOFZ45g9ROgTH2BrdGJ7sfDpsL9iYbMN5\n5dlNw0rfqQKBgDwZffHSUTzCRBjlugz4qLGCtlB7Qdn4JkeHsQ54ylOYoLG76Qxj\n3zkt97piN5pF+K//AuYWOfp2Nb8DhiC6A8f9tyz2Ox/uUD/hMBgcarMauyGrte9i\nB9rzv1cHJMsH1bgp06JLHd9bvZ0hKtdHezkOy1qLvP48KkhCkngaUpwZAoGBAJfq\nHgqCbjvo95nl7MPDg8xBdyXLSnvbLB2/o4SGRQZz5KmLMSrfJMNpZAyhJs6wz+/r\nkcQBSDydyHaTxuK8i/vNi/oFvMYNmddzXbKOb1KfyPbbZ/bNhzbOZzhDUIK2/sY9\n4Og5QG6Y4/7MUxz5YmqZiFaVldE+8+3ahdSBSIB5AoGBAKTG9B65X+G9F0rYxSOn\nzOJVLyYg5jfT5zRC2qYbcr82zhzS39uzsQ3agipvwXCXY1qVS33dftVKUG6ppx6B\nj3q/mpZ91kbwD0gFJ+OWlcLLnqVWOLau2MhiK+3ygxFtiIj/T3zmJ/KDG7qG1yCY\nLr5jhvrJ9OQQXGm6IRSK3q99\n-----END PRIVATE KEY-----\n",
+  "client_email": "fyp-imagevision-api@myfypproject-83c6e.iam.gserviceaccount.com",
+  "client_id": "109425559340767461973",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/fyp-imagevision-api%40myfypproject-83c6e.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

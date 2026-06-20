@@ -75,5 +75,6 @@
   "sessionInitFailed": "初始化聊天会话失败",
   "sendMessageFailed": "发送消息失败",
   "newConversationCreated": "新对话创建成功",
-  "createConversationFailed": "创建新对话失败"
+  "createConversationFailed": "创建新对话失败",
+  "imagePasted": "已粘贴 {{count}} 张图片"
 }

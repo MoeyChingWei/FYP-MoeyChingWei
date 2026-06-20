@@ -75,5 +75,6 @@
   "sessionInitFailed": "Failed to initialize chat session",
   "sendMessageFailed": "Failed to send message",
   "newConversationCreated": "New conversation created successfully",
-  "createConversationFailed": "Failed to create new conversation"
+  "createConversationFailed": "Failed to create new conversation",
+  "imagePasted": "{{count}} image(s) pasted successfully"
 }

@@ -75,5 +75,6 @@
   "sessionInitFailed": "Gagal memulakan sesi sembang",
   "sendMessageFailed": "Gagal menghantar mesej",
   "newConversationCreated": "Perbualan baharu berjaya dicipta",
-  "createConversationFailed": "Gagal mencipta perbualan baharu"
+  "createConversationFailed": "Gagal mencipta perbualan baharu",
+  "imagePasted": "{{count}} imej berjaya ditampal"
 }

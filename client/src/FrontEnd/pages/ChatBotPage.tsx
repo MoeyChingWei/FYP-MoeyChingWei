@@ -233,6 +233,37 @@ const ChatBotPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Handle paste event for images
+  useEffect(() => {
+    const handlePaste = async (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      // Check if clipboard contains files
+      const files: File[] = [];
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          if (file) {
+            files.push(file);
+          }
+        }
+      }
+
+      if (files.length > 0) {
+        e.preventDefault();
+        handleFileSelect(files);
+        message.success(t('messages.imagePasted', { count: files.length }));
+      }
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => {
+      document.removeEventListener('paste', handlePaste);
+    };
+  }, [selectedFiles]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
