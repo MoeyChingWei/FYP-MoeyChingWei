@@ -233,17 +233,15 @@ const ChatBotPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle paste event for images (only when focused on chat area)
+  // Handle paste event for images
   useEffect(() => {
     const handlePaste = async (e: ClipboardEvent) => {
-      // Only handle paste in chat area, not globally
+      // Allow paste anywhere in chatbot page
+      // Skip only if in sidebar or other pages
       const target = e.target as HTMLElement;
-      const isChatArea =
-        target.tagName === 'TEXTAREA' ||
-        target.closest('.chat-input-container') ||
-        target.closest('.chat-messages-container');
+      const isInSidebar = target.closest('.sidebar') || target.closest('.ant-layout-sider');
 
-      if (!isChatArea) return;
+      if (isInSidebar) return;
 
       const items = e.clipboardData?.items;
       if (!items) return;
