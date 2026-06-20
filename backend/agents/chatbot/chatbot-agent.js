@@ -589,7 +589,7 @@ class ChatBotAgent {
       .replace('{userDepartment}', user.department || 'Not set');
   }
 
-  async chat({ userId, message, sessionId }) {
+  async chat({ userId, message, sessionId, attachmentData }) {
     // 1. 加载用户信息
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -642,8 +642,8 @@ class ChatBotAgent {
       toolHandlers: this.enrichToolHandlers(userId),
     });
 
-    // 7. 保存对话历史
-    await this.saveMessage(sessionId, 'user', message);
+    // 7. 保存对话历史（带附件）
+    await this.saveMessage(sessionId, 'user', message, null, attachmentData);
     await this.generateSessionTitle(sessionId, message);
 
     if (response.success) {
@@ -720,10 +720,10 @@ class ChatBotAgent {
     }));
   }
 
-  async saveMessage(sessionId, role, content, metadata = null) {
+  async saveMessage(sessionId, role, content, metadata = null, attachmentData = null) {
     const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
 
-    await prisma.chatMessage.create({
+    const message = await prisma.chatMessage.create({
       data: {
         sessionId,
         role,
@@ -732,10 +732,31 @@ class ChatBotAgent {
       },
     });
 
+    // Create attachment records if attachmentData provided
+    if (attachmentData && Array.isArray(attachmentData) && attachmentData.length > 0) {
+      const attachmentRecords = attachmentData.map((att) => ({
+        messageId: message.id,
+        fileName: att.fileName,
+        fileUrl: att.fileUrl,
+        thumbnailUrl: att.thumbnailUrl || null,
+        fileSize: att.fileSize,
+        fileType: att.fileType,
+        mimeType: att.mimeType,
+      }));
+
+      await prisma.messageAttachment.createMany({
+        data: attachmentRecords,
+      });
+
+      console.log(`📎 Created ${attachmentRecords.length} attachment record(s) for message ${message.id}`);
+    }
+
     await prisma.chatSession.update({
       where: { id: sessionId },
       data: { updatedAt: new Date() },
     });
+
+    return message;
   }
 
   async getLastMessageMetadata(sessionId) {

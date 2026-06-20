@@ -101,7 +101,13 @@
       "PowerShell($docsToMove = @\\('HOW-TO-START.md', 'HOW-TO-USE-PROJECT-LOG.md', 'PROJECT-LOG.md', 'README-DOCS.md', 'START_HERE_TESTING.md', 'WORK_COMPLETION_SUMMARY.md'\\); foreach \\($doc in $docsToMove\\) { Move-Item $doc -Destination \"docs/\" -Force; Write-Host \"已移动: $doc -> docs/\" })",
       "Bash(grep -E \"\\\\.\\(js|jsx|tsx|ts\\)$\")",
       "Bash(python -m scripts.aggregate_benchmark iteration-1 --skill-name prompt-optimizer)",
-      "Bash(git init *)"
+      "Bash(git init *)",
+      "Bash(git commit *)",
+      "Bash(git config *)",
+      "Bash(dir)",
+      "PowerShell(if \\(-not \\(Test-Path \"C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend\\\\uploads\\\\temp\"\\)\\) { New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend\\\\uploads\\\\temp\" | Out-Null; Write-Output \"Created uploads/temp directory\" } else { Write-Output \"uploads/temp directory already exists\" })",
+      "Bash(npm test *)",
+      "Bash(dd if=/dev/zero of=/tmp/large-file.bin bs=1M count=11)"
     ]
   },
   "enabledPlugins": {}

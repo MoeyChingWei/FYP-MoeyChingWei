@@ -1,5 +1,6 @@
 import express from 'express';
 import chatbotAgent from '../agents/chatbot/chatbot-agent.js';
+import prisma from '../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = express.Router();
@@ -10,7 +11,7 @@ const router = express.Router();
  */
 router.post('/chat', async (req, res) => {
   try {
-    const { message, userId, sessionId } = req.body;
+    const { message, userId, sessionId, attachmentData } = req.body;
 
     // Validate required parameters
     if (!message || !userId) {
@@ -24,11 +25,15 @@ router.post('/chat', async (req, res) => {
     const actualSessionId = sessionId || uuidv4();
 
     console.log(`💬 ChatBot request from user ${userId}, session ${actualSessionId}`);
+    if (attachmentData && attachmentData.length > 0) {
+      console.log(`📎 With ${attachmentData.length} attachment(s)`);
+    }
 
     const response = await chatbotAgent.chat({
       userId,
       message,
       sessionId: actualSessionId,
+      attachmentData: attachmentData || undefined,
     });
 
     if (!response.success) {
@@ -140,13 +145,21 @@ router.get('/sessions', async (req, res) => {
 
 /**
  * GET /api/chatbot/history/:sessionId
- * Get session history
+ * Get session history with attachments
  */
 router.get('/history/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
 
-    const messages = await chatbotAgent.loadSessionHistory(sessionId, 100);
+    // Load messages with attachments included
+    const messages = await prisma.chatMessage.findMany({
+      where: { sessionId },
+      orderBy: { createdAt: 'asc' },
+      take: 100,
+      include: {
+        attachments: true,
+      },
+    });
 
     res.json({
       success: true,

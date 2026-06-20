@@ -1,11 +1,10 @@
 import express from 'express';
 import multer from 'multer';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/prisma.js';
 import { validateFile } from '../utils/file-validator.js';
 import { saveUploadedFile } from '../utils/file-storage.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Configure multer with memory storage and 10MB limit
 const upload = multer({

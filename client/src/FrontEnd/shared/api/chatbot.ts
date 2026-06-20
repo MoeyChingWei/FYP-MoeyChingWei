@@ -14,12 +14,46 @@ export async function createNewSession(userId: number) {
 }
 
 /**
+ * Upload attachment for chatbot message
+ */
+export async function uploadAttachment(
+  file: File,
+  sessionId: string,
+  userId: number
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('sessionId', sessionId);
+  formData.append('userId', userId.toString());
+
+  const res = await axios.post(`${API_BASE}/upload-attachment`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  if (!res.data?.success) {
+    throw new Error(res.data?.message ?? 'Failed to upload attachment');
+  }
+  return res.data.attachment;
+}
+
+/**
  * Send message to ChatBot
  */
 export async function sendMessage(params: {
   userId: number;
   message: string;
   sessionId?: string;
+  attachmentData?: Array<{
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    thumbnailUrl?: string;
+    fileSize: number;
+    fileType: string;
+    mimeType: string;
+  }>;
 }) {
   const res = await axios.post(`${API_BASE}/chat`, params);
   if (!res.data?.success) {

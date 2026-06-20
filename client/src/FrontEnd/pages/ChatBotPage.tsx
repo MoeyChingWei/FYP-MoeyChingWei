@@ -24,17 +24,32 @@ import {
   getUserSessions,
   deleteSession,
   clearAllChatHistory,
+  uploadAttachment,
 } from '../shared/api/chatbot';
 import { uploadSource, getUserSources, deleteSource } from '../shared/api/sources';
 import { getSessionUser } from '../shared/auth/session';
+import InputToolbar from '../components/ChatBot/InputToolbar';
+import AttachmentPreview from '../components/ChatBot/AttachmentPreview';
+import MessageAttachment from '../components/ChatBot/MessageAttachment';
 import './ChatBotPage.css';
 
 const { TextArea } = Input;
+
+interface AttachmentMetadata {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  thumbnailUrl?: string;
+  fileSize: number;
+  fileType: string;
+  mimeType: string;
+}
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  attachments?: AttachmentMetadata[];
 }
 
 interface Session {
@@ -189,6 +204,9 @@ const ChatBotPage: React.FC = () => {
   const [sources, setSources] = useState<Source[]>([]);
   const [loadingSources, setLoadingSources] = useState(false);
   const [uploadingSource, setUploadingSource] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [uploadedAttachments, setUploadedAttachments] = useState<AttachmentMetadata[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const sessionUser = getSessionUser();
@@ -302,6 +320,41 @@ const ChatBotPage: React.FC = () => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const handleFileSelect = (files: File[]) => {
+    setSelectedFiles((prev) => [...prev, ...files].slice(0, 5));
+  };
+
+  const handleImageSelect = (images: File[]) => {
+    setSelectedFiles((prev) => [...prev, ...images].slice(0, 5));
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadFiles = async () => {
+    if (selectedFiles.length === 0 || !currentSessionId || !userId) {
+      return [];
+    }
+
+    setUploadingFiles(true);
+    const attachments: AttachmentMetadata[] = [];
+
+    try {
+      for (const file of selectedFiles) {
+        const attachment = await uploadAttachment(file, currentSessionId, userId);
+        attachments.push(attachment);
+      }
+      setUploadedAttachments(attachments);
+      return attachments;
+    } catch (error: any) {
+      message.error(error.message || t('messages.uploadFailed'));
+      throw error;
+    } finally {
+      setUploadingFiles(false);
+    }
+  };
+
   const loadSessionMessages = async (sessionId: string) => {
     try {
       const history = await fetch(`/api/chatbot/history/${sessionId}`).then(r => r.json());
@@ -310,6 +363,7 @@ const ChatBotPage: React.FC = () => {
           role: msg.role,
           content: msg.content,
           timestamp: new Date(msg.createdAt || Date.now()),
+          attachments: msg.attachments || undefined,
         }));
         setMessages(msgs);
       }
@@ -345,16 +399,30 @@ const ChatBotPage: React.FC = () => {
   };
 
   const sendMessageToSession = async (sessionId: string, messageText: string) => {
-    if (!messageText.trim() || loading || !userId) return;
+    if ((!messageText.trim() && selectedFiles.length === 0) || loading || !userId) return;
+
+    // Upload files first if any selected
+    let attachments: AttachmentMetadata[] = [];
+    if (selectedFiles.length > 0) {
+      try {
+        attachments = await uploadFiles();
+      } catch (error) {
+        // Upload failed, don't send message
+        return;
+      }
+    }
 
     const userMessage: Message = {
       role: 'user',
       content: messageText,
       timestamp: new Date(),
+      attachments: attachments.length > 0 ? attachments : undefined,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
+    setSelectedFiles([]);
+    setUploadedAttachments([]);
     setLoading(true);
 
     try {
@@ -362,6 +430,7 @@ const ChatBotPage: React.FC = () => {
         userId,
         message: messageText,
         sessionId,
+        attachmentData: attachments.length > 0 ? attachments : undefined,
       });
 
       const assistantMessage: Message = {
@@ -380,7 +449,7 @@ const ChatBotPage: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || loading || !currentSessionId || !userId) return;
+    if ((!inputValue.trim() && selectedFiles.length === 0) || loading || !currentSessionId || !userId) return;
     await sendMessageToSession(currentSessionId, inputValue);
   };
 
@@ -685,6 +754,12 @@ const ChatBotPage: React.FC = () => {
                         <div className="message-text">
                           {msg.role === 'assistant' ? renderAssistantMessage(parsed.text) : parsed.text}
                         </div>
+                        {msg.attachments && msg.attachments.length > 0 && (
+                          <MessageAttachment
+                            attachments={msg.attachments}
+                            messageRole={msg.role}
+                          />
+                        )}
                         {parsed.options.length > 0 && (
                           <div className="message-options">
                             {parsed.options.map((option) => (
@@ -716,21 +791,37 @@ const ChatBotPage: React.FC = () => {
                 <Spin size="small" /> {t('page.thinkingMessage')}
               </div>
             )}
+            {uploadingFiles && (
+              <div className="loading-indicator">
+                <Spin size="small" /> Uploading files...
+              </div>
+            )}
+            {selectedFiles.length > 0 && (
+              <AttachmentPreview
+                files={selectedFiles}
+                onRemove={handleRemoveFile}
+              />
+            )}
             <div className="input-wrapper">
+              <InputToolbar
+                onFileSelect={handleFileSelect}
+                onImageSelect={handleImageSelect}
+                disabled={loading || uploadingFiles}
+              />
               <TextArea
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={t('page.typePlaceholder')}
                 autoSize={{ minRows: 1, maxRows: 6 }}
-                disabled={loading}
+                disabled={loading || uploadingFiles}
                 className="chat-input"
               />
               <Button
                 type="primary"
                 icon={<SendOutlined />}
                 onClick={handleSendMessage}
-                disabled={!inputValue.trim() || loading}
+                disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
                 size="large"
                 className="send-button"
               >

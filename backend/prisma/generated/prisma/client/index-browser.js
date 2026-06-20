@@ -246,6 +246,20 @@ exports.Prisma.ChatMessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.MessageAttachmentScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  thumbnailUrl: 'thumbnailUrl',
+  aiAnalysis: 'aiAnalysis',
+  uploadedAt: 'uploadedAt',
+  metadata: 'metadata'
+};
+
 exports.Prisma.SourceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -314,6 +328,7 @@ exports.Prisma.ModelName = {
   SupplierGrnRecordStore: 'SupplierGrnRecordStore',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
+  MessageAttachment: 'MessageAttachment',
   Source: 'Source',
   SourceChunk: 'SourceChunk'
 };
