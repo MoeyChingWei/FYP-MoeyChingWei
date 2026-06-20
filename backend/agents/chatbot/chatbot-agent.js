@@ -1,5 +1,6 @@
 import deepseekService from '../../services/deepseek-ai-service.js';
 import titleGenerator from '../../services/title-generator.js';
+import visionService from '../../services/vision-ai-service.js';
 import prisma from '../../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 import { generatePRNumber } from '../../utils/pr-number-generator.js';
@@ -749,6 +750,11 @@ class ChatBotAgent {
       });
 
       console.log(`📎 Created ${attachmentRecords.length} attachment record(s) for message ${message.id}`);
+
+      // Analyze images using vision AI (async, non-blocking)
+      this.analyzeAttachmentImages(message.id, attachmentData).catch(error => {
+        console.error('⚠️ Image analysis failed:', error.message);
+      });
     }
 
     await prisma.chatSession.update({
@@ -757,6 +763,55 @@ class ChatBotAgent {
     });
 
     return message;
+  }
+
+  /**
+   * Analyze images in attachments using vision AI
+   * This runs asynchronously and updates the database with analysis results
+   */
+  async analyzeAttachmentImages(messageId, attachmentData) {
+    if (!visionService.isEnabled()) {
+      console.log('⚠️ Vision service not enabled - skipping image analysis');
+      return;
+    }
+
+    // Filter for image attachments
+    const imageAttachments = attachmentData.filter(att =>
+      visionService.isImageFile(att.mimeType, att.fileName)
+    );
+
+    if (imageAttachments.length === 0) {
+      return;
+    }
+
+    console.log(`🔍 Analyzing ${imageAttachments.length} image(s) for message ${messageId}`);
+
+    // Analyze each image
+    for (const attachment of imageAttachments) {
+      try {
+        const result = await visionService.analyzeImage(attachment.fileUrl, attachment.fileName);
+
+        if (result.success) {
+          // Update the attachment record with AI analysis
+          await prisma.messageAttachment.updateMany({
+            where: {
+              messageId: messageId,
+              fileName: attachment.fileName,
+              fileUrl: attachment.fileUrl,
+            },
+            data: {
+              aiAnalysis: result.analysis,
+            },
+          });
+
+          console.log(`✅ Image analysis complete for: ${attachment.fileName}`);
+        } else {
+          console.error(`❌ Image analysis failed for ${attachment.fileName}: ${result.error}`);
+        }
+      } catch (error) {
+        console.error(`❌ Error analyzing ${attachment.fileName}:`, error.message);
+      }
+    }
   }
 
   async getLastMessageMetadata(sessionId) {
