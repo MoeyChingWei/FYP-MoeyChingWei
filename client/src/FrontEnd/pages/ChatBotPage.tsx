@@ -233,9 +233,18 @@ const ChatBotPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle paste event for images
+  // Handle paste event for images (only when focused on chat area)
   useEffect(() => {
     const handlePaste = async (e: ClipboardEvent) => {
+      // Only handle paste in chat area, not globally
+      const target = e.target as HTMLElement;
+      const isChatArea =
+        target.tagName === 'TEXTAREA' ||
+        target.closest('.chat-input-container') ||
+        target.closest('.chat-messages-container');
+
+      if (!isChatArea) return;
+
       const items = e.clipboardData?.items;
       if (!items) return;
 
@@ -262,7 +271,7 @@ const ChatBotPage: React.FC = () => {
     return () => {
       document.removeEventListener('paste', handlePaste);
     };
-  }, [selectedFiles]);
+  }, [selectedFiles, currentSessionId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -592,16 +601,41 @@ const ChatBotPage: React.FC = () => {
             <RobotOutlined style={{ fontSize: 32, color: '#1890ff' }} />
             {t('page.title')}
           </div>
-          <Input
-            className="chatbot-search-bar"
-            placeholder={t('page.newChatPlaceholder')}
-            prefix={<PlusOutlined />}
-            size="large"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onPressEnter={handleStartChat}
-            disabled={loading}
-          />
+
+          {/* File preview and input toolbar for new chat */}
+          <div className="new-chat-input-container" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+            {uploadingFiles && (
+              <div className="loading-indicator" style={{ marginBottom: '10px', textAlign: 'center' }}>
+                <Spin size="small" /> Uploading files...
+              </div>
+            )}
+            {selectedFiles.length > 0 && (
+              <div style={{ marginBottom: '10px' }}>
+                <AttachmentPreview
+                  files={selectedFiles}
+                  onRemove={handleRemoveFile}
+                />
+              </div>
+            )}
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
+              <InputToolbar
+                onFileSelect={handleFileSelect}
+                onImageSelect={handleImageSelect}
+                disabled={loading || uploadingFiles}
+              />
+              <Input
+                className="chatbot-search-bar"
+                placeholder={t('page.newChatPlaceholder')}
+                prefix={<PlusOutlined />}
+                size="large"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onPressEnter={handleStartChat}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
+            </div>
+          </div>
         </div>
 
         <Tabs className="chatbot-tabs" defaultActiveKey="chats" centered>
