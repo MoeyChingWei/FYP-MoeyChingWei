@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Button, Tooltip, message } from 'antd';
-import { PaperClipOutlined, SmileOutlined } from '@ant-design/icons';
+import { PaperClipOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './InputToolbar.css';
 
@@ -81,17 +81,6 @@ const InputToolbar: React.FC<InputToolbarProps> = ({
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
-
-      {/* Emoji button (optional, nice-to-have) */}
-      <Tooltip title="Emoji (coming soon)">
-        <Button
-          icon={<SmileOutlined />}
-          disabled
-          className="toolbar-button"
-          size="small"
-          type="text"
-        />
-      </Tooltip>
     </div>
   );
 };
