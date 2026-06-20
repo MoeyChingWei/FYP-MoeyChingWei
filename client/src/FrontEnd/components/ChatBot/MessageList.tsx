@@ -3,12 +3,25 @@ import { Avatar, Button } from 'antd';
 import { UserOutlined, RobotOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import MessageAttachment from './MessageAttachment';
 import './MessageList.css';
+
+interface MessageAttachmentData {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  mimeType?: string;
+  thumbnailUrl?: string;
+  aiAnalysis?: string;
+}
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp?: Date;
+  attachments?: MessageAttachmentData[];
 }
 
 interface MessageListProps {
@@ -180,6 +193,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onOptionClick }) =>
                     parsed.text
                   )}
                 </div>
+                {msg.attachments && msg.attachments.length > 0 && (
+                  <MessageAttachment
+                    attachments={msg.attachments}
+                    messageRole={msg.role}
+                  />
+                )}
               </div>
               {parsed.options.length > 0 && (
                 <div className="quick-option-list">
