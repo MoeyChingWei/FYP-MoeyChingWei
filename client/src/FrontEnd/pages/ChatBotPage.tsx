@@ -439,9 +439,12 @@ const ChatBotPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // If only attachments without text, send a default message
+      const messageToSend = messageText.trim() || (attachments.length > 0 ? '[Image]' : '');
+
       const response = await sendMessage({
         userId,
-        message: messageText,
+        message: messageToSend,
         sessionId,
         attachmentData: attachments.length > 0 ? attachments : undefined,
       });

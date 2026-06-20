@@ -14,10 +14,18 @@ router.post('/chat', async (req, res) => {
     const { message, userId, sessionId, attachmentData } = req.body;
 
     // Validate required parameters
-    if (!message || !userId) {
+    // Allow empty message if attachments are present
+    if (!userId) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required parameters: message and userId',
+        message: 'Missing required parameter: userId',
+      });
+    }
+
+    if (!message && (!attachmentData || attachmentData.length === 0)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Message or attachments required',
       });
     }
 
