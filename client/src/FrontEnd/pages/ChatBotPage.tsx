@@ -602,37 +602,80 @@ const ChatBotPage: React.FC = () => {
             {t('page.title')}
           </div>
 
-          {/* File preview and input toolbar for new chat */}
-          <div className="new-chat-input-container" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-            {uploadingFiles && (
-              <div className="loading-indicator" style={{ marginBottom: '10px', textAlign: 'center' }}>
-                <Spin size="small" /> Uploading files...
-              </div>
-            )}
+          {/* Input area with attachment preview - ChatGPT style */}
+          <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
+            {/* Attachment preview above input (ChatGPT style) */}
             {selectedFiles.length > 0 && (
-              <div style={{ marginBottom: '10px' }}>
+              <div style={{
+                marginBottom: '12px',
+                padding: '12px',
+                background: '#f7f7f8',
+                borderRadius: '12px',
+                border: '1px solid #e5e7eb'
+              }}>
                 <AttachmentPreview
                   files={selectedFiles}
                   onRemove={handleRemoveFile}
                 />
               </div>
             )}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
+
+            {/* Upload indicator */}
+            {uploadingFiles && (
+              <div style={{
+                marginBottom: '12px',
+                padding: '8px 12px',
+                textAlign: 'center',
+                background: '#f0f9ff',
+                borderRadius: '8px',
+                color: '#1890ff',
+                fontSize: '14px'
+              }}>
+                <Spin size="small" /> Uploading files...
+              </div>
+            )}
+
+            {/* Input box with toolbar - ChatGPT style */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '8px',
+              padding: '12px',
+              background: '#ffffff',
+              border: '1px solid #d1d5db',
+              borderRadius: '24px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              transition: 'all 0.2s'
+            }}>
               <InputToolbar
                 onFileSelect={handleFileSelect}
                 onImageSelect={handleImageSelect}
                 disabled={loading || uploadingFiles}
               />
               <Input
-                className="chatbot-search-bar"
                 placeholder={t('page.newChatPlaceholder')}
-                prefix={<PlusOutlined />}
                 size="large"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onPressEnter={handleStartChat}
                 disabled={loading}
-                style={{ flex: 1 }}
+                bordered={false}
+                style={{ flex: 1, fontSize: '15px' }}
+              />
+              <Button
+                type="text"
+                icon={<SendOutlined style={{ fontSize: '20px', color: inputValue.trim() || selectedFiles.length > 0 ? '#1890ff' : '#d1d5db' }} />}
+                onClick={handleStartChat}
+                disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+                size="large"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               />
             </div>
           </div>
