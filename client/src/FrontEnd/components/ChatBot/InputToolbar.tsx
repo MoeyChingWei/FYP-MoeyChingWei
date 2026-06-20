@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Button, Tooltip, message } from 'antd';
-import { PaperClipOutlined, PictureOutlined, SmileOutlined } from '@ant-design/icons';
+import { PaperClipOutlined, SmileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './InputToolbar.css';
 
@@ -17,9 +17,8 @@ const InputToolbar: React.FC<InputToolbarProps> = ({
 }) => {
   const { t: tMsg } = useTranslation('messages');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
-  // File input handler
+  // File input handler (now handles both files and images)
   const handleFileClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -39,15 +38,15 @@ const InputToolbar: React.FC<InputToolbarProps> = ({
     // Convert FileList to Array
     const fileArray = Array.from(files);
 
-    // Validate file types
-    const allowedExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv'];
+    // Validate file types (now includes images)
+    const allowedExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv', '.jpg', '.jpeg', '.png', '.gif', '.webp'];
     const invalidFiles = fileArray.filter(file => {
       const extension = '.' + file.name.split('.').pop()?.toLowerCase();
       return !allowedExtensions.includes(extension);
     });
 
     if (invalidFiles.length > 0) {
-      message.error(`Invalid file type. Allowed: ${allowedExtensions.join(', ')}`);
+      message.error(`Invalid file type. Allowed: PDF, Excel, Word, TXT, CSV, JPG, PNG, GIF, WebP`);
       return;
     }
 
@@ -61,52 +60,10 @@ const InputToolbar: React.FC<InputToolbarProps> = ({
     }
   };
 
-  // Image input handler
-  const handleImageClick = () => {
-    if (imageInputRef.current) {
-      imageInputRef.current.click();
-    }
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    // Validate file count (max 5 images)
-    if (files.length > 5) {
-      message.warning('Maximum 5 images can be selected at once');
-      return;
-    }
-
-    // Convert FileList to Array
-    const imageArray = Array.from(files);
-
-    // Validate image types
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    const invalidImages = imageArray.filter(image => {
-      const extension = '.' + image.name.split('.').pop()?.toLowerCase();
-      return !allowedExtensions.includes(extension);
-    });
-
-    if (invalidImages.length > 0) {
-      message.error(`Invalid image type. Allowed: ${allowedExtensions.join(', ')}`);
-      return;
-    }
-
-    // Call the callback with selected images
-    onImageSelect(imageArray);
-    message.success(`${imageArray.length} image(s) selected`);
-
-    // Reset input to allow selecting the same image again
-    if (event.target) {
-      event.target.value = '';
-    }
-  };
-
   return (
     <div className="input-toolbar">
       {/* File attachment button */}
-      <Tooltip title="Attach files (PDF, Excel, Word, TXT, CSV)">
+      <Tooltip title="Attach files (PDF, Excel, Word, TXT, CSV) or images (JPG, PNG, GIF)">
         <Button
           icon={<PaperClipOutlined />}
           onClick={handleFileClick}
@@ -119,30 +76,10 @@ const InputToolbar: React.FC<InputToolbarProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,.xlsx,.xls,.docx,.doc,.txt,.csv"
+        accept=".pdf,.xlsx,.xls,.docx,.doc,.txt,.csv,.jpg,.jpeg,.png,.gif,.webp"
         multiple
         style={{ display: 'none' }}
         onChange={handleFileChange}
-      />
-
-      {/* Image attachment button */}
-      <Tooltip title="Attach images (JPG, PNG, GIF, WebP)">
-        <Button
-          icon={<PictureOutlined />}
-          onClick={handleImageClick}
-          disabled={disabled}
-          className="toolbar-button"
-          size="small"
-          type="text"
-        />
-      </Tooltip>
-      <input
-        ref={imageInputRef}
-        type="file"
-        accept=".jpg,.jpeg,.png,.gif,.webp"
-        multiple
-        style={{ display: 'none' }}
-        onChange={handleImageChange}
       />
 
       {/* Emoji button (optional, nice-to-have) */}
