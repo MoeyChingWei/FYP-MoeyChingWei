@@ -18,57 +18,32 @@ import {
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import InputToolbar from '../components/ChatBot/InputToolbar';
+import AttachmentPreview from '../components/ChatBot/AttachmentPreview';
+import MessageAttachment from '../components/ChatBot/MessageAttachment';
+import './ChatBotPage.css';
+
+// Unified API and Types import
 import {
+  // Types
+  type AttachmentMetadata,
+  type Message,
+  type Session,
+  type Source,
+  // API Functions
   sendMessage,
   createNewSession,
   getUserSessions,
   deleteSession,
   clearAllChatHistory,
   uploadAttachment,
-} from '../shared/api/chatbot';
-import { uploadSource, getUserSources, deleteSource } from '../shared/api/sources';
-import { getSessionUser } from '../shared/auth/session';
-import InputToolbar from '../components/ChatBot/InputToolbar';
-import AttachmentPreview from '../components/ChatBot/AttachmentPreview';
-import MessageAttachment from '../components/ChatBot/MessageAttachment';
-import './ChatBotPage.css';
+  uploadSource,
+  getUserSources,
+  deleteSource,
+  getSessionUser,
+} from './chatbot-api';
 
 const { TextArea } = Input;
-
-interface AttachmentMetadata {
-  id: string;
-  fileName: string;
-  fileUrl: string;
-  thumbnailUrl?: string;
-  fileSize: number;
-  fileType: string;
-  mimeType: string;
-}
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  attachments?: AttachmentMetadata[];
-}
-
-interface Session {
-  id: string;
-  title: string;
-  updatedAt: string;
-  _count: {
-    messages: number;
-  };
-}
-
-interface Source {
-  id: string;
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-  uploadedAt: string;
-  chunkCount?: number;
-}
 
 function parseAssistantOptions(content: string) {
   const marker = '\nOPTIONS:\n';
