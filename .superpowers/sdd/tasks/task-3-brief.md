@@ -1,36 +1,68 @@
-# Task 3: Backend Upload API Endpoint
+# Task 3: Move Feature Documentation
 
-## Task Brief
+**Goal:** Move 35 feature-related files to docs/03-features/ subdirectories
 
-**Files:**
-- Create: `backend/routes/chatbot-upload.js`
-- Modify: `backend/server.js` (register route and serve uploads directory)
+**Files to Move:**
 
-**Interfaces:**
-- Consumes: validateFile, saveUploadedFile from Task 2; Prisma ChatSession model
-- Produces: POST /api/chatbot/upload-attachment endpoint returning {success, attachment: {id, fileName, fileUrl, thumbnailUrl?, fileSize, fileType, mimeType}}
+## AI Agents Main (6 files) → docs/03-features/ai-agents/
+- docs/MULTI_AGENT_SYSTEM.md
+- docs/MULTI_AGENT_IMPLEMENTATION_SUMMARY.md
+- docs/MULTI_AGENT_FRONTEND_GUIDE.md
+- docs/COMPLETE_MULTI_AGENT_SUMMARY.md
+- docs/ANALYTICS_AGENT_GUIDE.md
+- backend/API_REFACTORING_COMPLETE.md
 
-## Requirements
+## AI Agents Subfolder (5 files) → docs/03-features/ai-agents/agents/
+- backend/agents/AGENT_OPTIMIZATION_REPORT.md
+- backend/agents/OPTIMIZATION_SUMMARY.md
+- backend/agents/CHECK_AGENTS.md
+- backend/agents/FINAL_CHECK_REPORT.md
+- backend/agents/AGENT_IMPROVEMENTS.md
 
-**POST /api/chatbot/upload-attachment:**
-- Accept file via multipart/form-data (field name: `file`)
-- Accept sessionId and userId in body
-- Validate user owns the session
-- Validate file using file-validator
-- Save file using file-storage
-- Return attachment metadata (temporary ID, will be linked to message later)
+## ChatBot Main (3 files) → docs/03-features/chatbot/
+- backend/AUTO_TITLE_GENERATION.md
+- backend/CHATGPT_STYLE_COMPLETE.md
+- client/src/FrontEnd/components/ChatBot/ATTACHMENT_PREVIEW_GUIDE.md
 
-**Server modifications:**
-- Register `/api/chatbot` routes for upload
-- Serve `/uploads` directory as static files
+## ChatBot Image Features (4 files) → docs/03-features/chatbot/image-features/
+- backend/IMAGE_ANALYSIS_FIX.md
+- backend/IMAGE_SEND_FIX_COMPLETE.md
+- backend/PASTE_FIX_COMPLETE.md
+- backend/PASTE_IMAGE_GUIDE.md
 
-## Implementation Details
+## Voice Input (5 files) → docs/03-features/voice-input/
+- VOICE_INPUT_INTEGRATION.md
+- VOICE_INPUT_IMPROVEMENTS.md
+- VOICE_SPEED_OPTIMIZATION.md
+- VOICE_OPTIMIZATION_GUIDE.md
+- VOICE_INPUT_TROUBLESHOOTING.md
 
-Use multer with memory storage, 10MB limit. Validate session ownership. Return attachment data with temporary ID (`temp_${Date.now()}`). Real ID will be created when message is sent.
+## Export (3 files) → docs/03-features/export/
+- EXPORT_PURCHASE_REQUESTS_FEATURE.md
+- EXPORT_FEATURE_IMPLEMENTATION_SUMMARY.md
+- EXPORT_FEATURE_UI_GUIDE.md
 
-## Global Constraints
+## i18n (5 files) → docs/03-features/i18n/
+- docs/i18n-usage-guide.md
+- docs/multi-language-acceptance-testing.md
+- docs/multi-language-acceptance-report.md
+- docs/phase4-status.md
+- docs/phase4-implementation-summary.md
 
-- Node.js version: 18+
-- Use existing authentication (session-based)
-- Follow existing code style (2-space indentation, semicolons)
-- All API responses must include success/error status
+## Other Features (3 files) → docs/03-features/other/
+- docs/SOURCES_IMPLEMENTATION.md
+- docs/SOURCES_REDESIGN.md
+- docs/CSS_SPECIFICITY_FIX.md
+
+**Total:** 34 files to move
+
+**Steps:**
+1. Use `git mv` for all moves
+2. Move files by feature category
+3. Verify all files moved
+4. Commit with message: "docs: move feature documentation to categorized structure"
+
+**Global Constraints:**
+- Use `git mv` only
+- Do not edit file contents
+- Verify source files no longer exist after move

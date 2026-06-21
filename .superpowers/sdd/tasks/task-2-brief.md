@@ -1,43 +1,47 @@
-# Task 2: Backend File Upload Utilities
+# Task 2: Move Core and Setup Files
 
-## Task Brief
+**Goal:** Move 21 files to 01-core and 02-setup-guides directories
 
-**Files:**
-- Create: `backend/utils/file-validator.js`
-- Create: `backend/utils/image-processor.js`
-- Create: `backend/utils/file-storage.js`
-- Create: `backend/utils/__tests__/file-validator.test.js`
+**Files to Move:**
 
-**Interfaces:**
-- Consumes: Node.js fs, path, crypto modules; Sharp library
-- Produces: 
-  - `validateFile(file)` returns `{valid: boolean, error?: string, fileType: string}`
-  - `generateThumbnail(imagePath, outputPath)` returns `Promise<string>`
-  - `saveUploadedFile(file, userId, sessionId)` returns `Promise<{fileUrl, thumbnailUrl?, fileName, fileSize, mimeType}>`
+## Core Documentation (6 files) → docs/01-core/
+- docs/DOCUMENTATION.md
+- docs/PROJECT-LOG.md
+- docs/QUICK_REFERENCE.md
+- docs/CLAUDE.md
+- docs/README-DOCS.md
+- docs/MIGRATION.md
 
-## Requirements
+## Setup Guides - Backend (3 files) → docs/02-setup-guides/backend/
+- backend/README.md
+- backend/QUICK_START.md
+- backend/CHECKLIST.md
 
-**file-validator.js:**
-- Max file size: 10MB
-- Allowed types: jpg, jpeg, png, gif, webp (image), pdf, xlsx, xls, csv (excel), docx, doc (word), txt (text)
-- Return {valid: true, fileType} or {valid: false, error}
+## Setup Guides - Vision API (5 files) → docs/02-setup-guides/backend/vision-api/
+- backend/VISION_API_SETUP_GUIDE.md
+- backend/VISION_INTEGRATION_GUIDE.md
+- backend/backend/GOOGLE_VISION_READY.md
+- backend/backend/GOOGLE_VISION_SETUP.md
+- backend/backend/VISION_API_ALTERNATIVES.md
 
-**image-processor.js:**
-- generateThumbnail: resize to 400x400, fit inside, quality 80%, JPEG output
-- compressImage: if > 2MB, compress to quality 75%
+## Setup Guides - Frontend (2 files) → docs/02-setup-guides/frontend/
+- client/README.md
+- backend/FRONTEND_REFRESH_GUIDE.md
 
-**file-storage.js:**
-- Save to `/backend/uploads/messages/{sessionId}/`
-- Generate unique filename: {originalName}_{timestamp}_{randomHex}{ext}
-- For images: generate thumbnail, compress if needed
-- Return fileUrl, thumbnailUrl (if image), fileName, fileSize, mimeType
+## Setup Guides - General (3 files) → docs/02-setup-guides/guides/
+- docs/HOW-TO-START.md
+- docs/QUICK_START_GUIDE.md
+- docs/START_HERE_TESTING.md
 
-## Steps
+**Total:** 21 files to move
 
-Install packages, create utilities with full implementations (from plan), write tests, verify tests pass, commit.
+**Steps:**
+1. Use `git mv` for all file moves to preserve history
+2. Move files in groups (core, backend, vision-api, frontend, guides)
+3. Verify all 21 files moved successfully
+4. Commit with descriptive message
 
-## Global Constraints
-
-- Node.js version: 18+
-- Follow existing code style (2-space indentation, semicolons)
-- All functions must handle errors gracefully
+**Global Constraints:**
+- Use `git mv` only (preserves file history)
+- Do not edit file contents
+- Verify source files no longer exist after move

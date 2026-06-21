@@ -1,57 +1,53 @@
-# Task 5: Frontend AttachmentPreview Component
+# Task 5: Create Navigation Index and Update References
 
-## Goal
-Create a React component to display previews of selected files before sending the message. Users can review and remove files from the preview before uploading.
+**Goal:** Create DOCS-INDEX.md navigation file and update critical references in README.md, DOCUMENTATION.md, and CLAUDE.md
 
-## Dependencies
-- InputToolbar component (Task 4) - provides file selection functionality
-- Ant Design components: Card, Image, Button
-- File type icons from Ant Design icons
+**Files to Create:**
+- DOCS-INDEX.md (root directory)
 
-## Requirements
+**Files to Modify:**
+- README.md (update documentation links)
+- docs/01-core/DOCUMENTATION.md (update internal links)
+- docs/01-core/CLAUDE.md (update references)
 
-### Functional Requirements
-1. Display preview cards for all selected files (both images and documents)
-2. Show image thumbnails for image files
-3. Show appropriate file type icons for document files
-4. Display file name and size in human-readable format (KB, MB)
-5. Provide remove button for each file
-6. Handle maximum 5 files display
-7. Responsive layout that works on different screen sizes
+**DOCS-INDEX.md Content:**
+Complete navigation index with:
+- Quick start section linking to README.md, Quick Start Guide, Complete Documentation
+- 8-category structure overview (01-08)
+- Topic-based navigation (AI/ChatBot, Setup, Features, Testing)
+- Help section
 
-### Technical Requirements
-1. TypeScript with proper type definitions
-2. Props interface:
-   - `files: File[]` - array of selected files
-   - `onRemove: (index: number) => void` - callback when file is removed
-3. Use Ant Design components for consistency
-4. Separate CSS file for styling
-5. Follow existing code patterns in ChatBot components
+**Updates to Make:**
 
-### File Types to Handle
-- **Images**: jpg, jpeg, png, gif, webp (show thumbnail preview)
-- **Documents**: pdf, xlsx, xls, docx, doc, txt, csv (show file icon)
+1. **README.md:**
+   - Add link to DOCS-INDEX.md near top
+   - Update any broken paths to moved files
+   - Update documentation section if exists
 
-### Display Format
-- File name (truncate if too long)
-- File size in human-readable format
-- Remove button (X icon)
-- Image preview or file type icon
+2. **docs/01-core/DOCUMENTATION.md:**
+   - Update internal links to moved files
+   - Fix any ../path/to/doc.md references
+   - Update paths to new categorized locations
 
-## Files to Create
-1. `client/src/FrontEnd/components/ChatBot/AttachmentPreview.tsx`
-2. `client/src/FrontEnd/components/ChatBot/AttachmentPreview.css`
+3. **docs/01-core/CLAUDE.md:**
+   - Update backend/README.md → docs/02-setup-guides/backend/README.md
+   - Update client/README.md → docs/02-setup-guides/frontend/README.md
+   - Update any other moved file references
 
-## Implementation Steps
-1. Create TypeScript component with proper props interface
-2. Implement file size formatter utility function
-3. Implement file type detector function
-4. Create preview card for images with thumbnail
-5. Create preview card for documents with icon
-6. Add remove functionality
-7. Style the component with CSS
-8. Test with different file types
-9. Commit changes
+**Verification:**
+- Count markdown files in docs/ (should be ~102: 101 moved + DOCS-INDEX.md)
+- Test key links in DOCS-INDEX.md
+- Verify README.md has link to DOCS-INDEX.md
 
-## Expected Output
-A reusable component that can be integrated into the chat input area, showing a horizontal scrollable list of file previews with remove buttons.
+**Steps:**
+1. Create DOCS-INDEX.md with complete navigation
+2. Update README.md
+3. Update DOCUMENTATION.md
+4. Update CLAUDE.md
+5. Verify file count
+6. Commit with message: "docs: add navigation index and update references"
+
+**Global Constraints:**
+- DOCS-INDEX.md must be valid markdown
+- All links must use relative paths
+- Do not break existing functionality
