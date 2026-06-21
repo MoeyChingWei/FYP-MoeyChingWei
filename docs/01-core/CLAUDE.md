@@ -23,9 +23,9 @@ For detailed information about:
 
 ### Before Making Changes
 
-1. **Backend changes:** Read `backend/README.md` for exact file locations
-2. **Frontend changes:** Read `client/README.md` for exact file locations
-3. **General information:** Read `DOCUMENTATION.md`
+1. **Backend changes:** Read `docs/02-setup-guides/backend/README.md` for exact file locations
+2. **Frontend changes:** Read `docs/02-setup-guides/frontend/README.md` for exact file locations
+3. **General information:** Read `docs/01-core/DOCUMENTATION.md`
 
 **Do NOT search through the entire codebase.** The README files tell you exactly which files to modify.
 
@@ -80,8 +80,8 @@ npm run build  # Production build
 ### When Adding/Modifying Features
 
 1. **Read the appropriate README first:**
-   - Backend API → `backend/README.md` → "How To Modify/Develop Features" section
-   - Frontend UI → `client/README.md` → "How To Modify/Develop Features" section
+   - Backend API → `docs/02-setup-guides/backend/README.md` → "How To Modify/Develop Features" section
+   - Frontend UI → `docs/02-setup-guides/frontend/README.md` → "How To Modify/Develop Features" section
 
 2. **Follow the README instructions** to locate exact files
 
@@ -89,7 +89,7 @@ npm run build  # Production build
 
 4. **Test your changes**
 
-5. **Update documentation** if needed (in `DOCUMENTATION.md`)
+5. **Update documentation** if needed (in `docs/01-core/DOCUMENTATION.md`)
 
 ---
 
@@ -102,4 +102,4 @@ npm run build  # Production build
 
 ---
 
-For complete documentation, see **`DOCUMENTATION.md`**
+For complete documentation, see **`docs/01-core/DOCUMENTATION.md`**

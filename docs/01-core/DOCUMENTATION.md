@@ -118,8 +118,16 @@ FYP-MoeyChingWei/
 │   └── webpack.config.cjs # Build configuration
 │
 ├── FYPData_backup.sql     # Database backup
-├── DOCUMENTATION.md       # This file - comprehensive documentation
-└── CLAUDE.md             # Project instructions for Claude Code
+├── docs/                  # All project documentation
+│   ├── 01-core/          # Core documentation (DOCUMENTATION.md, CLAUDE.md)
+│   ├── 02-setup-guides/  # Setup and installation guides
+│   ├── 03-features/      # Feature documentation
+│   ├── 04-architecture/  # Architecture and design
+│   ├── 05-development/   # Development workflow
+│   ├── 06-testing/       # Testing documentation
+│   ├── 07-deployment/    # Deployment guides
+│   └── 08-legacy/        # Archived documentation
+└── DOCS-INDEX.md         # Documentation navigation index
 
 ```
 
@@ -381,59 +389,15 @@ return res.data;
 
 ---
 
-#### Supplier Fulfillment
-
-| File | Route | Role |
-|------|-------|------|
-| `SupplierOrderAcknowledgement.tsx` | `/supplier/acknowledgement` | Supplier |
-| `SupplierDelivery.tsx` | `/supplier/delivery` | Supplier |
-
-#### User Access Management
-
-| File | Route | Role |
-|------|-------|------|
-| `UserManagement.tsx` | `/admin/users` | Super Admin |
-| `RoleManagement.tsx` | `/admin/roles` | Super Admin |
-| `SupplierTypeManagement.tsx` | `/admin/supplier-types` | Super Admin |
-
-#### Settings
-
-| File | Route |
-|------|-------|
-| `SettingsHome.tsx` | `/settings` |
-| `CompanyAddressSubmodule.tsx` | `/settings/company-address` |
-| `FeedbackSubmodule.tsx` | `/settings/feedback` |
-
-### Frontend API Wrappers
-
-**Location:** `client/src/FrontEnd/shared/api/`
-
-All API calls use axios and follow this pattern:
-```typescript
-const res = await axios.get/post/put/patch/delete(url, data);
-if (!res.data?.success) {
-  throw new Error(res.data?.message ?? "Operation failed");
-}
-return res.data;
-```
-
-**Key API files:**
-- `notifications.ts` — Notification operations
-- `feedback.ts` — Feedback submission
-- `purchasingLookups.ts` — Lookup management
-- `supplierTypes.ts` — Supplier type assignments
-- `workflowStorage.ts` — Workflow CRUD
-
----
-
 ## Development Workflow
 
 ### 🚨 IMPORTANT: Always Read README Files First
 
 Before making any changes:
-- **Backend changes:** Read `backend/README.md` first
-- **Frontend changes:** Read `client/README.md` first  
-- **General overview:** Refer to `CLAUDE.md`
+- **Backend changes:** Read `docs/02-setup-guides/backend/README.md` first
+- **Frontend changes:** Read `docs/02-setup-guides/frontend/README.md` first  
+- **General overview:** Refer to `docs/01-core/CLAUDE.md`
+- **Navigation:** See `DOCS-INDEX.md` in project root
 
 The README files contain "How To Modify/Develop Features" sections with exact file locations.
 
@@ -713,8 +677,9 @@ npm run prisma:generate
 - `client/.env` — Frontend environment (never commit)
 - `backend/prisma/schema.prisma` — Database schema
 - `FYPData_backup.sql` — Database backup
-- `CLAUDE.md` — Project instructions for Claude Code
-- `DOCUMENTATION.md` — This comprehensive documentation
+- `DOCS-INDEX.md` — Documentation navigation index
+- `docs/01-core/CLAUDE.md` — Project instructions for Claude Code
+- `docs/01-core/DOCUMENTATION.md` — This comprehensive documentation
 
 ---
 
@@ -722,7 +687,7 @@ npm run prisma:generate
 
 For issues or questions:
 1. Check this documentation
-2. Check `backend/README.md` or `client/README.md` for specific details
+2. Check `docs/02-setup-guides/backend/README.md` or `docs/02-setup-guides/frontend/README.md` for specific details
 3. Review browser console and terminal logs
 4. Check database with Prisma Studio: `npm run prisma:studio`
 

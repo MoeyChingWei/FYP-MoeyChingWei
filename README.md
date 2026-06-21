@@ -22,6 +22,10 @@ Users can switch languages using the globe icon in the top navigation bar.
 
 For developer documentation, see [i18n Usage Guide](docs/i18n-usage-guide.md).
 
+## 📚 Documentation
+
+**[Complete Documentation Index](DOCS-INDEX.md)** - Navigate all project documentation organized by category.
+
 ## Quick Start
 
 ### Prerequisites
@@ -79,14 +83,14 @@ npm run dev
 
 ## Documentation
 
+- **[Documentation Index](DOCS-INDEX.md)**: Complete documentation navigation
 - **[Project Log](PROJECT-LOG.md)**: Development history and troubleshooting
-- **[Complete Documentation](docs/DOCUMENTATION.md)**: Full system documentation
-- **[Quick Reference](docs/QUICK_REFERENCE.md)**: Quick start guide
-- **[i18n Usage Guide](docs/i18n-usage-guide.md)**: Internationalization documentation
-- **[Backend API](backend/README.md)**: API endpoints and usage
-- **[Frontend Components](client/README.md)**: UI component documentation
+- **[Complete Documentation](docs/01-core/DOCUMENTATION.md)**: Full system documentation
+- **[Quick Start Guide](docs/02-setup-guides/QUICK-START.md)**: Fast setup for development
+- **[Backend Setup](docs/02-setup-guides/backend/README.md)**: Backend API and setup
+- **[Frontend Setup](docs/02-setup-guides/frontend/README.md)**: Frontend components and setup
 
-For document navigation in Chinese, see [README-DOCS.md](README-DOCS.md).
+For document navigation in Chinese, see [docs/01-core/README-DOCS.md](docs/01-core/README-DOCS.md).
 
 ## Technology Stack
 
@@ -133,7 +137,7 @@ This project is developed as a Final Year Project (FYP).
 
 For questions or issues:
 1. Check [PROJECT-LOG.md](PROJECT-LOG.md) for common issues
-2. Review [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) troubleshooting section
+2. Review [docs/01-core/DOCUMENTATION.md](docs/01-core/DOCUMENTATION.md) troubleshooting section
 3. Create an issue in the repository
 
 ---
