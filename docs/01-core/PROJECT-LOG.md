@@ -1,9 +1,84 @@
-# OptiMind ERP 项目开发日志
+# OptiMind ERP Project Log
 
-**项目名称**: OptiMind ERP System  
-**开发者**: Moey Ching Wei  
-**创建日期**: 2026-06-09  
-**最后更新**: 2026-06-10
+**Project Name**: OptiMind ERP System  
+**Developer**: Moey Ching Wei  
+**Created**: 2026-06-09  
+**Last Updated**: 2026-06-21
+
+---
+
+## 📝 How to Update This Log
+
+**After EVERY development task, add an entry using this format:**
+
+```markdown
+---
+## [YYYY-MM-DD] - [Feature Name]
+
+**Requirement:** [Brief description of what user asked for]
+
+**Implementation:** [What you built/changed]
+
+**Modified Files:**
+- `path/to/file.js` - Description of changes
+- `path/to/component.tsx` - Description of changes
+- `path/to/schema.prisma` - Description of changes
+
+**Technical Details:**
+- Technology/library used
+- Important code patterns
+- API endpoints added/modified
+- Database schema changes
+
+**Important Notes:**
+- Things other developers need to know
+- Dependencies added
+- Configuration changes
+- Breaking changes (if any)
+
+**Related Documentation:**
+- Created: docs/03-features/xxx/XXX_GUIDE.md
+- Updated: docs/01-core/DOCUMENTATION.md
+---
+```
+
+**Example Entry:**
+
+```markdown
+---
+## [2026-06-21] - Chatbot Export Feature
+
+**Requirement:** User wants chatbot to understand "export purchase request" command and generate CSV file
+
+**Implementation:** 
+- Added export command recognition in chatbot agent
+- Implemented CSV generation service
+- Added file download endpoint
+
+**Modified Files:**
+- `backend/agents/chatbot/chatbot-agent.js` - Added "export" command handler
+- `backend/services/export-service.js` - Created CSV generation logic
+- `backend/routes/chatbot.js` - Added GET /api/chatbot/export endpoint
+- `client/src/FrontEnd/shared/api/chatbot.ts` - Added exportPurchaseRequests() function
+
+**Technical Details:**
+- Uses Prisma to query purchase requests filtered by user
+- Generates CSV with headers: ID, Item, Quantity, Status, Date
+- Returns file as blob for client-side download
+- File size limit: 10MB per export
+
+**Important Notes:**
+- Export only includes authenticated user's purchase requests
+- CSV format is Excel-compatible
+- Requires valid authentication token
+- Feature is AI-driven (chatbot command), not a UI button
+
+**Related Documentation:**
+- Created: docs/03-features/export/CHATBOT_EXPORT_GUIDE.md
+- Updated: docs/01-core/DOCUMENTATION.md (Chatbot Features section)
+- Created: docs/04-implementation/completion-reports/2026-06-21-CHATBOT-EXPORT-COMPLETION-REPORT.md
+---
+```
 
 ---
 
