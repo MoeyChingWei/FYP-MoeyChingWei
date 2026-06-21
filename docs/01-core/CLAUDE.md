@@ -72,74 +72,71 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-## ⚠️ IMPORTANT: Complete Documentation Available
+## Project Context
 
-**All comprehensive documentation has been consolidated into `DOCUMENTATION.md`**
+**OptiMind ERP System** - Full-stack enterprise resource planning portal
 
-For detailed information about:
-- Project overview and architecture
-- Backend API documentation
-- Frontend page routes and components
-- Development workflows
-- Database schema
-- Migration guide
-- Troubleshooting
-
-**Please read `DOCUMENTATION.md` first.**
-
----
-
-## Quick Reference for Development
-
-### Before Making Changes
-
-1. **Backend changes:** Read `docs/02-setup-guides/backend/README.md` for exact file locations
-2. **Frontend changes:** Read `docs/02-setup-guides/frontend/README.md` for exact file locations
-3. **General information:** Read `docs/01-core/DOCUMENTATION.md`
-
-**Do NOT search through the entire codebase.** The README files tell you exactly which files to modify.
-
----
-
-## Project Overview
-
-Full-stack ERP portal with React frontend and Node.js/Express backend, using PostgreSQL with Prisma ORM.
-
-**Stack:**
+**Tech Stack:**
 - Frontend: React 18 + TypeScript + Webpack + Ant Design
-- Backend: Node.js + Express 5 + Prisma 7
-- Database: PostgreSQL 17 (database name: `FYPData`)
+- Backend: Node.js + Express 5 + Prisma ORM
+- Database: PostgreSQL 17 (`FYPData`)
+
+**Default Credentials:**
+- Email: `admin@fyp.local`
+- Password: `339595`
 
 ---
 
-## Quick Start
+## Essential Documentation
 
-### From Project Root
+Before making any changes, consult these files:
+
+1. **Complete System Docs:** `docs/01-core/DOCUMENTATION.md`
+   - Architecture overview
+   - API documentation
+   - Database schema
+   - Page routes and components
+
+2. **Backend Development:** `docs/02-setup-guides/backend/README.md`
+   - Exact file locations for backend features
+   - API endpoint patterns
+   - Service layer structure
+
+3. **Frontend Development:** `docs/02-setup-guides/frontend/README.md`
+   - Component organization
+   - Page structure
+   - State management patterns
+
+**Do NOT search the entire codebase.** These README files contain exact file paths and patterns.
+
+---
+
+## Quick Commands
+
+### Start Development Servers
 
 ```bash
-# Start frontend (port 3000)
-npm start
-
-# Start backend (port 4000)
-npm run backend
+# From project root
+npm start        # Frontend (http://localhost:3000)
+npm run backend  # Backend (http://localhost:4000)
 ```
 
-### Backend Commands
+### Backend Development
 
 ```bash
 cd backend
-npm run dev              # Development with auto-reload
+npm run dev              # Auto-reload development mode
 npm run admin:create     # Create super admin user
-npm run prisma:generate  # Generate Prisma client after schema changes
-npm run prisma:studio    # Open Prisma Studio GUI
-npm run prisma:migrate   # Create and apply migrations
+npm run prisma:generate  # Regenerate Prisma client (after schema changes)
+npm run prisma:studio    # Visual database browser
+npm run prisma:migrate   # Create and apply database migrations
 ```
 
-### Frontend Commands
+### Frontend Development
 
 ```bash
 cd client
-npm start      # Development server (port 3000)
+npm start      # Development server
 npm run build  # Production build
 ```
 
@@ -147,28 +144,35 @@ npm run build  # Production build
 
 ## Development Workflow
 
-### When Adding/Modifying Features
+### Standard Process
 
-1. **Read the appropriate README first:**
-   - Backend API → `docs/02-setup-guides/backend/README.md` → "How To Modify/Develop Features" section
-   - Frontend UI → `docs/02-setup-guides/frontend/README.md` → "How To Modify/Develop Features" section
+1. **Locate files** using the appropriate README (backend or frontend)
+2. **Make changes** following existing code patterns
+3. **Test locally** with both servers running
+4. **Run Prisma generate** if you modified `schema.prisma`
+5. **Update docs** in `DOCUMENTATION.md` for significant changes
 
-2. **Follow the README instructions** to locate exact files
+### Common Patterns
 
-3. **Make your changes**
+**Adding a new API endpoint:**
+- Route: `backend/routes/{feature}.js`
+- Controller: `backend/controllers/{feature}-controller.js`
+- Service: `backend/services/{feature}-service.js`
 
-4. **Test your changes**
-
-5. **Update documentation** if needed (in `docs/01-core/DOCUMENTATION.md`)
+**Adding a new page:**
+- Component: `client/src/FrontEnd/pages/{FeatureName}Page.tsx`
+- Route: Update `client/src/App.tsx`
+- API: `client/src/FrontEnd/shared/api/{feature}.ts`
 
 ---
 
-## Important Notes
+## Critical Rules
 
-- Always run `npm run prisma:generate` after schema changes
-- Frontend proxies `/api` and `/uploads` to `http://localhost:4000` in dev mode
-- Default login: `admin@fyp.local` / `339595`
-- Never commit `.env` files
+1. **Always run `npm run prisma:generate`** after any `schema.prisma` changes
+2. **Never commit `.env` files** - they contain secrets
+3. **Match existing code style** in the file you're editing
+4. **Test both frontend and backend** before considering work complete
+5. **Frontend dev server proxies** `/api` and `/uploads` to `http://localhost:4000`
 
 ---
 
