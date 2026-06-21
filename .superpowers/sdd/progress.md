@@ -1,13 +1,7 @@
 # Subagent-Driven Development Progress Ledger
 
-Plan: docs/superpowers/plans/2026-06-20-chatbot-file-upload.md
-Started: Sat, Jun 20, 2026 12:19:38 AM
+Plan: docs/superpowers/plans/2026-06-21-markdown-reorganization.md
+Started: 2026-06-21
 
+## Tasks
 
-Task 1: complete (commit e1fd60e, schema and migration added)
-Task 2: complete (commit cf8c838, 21 tests passing)
-Task 3: complete (commit 885a2dc, upload API endpoint working)
-Task 4: complete (commit aea3dbe, InputToolbar component ready)
-Task 5: complete (commit 0e5f739, AttachmentPreview component ready)
-Task 6: complete (commit 0dffd4f, MessageAttachment component with tests)
-Task 7: complete (commit b8970ba, full integration into ChatBotPage)

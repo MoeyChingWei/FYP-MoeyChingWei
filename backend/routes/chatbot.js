@@ -2,6 +2,7 @@ import express from 'express';
 import chatbotAgent from '../agents/chatbot/chatbot-agent.js';
 import prisma from '../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
+import { exportPurchaseRequestsToCSV, exportPurchaseRequestsToJSON, generateExportFilename } from '../utils/export-purchase-requests.js';
 
 const router = express.Router();
 
@@ -206,6 +207,69 @@ router.delete('/session/:sessionId', async (req, res) => {
 });
 
 /**
+ * PATCH /api/chatbot/session/:sessionId
+ * Rename session
+ */
+router.patch('/session/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { title, userId } = req.body;
+    const nextTitle = String(title || '').trim();
+
+    if (!nextTitle) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title is required',
+      });
+    }
+
+    if (nextTitle.length > 80) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title must be 80 characters or less',
+      });
+    }
+
+    const where = userId
+      ? { id: sessionId, userId: parseInt(userId) }
+      : { id: sessionId };
+
+    const result = await prisma.chatSession.updateMany({
+      where,
+      data: { title: nextTitle },
+    });
+
+    if (result.count === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Session not found',
+      });
+    }
+
+    const session = await prisma.chatSession.findUnique({
+      where: { id: sessionId },
+      include: {
+        _count: {
+          select: { messages: true },
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      message: 'Session renamed',
+      session,
+    });
+  } catch (error) {
+    console.error('âŒ Rename Session Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to rename session',
+    });
+  }
+});
+
+/**
  * DELETE /api/chatbot/sessions
  * Delete all sessions for a user
  */
@@ -264,6 +328,115 @@ router.post('/new-session', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create session',
+    });
+  }
+});
+
+/**
+ * POST /api/chatbot/export-purchase-requests
+ * Export purchase requests to CSV or JSON format
+ */
+router.post('/export-purchase-requests', async (req, res) => {
+  try {
+    const { userId, format = 'csv', status = 'ALL', limit = 100 } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing userId parameter',
+      });
+    }
+
+    console.log(`📥 Export request from user ${userId}, format: ${format}, status: ${status}`);
+
+    // Get user info
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { department: true, role: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Fetch purchase requests
+    const records = await prisma.purchaseRequestRecord.findMany({
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Filter by department (unless Super Admin)
+    let filteredRecords = records;
+    if (user.department && user.role !== 'Super Admin') {
+      filteredRecords = records.filter(r => r.payload.department === user.department);
+    }
+
+    // Filter by status
+    if (status !== 'ALL') {
+      filteredRecords = filteredRecords.filter(r => r.payload.status === status);
+    }
+
+    if (filteredRecords.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No purchase requests found to export',
+      });
+    }
+
+    // Map to export format
+    const requestsForExport = filteredRecords.map(r => ({
+      prNumber: r.payload.prNumber,
+      status: r.payload.status,
+      department: r.payload.department,
+      requestBy: r.payload.requestBy,
+      requestDate: r.payload.requestDate,
+      createdByEmail: r.payload.createdByEmail,
+      currency: r.payload.currency,
+      urgency: r.payload.urgency || 'normal',
+      procurementNotes: r.payload.procurementNotes || '',
+      lineItems: r.payload.lineItems || [],
+    }));
+
+    // Generate export data
+    let exportData, mimeType, filename;
+    try {
+      if (format === 'json') {
+        exportData = exportPurchaseRequestsToJSON(requestsForExport);
+        mimeType = 'application/json';
+        filename = generateExportFilename('json', user.department);
+      } else {
+        exportData = exportPurchaseRequestsToCSV(requestsForExport);
+        mimeType = 'text/csv';
+        filename = generateExportFilename('csv', user.department);
+      }
+    } catch (error) {
+      console.error('❌ Export generation error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to generate export file',
+        error: error.message,
+      });
+    }
+
+    console.log(`✅ Export generated: ${filteredRecords.length} records, ${format.toUpperCase()}`);
+
+    // Set headers for file download
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('X-Record-Count', filteredRecords.length);
+    res.setHeader('X-Export-Status', status);
+    res.setHeader('X-Export-Department', user.department || 'All');
+
+    res.send(exportData);
+  } catch (error) {
+    console.error('❌ Export Purchase Requests Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to export purchase requests',
+      error: error.message,
     });
   }
 });

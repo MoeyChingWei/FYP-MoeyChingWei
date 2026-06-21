@@ -108,7 +108,15 @@
       "PowerShell(if \\(-not \\(Test-Path \"C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend\\\\uploads\\\\temp\"\\)\\) { New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend\\\\uploads\\\\temp\" | Out-Null; Write-Output \"Created uploads/temp directory\" } else { Write-Output \"uploads/temp directory already exists\" })",
       "Bash(npm test *)",
       "Bash(dd if=/dev/zero of=/tmp/large-file.bin bs=1M count=11)",
-      "WebFetch(domain:api-docs.deepseek.com)"
+      "WebFetch(domain:api-docs.deepseek.com)",
+      "Bash(lsof -ti:4000)",
+      "Bash(xargs kill -9)",
+      "PowerShell(cd backend; Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"npm start\" -WindowStyle Normal)",
+      "PowerShell(Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"cd 'C:\\\\Users\\\\mch\\\\Desktop\\\\FYP\\\\FYP-MoeyChingWei\\\\backend'; npm start\")",
+      "PowerShell(node -e \"import\\('./utils/export-purchase-requests.js'\\).then\\(m => console.log\\('✅ Export module loaded successfully\\\\n✅ Functions available:', Object.keys\\(m\\).join\\(', '\\)\\)\\).catch\\(e => console.error\\('❌ Error:', e.message\\)\\)\")",
+      "PowerShell(node test-export.js)",
+      "Read(//c/Users/mch/.claude/plugins/cache/claude-plugins-official/superpowers/6.0.3/skills/subagent-driven-development/scripts/**)",
+      "Bash(bash task-brief.sh \"C:/Users/mch/Desktop/FYP/FYP-MoeyChingWei/docs/superpowers/plans/2026-06-21-markdown-reorganization.md\" 1)"
     ]
   },
   "enabledPlugins": {}

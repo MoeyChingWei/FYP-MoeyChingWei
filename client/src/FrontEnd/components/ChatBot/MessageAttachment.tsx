@@ -56,9 +56,24 @@ const getFileIcon = (fileType: string) => {
 };
 
 // Helper function to check if file is an image
-const isImageType = (fileType: string): boolean => {
+const isImageType = (attachment: MessageAttachment): boolean => {
+  const fileType = attachment.fileType?.toLowerCase() || '';
+  const mimeType = attachment.mimeType?.toLowerCase() || '';
+  const fileName = attachment.fileName?.toLowerCase() || '';
   const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
-  return imageTypes.includes(fileType.toLowerCase());
+
+  return (
+    fileType === 'image' ||
+    mimeType.startsWith('image/') ||
+    imageTypes.includes(fileType) ||
+    imageTypes.some((extension) => fileName.endsWith(`.${extension}`))
+  );
+};
+
+const normalizeFileUrl = (fileUrl?: string): string => {
+  if (!fileUrl) return '';
+  if (/^(https?:|data:|blob:)/i.test(fileUrl)) return fileUrl;
+  return fileUrl.startsWith('/') ? fileUrl : `/${fileUrl}`;
 };
 
 // Helper function to handle download
@@ -80,7 +95,9 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachments, mess
   return (
     <div className={`message-attachment-container ${messageRole}`}>
       {attachments.map((attachment) => {
-        const isImage = isImageType(attachment.fileType);
+        const isImage = isImageType(attachment);
+        const fileUrl = normalizeFileUrl(attachment.fileUrl);
+        const thumbnailUrl = normalizeFileUrl(attachment.thumbnailUrl || attachment.fileUrl);
 
         return (
           <div key={attachment.id} className="message-attachment-item">
@@ -88,11 +105,11 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachments, mess
               // Image attachment with lightbox
               <div className="attachment-image-wrapper">
                 <Image
-                  src={attachment.thumbnailUrl || attachment.fileUrl}
+                  src={thumbnailUrl}
                   alt={attachment.fileName}
                   className="attachment-image"
                   preview={{
-                    src: attachment.fileUrl,
+                    src: fileUrl,
                     mask: (
                       <div className="image-preview-mask">
                         <EyeOutlined />
@@ -146,7 +163,7 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachments, mess
                     icon={<DownloadOutlined />}
                     size="small"
                     className="attachment-download-btn"
-                    onClick={() => handleDownload(attachment.fileUrl, attachment.fileName)}
+                    onClick={() => handleDownload(fileUrl, attachment.fileName)}
                   >
                     Download
                   </Button>

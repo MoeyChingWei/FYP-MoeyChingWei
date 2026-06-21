@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Input, Spin, Empty, message, Tabs, Dropdown, Modal, Upload } from 'antd';
+import { Button, Input, Spin, Empty, message, Tabs, Dropdown, Modal, Upload, Tooltip } from 'antd';
 import {
   PlusOutlined,
   SendOutlined,
   DeleteOutlined,
+  EditOutlined,
   RobotOutlined,
   MoreOutlined,
   FilePdfOutlined,
@@ -14,6 +15,7 @@ import {
   InboxOutlined,
   ClockCircleOutlined,
   DatabaseOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
@@ -21,6 +23,7 @@ import remarkGfm from 'remark-gfm';
 import InputToolbar from '../components/ChatBot/InputToolbar';
 import AttachmentPreview from '../components/ChatBot/AttachmentPreview';
 import MessageAttachment from '../components/ChatBot/MessageAttachment';
+import VoiceInput from '../components/ChatBot/VoiceInput';
 import './ChatBotPage.css';
 
 // Unified API and Types import
@@ -35,12 +38,14 @@ import {
   createNewSession,
   getUserSessions,
   deleteSession,
+  renameSession,
   clearAllChatHistory,
   uploadAttachment,
   uploadSource,
   getUserSources,
   deleteSource,
   getSessionUser,
+  exportPurchaseRequests,
 } from './chatbot-api';
 
 const { TextArea } = Input;
@@ -168,7 +173,7 @@ function renderAssistantMessage(text: string) {
 }
 
 const ChatBotPage: React.FC = () => {
-  const { t } = useTranslation('chatbot');
+  const { t, i18n } = useTranslation('chatbot');
   const { t: tMsg } = useTranslation('messages');
   const [sessions, setSessions] = useState<Session[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -182,10 +187,19 @@ const ChatBotPage: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [uploadedAttachments, setUploadedAttachments] = useState<AttachmentMetadata[]>([]);
+  const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<Session | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renamingChat, setRenamingChat] = useState(false);
+  const [voiceRecording, setVoiceRecording] = useState(false);
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const sessionUser = getSessionUser();
   const userId = sessionUser?.id;
+
+  // Determine voice input language based on current i18n language
+  const voiceLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US';
 
   // Check if user is logged in
   useEffect(() => {
@@ -308,6 +322,43 @@ const ChatBotPage: React.FC = () => {
     }
   };
 
+  const isSourceFile = (file: File) => {
+    const sourceExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv'];
+    const extension = `.${file.name.split('.').pop()?.toLowerCase() || ''}`;
+    return sourceExtensions.includes(extension);
+  };
+
+  const saveFilesToSources = async (files: File[]) => {
+    if (!userId) return;
+
+    const sourceFiles = files.filter(isSourceFile);
+    if (sourceFiles.length === 0) return;
+
+    try {
+      setUploadingSource(true);
+      const results = await Promise.allSettled(
+        sourceFiles.map((file) => uploadSource(file, userId, currentSessionId || undefined))
+      );
+      const savedCount = results.filter(
+        (result) => result.status === 'fulfilled' && result.value.success
+      ).length;
+
+      if (savedCount > 0) {
+        message.success(`${savedCount} file(s) saved to Sources`);
+        await loadSources();
+      }
+
+      const failedCount = sourceFiles.length - savedCount;
+      if (failedCount > 0) {
+        message.warning(`${failedCount} file(s) could not be saved to Sources`);
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Failed to save file to Sources');
+    } finally {
+      setUploadingSource(false);
+    }
+  };
+
   const getFileIcon = (fileType: string) => {
     const type = fileType.toLowerCase();
     if (type === 'pdf') return <FilePdfOutlined />;
@@ -333,20 +384,81 @@ const ChatBotPage: React.FC = () => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const handleFileSelect = (files: File[]) => {
-    setSelectedFiles((prev) => [...prev, ...files].slice(0, 5));
+  const getValidFiles = (files: File[]) => {
+    const allowedExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv', '.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+    return files.filter((file) => {
+      const extension = `.${file.name.split('.').pop()?.toLowerCase() || ''}`;
+      return allowedExtensions.includes(extension);
+    });
+  };
+
+  const handleFileSelect = (files: File[], showFeedback = false) => {
+    const validFiles = getValidFiles(files);
+
+    if (validFiles.length === 0) {
+      message.error('Unsupported file type. Please upload PDF, Excel, Word, TXT, CSV, or image files.');
+      return;
+    }
+
+    setSelectedFiles((prev) => {
+      const nextFiles = [...prev, ...validFiles].slice(0, 5);
+
+      if (showFeedback) {
+        message.success(`${validFiles.length} file(s) added`);
+      }
+
+      if (prev.length + validFiles.length > 5) {
+        message.warning('Maximum 5 files can be selected at once');
+      }
+
+      return nextFiles;
+    });
+
+    void saveFilesToSources(validFiles);
   };
 
   const handleImageSelect = (images: File[]) => {
-    setSelectedFiles((prev) => [...prev, ...images].slice(0, 5));
+    handleFileSelect(images);
   };
 
   const handleRemoveFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const uploadFiles = async () => {
-    if (selectedFiles.length === 0 || !currentSessionId || !userId) {
+  const handleFileDragEnter = (event: React.DragEvent<HTMLElement>) => {
+    if (event.dataTransfer.types.includes('Files')) {
+      event.preventDefault();
+      setIsDraggingFiles(true);
+    }
+  };
+
+  const handleFileDragOver = (event: React.DragEvent<HTMLElement>) => {
+    if (event.dataTransfer.types.includes('Files')) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+      setIsDraggingFiles(true);
+    }
+  };
+
+  const handleFileDragLeave = (event: React.DragEvent<HTMLElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setIsDraggingFiles(false);
+    }
+  };
+
+  const handleFileDrop = (event: React.DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    setIsDraggingFiles(false);
+
+    const droppedFiles = Array.from(event.dataTransfer.files || []);
+    if (droppedFiles.length > 0) {
+      handleFileSelect(droppedFiles, true);
+    }
+  };
+
+  const uploadFiles = async (sessionId: string) => {
+    if (selectedFiles.length === 0 || !sessionId || !userId) {
       return [];
     }
 
@@ -355,7 +467,7 @@ const ChatBotPage: React.FC = () => {
 
     try {
       for (const file of selectedFiles) {
-        const attachment = await uploadAttachment(file, currentSessionId, userId);
+        const attachment = await uploadAttachment(file, sessionId, userId);
         attachments.push(attachment);
       }
       setUploadedAttachments(attachments);
@@ -412,22 +524,24 @@ const ChatBotPage: React.FC = () => {
   };
 
   const sendMessageToSession = async (sessionId: string, messageText: string) => {
-    if ((!messageText.trim() && selectedFiles.length === 0) || loading || !userId) return;
+    const trimmedMessage = messageText.trim();
+    if ((!trimmedMessage && selectedFiles.length === 0) || loading || !userId) return;
 
     // Upload files first if any selected
     let attachments: AttachmentMetadata[] = [];
     if (selectedFiles.length > 0) {
       try {
-        attachments = await uploadFiles();
+        attachments = await uploadFiles(sessionId);
       } catch (error) {
         // Upload failed, don't send message
         return;
       }
     }
 
+    const messageToSend = trimmedMessage || (attachments.length > 0 ? '[Image]' : '');
     const userMessage: Message = {
       role: 'user',
-      content: messageText,
+      content: messageToSend,
       timestamp: new Date(),
       attachments: attachments.length > 0 ? attachments : undefined,
     };
@@ -439,9 +553,6 @@ const ChatBotPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // If only attachments without text, send a default message
-      const messageToSend = messageText.trim() || (attachments.length > 0 ? '[Image]' : '');
-
       const response = await sendMessage({
         userId,
         message: messageToSend,
@@ -476,13 +587,46 @@ const ChatBotPage: React.FC = () => {
 
   const handleStartChat = async () => {
     const messageText = inputValue.trim();
-    if (!messageText || loading) return;
+    if ((!messageText && selectedFiles.length === 0) || loading) return;
 
     const newSessionId = await createSession();
     if (!newSessionId) return;
 
     setMessages([]);
     await sendMessageToSession(newSessionId, messageText);
+  };
+
+  const handleExportPurchaseRequests = async (format: 'csv' | 'json' = 'csv') => {
+    if (!userId) {
+      message.error(t('messages.userNotLoggedIn'));
+      return;
+    }
+
+    try {
+      message.loading({ content: 'Preparing export...', key: 'export' });
+
+      const result = await exportPurchaseRequests({
+        userId,
+        format,
+        status: 'ALL',
+        limit: 100,
+      });
+
+      message.success({
+        content: `Successfully exported ${result.recordCount} purchase request(s)`,
+        key: 'export',
+        duration: 3,
+      });
+
+      console.log('Export completed:', result);
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      message.error({
+        content: error.message || 'Failed to export purchase requests',
+        key: 'export',
+        duration: 5,
+      });
+    }
   };
 
   const handleSessionClick = (sessionId: string) => {
@@ -504,6 +648,47 @@ const ChatBotPage: React.FC = () => {
       }
     } catch (error) {
       message.error(t('messages.sessionDeleteFailed'));
+    }
+  };
+
+  const openRenameModal = (session: Session) => {
+    setRenameTarget(session);
+    setRenameValue(session.title || t('history.newConversation'));
+    setRenameModalOpen(true);
+  };
+
+  const handleRenameChat = async () => {
+    const nextTitle = renameValue.trim();
+
+    if (!renameTarget || !userId) return;
+
+    if (!nextTitle) {
+      message.warning('Chat title is required');
+      return;
+    }
+
+    try {
+      setRenamingChat(true);
+      const updatedSession = await renameSession(renameTarget.id, nextTitle, userId);
+      setSessions((prev) =>
+        prev.map((session) =>
+          session.id === renameTarget.id
+            ? {
+                ...session,
+                title: updatedSession?.title || nextTitle,
+                updatedAt: updatedSession?.updatedAt || session.updatedAt,
+              }
+            : session
+        )
+      );
+      setRenameModalOpen(false);
+      setRenameTarget(null);
+      setRenameValue('');
+      message.success('Chat renamed');
+    } catch (error: any) {
+      message.error(error.message || 'Failed to rename chat');
+    } finally {
+      setRenamingChat(false);
     }
   };
 
@@ -567,6 +752,16 @@ const ChatBotPage: React.FC = () => {
     }
   };
 
+  const handleVoiceInput = () => {
+    message.info('Voice input feature - Coming soon!');
+    // TODO: Implement voice input functionality
+  };
+
+  const handleVoiceTranscript = (transcript: string) => {
+    setInputValue((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    message.success('Voice recorded successfully!');
+  };
+
   return !currentSessionId ? (
     // Welcome Screen - No Session
     <div className="chatbot-page">
@@ -610,22 +805,25 @@ const ChatBotPage: React.FC = () => {
                 <Spin size="small" /> Uploading files...
               </div>
             )}
+            {uploadingSource && (
+              <div className="source-save-indicator">
+                <Spin size="small" /> Saving document to Sources...
+              </div>
+            )}
 
             {/* Input box with toolbar - ChatGPT style */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              gap: '8px',
-              padding: '12px',
-              background: '#ffffff',
-              border: '1px solid #d1d5db',
-              borderRadius: '24px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              transition: 'all 0.2s'
-            }}>
+            <div
+              className={`chatbot-drop-input welcome ${isDraggingFiles ? 'drag-over' : ''}`}
+              onDragEnter={handleFileDragEnter}
+              onDragOver={handleFileDragOver}
+              onDragLeave={handleFileDragLeave}
+              onDrop={handleFileDrop}
+            >
               <InputToolbar
                 onFileSelect={handleFileSelect}
                 onImageSelect={handleImageSelect}
+                onVoiceClick={handleVoiceInput}
+                showVoiceButton={false}
                 disabled={loading || uploadingFiles}
               />
               <Input
@@ -638,21 +836,29 @@ const ChatBotPage: React.FC = () => {
                 bordered={false}
                 style={{ flex: 1, fontSize: '15px' }}
               />
-              <Button
-                type="text"
-                icon={<SendOutlined style={{ fontSize: '20px', color: inputValue.trim() || selectedFiles.length > 0 ? '#1890ff' : '#d1d5db' }} />}
-                onClick={handleStartChat}
-                disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
-                size="large"
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
+              <VoiceInput
+                onTranscript={handleVoiceTranscript}
+                onRecordingChange={setVoiceRecording}
+                disabled={loading || uploadingFiles}
+                language={voiceLanguage}
               />
+              {!voiceRecording && (
+                <Button
+                  type="text"
+                  icon={<SendOutlined style={{ fontSize: '20px', color: inputValue.trim() || selectedFiles.length > 0 ? '#1890ff' : '#d1d5db' }} />}
+                  onClick={handleStartChat}
+                  disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+                  size="large"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -672,12 +878,55 @@ const ChatBotPage: React.FC = () => {
                     key={session.id}
                     className="chat-history-item"
                     onClick={() => handleSessionClick(session.id)}
+                    tabIndex={0}
                   >
                     <div className="chat-history-title">
                       <span>{session.title || t('history.newConversation')}</span>
-                      <span className="chat-history-date">
-                        {new Date(session.updatedAt).toLocaleDateString()}
-                      </span>
+                      <div className="chat-history-meta">
+                        <span className="chat-history-date">
+                          {new Date(session.updatedAt).toLocaleDateString()}
+                        </span>
+                        <Dropdown
+                          trigger={['click']}
+                          placement="bottomRight"
+                          menu={{
+                            items: [
+                              {
+                                key: 'rename-chat',
+                                label: 'Rename chat',
+                                icon: <EditOutlined />,
+                              },
+                              {
+                                key: 'delete-chat',
+                                label: 'Delete this chat',
+                                icon: <DeleteOutlined />,
+                                danger: true,
+                              },
+                            ],
+                            onClick: ({ key, domEvent }) => {
+                              domEvent.stopPropagation();
+
+                              if (key === 'rename-chat') {
+                                openRenameModal(session);
+                                return;
+                              }
+
+                              if (key === 'delete-chat') {
+                                handleDeleteSession(session.id, domEvent as unknown as React.MouseEvent);
+                              }
+                            },
+                          }}
+                        >
+                          <Button
+                            type="text"
+                            size="small"
+                            icon={<MoreOutlined />}
+                            aria-label="Chat options"
+                            className="chat-history-option-button"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </Dropdown>
+                      </div>
                     </div>
                     <div className="chat-history-preview">
                       {session._count.messages} {t('history.messages')}
@@ -785,6 +1034,28 @@ const ChatBotPage: React.FC = () => {
           </Tabs.TabPane>
         </Tabs>
       </div>
+      <Modal
+        title="Rename chat"
+        open={renameModalOpen}
+        okText="Save"
+        confirmLoading={renamingChat}
+        onOk={handleRenameChat}
+        onCancel={() => {
+          setRenameModalOpen(false);
+          setRenameTarget(null);
+          setRenameValue('');
+        }}
+      >
+        <Input
+          value={renameValue}
+          maxLength={80}
+          showCount
+          autoFocus
+          placeholder="Chat title"
+          onChange={(e) => setRenameValue(e.target.value)}
+          onPressEnter={handleRenameChat}
+        />
+      </Modal>
     </div>
   ) : (
     // Chat View - With Session
@@ -796,9 +1067,37 @@ const ChatBotPage: React.FC = () => {
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleNewChat}
+              style={{ marginBottom: '8px', width: '100%' }}
             >
               {t('buttons.newChat')}
             </Button>
+            <Dropdown
+              trigger={['click']}
+              menu={{
+                items: [
+                  {
+                    key: 'csv',
+                    label: 'Export as CSV',
+                    icon: <FileExcelOutlined />,
+                  },
+                  {
+                    key: 'json',
+                    label: 'Export as JSON',
+                    icon: <FileTextOutlined />,
+                  },
+                ],
+                onClick: ({ key }) => {
+                  handleExportPurchaseRequests(key as 'csv' | 'json');
+                },
+              }}
+            >
+              <Button
+                icon={<DownloadOutlined />}
+                style={{ width: '100%' }}
+              >
+                Export Purchase Requests
+              </Button>
+            </Dropdown>
           </div>
           <div className="chatbot-sessions-list">
             {sessions.map((session) => (
@@ -831,18 +1130,24 @@ const ChatBotPage: React.FC = () => {
                   const parsed = msg.role === 'assistant'
                     ? parseAssistantOptions(msg.content)
                     : { text: msg.content, options: [] as string[] };
+                  const hasAttachments = Boolean(msg.attachments && msg.attachments.length > 0);
+                  const shouldRenderText = msg.role === 'assistant'
+                    ? parsed.text.trim().length > 0
+                    : parsed.text.trim().length > 0 && !(hasAttachments && parsed.text.trim() === '[Image]');
 
                   return (
                     <div key={index} className={`chat-message ${msg.role === 'user' ? 'user' : 'assistant'}`}>
                       <div className="message-content">
-                        <div className="message-text">
-                          {msg.role === 'assistant' ? renderAssistantMessage(parsed.text) : parsed.text}
-                        </div>
-                        {msg.attachments && msg.attachments.length > 0 && (
+                        {hasAttachments && (
                           <MessageAttachment
-                            attachments={msg.attachments}
+                            attachments={msg.attachments!}
                             messageRole={msg.role}
                           />
+                        )}
+                        {shouldRenderText && (
+                          <div className="message-text">
+                            {msg.role === 'assistant' ? renderAssistantMessage(parsed.text) : parsed.text}
+                          </div>
                         )}
                         {parsed.options.length > 0 && (
                           <div className="message-options">
@@ -880,16 +1185,29 @@ const ChatBotPage: React.FC = () => {
                 <Spin size="small" /> Uploading files...
               </div>
             )}
+            {uploadingSource && (
+              <div className="loading-indicator source-saving">
+                <Spin size="small" /> Saving document to Sources...
+              </div>
+            )}
             {selectedFiles.length > 0 && (
               <AttachmentPreview
                 files={selectedFiles}
                 onRemove={handleRemoveFile}
               />
             )}
-            <div className="input-wrapper">
+            <div
+              className={`input-wrapper chatbot-drop-input ${isDraggingFiles ? 'drag-over' : ''}`}
+              onDragEnter={handleFileDragEnter}
+              onDragOver={handleFileDragOver}
+              onDragLeave={handleFileDragLeave}
+              onDrop={handleFileDrop}
+            >
               <InputToolbar
                 onFileSelect={handleFileSelect}
                 onImageSelect={handleImageSelect}
+                onVoiceClick={handleVoiceInput}
+                showVoiceButton={false}
                 disabled={loading || uploadingFiles}
               />
               <TextArea
@@ -901,16 +1219,24 @@ const ChatBotPage: React.FC = () => {
                 disabled={loading || uploadingFiles}
                 className="chat-input"
               />
-              <Button
-                type="primary"
-                icon={<SendOutlined />}
-                onClick={handleSendMessage}
-                disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
-                size="large"
-                className="send-button"
-              >
-                {t('buttons.send')}
-              </Button>
+              <VoiceInput
+                onTranscript={handleVoiceTranscript}
+                onRecordingChange={setVoiceRecording}
+                disabled={loading || uploadingFiles}
+                language={voiceLanguage}
+              />
+              {!voiceRecording && (
+                <Button
+                  type="primary"
+                  icon={<SendOutlined />}
+                  onClick={handleSendMessage}
+                  disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+                  size="large"
+                  className="send-button"
+                >
+                  {t('buttons.send')}
+                </Button>
+              )}
             </div>
           </div>
           </div>

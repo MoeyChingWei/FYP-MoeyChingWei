@@ -98,6 +98,20 @@ export async function deleteSession(sessionId: string) {
 }
 
 /**
+ * Rename session
+ */
+export async function renameSession(sessionId: string, title: string, userId?: number) {
+  const res = await axios.patch(`${API_BASE}/session/${sessionId}`, {
+    title,
+    userId,
+  });
+  if (!res.data?.success) {
+    throw new Error(res.data?.message ?? 'Failed to rename session');
+  }
+  return res.data.session;
+}
+
+/**
  * Delete all chat sessions for a user
  */
 export async function clearAllChatHistory(userId: number) {
@@ -175,4 +189,64 @@ export async function sendMessageStream(
     onError(error as Error);
     throw error;
   }
+}
+
+/**
+ * Export purchase requests to file
+ */
+export async function exportPurchaseRequests(params: {
+  userId: number;
+  format?: 'csv' | 'json';
+  status?: 'ALL' | 'PENDING' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+  limit?: number;
+}) {
+  const response = await fetch(`${API_BASE}/export-purchase-requests`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      userId: params.userId,
+      format: params.format || 'csv',
+      status: params.status || 'ALL',
+      limit: params.limit || 100,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData?.message ?? 'Failed to export purchase requests');
+  }
+
+  // Get filename from Content-Disposition header
+  const contentDisposition = response.headers.get('Content-Disposition');
+  let filename = `Purchase_Requests_${new Date().toISOString().split('T')[0]}.${params.format || 'csv'}`;
+
+  if (contentDisposition) {
+    const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+    if (filenameMatch) {
+      filename = filenameMatch[1];
+    }
+  }
+
+  // Get the file data
+  const blob = await response.blob();
+
+  // Trigger download
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+
+  // Return metadata from headers
+  return {
+    recordCount: parseInt(response.headers.get('X-Record-Count') || '0'),
+    status: response.headers.get('X-Export-Status') || 'ALL',
+    department: response.headers.get('X-Export-Department') || 'All',
+    filename,
+  };
 }

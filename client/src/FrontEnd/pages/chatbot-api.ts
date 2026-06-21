@@ -47,8 +47,10 @@ export {
   createNewSession,
   getUserSessions,
   deleteSession,
+  renameSession,
   clearAllChatHistory,
   uploadAttachment,
+  exportPurchaseRequests,
 } from '../shared/api/chatbot';
 
 // Re-export from sources API

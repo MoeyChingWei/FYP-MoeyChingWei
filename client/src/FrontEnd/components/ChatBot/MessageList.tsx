@@ -162,6 +162,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onOptionClick }) =>
             </div>
             <div className="message-content-wrapper">
               <div className="message-bubble">
+                {msg.attachments && msg.attachments.length > 0 && (
+                  <MessageAttachment
+                    attachments={msg.attachments}
+                    messageRole={msg.role}
+                  />
+                )}
                 <div className="message-text">
                   {msg.role === 'assistant' ? (
                     <ReactMarkdown
@@ -193,12 +199,6 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onOptionClick }) =>
                     parsed.text
                   )}
                 </div>
-                {msg.attachments && msg.attachments.length > 0 && (
-                  <MessageAttachment
-                    attachments={msg.attachments}
-                    messageRole={msg.role}
-                  />
-                )}
               </div>
               {parsed.options.length > 0 && (
                 <div className="quick-option-list">

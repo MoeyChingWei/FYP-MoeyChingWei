@@ -2,12 +2,25 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px;
+  padding: 0;
 }
 
 .toolbar-button {
   transition: all 0.3s ease;
   color: rgba(0, 0, 0, 0.45);
+}
+
+.attachment-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachment-button .anticon {
+  font-size: 18px;
 }
 
 .toolbar-button:hover:not(:disabled) {
@@ -23,6 +36,16 @@
 .toolbar-button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* Voice button styling */
+.voice-button {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.voice-button:hover:not(:disabled) {
+  color: #52c41a !important;
+  background-color: rgba(82, 196, 26, 0.1) !important;
 }
 
 /* Ant Design button override for consistent styling */

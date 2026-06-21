@@ -1,15 +1,157 @@
 .voice-input-button {
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  overflow: visible;
+}
+
+.voice-recorder-panel {
+  flex: 0 1 440px;
+  min-width: min(440px, 46vw);
+  height: 48px;
+  padding: 0 8px 0 18px;
+  border-radius: 24px;
+  background: #262626;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: recorderSlideIn 0.2s ease-out;
+}
+
+.voice-wave {
+  flex: 0 1 220px;
+  min-width: 120px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.voice-recorder-status {
+  flex: 1;
+  min-width: 90px;
+  max-width: 170px;
+  color: #d1d5db;
+  font-size: 13px;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.voice-wave span {
+  width: 3px;
+  height: 6px;
+  border-radius: 999px;
+  background: #cfcfcf;
+  opacity: 0.72;
+  animation: voiceWave 0.9s ease-in-out infinite;
+}
+
+.voice-wave span:nth-child(3n) {
+  height: 12px;
+  opacity: 0.9;
+}
+
+.voice-wave span:nth-child(4n) {
+  height: 18px;
+  background: #f5f5f5;
+}
+
+.voice-wave span:nth-child(7n) {
+  height: 24px;
+  background: #ffffff;
+}
+
+.voice-recorder-action {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #f3f4f6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-recorder-action:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.voice-recorder-action.confirm {
+  color: #ffffff;
+}
+
+.voice-recorder-action.confirm:hover {
+  background: rgba(34, 197, 94, 0.22) !important;
+}
+
+.voice-recorder-action.cancel:hover {
+  background: rgba(239, 68, 68, 0.22) !important;
+}
+
+@keyframes recorderSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes voiceWave {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleY(1.35);
+    opacity: 1;
+  }
+}
+
+.voice-input-button .anticon {
+  font-size: 21px;
 }
 
 .voice-input-button.listening {
-  animation: pulse 1.5s infinite;
-  box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7);
+  color: #1f2937 !important;
+  background: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  animation: recordingPulse 1.5s infinite;
+  box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.42);
 }
 
-@keyframes pulse {
+.voice-input-button.initializing {
+  animation: spin 1s linear infinite;
+}
+
+.voice-input-button.listening::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 77, 79, 0.35);
+  animation: recordingRing 1.5s infinite;
+}
+
+@keyframes recordingPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.42);
   }
   70% {
     box-shadow: 0 0 0 10px rgba(255, 77, 79, 0);
@@ -19,6 +161,53 @@
   }
 }
 
-.voice-input-button:not(.listening):hover {
+@keyframes recordingRing {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.88);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.voice-input-button:not(.listening):not(.initializing):hover {
+  color: #52c41a !important;
+  background-color: rgba(82, 196, 26, 0.12) !important;
   transform: scale(1.05);
+}
+
+/* Badge styling for listening indicator */
+.voice-input-badge .ant-badge-dot {
+  top: 2px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* Improve button visibility */
+.voice-input-button.ant-btn-primary {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.voice-input-button.ant-btn-primary:hover {
+  background-color: #ff7875 !important;
+  border-color: #ff7875 !important;
+}
+
+.voice-input-button.ant-btn-primary:focus {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
 }

@@ -1,88 +1,38 @@
-# Task 1: Database Schema and Migration
+# Task 1: Create Directory Structure
 
-## Task Brief
+**Goal:** Create 22 directories under docs/ for the new markdown organization structure
 
-**Files:**
-- Create: `backend/prisma/migrations/YYYYMMDDHHMMSS_add_message_attachments/migration.sql`
-- Modify: `backend/prisma/schema.prisma:217-218` (after ChatMessage model)
+**Files to Create:**
+- docs/01-core/
+- docs/02-setup-guides/backend/
+- docs/02-setup-guides/backend/vision-api/
+- docs/02-setup-guides/frontend/
+- docs/02-setup-guides/guides/
+- docs/03-features/ai-agents/agents/
+- docs/03-features/chatbot/image-features/
+- docs/03-features/voice-input/
+- docs/03-features/export/
+- docs/03-features/i18n/
+- docs/03-features/other/
+- docs/04-implementation/completion-reports/
+- docs/04-implementation/backend-tests/
+- docs/05-testing/test-plans/
+- docs/05-testing/test-results/
+- docs/05-testing/checklists/
+- docs/06-guides/user-guides/
+- docs/06-guides/other/
+- docs/07-design-specs/specs/
+- docs/07-design-specs/plans/
+- docs/08-archive/old-implementations/
+- docs/08-archive/backups/
 
-**Interfaces:**
-- Consumes: Existing ChatMessage model (id field)
-- Produces: MessageAttachment model with fields: id (String), messageId (Int), fileName (String), fileUrl (String), fileType (String), fileSize (Int), mimeType (String?), thumbnailUrl (String?), aiAnalysis (String?), uploadedAt (DateTime), metadata (Json?)
+**Steps:**
+1. Create git backup commit
+2. Create all 22 directories using mkdir -p
+3. Verify directories created (count should be 22+)
+4. Commit directory structure
 
-## Steps
-
-- [ ] **Step 1: Add MessageAttachment model to schema**
-
-Edit `backend/prisma/schema.prisma`, add after ChatMessage model:
-
-```prisma
-model MessageAttachment {
-  id           String   @id @default(uuid())
-  messageId    Int
-  fileName     String
-  fileUrl      String
-  fileType     String
-  fileSize     Int
-  mimeType     String?
-  thumbnailUrl String?
-  aiAnalysis   String?  @db.Text
-  uploadedAt   DateTime @default(now())
-  metadata     Json?
-
-  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-
-  @@index([messageId])
-  @@index([uploadedAt])
-  @@map("message_attachments")
-}
-```
-
-- [ ] **Step 2: Add attachments relation to ChatMessage**
-
-In `backend/prisma/schema.prisma`, modify ChatMessage model to add:
-
-```prisma
-attachments MessageAttachment[] // ADD THIS LINE
-```
-
-- [ ] **Step 3: Generate migration**
-
-```bash
-cd backend && npm run prisma:migrate -- --name add_message_attachments
-```
-
-- [ ] **Step 4: Apply migration**
-
-```bash
-cd backend && npm run prisma:migrate
-```
-
-- [ ] **Step 5: Regenerate Prisma client**
-
-```bash
-cd backend && npm run prisma:generate
-```
-
-- [ ] **Step 6: Verify schema in database**
-
-```bash
-cd backend && npm run prisma:studio
-```
-
-Verify `message_attachments` table exists with correct columns.
-
-- [ ] **Step 7: Commit database changes**
-
-```bash
-git add backend/prisma/schema.prisma backend/prisma/migrations/
-git commit -m "feat(db): add message_attachments table for per-message file uploads"
-```
-
-## Global Constraints
-
-- React version: 18+
-- Node.js version: 18+
-- TypeScript: Use strict mode
-- Database: PostgreSQL with Prisma ORM
-- Follow existing code style (2-space indentation, semicolons)
+**Global Constraints:**
+- Use git for all operations
+- Folder format: NN-category-name/
+- Maximum depth: 3 levels

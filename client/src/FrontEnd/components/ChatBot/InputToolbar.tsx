@@ -1,18 +1,22 @@
 import React, { useRef } from 'react';
 import { Button, Tooltip, message } from 'antd';
-import { PaperClipOutlined } from '@ant-design/icons';
+import { PaperClipOutlined, AudioOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './InputToolbar.css';
 
 interface InputToolbarProps {
   onFileSelect: (files: File[]) => void;
   onImageSelect: (images: File[]) => void;
+  onVoiceClick?: () => void;
+  showVoiceButton?: boolean;
   disabled?: boolean;
 }
 
 const InputToolbar: React.FC<InputToolbarProps> = ({
   onFileSelect,
   onImageSelect,
+  onVoiceClick,
+  showVoiceButton = true,
   disabled
 }) => {
   const { t: tMsg } = useTranslation('messages');
@@ -68,11 +72,25 @@ const InputToolbar: React.FC<InputToolbarProps> = ({
           icon={<PaperClipOutlined />}
           onClick={handleFileClick}
           disabled={disabled}
-          className="toolbar-button"
-          size="small"
+          className="toolbar-button attachment-button"
+          size="large"
           type="text"
         />
       </Tooltip>
+
+      {showVoiceButton && (
+        <Tooltip title="Voice input">
+          <Button
+            icon={<AudioOutlined />}
+            onClick={onVoiceClick}
+            disabled={disabled}
+            className="toolbar-button voice-button"
+            size="small"
+            type="text"
+          />
+        </Tooltip>
+      )}
+
       <input
         ref={fileInputRef}
         type="file"

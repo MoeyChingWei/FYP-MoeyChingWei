@@ -4,6 +4,7 @@ import visionService from '../../services/vision-ai-service.js';
 import prisma from '../../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 import { generatePRNumber } from '../../utils/pr-number-generator.js';
+import { exportPurchaseRequestsToCSV, exportPurchaseRequestsToJSON } from '../../utils/export-purchase-requests.js';
 
 const COMMON_CATEGORIES = [
   'Office Supplies / Stationery',
@@ -106,11 +107,62 @@ Your responsibilities:
 2. Help users query data (purchase requests, orders, spending statistics, etc.)
 3. Guide users through operations
 4. Provide a friendly user experience
+5. Analyze images when users upload them
+6. Export purchase request data when requested
 
 Current user information:
 - Name: {userName}
 - Role: {userRole}
 - Department: {userDepartment}
+
+## Image Analysis
+
+When a user uploads an image, you will receive the analysis results in the format:
+[Image Analysis]
+📷 filename.png:
+[Description of what's in the image]
+
+Use this information to:
+- Answer questions about the image content
+- Help identify items for purchase requests
+- Extract text or data from screenshots
+- Provide context-aware responses based on the visual content
+
+If the image contains items that could be purchased, proactively offer to help create a purchase request using the information from the image.
+
+## Exporting Purchase Requests
+
+When users ask to "export", "download", or "get a file" of purchase requests:
+
+1. Call the export_purchase_requests tool with appropriate filters
+2. The tool will generate the export data (CSV or JSON format)
+3. Present the results to the user with these details:
+   - Number of records exported
+   - Format (CSV or JSON)
+   - Status filter applied (if any)
+   - Department filter (if applicable)
+
+Example response after successful export:
+"✅ Export ready! I've prepared {count} purchase request(s) in {format} format.
+
+**Export Details:**
+- Records: {count}
+- Format: {format}
+- Status: {status}
+- Department: {department}
+
+The data is ready and includes all line items with full details (PR numbers, items, quantities, prices, suppliers, etc.).
+
+Unfortunately, I cannot directly send you the file through chat, but here's what you can do:
+1. Copy the formatted data from above if you need to paste it into Excel
+2. Ask your system administrator to set up a download endpoint
+3. Use the API directly at: POST /api/chatbot/export
+
+Would you like me to show you a sample of the data, or help you with anything else?"
+
+Available formats:
+- **CSV**: Best for Excel and Google Sheets (default)
+- **JSON**: Best for developers and system integration
 
 ## Creating Purchase Requests
 
@@ -213,6 +265,7 @@ Example state structure:
 - get_notifications: Get user notifications
 - get_lookup_options: Get available categories or units
 - create_purchase_request: Create new purchase request (MUST be called after collecting all item data)
+- export_purchase_requests: Export purchase requests to CSV or JSON format
 
 ## CRITICAL: Data Presentation Format
 
@@ -345,6 +398,34 @@ class ChatBotAgent {
             }
           },
           required: ['lineItems'],
+        },
+      },
+      {
+        name: 'export_purchase_requests',
+        description: '[MUST USE] When users ask to export, download, or get a file of purchase requests, call this tool to generate export data.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            userId: {
+              type: 'number',
+              description: 'User ID'
+            },
+            format: {
+              type: 'string',
+              enum: ['csv', 'json'],
+              description: 'Export format (default: csv)'
+            },
+            status: {
+              type: 'string',
+              enum: ['ALL', 'PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED'],
+              description: 'Filter by status (default: ALL)'
+            },
+            limit: {
+              type: 'number',
+              description: 'Maximum number of records to export (default: 100)'
+            }
+          },
+          required: ['userId'],
         },
       },
     ];
@@ -580,6 +661,88 @@ class ChatBotAgent {
           department: user.department,
         };
       },
+
+      export_purchase_requests: async (input) => {
+        const { userId, format = 'csv', status = 'ALL', limit = 100 } = input;
+
+        // Get user info
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { department: true, role: true },
+        });
+
+        if (!user) {
+          return { success: false, error: 'User not found' };
+        }
+
+        // Fetch purchase requests
+        const records = await prisma.purchaseRequestRecord.findMany({
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        });
+
+        // Filter by department (unless Super Admin)
+        let filteredRecords = records;
+        if (user.department && user.role !== 'Super Admin') {
+          filteredRecords = records.filter(r => r.payload.department === user.department);
+        }
+
+        // Filter by status
+        if (status !== 'ALL') {
+          filteredRecords = filteredRecords.filter(r => r.payload.status === status);
+        }
+
+        if (filteredRecords.length === 0) {
+          return {
+            success: false,
+            error: 'No purchase requests found to export',
+            message: 'There are no purchase requests matching your criteria.',
+          };
+        }
+
+        // Map to export format
+        const requestsForExport = filteredRecords.map(r => ({
+          prNumber: r.payload.prNumber,
+          status: r.payload.status,
+          department: r.payload.department,
+          requestBy: r.payload.requestBy,
+          requestDate: r.payload.requestDate,
+          createdByEmail: r.payload.createdByEmail,
+          currency: r.payload.currency,
+          urgency: r.payload.urgency || 'normal',
+          procurementNotes: r.payload.procurementNotes || '',
+          lineItems: r.payload.lineItems || [],
+        }));
+
+        // Generate export data
+        let exportData, mimeType;
+        try {
+          if (format === 'json') {
+            exportData = exportPurchaseRequestsToJSON(requestsForExport);
+            mimeType = 'application/json';
+          } else {
+            exportData = exportPurchaseRequestsToCSV(requestsForExport);
+            mimeType = 'text/csv';
+          }
+        } catch (error) {
+          return {
+            success: false,
+            error: 'Failed to generate export file',
+            message: error.message,
+          };
+        }
+
+        return {
+          success: true,
+          format,
+          recordCount: filteredRecords.length,
+          department: user.department || 'All',
+          status,
+          data: exportData,
+          mimeType,
+          message: `Successfully prepared ${filteredRecords.length} purchase request(s) for export`,
+        };
+      },
     };
   }
 
@@ -618,23 +781,59 @@ class ChatBotAgent {
       return guidedResponse;
     }
 
-    // 3. 加载会话历史
+    // 3. 分析图片附件（如果有）- 在 AI 回复之前完成分析
+    let imageAnalysisText = '';
+    if (attachmentData && attachmentData.length > 0) {
+      const imageAttachments = attachmentData.filter(att =>
+        visionService.isImageFile(att.mimeType, att.fileName)
+      );
+
+      if (imageAttachments.length > 0 && visionService.isEnabled()) {
+        console.log(`🔍 Analyzing ${imageAttachments.length} image(s) before AI response`);
+
+        const analysisResults = [];
+        for (const attachment of imageAttachments) {
+          try {
+            const result = await visionService.analyzeImage(attachment.fileUrl, attachment.fileName);
+            if (result.success) {
+              analysisResults.push({
+                fileName: attachment.fileName,
+                analysis: result.analysis,
+              });
+              console.log(`✅ Image analysis complete for: ${attachment.fileName}`);
+            }
+          } catch (error) {
+            console.error(`❌ Error analyzing ${attachment.fileName}:`, error.message);
+          }
+        }
+
+        // 构建图片分析文本
+        if (analysisResults.length > 0) {
+          imageAnalysisText = '\n\n[Image Analysis]\n' + analysisResults.map(r =>
+            `📷 ${r.fileName}:\n${r.analysis}`
+          ).join('\n\n');
+        }
+      }
+    }
+
+    // 4. 加载会话历史
     const history = await this.loadSessionHistory(sessionId);
 
-    // 4. 构建系统提示词
+    // 5. 构建系统提示词
     const sourceContext = await this.loadRelevantSourceContext(userId, sessionId, message);
     const systemPrompt = `${this.buildSystemPrompt(user)}${sourceContext}`;
 
-    // 5. 构建消息数组（注入userId到工具调用中）
+    // 6. 构建消息数组（注入userId到工具调用中，并包含图片分析结果）
+    const userMessage = message + imageAnalysisText;
     const messages = [
       ...history,
       {
         role: 'user',
-        content: message,
+        content: userMessage,
       },
     ];
 
-    // 6. 调用DeepSeek API（带工具调用）
+    // 7. 调用DeepSeek API（带工具调用）
     const response = await deepseekService.chatWithTools({
       agentType: this.agentType,
       systemPrompt,
@@ -643,9 +842,16 @@ class ChatBotAgent {
       toolHandlers: this.enrichToolHandlers(userId),
     });
 
-    // 7. 保存对话历史（带附件）
+    // 8. 保存对话历史（带附件）
     await this.saveMessage(sessionId, 'user', message, null, attachmentData);
     await this.generateSessionTitle(sessionId, message);
+
+    // 保存图片分析结果到数据库（异步，用于后续查询）
+    if (attachmentData && attachmentData.length > 0) {
+      this.saveImageAnalysisToDatabase(sessionId, attachmentData).catch(error => {
+        console.error('⚠️ Failed to save image analysis to database:', error.message);
+      });
+    }
 
     if (response.success) {
       await this.saveMessage(sessionId, 'assistant', response.content);
@@ -750,11 +956,6 @@ class ChatBotAgent {
       });
 
       console.log(`📎 Created ${attachmentRecords.length} attachment record(s) for message ${message.id}`);
-
-      // Analyze images using vision AI (async, non-blocking)
-      this.analyzeAttachmentImages(message.id, attachmentData).catch(error => {
-        console.error('⚠️ Image analysis failed:', error.message);
-      });
     }
 
     await prisma.chatSession.update({
@@ -766,12 +967,25 @@ class ChatBotAgent {
   }
 
   /**
-   * Analyze images in attachments using vision AI
-   * This runs asynchronously and updates the database with analysis results
+   * Save image analysis results to database (runs asynchronously)
+   * This is for historical record-keeping, separate from the real-time analysis
    */
-  async analyzeAttachmentImages(messageId, attachmentData) {
+  async saveImageAnalysisToDatabase(sessionId, attachmentData) {
     if (!visionService.isEnabled()) {
-      console.log('⚠️ Vision service not enabled - skipping image analysis');
+      return;
+    }
+
+    // Find the most recent user message with attachments
+    const message = await prisma.chatMessage.findFirst({
+      where: {
+        sessionId,
+        role: 'user',
+      },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true },
+    });
+
+    if (!message) {
       return;
     }
 
@@ -784,18 +998,17 @@ class ChatBotAgent {
       return;
     }
 
-    console.log(`🔍 Analyzing ${imageAttachments.length} image(s) for message ${messageId}`);
+    console.log(`💾 Saving image analysis to database for ${imageAttachments.length} image(s)`);
 
-    // Analyze each image
+    // Update each attachment record with analysis
     for (const attachment of imageAttachments) {
       try {
         const result = await visionService.analyzeImage(attachment.fileUrl, attachment.fileName);
 
         if (result.success) {
-          // Update the attachment record with AI analysis
           await prisma.messageAttachment.updateMany({
             where: {
-              messageId: messageId,
+              messageId: message.id,
               fileName: attachment.fileName,
               fileUrl: attachment.fileUrl,
             },
@@ -804,12 +1017,10 @@ class ChatBotAgent {
             },
           });
 
-          console.log(`✅ Image analysis complete for: ${attachment.fileName}`);
-        } else {
-          console.error(`❌ Image analysis failed for ${attachment.fileName}: ${result.error}`);
+          console.log(`✅ Saved analysis for: ${attachment.fileName}`);
         }
       } catch (error) {
-        console.error(`❌ Error analyzing ${attachment.fileName}:`, error.message);
+        console.error(`❌ Error saving analysis for ${attachment.fileName}:`, error.message);
       }
     }
   }
