@@ -1,0 +1,81 @@
+{{!-- backend/templates/documents/purchase-order.hbs --}}
+
+<div class="document-meta">
+  <div class="meta-row">
+    <div class="meta-label">Document Type:</div>
+    <div class="meta-value">{{documentType}}</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-label">Document Number:</div>
+    <div class="meta-value">{{documentNumber}}</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-label">Status:</div>
+    <div class="meta-value">{{status}}</div>
+  </div>
+  {{#if orderDate}}
+  <div class="meta-row">
+    <div class="meta-label">Order Date:</div>
+    <div class="meta-value">{{orderDate}}</div>
+  </div>
+  {{/if}}
+</div>
+
+<div class="requester-info">
+  <div class="meta-row">
+    <div class="meta-label">Supplier Name:</div>
+    <div class="meta-value">{{#if supplierName}}{{supplierName}}{{else}}[To be added]{{/if}}</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-label">Delivery Address:</div>
+    <div class="meta-value">{{#if deliveryAddress}}{{deliveryAddress}}{{else}}[To be added]{{/if}}</div>
+  </div>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="col-no">No</th>
+      <th>Item Name</th>
+      <th class="col-qty">Qty</th>
+      <th class="col-unit">Unit</th>
+      <th class="col-price">Unit Price</th>
+      <th class="col-price">Total Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each lineItems}}
+    <tr>
+      <td class="col-no">{{this.no}}</td>
+      <td>{{this.itemName}}</td>
+      <td class="col-qty">{{this.quantity}}</td>
+      <td class="col-unit">{{this.unit}}</td>
+      <td class="col-price">{{this.unitPrice}}</td>
+      <td class="col-price">{{this.totalPrice}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<div class="table-summary">
+  {{#if subtotal}}
+  <div class="summary-row">
+    <span class="summary-label">Subtotal:</span>
+    <span class="summary-value">{{subtotal}}</span>
+  </div>
+  {{/if}}
+  {{#if tax}}
+  <div class="summary-row">
+    <span class="summary-label">Tax:</span>
+    <span class="summary-value">{{tax}}</span>
+  </div>
+  {{/if}}
+  {{#if total}}
+  <div class="summary-row">
+    <span class="summary-label">Total:</span>
+    <span class="summary-value">{{total}}</span>
+  </div>
+  {{/if}}
+</div>
+
+{{> signature}}

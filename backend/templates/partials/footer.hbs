@@ -1,0 +1,7 @@
+{{!-- backend/templates/partials/footer.hbs --}}
+<div class="page-footer">
+  <p>{{#if footerText}}{{footerText}}{{else}}This document was generated on {{generatedDate}}{{/if}}</p>
+  {{#if confidential}}
+  <p style="margin-top: 5px; font-weight: bold;">CONFIDENTIAL - For Internal Use Only</p>
+  {{/if}}
+</div>

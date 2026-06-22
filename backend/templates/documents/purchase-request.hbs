@@ -1,0 +1,72 @@
+{{!-- backend/templates/documents/purchase-request.hbs --}}
+
+<div class="document-meta">
+  <div class="meta-row">
+    <div class="meta-label">Document Type:</div>
+    <div class="meta-value">{{documentType}}</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-label">Document Number:</div>
+    <div class="meta-value">{{documentNumber}}</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-label">Status:</div>
+    <div class="meta-value">{{status}}</div>
+  </div>
+  {{#if requestDate}}
+  <div class="meta-row">
+    <div class="meta-label">Request Date:</div>
+    <div class="meta-value">{{requestDate}}</div>
+  </div>
+  {{/if}}
+</div>
+
+<div class="requester-info">
+  <div class="meta-row">
+    <div class="meta-label">Requester Name:</div>
+    <div class="meta-value">{{requesterName}}</div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-label">Department:</div>
+    <div class="meta-value">{{department}}</div>
+  </div>
+  {{#if purpose}}
+  <div class="meta-row">
+    <div class="meta-label">Purpose:</div>
+    <div class="meta-value">{{purpose}}</div>
+  </div>
+  {{/if}}
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="col-no">No</th>
+      <th>Item Name</th>
+      <th>Category</th>
+      <th class="col-qty">Qty</th>
+      <th class="col-unit">Unit</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each lineItems}}
+    <tr>
+      <td class="col-no">{{this.no}}</td>
+      <td>{{this.itemName}}</td>
+      <td>{{this.category}}</td>
+      <td class="col-qty">{{this.quantity}}</td>
+      <td class="col-unit">{{this.unit}}</td>
+      <td>{{this.description}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+{{#if totalItems}}
+<div class="table-summary">
+  Total Items: {{totalItems}}
+</div>
+{{/if}}
+
+{{> signature}}

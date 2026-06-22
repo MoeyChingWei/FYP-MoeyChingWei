@@ -1,0 +1,47 @@
+/* backend/templates/styles/print.css */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .document-container {
+    max-width: none;
+    padding: 0;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+  }
+
+  .data-table {
+    page-break-inside: auto;
+  }
+
+  .data-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .data-table thead {
+    display: table-header-group;
+  }
+
+  .signature-block {
+    page-break-inside: avoid;
+  }
+
+  @page {
+    size: A4;
+    margin: 20mm 15mm;
+  }
+}
+
+/* Prevent orphan rows */
+.data-table tbody tr {
+  page-break-inside: avoid;
+}

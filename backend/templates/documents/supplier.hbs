@@ -1,0 +1,29 @@
+{{!-- backend/templates/documents/supplier-list.hbs --}}
+
+<div class="document-meta">
+  <div class="meta-row">
+    <div class="meta-label">Document Type:</div>
+    <div class="meta-value">Supplier Information</div>
+  </div>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Supplier Name</th>
+      <th>Address</th>
+      <th>Phone</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{name}}</td>
+      <td>{{address}}</td>
+      <td>{{phone}}</td>
+      <td>{{email}}</td>
+    </tr>
+  </tbody>
+</table>
+
+{{> signature}}

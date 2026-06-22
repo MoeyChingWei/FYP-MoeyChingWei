@@ -1,0 +1,58 @@
+/* backend/templates/styles/tables.css */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 11pt;
+}
+
+.data-table thead {
+  background: #333;
+  color: #fff;
+}
+
+.data-table th {
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: bold;
+  border: 1px solid #333;
+}
+
+.data-table td {
+  padding: 10px 8px;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.data-table tbody tr:hover {
+  background: #f0f0f0;
+}
+
+.data-table .col-no {
+  width: 50px;
+  text-align: center;
+}
+
+.data-table .col-qty {
+  width: 80px;
+  text-align: right;
+}
+
+.data-table .col-unit {
+  width: 80px;
+}
+
+.data-table .col-status {
+  width: 120px;
+}
+
+.table-summary {
+  margin-top: 10px;
+  text-align: right;
+  font-weight: bold;
+  font-size: 11pt;
+}

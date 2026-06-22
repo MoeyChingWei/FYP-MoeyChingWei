@@ -1,81 +1,71 @@
-# Task 3: Move Feature Documentation — Completion Report
+# Task 3: Create Handlebars Template Partials - Report
 
-**Status:** COMPLETED
-
-**Commit Hash:** ae62320
-
-**Files Moved:** 34
+## Status
+**COMPLETED** ✅
 
 ## Summary
+Successfully created three reusable Handlebars template partials (header, footer, signature) that match the CSS classes from Task 2. All partials use proper Handlebars syntax with conditional logic for flexible data rendering.
 
-Successfully moved all 34 feature documentation files to categorized subdirectories within `docs/03-features/`. All files were relocated using `git mv` with no content modifications.
+## Files Created
+1. `backend/templates/partials/header.hbs` (331 bytes)
+   - Company header with OptiMind ERP System branding
+   - Fixed company address: 123 Business Street, Kuala Lumpur
+   - Optional phone and email fields with {{#if}} conditionals
+   - Uses `.company-header`, `.company-name`, `.company-info` CSS classes
 
-## Files Moved by Category
+2. `backend/templates/partials/footer.hbs` (310 bytes)
+   - Page footer with generation date or custom text
+   - Optional confidential flag with bold styling
+   - Uses `.page-footer` CSS class
+   - Flexible `{{footerText}}` or default generated date message
 
-### AI Agents Main (6 files) → docs/03-features/ai-agents/
-- docs/MULTI_AGENT_SYSTEM.md
-- docs/MULTI_AGENT_IMPLEMENTATION_SUMMARY.md
-- docs/MULTI_AGENT_FRONTEND_GUIDE.md
-- docs/COMPLETE_MULTI_AGENT_SUMMARY.md
-- docs/ANALYTICS_AGENT_GUIDE.md
-- backend/API_REFACTORING_COMPLETE.md
+3. `backend/templates/partials/signature.hbs` (918 bytes)
+   - Dual signature block layout (prepared by / approved by)
+   - Customizable labels via `preparedByLabel` and `approvedByLabel`
+   - Optional name and date fields with placeholder fallbacks
+   - Uses `.signature-block`, `.signature-section`, `.signature-label`, `.signature-line`, `.signature-name`, `.signature-date` CSS classes
 
-### AI Agents Subfolder (5 files) → docs/03-features/ai-agents/agents/
-- backend/agents/AGENT_OPTIMIZATION_REPORT.md
-- backend/agents/OPTIMIZATION_SUMMARY.md
-- backend/agents/CHECK_AGENTS.md
-- backend/agents/FINAL_CHECK_REPORT.md
-- backend/AGENT_IMPROVEMENTS.md (moved from backend/ to agents/)
+## Handlebars Features Used
+- `{{variable}}` - Variable interpolation
+- `{{#if condition}}...{{else}}...{{/if}}` - Conditional rendering
+- `{{!-- comment --}}` - Template comments
+- Default value patterns with `{{else}}` fallbacks
 
-### ChatBot Main (3 files) → docs/03-features/chatbot/
-- backend/AUTO_TITLE_GENERATION.md
-- backend/CHATGPT_STYLE_COMPLETE.md
-- client/src/FrontEnd/components/ChatBot/ATTACHMENT_PREVIEW_GUIDE.md
+## Commits
+- `d252eb9` - feat(export): add reusable Handlebars template partials
 
-### ChatBot Image Features (4 files) → docs/03-features/chatbot/image-features/
-- backend/IMAGE_ANALYSIS_FIX.md
-- backend/IMAGE_SEND_FIX_COMPLETE.md
-- backend/PASTE_FIX_COMPLETE.md
-- backend/PASTE_IMAGE_GUIDE.md
+## Specifications Met
+- ✅ Created 3 .hbs files in backend/templates/partials/
+- ✅ Used proper Handlebars syntax ({{variable}}, {{#if}})
+- ✅ All CSS classes match common.css from Task 2
+- ✅ Company info included: OptiMind ERP System, 123 Business Street, Kuala Lumpur
+- ✅ Conventional commit format with descriptive message
+- ✅ Partials are reusable and flexible via conditional logic
 
-### Voice Input (5 files) → docs/03-features/voice-input/
-- VOICE_INPUT_INTEGRATION.md
-- VOICE_INPUT_IMPROVEMENTS.md
-- VOICE_SPEED_OPTIMIZATION.md
-- VOICE_OPTIMIZATION_GUIDE.md
-- VOICE_INPUT_TROUBLESHOOTING.md
+## Template Usage Examples
 
-### Export (3 files) → docs/03-features/export/
-- EXPORT_PURCHASE_REQUESTS_FEATURE.md
-- EXPORT_FEATURE_IMPLEMENTATION_SUMMARY.md
-- EXPORT_FEATURE_UI_GUIDE.md
+### Header Partial
+```handlebars
+{{> header companyPhone="+60-3-1234-5678" companyEmail="info@optimind.com"}}
+```
 
-### i18n (5 files) → docs/03-features/i18n/
-- docs/i18n-usage-guide.md
-- docs/multi-language-acceptance-testing.md
-- docs/multi-language-acceptance-report.md
-- docs/phase4-status.md
-- docs/phase4-implementation-summary.md
+### Footer Partial
+```handlebars
+{{> footer generatedDate="22 June 2026" confidential=true}}
+{{> footer footerText="Custom footer message"}}
+```
 
-### Other Features (3 files) → docs/03-features/other/
-- docs/SOURCES_IMPLEMENTATION.md
-- docs/SOURCES_REDESIGN.md
-- docs/CSS_SPECIFICITY_FIX.md
+### Signature Partial
+```handlebars
+{{> signature 
+    preparedBy="John Doe" 
+    preparedDate="22/06/2026"
+    approvedBy="Jane Smith" 
+    approvedDate="22/06/2026"}}
+```
 
-## Verification
+## Concerns
+None. All specifications met successfully.
 
-All 34 files successfully moved:
-- All source files no longer exist at original locations
-- All files present in their new categorized destinations
-- Git status shows all moves as rename operations (R flag)
-- No file content modifications occurred
-
-## Commit Details
-
-Commit: ae62320
-Message: "docs: move feature documentation to categorized structure"
-Files changed: 34
-Insertions: 0
-Deletions: 0
-
-All moves tracked through git rename operations, preserving full commit history for each file.
+## Next Steps
+Ready to proceed with Task 4: Create Base Layout and Document Templates.

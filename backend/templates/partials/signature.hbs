@@ -1,0 +1,16 @@
+{{!-- backend/templates/partials/signature.hbs --}}
+<div class="signature-block">
+  <div class="signature-section">
+    <div class="signature-label">{{#if preparedByLabel}}{{preparedByLabel}}{{else}}Prepared By{{/if}}</div>
+    <div class="signature-line"></div>
+    <div class="signature-name">{{#if preparedBy}}{{preparedBy}}{{else}}_____________________{{/if}}</div>
+    <div class="signature-date">Date: {{#if preparedDate}}{{preparedDate}}{{else}}_____________________{{/if}}</div>
+  </div>
+
+  <div class="signature-section">
+    <div class="signature-label">{{#if approvedByLabel}}{{approvedByLabel}}{{else}}Approved By{{/if}}</div>
+    <div class="signature-line"></div>
+    <div class="signature-name">{{#if approvedBy}}{{approvedBy}}{{else}}_____________________{{/if}}</div>
+    <div class="signature-date">Date: {{#if approvedDate}}{{approvedDate}}{{else}}_____________________{{/if}}</div>
+  </div>
+</div>

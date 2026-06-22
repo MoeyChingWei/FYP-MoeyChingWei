@@ -1,38 +1,32 @@
-# Task 1: Create Directory Structure
+# Task 1: Install Dependencies and Create Directory Structure
 
-**Goal:** Create 22 directories under docs/ for the new markdown organization structure
+## Goal
+Set up the export system foundation by installing required NPM packages, creating the template directory structure, and configuring Puppeteer for PDF generation.
 
-**Files to Create:**
-- docs/01-core/
-- docs/02-setup-guides/backend/
-- docs/02-setup-guides/backend/vision-api/
-- docs/02-setup-guides/frontend/
-- docs/02-setup-guides/guides/
-- docs/03-features/ai-agents/agents/
-- docs/03-features/chatbot/image-features/
-- docs/03-features/voice-input/
-- docs/03-features/export/
-- docs/03-features/i18n/
-- docs/03-features/other/
-- docs/04-implementation/completion-reports/
-- docs/04-implementation/backend-tests/
-- docs/05-testing/test-plans/
-- docs/05-testing/test-results/
-- docs/05-testing/checklists/
-- docs/06-guides/user-guides/
-- docs/06-guides/other/
-- docs/07-design-specs/specs/
-- docs/07-design-specs/plans/
-- docs/08-archive/old-implementations/
-- docs/08-archive/backups/
+## Files to Create/Modify
+- Modify: `backend/package.json` - Add handlebars, puppeteer, exceljs, handlebars-helpers
+- Create: `backend/templates/{layouts,partials,documents,styles}/` - Directory structure
+- Create: `backend/config/puppeteer-config.js` - Puppeteer configuration
 
-**Steps:**
-1. Create git backup commit
-2. Create all 22 directories using mkdir -p
-3. Verify directories created (count should be 22+)
-4. Commit directory structure
+## Dependencies to Install
+```bash
+npm install handlebars@^4.7.8 puppeteer@^21.0.0 exceljs@^4.4.0 handlebars-helpers@^0.10.0 --save
+```
 
-**Global Constraints:**
-- Use git for all operations
-- Folder format: NN-category-name/
-- Maximum depth: 3 levels
+## Puppeteer Configuration
+Export two objects:
+- `puppeteerConfig`: Launch options (headless, sandbox flags)
+- `pdfOptions`: PDF generation settings (A4, margins, printBackground)
+
+## Steps
+1. Install dependencies via npm
+2. Create template directory structure (layouts, partials, documents, styles)
+3. Create puppeteer-config.js with launch and PDF options
+4. Verify installation with `npm list`
+5. Commit with conventional commit message
+
+## Success Criteria
+- All 4 packages installed in package.json
+- 4 template subdirectories exist
+- puppeteer-config.js exports both config objects
+- `npm list handlebars puppeteer exceljs` shows installed versions
