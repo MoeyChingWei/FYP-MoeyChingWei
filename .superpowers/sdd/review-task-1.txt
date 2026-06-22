@@ -1,0 +1,40 @@
+Commits: 28ae5b0..051f17b
+
+commit 051f17b
+build: add export system dependencies and puppeteer config
+
+- Add handlebars, puppeteer, exceljs, handlebars-helpers
+- Create template directory structure
+- Add puppeteer configuration with A4 PDF settings
+
+---STAT---
+ backend/config/puppeteer-config.js |  16 +
+ backend/package-lock.json          | 953 +++++++++++++++++++++++++++++++++++++
+ backend/package.json               |   4 +
+ 3 files changed, 973 insertions(+)
+
+---DIFF---
+diff --git a/backend/config/puppeteer-config.js b/backend/config/puppeteer-config.js
+new file mode 100644
+index 0000000..8f3c0b5
+--- /dev/null
++++ b/backend/config/puppeteer-config.js
+@@ -0,0 +1,16 @@
++export const puppeteerConfig = {
++  headless: true,
++  args: [
++    '--no-sandbox',
++    '--disable-setuid-sandbox',
++    '--disable-dev-shm-usage',
++  ],
++};
++
++export const pdfOptions = {
++  format: 'A4',
++  margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
++  printBackground: true,
++  displayHeaderFooter: false,
++};
++
+diff --git a/backend/package.json b/backend/package.json
+[package.json changes - 4 new dependencies added]
