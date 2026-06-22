@@ -4,8 +4,9 @@
  * Configuration for Puppeteer browser launch options and PDF generation settings.
  */
 
-const puppeteerConfig = {
-  headless: true,
+export const puppeteerConfig = {
+  headless: 'new',
+  executablePath: 'C:\\Users\\mch\\.cache\\puppeteer\\chrome\\win64-121.0.6167.85\\chrome-win64\\chrome.exe',
   args: [
     '--no-sandbox',
     '--disable-setuid-sandbox',
@@ -14,7 +15,7 @@ const puppeteerConfig = {
   ]
 };
 
-const pdfOptions = {
+export const pdfOptions = {
   format: 'A4',
   margin: {
     top: '20mm',
@@ -25,7 +26,7 @@ const pdfOptions = {
   printBackground: true
 };
 
-module.exports = {
+export default {
   puppeteerConfig,
   pdfOptions
 };
