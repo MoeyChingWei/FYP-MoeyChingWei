@@ -135,7 +135,7 @@ describe('Export Service', () => {
       expect(stats.size).toBeGreaterThan(0);
     });
 
-    it.skip('should export purchase order to PDF (template not created yet)', async () => {
+    it('should export purchase order to PDF', async () => {
       const outputPath = path.join(testOutputDir, 'po-export.pdf');
       const result = await exportService.exportToPDF(
         'purchase-order',
@@ -151,7 +151,7 @@ describe('Export Service', () => {
       expect(stats.size).toBeGreaterThan(0);
     });
 
-    it.skip('should export invoice to PDF (template not created yet)', async () => {
+    it('should export invoice to PDF', async () => {
       const outputPath = path.join(testOutputDir, 'invoice-export.pdf');
       const result = await exportService.exportToPDF(
         'invoice',
@@ -167,7 +167,7 @@ describe('Export Service', () => {
       expect(stats.size).toBeGreaterThan(0);
     });
 
-    it.skip('should export supplier to PDF (template not created yet)', async () => {
+    it('should export supplier to PDF', async () => {
       const outputPath = path.join(testOutputDir, 'supplier-export.pdf');
       const result = await exportService.exportToPDF(
         'supplier',
