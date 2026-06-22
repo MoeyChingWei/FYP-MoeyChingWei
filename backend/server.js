@@ -17,6 +17,7 @@ import chatbotUploadRoutes from "./routes/chatbot-upload.js";
 import sourcesRoutes from "./routes/sources.js";
 import agentsRoutes from "./routes/agents.js";
 import languageRoutes from "./routes/language.js";
+import exportRoutes from "./routes/export.js";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/chatbot", chatbotUploadRoutes);
 app.use("/api/sources", sourcesRoutes);
 app.use("/api/agents", agentsRoutes);
 app.use("/api", languageRoutes);
+app.use("/api/export", exportRoutes);
 
 app.get("/", (req, res) => {
   res.send("OptiMind Backend Running");
