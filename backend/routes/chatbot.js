@@ -3,8 +3,14 @@ import chatbotAgent from '../agents/chatbot/chatbot-agent.js';
 import prisma from '../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 import { exportPurchaseRequestsToCSV, exportPurchaseRequestsToJSON, generateExportFilename } from '../utils/export-purchase-requests.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const router = express.Router();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * POST /api/chatbot/chat
@@ -191,11 +197,11 @@ router.delete('/session/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
 
-    await chatbotAgent.deleteSession(sessionId);
+    const deleted = await chatbotAgent.deleteSession(sessionId);
 
     res.json({
       success: true,
-      message: 'Session deleted',
+      message: deleted ? 'Session deleted' : 'Session already deleted',
     });
   } catch (error) {
     console.error('❌ Delete Session Error:', error);
@@ -436,6 +442,78 @@ router.post('/export-purchase-requests', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to export purchase requests',
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/chatbot/download/:filename
+ * Download exported files with security validation and auto-cleanup
+ */
+router.get('/download/:filename', async (req, res) => {
+  try {
+    const { filename } = req.params;
+
+    // Validate filename format (security)
+    const filenameRegex = /^[a-zA-Z0-9-]+\.(pdf|xlsx|csv|json)$/;
+    if (!filenameRegex.test(filename)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid filename format',
+      });
+    }
+
+    // Construct file path
+    const exportsDir = path.join(__dirname, '..', 'exports');
+    const filePath = path.join(exportsDir, filename);
+
+    // Verify file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'File not found',
+      });
+    }
+
+    // Determine content type based on extension
+    const ext = path.extname(filename).toLowerCase();
+    const contentTypeMap = {
+      '.pdf': 'application/pdf',
+      '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      '.csv': 'text/csv',
+      '.json': 'application/json',
+    };
+
+    const contentType = contentTypeMap[ext] || 'application/octet-stream';
+
+    // Set response headers
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    // Stream file to response
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    // Auto-delete file after 5 seconds
+    fileStream.on('end', () => {
+      setTimeout(() => {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error(`❌ Failed to delete file ${filename}:`, err);
+          } else {
+            console.log(`🗑️ Auto-deleted: ${filename}`);
+          }
+        });
+      }, 5000);
+    });
+
+    console.log(`📥 Download initiated: ${filename}`);
+  } catch (error) {
+    console.error('❌ Download Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to download file',
       error: error.message,
     });
   }
