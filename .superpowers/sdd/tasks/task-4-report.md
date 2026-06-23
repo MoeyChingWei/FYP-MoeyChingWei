@@ -1,62 +1,74 @@
-# Task 4 Report: Create Base Layout and Document Templates
+# Task 4: Create PrintButton Component - Implementation Report
 
-## Status
-**Completed** - All deliverables created and committed.
+## Status: COMPLETED ✓
+
+## Overview
+Created PrintButton component for printing data by generating PDF and automatically triggering browser print dialog.
 
 ## Files Created
-1. `backend/templates/layouts/base.hbs` - Base HTML5 layout
-2. `backend/templates/documents/purchase-request.hbs` - Purchase request document template
+1. `client/src/FrontEnd/components/shared/PrintButton.tsx` - Main component
+2. `client/src/FrontEnd/components/shared/PrintButton.module.css` - Component styles
 
 ## Implementation Details
 
-### base.hbs
-- HTML5 doctype with proper meta tags
-- CSS injection using triple braces: `{{{commonCSS}}}`, `{{{tablesCSS}}}`, `{{{printCSS}}}`
-- Document title from `{{documentTitle}}`
-- Partial includes: `{{> header}}` and `{{> footer}}`
-- Content placeholder using `{{{body}}}` for unescaped HTML
-- Wrapped in `.document-container` div for consistent layout
+### PrintButton.tsx
+- **Simple PDF-only button** - Uses export API with `format: 'pdf'`
+- **Auto-triggers print dialog** - Opens PDF in new window and calls `window.print()`
+- **Loading state** - Shows LoadingOutlined icon while processing
+- **Error handling** - Handles 403, 404, 500, timeout, and popup blocker errors
+- **Callbacks** - Supports `onPrintStart`, `onPrintEnd`, `onPrintError`
+- **Accessibility** - Includes ARIA labels and keyboard support
 
-### purchase-request.hbs
-- **Document metadata section** (`.document-meta`): document type, number, status, optional request date
-- **Requester info section** (`.requester-info`): name, department, optional purpose
-- **Data table** (`.data-table`): 6 columns (No, Item Name, Category, Qty, Unit, Description)
-- **Line items iteration**: `{{#each lineItems}}` with proper column mapping
-- **Table summary**: Optional total items display
-- **Signature block**: Includes `{{> signature}}` partial for approvals
+### Key Features
+```typescript
+- Uses Ant Design Button and icons (PrinterOutlined, LoadingOutlined)
+- Integrates with i18n for labels (buttons.print, buttons.printDocument)
+- Authentication via localStorage (authToken, userId, userRole, userDepartment)
+- axios with responseType: 'blob', timeout: 60000ms
+- Opens PDF in new window with window.open(url, '_blank')
+- Automatic print dialog trigger after PDF loads
+- Blob URL cleanup after print dialog opens
+```
 
-### CSS Classes Used
-All classes match Task 2 styles:
-- `.document-meta`, `.meta-row`, `.meta-label`, `.meta-value`
-- `.requester-info`
-- `.data-table`, `.col-no`, `.col-qty`, `.col-unit`
-- `.table-summary`
+### PrintButton.module.css
+- Consistent styling with ExportButton
+- Hover lift effect (translateY(-1px))
+- Focus outline for accessibility
+- Disabled state styling
+- Box shadow transitions
 
-### Handlebars Features
-- Triple braces `{{{ }}}` for unescaped CSS and HTML content
-- Double braces `{{ }}` for escaped text values
-- `{{#each lineItems}}` for iteration
-- `{{#if}}` for conditional rendering
-- `{{> partialName}}` for partial includes
+## Component Interface
+```typescript
+interface PrintButtonProps {
+  dataType: DataType;
+  data: Record<string, unknown>[];
+  onPrintStart?: () => void;
+  onPrintEnd?: () => void;
+  onPrintError?: (error: Error) => void;
+  className?: string;
+  disabled?: boolean;
+  tooltip?: string;
+  pageTitle?: string;
+  includeTimestamp?: boolean;
+}
+```
 
 ## Commit
-```
-f2a4d45 feat: add base layout and purchase request template
-```
+- **Hash**: `ae2f0f2`
+- **Message**: "feat: add PrintButton component for PDF printing"
+- **Files**: 2 files changed, 169 insertions(+)
 
-## Success Criteria Met
-- [x] Both .hbs files created
-- [x] base.hbs uses triple braces for CSS injection and body
-- [x] purchase-request.hbs uses proper Handlebars iteration
-- [x] CSS classes match styles from Task 2
-- [x] Committed with conventional format
+## Integration Notes
+- Component ready for use in any page requiring print functionality
+- Requires export API endpoint at `/api/export/{dataType}` to support PDF format
+- Works alongside ExportButton component with consistent design
+- Uses same authentication and permission model as ExportButton
 
-## Concerns
-None. The templates are ready for integration with the renderer service in Task 5.
+## Dependencies
+- Ant Design 6.3.1: Button, message, PrinterOutlined, LoadingOutlined
+- axios: HTTP client with blob response support
+- react-i18next: Translation hook
+- React: useState hook for state management
 
 ## Next Steps
-Task 5 will build the template renderer service that:
-1. Loads these templates
-2. Reads CSS files and injects them
-3. Compiles Handlebars templates
-4. Renders documents with data context
+Task 5: Integrate PrintButton and ExportButton into Purchase Order Review Page
