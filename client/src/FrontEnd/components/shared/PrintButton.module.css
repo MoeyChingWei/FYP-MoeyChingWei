@@ -1,0 +1,28 @@
+.printButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.printButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.printButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.printButton:focus {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.printButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
