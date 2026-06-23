@@ -14,7 +14,12 @@
     "no": "否",
     "add": "添加",
     "open": "打开",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "export": "导出",
+    "print": "打印",
+    "exportPDF": "导出为PDF",
+    "exportExcel": "导出为Excel",
+    "printDocument": "打印文档"
   },
   "labels": {
     "name": "名称",

@@ -14,7 +14,12 @@
     "no": "No",
     "add": "Add",
     "open": "Open",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "export": "Export",
+    "print": "Print",
+    "exportPDF": "Export as PDF",
+    "exportExcel": "Export as Excel",
+    "printDocument": "Print Document"
   },
   "labels": {
     "name": "Name",

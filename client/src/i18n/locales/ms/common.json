@@ -14,7 +14,12 @@
     "no": "Tidak",
     "add": "Tambah",
     "open": "Buka",
-    "refresh": "Muat semula"
+    "refresh": "Muat semula",
+    "export": "Eksport",
+    "print": "Cetak",
+    "exportPDF": "Eksport sebagai PDF",
+    "exportExcel": "Eksport sebagai Excel",
+    "printDocument": "Cetak Dokumen"
   },
   "labels": {
     "name": "Nama",
