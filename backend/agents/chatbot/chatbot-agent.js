@@ -495,6 +495,49 @@ class ChatBotAgent {
           required: ['userId'],
         },
       },
+      {
+        name: 'export_data',
+        description: '[MUST USE] Universal export tool for multiple data types. Call when users ask to export, download, or get files for purchase requests, purchase orders, invoices, or suppliers.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            dataType: {
+              type: 'string',
+              enum: ['purchase-requests', 'purchase-orders', 'invoices', 'suppliers'],
+              description: 'Type of data to export'
+            },
+            format: {
+              type: 'string',
+              enum: ['pdf', 'excel', 'csv', 'json'],
+              description: 'Export format'
+            },
+            filters: {
+              type: 'object',
+              description: 'Optional filters for the export',
+              properties: {
+                status: {
+                  type: 'string',
+                  enum: ['ALL', 'PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED'],
+                  description: 'Filter by status (for purchase requests/orders)'
+                },
+                dateRange: {
+                  type: 'string',
+                  description: 'Date range filter (e.g., "last 7 days", "last 30 days")'
+                },
+                department: {
+                  type: 'string',
+                  description: 'Filter by department'
+                },
+                limit: {
+                  type: 'number',
+                  description: 'Maximum number of records to export (default: 100)'
+                }
+              }
+            }
+          },
+          required: ['dataType', 'format'],
+        },
+      },
     ];
   }
 
