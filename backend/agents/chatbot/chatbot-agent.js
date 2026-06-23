@@ -130,39 +130,106 @@ Use this information to:
 
 If the image contains items that could be purchased, proactively offer to help create a purchase request using the information from the image.
 
-## Exporting Purchase Requests
+## Exporting Data
 
-When users ask to "export", "download", or "get a file" of purchase requests:
+When users ask to "export", "download", "get a file", or similar, follow this process:
 
-1. Call the export_purchase_requests tool with appropriate filters
-2. The tool will generate the export data (CSV or JSON format)
-3. Present the results to the user with these details:
-   - Number of records exported
-   - Format (CSV or JSON)
-   - Status filter applied (if any)
-   - Department filter (if applicable)
+### Step 1: Detect Data Type
+Identify what data they want to export:
+- **Purchase Requests**: Keywords like "purchase requests", "PR", "requisitions"
+- **Purchase Orders**: Keywords like "purchase orders", "PO", "orders"
+- **Invoices**: Keywords like "invoices", "billing", "receipts"
+- **Suppliers**: Keywords like "suppliers", "vendor", "vendor list"
 
-Example response after successful export:
-"✅ Export ready! I've prepared {count} purchase request(s) in {format} format.
+If unclear, ask: "Which data would you like to export?
+
+OPTIONS:
+- Purchase Requests
+- Purchase Orders
+- Invoices
+- Suppliers"
+
+### Step 2: Detect Export Format
+Determine the preferred format:
+- **CSV**: Best for Excel and Google Sheets (default if not specified)
+- **JSON**: Best for developers and system integration
+- **PDF**: For formatted documents and printing
+- **Excel**: For advanced spreadsheet features
+
+If not specified, default to CSV. You can also ask: "Which format would you prefer?
+
+OPTIONS:
+- CSV (Excel/Sheets compatible)
+- JSON (for integration)
+- PDF (formatted document)
+- Excel (advanced features)"
+
+### Step 3: Apply Optional Filters
+For purchase requests and orders, offer filter options:
+- **Status**: ALL, PENDING, SUBMITTED, APPROVED, REJECTED
+- **Date Range**: Last 7 days, Last 30 days, Custom range
+- **Department**: User's department (auto-filtered for non-admins)
+- **Limit**: Default 100 records
+
+Ask if filters are needed: "Would you like to apply any filters?
+
+OPTIONS:
+- No, export everything
+- Filter by status
+- Filter by date range
+- Filter by specific department"
+
+### Step 4: Call Export Tool
+Based on data type and format, call the appropriate tool:
+
+**For Purchase Requests:**
+Call export_purchase_requests tool with:
+- format: 'csv' | 'json' | 'pdf' | 'xlsx'
+- status: 'ALL' | 'PENDING' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
+- limit: number (default 100)
+
+**For Purchase Orders:**
+Call export_purchase_orders tool (if available)
+
+**For Invoices:**
+Call export_invoices tool (if available)
+
+**For Suppliers:**
+Call export_suppliers tool (if available)
+
+### Step 5: Present Results
+After successful export, show:
+
+"✅ Export ready! I've prepared {count} {dataType}(s) in {format} format.
 
 **Export Details:**
 - Records: {count}
+- Data Type: {dataType}
 - Format: {format}
-- Status: {status}
+- Status: {status} (if applicable)
+- Date Range: {range} (if applicable)
 - Department: {department}
 
-The data is ready and includes all line items with full details (PR numbers, items, quantities, prices, suppliers, etc.).
+The data includes all relevant details:
+- For Purchase Requests: PR numbers, items, quantities, prices, suppliers
+- For Orders: Order numbers, items, quantities, totals, status
+- For Invoices: Invoice numbers, amounts, dates, vendors
+- For Suppliers: Vendor names, contact info, payment terms
 
-Unfortunately, I cannot directly send you the file through chat, but here's what you can do:
-1. Copy the formatted data from above if you need to paste it into Excel
-2. Ask your system administrator to set up a download endpoint
+The file is ready. You can:
+1. Copy the formatted data if you need to paste into Excel
+2. Download via the system interface
 3. Use the API directly at: POST /api/chatbot/export
 
-Would you like me to show you a sample of the data, or help you with anything else?"
+Would you like me to show you a preview, apply different filters, or help with anything else?"
 
-Available formats:
-- **CSV**: Best for Excel and Google Sheets (default)
-- **JSON**: Best for developers and system integration
+### Step 6: Handle Errors
+If no data found:
+"No {dataType} found matching your criteria. Try:
+- Removing filters
+- Expanding the date range
+- Checking your department permissions
+- Contacting your administrator"
 
 ## Creating Purchase Requests
 
@@ -1420,23 +1487,106 @@ class ChatBotAgent {
   }
 
   async deleteSession(sessionId) {
-    await prisma.chatSession.delete({
-      where: { id: sessionId },
+    return await prisma.$transaction(async (tx) => {
+      const session = await tx.chatSession.findUnique({
+        where: { id: sessionId },
+        select: { id: true },
+      });
+
+      if (!session) {
+        return false;
+      }
+
+      const messages = await tx.chatMessage.findMany({
+        where: { sessionId },
+        select: { id: true },
+      });
+      const messageIds = messages.map((message) => message.id);
+
+      if (messageIds.length > 0) {
+        await tx.messageAttachment.deleteMany({
+          where: { messageId: { in: messageIds } },
+        });
+      }
+
+      const sources = await tx.source.findMany({
+        where: { sessionId },
+        select: { id: true },
+      });
+      const sourceIds = sources.map((source) => source.id);
+
+      if (sourceIds.length > 0) {
+        await tx.sourceChunk.deleteMany({
+          where: { sourceId: { in: sourceIds } },
+        });
+      }
+
+      await tx.source.deleteMany({
+        where: { sessionId },
+      });
+
+      await tx.chatMessage.deleteMany({
+        where: { sessionId },
+      });
+
+      await tx.chatSession.delete({
+        where: { id: sessionId },
+      });
+
+      return true;
     });
   }
 
   async deleteAllUserSessions(userId) {
-    await prisma.chatMessage.deleteMany({
-      where: {
-        session: { userId },
-      },
-    });
+    return await prisma.$transaction(async (tx) => {
+      const sessions = await tx.chatSession.findMany({
+        where: { userId },
+        select: { id: true },
+      });
+      const sessionIds = sessions.map((session) => session.id);
 
-    const result = await prisma.chatSession.deleteMany({
-      where: { userId },
-    });
+      if (sessionIds.length === 0) {
+        return 0;
+      }
 
-    return result.count;
+      const messages = await tx.chatMessage.findMany({
+        where: { sessionId: { in: sessionIds } },
+        select: { id: true },
+      });
+      const messageIds = messages.map((message) => message.id);
+
+      if (messageIds.length > 0) {
+        await tx.messageAttachment.deleteMany({
+          where: { messageId: { in: messageIds } },
+        });
+      }
+
+      const sources = await tx.source.findMany({
+        where: { sessionId: { in: sessionIds } },
+        select: { id: true },
+      });
+      const sourceIds = sources.map((source) => source.id);
+
+      if (sourceIds.length > 0) {
+        await tx.sourceChunk.deleteMany({
+          where: { sourceId: { in: sourceIds } },
+        });
+      }
+
+      await tx.source.deleteMany({
+        where: { sessionId: { in: sessionIds } },
+      });
+
+      await tx.chatMessage.deleteMany({
+        where: { sessionId: { in: sessionIds } },
+      });
+
+      const result = await tx.chatSession.deleteMany({
+        where: { id: { in: sessionIds } },
+      });
+
+      return result.count;
+    });
   }
 }
 
