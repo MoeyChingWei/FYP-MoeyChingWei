@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 import styles from "./PurchasingManagement.module.css";
 import { getSessionUser } from "../../shared/auth/session";
-import { UserRole } from "../../shared/types/roles";
+import { isFinanceRole, UserRole } from "../../shared/types/roles";
 
 const { Title } = Typography;
 
@@ -63,7 +63,7 @@ export default function PurchasingManagement(): React.ReactElement {
       return purchaseRequestCards;
     }
     if (role === UserRole.DEPARTMENT_EXECUTIVE) return purchaseRequestCards;
-    if (role === UserRole.EMPLOYEE) {
+    if (role === UserRole.EMPLOYEE || isFinanceRole(role)) {
       return purchaseRequestCards.filter((card) => card.route === "/purchasing/review");
     }
     return [];
@@ -79,7 +79,13 @@ export default function PurchasingManagement(): React.ReactElement {
     return [];
   }, [role]);
 
-  const showGrn = !role || role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.DEPARTMENT_EXECUTIVE || role === UserRole.EMPLOYEE;
+  const showGrn =
+    !role ||
+    role === UserRole.ADMIN ||
+    role === UserRole.MANAGER ||
+    role === UserRole.DEPARTMENT_EXECUTIVE ||
+    role === UserRole.EMPLOYEE ||
+    isFinanceRole(role);
 
   return (
     <div className={styles.page}>

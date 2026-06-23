@@ -21,6 +21,7 @@ import {
   InboxOutlined,
   SettingOutlined,
   CommentOutlined,
+  RobotOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
@@ -32,7 +33,7 @@ import {
   getSessionUser,
   type SessionUser,
 } from "./shared/auth/session";
-import { UserRole } from "./shared/types/roles";
+import { isFinanceRole, UserRole } from "./shared/types/roles";
 import NotificationBell from "./components/shared/NotificationBell";
 import BreadcrumbNav from "./components/shared/BreadcrumbNav";
 import ChatBotWidget from "./components/ChatBot/ChatBotWidget";
@@ -120,6 +121,7 @@ const AIAssistantSubmodule = lazy(() => import("./pages/settings/AIAssistantSubm
 const AIAssistantRedesign = lazy(() => import("./pages/settings/AIAssistantRedesign"));
 const SubAgentsPage = lazy(() => import("./pages/settings/SubAgentsPage"));
 const ChatBotPage = lazy(() => import("./pages/ChatBotPage"));
+const MultiAgentPage = lazy(() => import("./pages/MultiAgentPage"));
 
 type MenuKey =
   | "overview"
@@ -128,6 +130,7 @@ type MenuKey =
   | "supplier-overview"
   | "tracking-item"
   | "chatbot"
+  | "ai-agents"
   | "settings";
 
 function useMenuKeyFromPath(pathname: string): MenuKey {
@@ -136,6 +139,7 @@ function useMenuKeyFromPath(pathname: string): MenuKey {
   if (pathname.startsWith("/supplier-overview")) return "supplier-overview";
   if (pathname.startsWith("/tracking-item")) return "tracking-item";
   if (pathname.startsWith("/chatbot")) return "chatbot";
+  if (pathname.startsWith("/ai-agents")) return "ai-agents";
   if (
     pathname.startsWith("/settings") ||
     pathname.startsWith("/category-selection")
@@ -180,7 +184,7 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/purchasing/po-approval")) return false;
       return true;
     }
-    if (role === UserRole.EMPLOYEE) {
+    if (role === UserRole.EMPLOYEE || isFinanceRole(role)) {
       if (pathname.startsWith("/overview")) return true;
       if (pathname.startsWith("/profile")) return true;
       if (pathname.startsWith("/notifications")) return true;
@@ -190,6 +194,7 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/purchasing/goods-received-note")) return true;
       if (pathname.startsWith("/tracking-item")) return true;
       if (pathname.startsWith("/chatbot")) return true;
+      if (pathname.startsWith("/ai-agents")) return true;
       if (pathname.startsWith("/settings")) return true;
       if (pathname.startsWith("/category-selection")) return true;
       return false;
@@ -199,6 +204,7 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/profile")) return true;
       if (pathname.startsWith("/notifications")) return true;
       if (pathname.startsWith("/chatbot")) return true;
+      if (pathname.startsWith("/ai-agents")) return true;
       return false;
     }
     return true;
@@ -222,6 +228,7 @@ function MainLayout(): React.ReactElement {
       "supplier-overview": "#14b8a6",
       "tracking-item": "#ec4899",
       chatbot: "#f59e0b",
+      "ai-agents": "#8b5cf6",
       settings: "#64748b",
     }),
     [],
@@ -233,6 +240,7 @@ function MainLayout(): React.ReactElement {
     "supplier-overview": "/supplier-overview",
     "tracking-item": "/tracking-item",
     chatbot: "/chatbot",
+    "ai-agents": "/ai-agents",
     settings: "/settings",
   };
 
@@ -243,17 +251,18 @@ function MainLayout(): React.ReactElement {
     if (role === UserRole.DEPARTMENT_EXECUTIVE) {
       return key !== "supplier-overview" && key !== "users-access";
     }
-    if (role === UserRole.EMPLOYEE) {
+    if (role === UserRole.EMPLOYEE || isFinanceRole(role)) {
       return (
         key === "overview" ||
         key === "purchasing" ||
         key === "tracking-item" ||
         key === "chatbot" ||
+        key === "ai-agents" ||
         key === "settings"
       );
     }
     if (role === UserRole.SUPPLIER) {
-      return key === "supplier-overview" || key === "chatbot";
+      return key === "supplier-overview" || key === "chatbot" || key === "ai-agents";
     }
     return true;
   };
@@ -313,6 +322,11 @@ function MainLayout(): React.ReactElement {
                   key: "chatbot",
                   icon: <CommentOutlined />,
                   label: t('sidebar.chatbot'),
+                },
+                {
+                  key: "ai-agents",
+                  icon: <RobotOutlined />,
+                  label: t('sidebar.aiAgents'),
                 },
                 {
                   key: "settings",
@@ -535,6 +549,7 @@ function MainLayout(): React.ReactElement {
           />
           <Route path="/tracking-item/*" element={<Navigate to="/tracking-item" replace />} />
           <Route path="/chatbot" element={<ChatBotPage />} />
+          <Route path="/ai-agents" element={<MultiAgentPage userId={sessionUser?.id || 0} />} />
           <Route path="/settings" element={<SettingsHome />} />
           <Route
             path="/settings/company-address"

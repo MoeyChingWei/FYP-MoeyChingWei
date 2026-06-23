@@ -3,7 +3,7 @@
 **Project Name**: OptiMind ERP System  
 **Developer**: Moey Ching Wei  
 **Created**: 2026-06-09  
-**Last Updated**: 2026-06-21
+**Last Updated**: 2026-06-23
 
 ---
 
@@ -651,3 +651,119 @@ _暂无记录的技术债务_
 _本文档会持续更新，记录项目开发过程中的所有重要信息。_
 
 **最后更新时间**: 2026-06-10
+
+---
+## [2026-06-22] - Export & Print System Backend
+
+**Requirement:** Build professional document export system for OptiMind ERP supporting PDF, Excel, CSV, and JSON formats for purchase requests, orders, invoices, and suppliers.
+
+**Implementation:** 
+- Developed complete backend export API with template-based document generation
+- Integrated Puppeteer for PDF generation, exceljs for spreadsheets
+- Created professional Handlebars templates with company branding
+- Implemented data formatting layer for all 4 data types
+
+**Modified Files:**
+- `backend/routes/export.js` - REST API endpoint POST /api/export/:dataType
+- `backend/services/export-service.js` - Unified export orchestration (20 tests)
+- `backend/services/pdf-generator.js` - Puppeteer HTML→PDF (10 tests)
+- `backend/services/template-renderer.js` - Handlebars compilation (9 tests)
+- `backend/services/data-formatter.js` - Data transformation (18 tests)
+- `backend/templates/documents/*.hbs` - 4 professional document templates
+- `backend/templates/styles/*.css` - Print-optimized CSS
+- `backend/config/puppeteer-config.js` - PDF generation config
+
+**Technical Details:**
+- Template Engine: Handlebars with caching for performance
+- PDF Generation: Puppeteer headless Chrome with A4 format
+- Excel: exceljs with auto-column sizing
+- Department-level permissions enforced via user role
+- Response: Binary blob stream (responseType: 'blob')
+- Timeout: 60 seconds for large datasets
+
+**Important Notes:**
+- All 78 backend tests passing (100% coverage)
+- File naming: {dataType}-{timestamp}.{extension}
+- Requires Chromium dependencies for Puppeteer
+- PDF templates optimized for printing (print.css)
+
+**Related Documentation:**
+- Created: docs/04-implementation/completion-reports/2026-06-22-EXPORT-PRINT-SYSTEM-COMPLETION-REPORT.md
+- Created: docs/07-design-specs/specs/2026-06-22-export-print-system-design.md
+
+---
+## [2026-06-23] - Export & Print System Frontend
+
+**Requirement:** Create reusable React components for exporting data with format selection and print functionality, integrate with backend export API.
+
+**Implementation:**
+- Built ExportButton component with dropdown menu (PDF/Excel/CSV/JSON)
+- Built PrintButton component for direct PDF printing
+- Added i18n translations for EN/ZH/MS
+- Integrated into PurchaseOrderReview page as proof-of-concept
+
+**Modified Files:**
+- `client/src/FrontEnd/components/shared/ExportButton.tsx` - Export dropdown component
+- `client/src/FrontEnd/components/shared/PrintButton.tsx` - Print button component
+- `client/src/FrontEnd/components/shared/types/export.ts` - TypeScript types
+- `client/src/FrontEnd/pages/purchasing/PurchaseOrderReview.tsx` - Integration example
+- `client/src/i18n/locales/en/common.json` - Export translations (English)
+- `client/src/i18n/locales/zh/common.json` - Export translations (Chinese)
+- `client/src/i18n/locales/ms/common.json` - Export translations (Malay)
+
+**Technical Details:**
+- UI Framework: Ant Design 6.3.1 (Dropdown, Button, message)
+- HTTP Client: axios with responseType: 'blob'
+- File Download: Blob URL creation with auto-cleanup
+- Error Handling: 403, 404, 500, timeout with user-friendly messages
+- Loading States: Per-format loading spinners
+- Permissions: Automatically uses session user credentials
+
+**Important Notes:**
+- Components are fully reusable across all list pages
+- Supports current page filters (status, department, date range)
+- Auto-revokes blob URLs to prevent memory leaks
+- Print button opens PDF in new window with print dialog
+
+**Related Documentation:**
+- Created: docs/07-design-specs/specs/2026-06-23-frontend-export-components-design.md
+- Created: docs/07-design-specs/guides/export-button-integration.md
+- Created: docs/07-design-specs/plans/2026-06-23-frontend-export-components.md
+
+---
+## [2026-06-23] - Chatbot export_data Tool Integration
+
+**Requirement:** Enable chatbot to understand natural language export requests and provide OPTIONS buttons for format selection.
+
+**Implementation:**
+- Upgraded chatbot with universal export_data tool supporting all data types and formats
+- Enhanced system prompt with export instructions and format detection
+- Added download endpoint for temporary file serving
+- Implemented OPTIONS button UI for format selection when not specified
+
+**Modified Files:**
+- `backend/agents/chatbot/chatbot-agent.js` - Added export_data tool definition and handler
+- `backend/utils/chatbot-export-handler.js` - Export logic for chatbot (NEW)
+- `backend/routes/chatbot.js` - Added GET /api/chatbot/download/:filename endpoint
+- `backend/temp/exports/.gitignore` - Temp file directory (NEW)
+
+**Technical Details:**
+- Tool Definition: export_data with dataType, format, filters parameters
+- Backend Integration: Calls POST /api/export/:dataType via axios
+- File Management: Saves to temp/exports/, auto-deletes after 5 seconds
+- OPTIONS Format: Frontend renders clickable format buttons
+- Natural Language: Detects data type and format from user message
+- Security: Filename validation regex, path traversal protection
+
+**Important Notes:**
+- Supports natural language: "导出采购申请", "export purchase orders as PDF"
+- Shows OPTIONS buttons when format not specified
+- Returns download link with file metadata (size, timestamp)
+- Comprehensive error handling (permissions, no data, timeout, server errors)
+- Works with all 4 data types and 4 formats
+
+**Related Documentation:**
+- Created: docs/07-design-specs/specs/2026-06-23-chatbot-export-tool-design.md
+- Created: docs/07-design-specs/plans/2026-06-23-chatbot-export-tool.md
+- Created: docs/07-design-specs/guides/chatbot-export-usage.md
+

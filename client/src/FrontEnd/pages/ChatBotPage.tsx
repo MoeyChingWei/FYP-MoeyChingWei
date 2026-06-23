@@ -15,7 +15,6 @@ import {
   InboxOutlined,
   ClockCircleOutlined,
   DatabaseOutlined,
-  DownloadOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
@@ -45,7 +44,6 @@ import {
   getUserSources,
   deleteSource,
   getSessionUser,
-  exportPurchaseRequests,
 } from './chatbot-api';
 
 const { TextArea } = Input;
@@ -596,58 +594,23 @@ const ChatBotPage: React.FC = () => {
     await sendMessageToSession(newSessionId, messageText);
   };
 
-  const handleExportPurchaseRequests = async (format: 'csv' | 'json' = 'csv') => {
-    if (!userId) {
-      message.error(t('messages.userNotLoggedIn'));
-      return;
-    }
-
-    try {
-      message.loading({ content: 'Preparing export...', key: 'export' });
-
-      const result = await exportPurchaseRequests({
-        userId,
-        format,
-        status: 'ALL',
-        limit: 100,
-      });
-
-      message.success({
-        content: `Successfully exported ${result.recordCount} purchase request(s)`,
-        key: 'export',
-        duration: 3,
-      });
-
-      console.log('Export completed:', result);
-    } catch (error: any) {
-      console.error('Export failed:', error);
-      message.error({
-        content: error.message || 'Failed to export purchase requests',
-        key: 'export',
-        duration: 5,
-      });
-    }
-  };
-
   const handleSessionClick = (sessionId: string) => {
     setCurrentSessionId(sessionId);
     loadSessionMessages(sessionId);
   };
 
-  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDeleteSession = async (sessionId: string) => {
     try {
       await deleteSession(sessionId);
+      setSessions((prev) => prev.filter((session) => session.id !== sessionId));
       message.success(t('messages.sessionDeleted'));
 
       // If deleted current session, return to the new-chat screen
       if (sessionId === currentSessionId) {
         handleNewChat();
-      } else {
-        await loadSessions();
       }
-    } catch (error) {
-      message.error(t('messages.sessionDeleteFailed'));
+    } catch (error: any) {
+      message.error(error.message || t('messages.sessionDeleteFailed'));
     }
   };
 
@@ -912,7 +875,7 @@ const ChatBotPage: React.FC = () => {
                               }
 
                               if (key === 'delete-chat') {
-                                handleDeleteSession(session.id, domEvent as unknown as React.MouseEvent);
+                                handleDeleteSession(session.id);
                               }
                             },
                           }}
@@ -1071,33 +1034,6 @@ const ChatBotPage: React.FC = () => {
             >
               {t('buttons.newChat')}
             </Button>
-            <Dropdown
-              trigger={['click']}
-              menu={{
-                items: [
-                  {
-                    key: 'csv',
-                    label: 'Export as CSV',
-                    icon: <FileExcelOutlined />,
-                  },
-                  {
-                    key: 'json',
-                    label: 'Export as JSON',
-                    icon: <FileTextOutlined />,
-                  },
-                ],
-                onClick: ({ key }) => {
-                  handleExportPurchaseRequests(key as 'csv' | 'json');
-                },
-              }}
-            >
-              <Button
-                icon={<DownloadOutlined />}
-                style={{ width: '100%' }}
-              >
-                Export Purchase Requests
-              </Button>
-            </Dropdown>
           </div>
           <div className="chatbot-sessions-list">
             {sessions.map((session) => (
@@ -1115,7 +1051,10 @@ const ChatBotPage: React.FC = () => {
                   danger
                   size="small"
                   icon={<DeleteOutlined />}
-                  onClick={(e) => handleDeleteSession(session.id, e)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteSession(session.id);
+                  }}
                 />
               </div>
             ))}

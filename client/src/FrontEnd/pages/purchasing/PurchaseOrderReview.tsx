@@ -31,8 +31,8 @@ import {
 import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/types";
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
 import { UserRole } from "../../shared/types/roles";
-import { ExportButton } from "../../components/ExportButton";
-import { PrintButton } from "../../components/PrintButton";
+import ExportButton from "../../components/shared/ExportButton";
+import PrintButton from "../../components/shared/PrintButton";
 
 import styles from "./PurchaseOrderReview.module.css";
 
@@ -94,26 +94,6 @@ export default function PurchaseOrderReview(): React.ReactElement {
     sessionUser?.role === UserRole.MANAGER ||
     normalizedRole === "super admin";
   const isAdmin = canViewAllOrders;
-
-  // Build filters for export/print
-  const exportFilters = useMemo(() => {
-    const filters: Record<string, any> = {};
-
-    if (searchValue.trim()) {
-      filters.search = searchValue.trim();
-    }
-
-    if (selectedDate) {
-      filters.date = selectedDate;
-    }
-
-    // Add department filter based on permissions
-    if (!canViewAllOrders && sessionUser) {
-      filters.department = sessionUser.department || undefined;
-    }
-
-    return filters;
-  }, [searchValue, selectedDate, canViewAllOrders, sessionUser]);
 
   const filteredOrders = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
@@ -369,14 +349,14 @@ export default function PurchaseOrderReview(): React.ReactElement {
             <Flex gap={8}>
               <ExportButton
                 dataType="purchase-orders"
-                filters={exportFilters}
-                onSuccess={() => message.success(tMsg('export.success'))}
-                onError={(error) => message.error(tMsg('export.error'))}
+                data={filteredOrders as unknown as Record<string, unknown>[]}
+                onExportSuccess={() => message.success(tMsg('export.success'))}
+                onExportError={() => message.error(tMsg('export.error'))}
               />
               <PrintButton
                 dataType="purchase-orders"
-                filters={exportFilters}
-                onError={(error) => message.error(tMsg('print.error'))}
+                data={filteredOrders as unknown as Record<string, unknown>[]}
+                onPrintError={() => message.error(tMsg('print.error'))}
               />
               <Button
                 type="primary"

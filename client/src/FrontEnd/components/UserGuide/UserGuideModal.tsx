@@ -12,7 +12,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import { UserRole } from "../../shared/types/roles";
+import { isFinanceRole, UserRole } from "../../shared/types/roles";
 
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -20,7 +20,7 @@ const { Panel } = Collapse;
 interface UserGuideModalProps {
   visible: boolean;
   onClose: () => void;
-  userRole?: UserRole;
+  userRole?: string;
 }
 
 interface GuideSection {
@@ -115,7 +115,12 @@ export default function UserGuideModal({
       });
     }
 
-    if (userRole === UserRole.EMPLOYEE || userRole === UserRole.DEPARTMENT_EXECUTIVE || userRole === UserRole.MANAGER) {
+    if (
+      userRole === UserRole.EMPLOYEE ||
+      userRole === UserRole.DEPARTMENT_EXECUTIVE ||
+      userRole === UserRole.MANAGER ||
+      isFinanceRole(userRole)
+    ) {
       sections.push({
         key: "purchasing-guide",
         title: t("purchasing.title"),

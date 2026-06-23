@@ -12,3 +12,35 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Global Ant Design dropdown styling. */
+.ant-select-dropdown,
+.ant-dropdown .ant-dropdown-menu {
+  padding: 6px !important;
+  background: #eef6ff !important;
+  border: 1px solid #93c5fd !important;
+  border-radius: 8px !important;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18) !important;
+}
+
+.ant-select-dropdown .ant-select-item,
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item,
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-submenu-title {
+  border-radius: 6px !important;
+  color: #0f172a !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled),
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-active,
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-submenu-title-active,
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item:hover,
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-submenu-title:hover {
+  background: #dbeafe !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled),
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-selected {
+  background: #bfdbfe !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}

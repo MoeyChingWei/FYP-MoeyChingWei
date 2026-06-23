@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 
 import styles from "./Overview.module.css";
 import { getSessionUser } from "../shared/auth/session";
-import { UserRole } from "../shared/types/roles";
+import { isFinanceRole, UserRole } from "../shared/types/roles";
 import {
   fetchNotifications,
   deleteNotification,
@@ -323,7 +323,7 @@ export default function Dashboard(): React.ReactElement {
     if (role === UserRole.DEPARTMENT_EXECUTIVE) {
       return tiles.filter((t) => t.key !== "supplier-overview" && t.key !== "users-access");
     }
-    if (role === UserRole.EMPLOYEE) {
+    if (role === UserRole.EMPLOYEE || isFinanceRole(role)) {
       return tiles.filter(
         (t) => t.key === "purchasing" || t.key === "tracking-item",
       );
