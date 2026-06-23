@@ -5,6 +5,7 @@ import prisma from '../../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 import { generatePRNumber } from '../../utils/pr-number-generator.js';
 import { exportPurchaseRequestsToCSV, exportPurchaseRequestsToJSON } from '../../utils/export-purchase-requests.js';
+import { handleExport } from '../../utils/chatbot-export-handler.js';
 
 const COMMON_CATEGORIES = [
   'Office Supplies / Stationery',
@@ -852,6 +853,82 @@ class ChatBotAgent {
           mimeType,
           message: `Successfully prepared ${filteredRecords.length} purchase request(s) for export`,
         };
+      },
+
+      export_data: async (input) => {
+        const { dataType, format, filters = {}, userId } = input;
+
+        // Get user info
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { role: true, department: true },
+        });
+
+        if (!user) {
+          return {
+            success: false,
+            error: '❌ 找不到用户信息',
+            message: '无法验证用户权限，请重新登录。',
+          };
+        }
+
+        // Call the export handler
+        const result = await handleExport({
+          dataType,
+          format,
+          filters,
+          userId,
+          userRole: user.role,
+          userDepartment: user.department,
+        });
+
+        // Format response with Chinese and emojis
+        if (result.success) {
+          const formatEmoji = {
+            pdf: '📄',
+            excel: '📊',
+            csv: '📋',
+            json: '📦',
+          }[format] || '📁';
+
+          const dataTypeLabel = {
+            'purchase-requests': '采购申请',
+            'purchase-orders': '采购订单',
+            'invoices': '发票',
+            'suppliers': '供应商',
+          }[dataType] || dataType;
+
+          return {
+            success: true,
+            message: `✅ ${dataTypeLabel}数据导出成功！\n\n${formatEmoji} 格式: ${format.toUpperCase()}\n📦 记录数: ${result.recordCount || '未知'}\n📂 文件名: ${result.filename}\n🔗 下载链接: ${result.downloadUrl}\n⏰ 生成时间: ${new Date(result.timestamp).toLocaleString('zh-CN')}`,
+            filename: result.filename,
+            downloadUrl: result.downloadUrl,
+            recordCount: result.recordCount,
+            format: result.format,
+            timestamp: result.timestamp,
+          };
+        } else {
+          // Format error messages in Chinese
+          const errorMessages = {
+            'INVALID_DATA_TYPE': '❌ 数据类型无效',
+            'INVALID_FORMAT': '❌ 导出格式无效',
+            'MISSING_AUTH': '❌ 缺少身份验证',
+            'CONNECTION_REFUSED': '❌ 无法连接到导出服务',
+            'TIMEOUT': '⏰ 导出超时',
+            'PERMISSION_DENIED': '🚫 权限不足',
+            'NO_DATA': '📭 没有找到数据',
+            'BAD_REQUEST': '❌ 请求参数错误',
+            'SERVER_ERROR': '🔧 服务器错误',
+          };
+
+          const errorTitle = errorMessages[result.error] || '❌ 导出失败';
+
+          return {
+            success: false,
+            error: errorTitle,
+            message: `${errorTitle}\n\n${result.message}`,
+          };
+        }
       },
     };
   }
