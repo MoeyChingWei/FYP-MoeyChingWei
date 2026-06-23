@@ -1,0 +1,10 @@
+# Temporary export files
+exports/
+*.pdf
+*.xlsx
+*.csv
+*.json
+
+# System files
+.DS_Store
+Thumbs.db
