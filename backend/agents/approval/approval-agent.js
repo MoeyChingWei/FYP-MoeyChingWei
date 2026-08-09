@@ -2,7 +2,7 @@ import BaseAgent from '../base-agent.js';
 import prisma from '../../config/prisma.js';
 
 /**
- * 计算总金额
+ * Calculate the total amount
  */
 function calculateTotalAmount(lineItems) {
   if (!lineItems || lineItems.length === 0) return 0;
@@ -12,7 +12,7 @@ function calculateTotalAmount(lineItems) {
 }
 
 /**
- * 获取日期范围
+ * Get the date range
  */
 function getDateRangeForPeriod(period) {
   const end = new Date();
@@ -30,27 +30,27 @@ function getDateRangeForPeriod(period) {
 }
 
 /**
- * 计算金融风险评分 (0-25分)
+ * Calculate the financial risk score (0-25 points)
  */
 async function calculateFinancialRisk(amount, department) {
   let score = 0;
   const details = [];
 
-  // 1. 金额绝对值风险 (0-15分)
+  // 1. Absolute amount risk (0-15 points)
   if (amount > 100000) {
     score += 15;
-    details.push(`金额超过10万 (${amount.toFixed(2)})，属于大额采购`);
+    details.push(`Amount exceeds 100,000 (${amount.toFixed(2)}) — large purchase`);
   } else if (amount > 50000) {
     score += 10;
-    details.push(`金额超过5万 (${amount.toFixed(2)})，需要注意`);
+    details.push(`Amount exceeds 50,000 (${amount.toFixed(2)}) — needs attention`);
   } else if (amount > 10000) {
     score += 5;
-    details.push(`金额适中 (${amount.toFixed(2)})`);
+    details.push(`Moderate amount (${amount.toFixed(2)})`);
   } else {
-    details.push(`金额较小 (${amount.toFixed(2)})`);
+    details.push(`Small amount (${amount.toFixed(2)})`);
   }
 
-  // 2. 预算利用率风险 (0-10分)
+  // 2. Budget utilization risk (0-10 points)
   try {
     const monthStart = new Date();
     monthStart.setDate(1);
@@ -73,28 +73,28 @@ async function calculateFinancialRisk(amount, department) {
         s + parseFloat(item.totalPrice || 0), 0);
     }, 0);
 
-    // 假设预算（实际项目应从预算表获取）
+    // Assumed budget (a real project should fetch this from a budget table)
     const estimatedBudget = 50000;
     const utilizationRate = (monthlySpent / estimatedBudget) * 100;
 
     if (utilizationRate > 90) {
       score += 10;
-      details.push(`预算已使用${utilizationRate.toFixed(1)}%，接近上限`);
+      details.push(`Budget ${utilizationRate.toFixed(1)}% utilized — approaching the limit`);
     } else if (utilizationRate > 70) {
       score += 5;
-      details.push(`预算已使用${utilizationRate.toFixed(1)}%`);
+      details.push(`Budget ${utilizationRate.toFixed(1)}% utilized`);
     } else {
-      details.push(`预算使用率：${utilizationRate.toFixed(1)}%`);
+      details.push(`Budget utilization: ${utilizationRate.toFixed(1)}%`);
     }
   } catch (error) {
-    details.push('无法计算预算利用率');
+    details.push('Unable to calculate budget utilization');
   }
 
   return { score: Math.min(score, 25), details };
 }
 
 /**
- * 计算供应商风险评分 (0-20分)
+ * Calculate the supplier risk score (0-20 points)
  */
 async function calculateSupplierRisk(lineItems) {
   let score = 0;
@@ -102,18 +102,18 @@ async function calculateSupplierRisk(lineItems) {
 
   if (!lineItems || lineItems.length === 0) {
     score += 10;
-    details.push('没有line items信息');
+    details.push('No line items information');
     return { score, details };
   }
 
   for (const item of lineItems) {
     if (!item.supplierName) {
       score += 5;
-      details.push(`${item.itemName}: 未指定供应商`);
+      details.push(`${item.itemName}: no supplier specified`);
       continue;
     }
 
-    // 检查供应商历史
+    // Check the supplier's history
     const supplierHistory = await prisma.purchaseOrderRecord.count({
       where: {
         payload: {
@@ -125,12 +125,12 @@ async function calculateSupplierRisk(lineItems) {
 
     if (supplierHistory === 0) {
       score += 8;
-      details.push(`${item.supplierName}: 新供应商，无历史记录`);
+      details.push(`${item.supplierName}: new supplier, no history`);
     } else if (supplierHistory < 5) {
       score += 4;
-      details.push(`${item.supplierName}: 合作次数较少 (${supplierHistory}次)`);
+      details.push(`${item.supplierName}: limited history (${supplierHistory} orders)`);
     } else {
-      details.push(`${item.supplierName}: 可靠供应商 (${supplierHistory}次合作)`);
+      details.push(`${item.supplierName}: reliable supplier (${supplierHistory} past orders)`);
     }
   }
 
@@ -138,33 +138,33 @@ async function calculateSupplierRisk(lineItems) {
 }
 
 /**
- * 计算合规风险评分 (0-20分)
+ * Calculate the compliance risk score (0-20 points)
  */
 function calculateComplianceRisk(payload, totalAmount) {
   let score = 0;
   const details = [];
 
-  // 1. 预算合规 (0-10分)
+  // 1. Budget compliance (0-10 points)
   if (totalAmount > 100000) {
     score += 10;
-    details.push('金额超过标准采购限额，需要董事会批准');
+    details.push('Amount exceeds the standard procurement limit — requires board approval');
   } else if (totalAmount > 50000) {
     score += 6;
-    details.push('金额超过5万，需要高管批准');
+    details.push('Amount exceeds 50,000 — requires executive approval');
   } else if (totalAmount > 10000) {
     score += 3;
-    details.push('金额超过1万，需要经理批准');
+    details.push('Amount exceeds 10,000 — requires manager approval');
   }
 
-  // 2. 文档完整性 (0-10分)
+  // 2. Documentation completeness (0-10 points)
   if (!payload.lineItems || payload.lineItems.length === 0) {
     score += 10;
-    details.push('❌ 缺少line items');
+    details.push('❌ Missing line items');
   } else {
     const missingPrices = payload.lineItems.filter(item => !item.unitPrice || item.unitPrice === 0);
     if (missingPrices.length > 0) {
       score += 5;
-      details.push(`⚠️ ${missingPrices.length}个商品缺少价格`);
+      details.push(`⚠️ ${missingPrices.length} item(s) missing price`);
     }
   }
 
@@ -172,7 +172,7 @@ function calculateComplianceRisk(payload, totalAmount) {
 }
 
 /**
- * 计算历史风险评分 (0-15分)
+ * Calculate the historical risk score (0-15 points)
  */
 async function calculateHistoricalRisk(userId, department) {
   let score = 0;
@@ -199,32 +199,32 @@ async function calculateHistoricalRisk(userId, department) {
 
     if (total === 0) {
       score += 5;
-      details.push('新用户，无历史记录');
+      details.push('New user, no history');
     } else {
       const approvalRate = approved / total;
       const rejectionRate = rejected / total;
 
       if (rejectionRate > 0.3) {
         score += 15;
-        details.push(`高拒绝率：${(rejectionRate * 100).toFixed(1)}% (${rejected}/${total})`);
+        details.push(`High rejection rate: ${(rejectionRate * 100).toFixed(1)}% (${rejected}/${total})`);
       } else if (rejectionRate > 0.15) {
         score += 8;
-        details.push(`中等拒绝率：${(rejectionRate * 100).toFixed(1)}% (${rejected}/${total})`);
+        details.push(`Moderate rejection rate: ${(rejectionRate * 100).toFixed(1)}% (${rejected}/${total})`);
       } else if (approvalRate > 0.9) {
-        details.push(`✅ 优秀批准历史：${(approvalRate * 100).toFixed(1)}% (${approved}/${total})`);
+        details.push(`✅ Excellent approval history: ${(approvalRate * 100).toFixed(1)}% (${approved}/${total})`);
       } else {
-        details.push(`批准率：${(approvalRate * 100).toFixed(1)}% (${approved}/${total})`);
+        details.push(`Approval rate: ${(approvalRate * 100).toFixed(1)}% (${approved}/${total})`);
       }
     }
   } catch (error) {
-    details.push('无法查询历史记录');
+    details.push('Unable to query historical records');
   }
 
   return { score: Math.min(score, 15), details };
 }
 
 /**
- * 计算文档完整性风险评分 (0-10分)
+ * Calculate the documentation completeness risk score (0-10 points)
  */
 function calculateDocumentationRisk(payload) {
   let score = 0;
@@ -235,7 +235,7 @@ function calculateDocumentationRisk(payload) {
 
   if (missingFields.length > 0) {
     score += missingFields.length * 3;
-    details.push(`缺少必填字段：${missingFields.join(', ')}`);
+    details.push(`Missing required fields: ${missingFields.join(', ')}`);
   }
 
   if (payload.lineItems && payload.lineItems.length > 0) {
@@ -245,7 +245,7 @@ function calculateDocumentationRisk(payload) {
 
     if (incompleteItems.length > 0) {
       score += 4;
-      details.push(`${incompleteItems.length}个商品信息不完整`);
+      details.push(`${incompleteItems.length} item(s) with incomplete information`);
     }
   }
 
@@ -253,7 +253,7 @@ function calculateDocumentationRisk(payload) {
 }
 
 /**
- * 计算紧急程度风险评分 (0-10分)
+ * Calculate the urgency risk score (0-10 points)
  */
 function calculateUrgencyRisk(urgency) {
   let score = 0;
@@ -261,12 +261,12 @@ function calculateUrgencyRisk(urgency) {
 
   if (urgency === 'critical') {
     score = 10;
-    details.push('🔴 紧急采购，可能绕过正常审批流程');
+    details.push('🔴 Critical purchase — may bypass the normal approval process');
   } else if (urgency === 'urgent') {
     score = 6;
-    details.push('🟡 加急采购，需要快速决策');
+    details.push('🟡 Urgent purchase — requires a quick decision');
   } else {
-    details.push('✅ 正常采购流程');
+    details.push('✅ Standard procurement process');
   }
 
   return { score, details };
@@ -440,7 +440,7 @@ Remember: You are a GUARDIAN of company resources. Be thorough, fair, and always
 /**
  * Approval Agent - Risk Management and Compliance Specialist
  *
- * 专注于采购申请评估、风险分析、政策合规检查
+ * Focuses on purchase request evaluation, risk analysis, and policy compliance checks
  */
 class ApprovalAgent extends BaseAgent {
   constructor() {
@@ -606,7 +606,7 @@ class ApprovalAgent extends BaseAgent {
       evaluate_purchase_request: async (input) => {
         const { requestId, includeHistorical = true } = input;
 
-        // 查找采购申请
+        // Look up the purchase request
         const request = await prisma.purchaseRequestRecord.findUnique({
           where: { localId: requestId },
         });
@@ -617,16 +617,16 @@ class ApprovalAgent extends BaseAgent {
 
         const payload = request.payload;
 
-        // 计算总金额
+        // Calculate the total amount
         const totalAmount = (payload.lineItems || []).reduce((sum, item) => {
           return sum + (item.unitPrice * item.quantity || 0);
         }, 0);
 
-        // 获取部门历史支出
+        // Get the department's historical spending
         const deptRequests = await prisma.purchaseRequestRecord.findMany({
           where: {
             createdAt: {
-              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 过去30天
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // past 30 days
             },
           },
         });
@@ -638,7 +638,7 @@ class ApprovalAgent extends BaseAgent {
               s + (item.unitPrice * item.quantity || 0), 0);
           }, 0);
 
-        // 风险评估
+        // Risk assessment
         const budgetUtilization = totalAmount / (deptSpending + totalAmount) * 100;
         let financialRisk = 'low';
         if (budgetUtilization > 80) financialRisk = 'high';
@@ -648,9 +648,9 @@ class ApprovalAgent extends BaseAgent {
         if (totalAmount > 50000) complianceRisk = 'high';
         else if (totalAmount > 20000) complianceRisk = 'medium';
 
-        const operationalRisk = 'low'; // 简化评估
+        const operationalRisk = 'low'; // simplified assessment
 
-        // 整体风险
+        // Overall risk
         let overallRisk = 'low';
         if (financialRisk === 'high' || complianceRisk === 'high') {
           overallRisk = 'high';
@@ -695,10 +695,10 @@ class ApprovalAgent extends BaseAgent {
           };
         }
 
-        // 获取日期范围
+        // Get the date range
         const dateRange = getDateRangeForPeriod(period);
 
-        // 查询该部门在此期间的所有订单
+        // Query all orders for this department during the period
         const whereClause = {
           createdAt: {
             gte: dateRange.start,
@@ -715,14 +715,14 @@ class ApprovalAgent extends BaseAgent {
           select: { payload: true },
         });
 
-        // 计算实际支出
+        // Calculate the actual spending
         const totalSpent = orders.reduce((sum, order) => {
           return sum + (order.payload.items || []).reduce((s, item) =>
             s + parseFloat(item.totalPrice || 0), 0);
         }, 0);
 
-        // 动态预算配置（实际应从数据库Budget表获取）
-        // 这里使用假设的预算值
+        // Dynamic budget configuration (a real project should fetch this from a Budget table)
+        // An assumed budget value is used here
         const budgetConfig = {
           month: 50000,
           quarter: 150000,
@@ -735,7 +735,7 @@ class ApprovalAgent extends BaseAgent {
         const canAfford = remaining >= requestAmount;
         const utilizationAfter = ((totalSpent + requestAmount) / allocatedBudget) * 100;
 
-        // 预测预算耗尽时间
+        // Forecast when the budget will be depleted
         let forecastDepletion = null;
         if (totalSpent > 0 && period === 'month') {
           const daysInPeriod = (dateRange.end - dateRange.start) / (1000 * 60 * 60 * 24);
@@ -753,31 +753,31 @@ class ApprovalAgent extends BaseAgent {
           }
         }
 
-        // 动态建议生成
+        // Dynamic recommendation generation
         let status, recommendation, severity;
         if (utilizationAfter > 100) {
-          status = '🔴 超出预算';
+          status = '🔴 Over budget';
           severity = 'critical';
-          recommendation = '❌ 无法批准，预算不足。需要申请追加预算或推迟采购。';
+          recommendation = '❌ Cannot approve — insufficient budget. Request additional budget or postpone the purchase.';
         } else if (utilizationAfter > 95) {
-          status = '🔴 严重超预算风险';
+          status = '🔴 Serious over-budget risk';
           severity = 'high';
-          recommendation = '⚠️ 强烈建议推迟此采购，预算即将耗尽。考虑：\n1. 推迟到下个周期\n2. 削减采购量\n3. 申请紧急追加预算';
+          recommendation = '⚠️ Strongly recommend postponing this purchase — budget is nearly depleted. Consider:\n1. Postpone to the next period\n2. Reduce the purchase quantity\n3. Request an emergency budget increase';
         } else if (utilizationAfter > 85) {
-          status = '🟡 接近预算上限';
+          status = '🟡 Approaching budget limit';
           severity = 'medium';
-          recommendation = '⚠️ 可以批准，但需要谨慎：\n1. 这是本周期最后的重大采购机会\n2. 后续只能批准小额采购\n3. 建议监控剩余预算';
+          recommendation = '⚠️ Can be approved, but with caution:\n1. This is the last major purchase opportunity this period\n2. Only small purchases can be approved afterward\n3. Recommend monitoring the remaining budget';
         } else if (utilizationAfter > 70) {
-          status = '🟢 预算充足但需注意';
+          status = '🟢 Budget sufficient but worth noting';
           severity = 'low';
-          recommendation = '✅ 预算状况良好，可以批准。建议继续监控支出趋势。';
+          recommendation = '✅ Budget status is healthy, can be approved. Recommend continuing to monitor spending trends.';
         } else {
-          status = '🟢 预算充裕';
+          status = '🟢 Budget healthy';
           severity = 'none';
-          recommendation = '✅ 预算充足，无需担忧。支出健康，可以正常批准。';
+          recommendation = '✅ Budget is sufficient, no concerns. Spending is healthy, can be approved normally.';
         }
 
-        // 对比历史同期
+        // Compare against the same period historically
         let historicalComparison = null;
         if (period === 'month') {
           try {
@@ -807,10 +807,10 @@ class ApprovalAgent extends BaseAgent {
               currentPeriodSpent: totalSpent.toFixed(2),
               change: (totalSpent - lastMonthSpent).toFixed(2),
               changePercent: changePercent.toFixed(1) + '%',
-              trend: changePercent > 10 ? '📈 增长' : changePercent < -10 ? '📉 下降' : '➡️ 持平',
+              trend: changePercent > 10 ? '📈 Increasing' : changePercent < -10 ? '📉 Decreasing' : '➡️ Flat',
             };
           } catch (error) {
-            // 忽略历史对比错误
+            // Ignore historical comparison errors
           }
         }
 
@@ -840,9 +840,9 @@ class ApprovalAgent extends BaseAgent {
           historicalComparison,
 
           warnings: utilizationAfter > 90
-            ? ['⚠️ 预算使用率超过90%', '❌ 后续采购将受限', '📋 建议规划下周期预算']
+            ? ['⚠️ Budget utilization exceeds 90%', '❌ Further purchases will be restricted', '📋 Recommend planning next period\'s budget']
             : utilizationAfter > 70
-            ? ['⚠️ 预算使用率超过70%', '📊 建议密切监控']
+            ? ['⚠️ Budget utilization exceeds 70%', '📊 Recommend close monitoring']
             : [],
         };
       },
@@ -1017,50 +1017,50 @@ class ApprovalAgent extends BaseAgent {
         const payload = request.payload;
         const totalAmount = calculateTotalAmount(payload.lineItems);
 
-        // 多维度风险评估
+        // Multi-dimensional risk assessment
         const factors = {
-          // 1. 金融风险 (0-25分)
+          // 1. Financial risk (0-25 points)
           financial: await calculateFinancialRisk(totalAmount, payload.department),
 
-          // 2. 供应商风险 (0-20分)
+          // 2. Supplier risk (0-20 points)
           supplier: await calculateSupplierRisk(payload.lineItems),
 
-          // 3. 合规风险 (0-20分)
+          // 3. Compliance risk (0-20 points)
           compliance: calculateComplianceRisk(payload, totalAmount),
 
-          // 4. 历史风险 (0-15分)
+          // 4. Historical risk (0-15 points)
           historical: await calculateHistoricalRisk(payload.createdByUserId, payload.department),
 
-          // 5. 文档完整性风险 (0-10分)
+          // 5. Documentation completeness risk (0-10 points)
           documentation: calculateDocumentationRisk(payload),
 
-          // 6. 紧急程度风险 (0-10分)
+          // 6. Urgency risk (0-10 points)
           urgency: calculateUrgencyRisk(payload.urgency),
         };
 
-        // 计算总分 (0-100)
+        // Calculate the total score (0-100)
         const totalScore = Object.values(factors).reduce((sum, factor) => sum + factor.score, 0);
 
-        // 风险等级评定
+        // Determine the risk level
         let riskLevel, indicator, recommendation;
         if (totalScore < 30) {
           riskLevel = 'low';
           indicator = '🟢';
-          recommendation = '✅ 低风险，建议快速批准';
+          recommendation = '✅ Low risk — recommend fast approval';
         } else if (totalScore < 60) {
           riskLevel = 'medium';
           indicator = '🟡';
-          recommendation = '⚠️ 中等风险，建议详细审查后批准';
+          recommendation = '⚠️ Medium risk — recommend approval after detailed review';
         } else {
           riskLevel = 'high';
           indicator = '🔴';
-          recommendation = '🔴 高风险，建议拒绝或要求补充信息';
+          recommendation = '🔴 High risk — recommend rejection or request additional information';
         }
 
-        // 自动批准建议
+        // Auto-approval recommendation
         const autoApprove = totalScore < 20 && totalAmount < 5000;
 
-        // 生成详细报告
+        // Generate the detailed report
         const detailReport = {
           financial: {
             score: factors.financial.score,
@@ -1120,12 +1120,12 @@ class ApprovalAgent extends BaseAgent {
           recommendation,
 
           nextSteps: autoApprove
-            ? ['✅ 符合自动批准条件', '无需人工审核', '系统可自动处理']
+            ? ['✅ Meets auto-approval criteria', 'No manual review needed', 'System can process automatically']
             : totalScore < 40
-            ? ['📋 提交给部门经理审批', '预计1个工作日内完成']
+            ? ['📋 Submit to department manager for approval', 'Expected completion within 1 business day']
             : totalScore < 70
-            ? ['⚠️ 提交给高管审批', '需要详细审查', '预计2-3个工作日']
-            : ['🔴 需要补充信息', '联系申请人clarify细节', '重新提交后再评估'],
+            ? ['⚠️ Submit to executive for approval', 'Detailed review required', 'Expected 2-3 business days']
+            : ['🔴 Additional information required', 'Contact the requester to clarify details', 'Re-evaluate after resubmission'],
 
           evaluatedAt: new Date().toISOString(),
         };
@@ -1146,7 +1146,7 @@ class ApprovalAgent extends BaseAgent {
         const totalAmount = (payload.lineItems || []).reduce((sum, item) =>
           sum + (item.unitPrice * item.quantity || 0), 0);
 
-        // 决策逻辑
+        // Decision logic
         let decision = 'APPROVE';
         let conditions = [];
         let reasoning = [];

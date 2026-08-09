@@ -6,7 +6,6 @@ import styles from "./BreadcrumbNav.module.css";
 
 type BreadcrumbItem = {
   title: string | React.ReactNode;
-  path?: string;
 };
 
 const routeNameMap: Record<string, string> = {
@@ -53,7 +52,6 @@ export default function BreadcrumbNav(): React.ReactElement {
           <HomeOutlined />
         </Link>
       ),
-      path: "/overview",
     },
   ];
 
@@ -65,7 +63,6 @@ export default function BreadcrumbNav(): React.ReactElement {
     if (!isLast) {
       breadcrumbItems.push({
         title: <Link to={url}>{title}</Link>,
-        path: url,
       });
     } else {
       breadcrumbItems.push({

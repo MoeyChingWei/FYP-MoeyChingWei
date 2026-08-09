@@ -2,29 +2,29 @@ import BaseAgent from '../base-agent.js';
 import prisma from '../../config/prisma.js';
 
 /**
- * 三次指数平滑（Holt-Winters）预测算法
+ * Triple exponential smoothing (Holt-Winters) forecasting algorithm
  */
 function holtWintersPredict(data, forecastPeriods = 3, seasonLength = 12) {
   if (data.length < seasonLength) {
-    // 数据不足，使用简单移动平均
+    // Insufficient data, use simple moving average
     const avg = data.reduce((a, b) => a + b, 0) / data.length;
     return Array(forecastPeriods).fill(avg);
   }
 
-  const alpha = 0.3; // 水平平滑系数
-  const beta = 0.1;  // 趋势平滑系数
-  const gamma = 0.2; // 季节性平滑系数
+  const alpha = 0.3; // Level smoothing coefficient
+  const beta = 0.1;  // Trend smoothing coefficient
+  const gamma = 0.2; // Seasonal smoothing coefficient
 
   let level = data[0];
   let trend = 0;
   const seasonal = new Array(seasonLength).fill(1);
 
-  // 初始化季节因子
+  // Initialize seasonal factors
   for (let i = 0; i < seasonLength && i < data.length; i++) {
     seasonal[i] = data[i] / (data.reduce((a, b) => a + b, 0) / data.length);
   }
 
-  // 训练模型
+  // Train the model
   data.forEach((value, t) => {
     if (t === 0) return;
 
@@ -36,7 +36,7 @@ function holtWintersPredict(data, forecastPeriods = 3, seasonLength = 12) {
     seasonal[seasonIdx] = gamma * (value / level) + (1 - gamma) * seasonal[seasonIdx];
   });
 
-  // 预测
+  // Forecast
   const forecasts = [];
   for (let i = 1; i <= forecastPeriods; i++) {
     const seasonIdx = (data.length + i - 1) % seasonLength;
@@ -47,7 +47,7 @@ function holtWintersPredict(data, forecastPeriods = 3, seasonLength = 12) {
 }
 
 /**
- * Z-score 异常检测
+ * Z-score anomaly detection
  */
 function detectAnomaliesZScore(data, threshold = 2.5) {
   const mean = data.reduce((a, b) => a + b, 0) / data.length;
@@ -182,7 +182,7 @@ Remember: You are a DATA EXPERT. Every statement should be backed by numbers. Be
 /**
  * Analytics Agent - Data Analysis Expert
  *
- * 专注于数据分析、趋势预测、业务洞察
+ * Focused on data analysis, trend forecasting, and business insights
  */
 class AnalyticsAgent extends BaseAgent {
   constructor() {
@@ -367,7 +367,7 @@ class AnalyticsAgent extends BaseAgent {
       analyze_spending_trends: async (input) => {
         const { department, category, months = 6, groupBy = 'month' } = input;
 
-        // 获取历史订单数据
+        // Fetch historical order data
         const startDate = new Date();
         startDate.setMonth(startDate.getMonth() - months);
 
@@ -380,17 +380,17 @@ class AnalyticsAgent extends BaseAgent {
           orderBy: { createdAt: 'asc' },
         });
 
-        // 过滤和分组数据
+        // Filter and group the data
         const spendingByPeriod = {};
         let totalSpending = 0;
 
         orders.forEach(order => {
-          // 部门过滤
+          // Filter by department
           if (department && order.payload.department !== department) {
             return;
           }
 
-          // 计算月份/季度
+          // Calculate month/quarter
           const date = new Date(order.createdAt);
           let periodKey;
 
@@ -405,10 +405,10 @@ class AnalyticsAgent extends BaseAgent {
             spendingByPeriod[periodKey] = 0;
           }
 
-          // 计算支出
+          // Calculate spending
           if (order.payload.items && Array.isArray(order.payload.items)) {
             order.payload.items.forEach(item => {
-              // 类别过滤
+              // Category filter
               if (category && item.itemCategory !== category) {
                 return;
               }
@@ -420,7 +420,7 @@ class AnalyticsAgent extends BaseAgent {
           }
         });
 
-        // 计算趋势
+        // Calculate trend
         const periods = Object.keys(spendingByPeriod).sort();
         const values = periods.map(p => spendingByPeriod[p]);
 
@@ -454,7 +454,7 @@ class AnalyticsAgent extends BaseAgent {
       predict_future_spending: async (input) => {
         const { department, forecastMonths = 3, includeSeasonality = false } = input;
 
-        // 获取历史数据（至少12个月用于季节性分析）
+        // Get historical data (at least 12 months for seasonality analysis)
         const startDate = new Date();
         const lookbackMonths = includeSeasonality ? 24 : 12;
         startDate.setMonth(startDate.getMonth() - lookbackMonths);
@@ -480,7 +480,7 @@ class AnalyticsAgent extends BaseAgent {
           },
         });
 
-        // 按月聚合支出
+        // Aggregate spending by month
         const monthlySpending = {};
         orders.forEach(order => {
           const date = new Date(order.createdAt);
@@ -495,7 +495,7 @@ class AnalyticsAgent extends BaseAgent {
           }
         });
 
-        // 填充缺失月份为0
+        // Fill missing months with 0
         const sortedMonths = Object.keys(monthlySpending).sort();
         if (sortedMonths.length === 0) {
           return {
@@ -515,11 +515,11 @@ class AnalyticsAgent extends BaseAgent {
           };
         }
 
-        // 计算历史统计
+        // Calculate historical statistics
         const avgMonthly = spendingValues.reduce((a, b) => a + b, 0) / spendingValues.length;
         const recentAvg = spendingValues.slice(-3).reduce((a, b) => a + b, 0) / 3;
 
-        // 使用 Holt-Winters 方法预测
+        // Use Holt-Winters method for prediction
         let forecasts;
         let method;
 
@@ -527,7 +527,7 @@ class AnalyticsAgent extends BaseAgent {
           forecasts = holtWintersPredict(spendingValues, forecastMonths, 12);
           method = 'Holt-Winters Triple Exponential Smoothing';
         } else {
-          // 使用简单线性趋势
+          // Use simple linear trend
           const n = spendingValues.length;
           const sumX = spendingValues.reduce((sum, _, i) => sum + i, 0);
           const sumY = spendingValues.reduce((sum, val) => sum + val, 0);
@@ -544,14 +544,14 @@ class AnalyticsAgent extends BaseAgent {
           method = 'Linear Regression';
         }
 
-        // 格式化预测结果
+        // Format forecast results
         const formattedForecasts = forecasts.map((value, i) => {
           const confidenceLevel =
             i < 2 ? 'high' :
             i < 4 ? 'medium' :
             'low';
 
-          // 计算置信区间（±15%）
+          // Calculate confidence interval (±15%)
           const margin = value * 0.15;
 
           return {
@@ -568,16 +568,16 @@ class AnalyticsAgent extends BaseAgent {
         const totalForecast = forecasts.reduce((sum, val) => sum + val, 0);
         const growthRate = ((recentAvg - avgMonthly) / avgMonthly) * 100;
 
-        // 生成建议
+        // Generate recommendation
         let recommendation;
         if (growthRate > 20) {
-          recommendation = '⚠️ 支出快速增长，建议审查预算并控制非必要开支';
+          recommendation = '⚠️ Spending is growing rapidly — review the budget and control non-essential expenses';
         } else if (growthRate > 10) {
-          recommendation = '🟡 支出增长明显，建议密切监控';
+          recommendation = '🟡 Spending growth is notable — monitor closely';
         } else if (growthRate < -10) {
-          recommendation = '✅ 支出下降，成本控制良好';
+          recommendation = '✅ Spending is decreasing — cost control is working well';
         } else {
-          recommendation = '➡️ 支出稳定，维持当前预算即可';
+          recommendation = '➡️ Spending is stable — maintain the current budget';
         }
 
         return {
@@ -610,7 +610,7 @@ class AnalyticsAgent extends BaseAgent {
 
         const deptStats = {};
 
-        // 收集数据
+        // Collect data
         const addToDept = (dept, type, value) => {
           if (!deptStats[dept]) {
             deptStats[dept] = { requests: 0, orders: 0, spending: 0, items: 0 };
@@ -629,7 +629,7 @@ class AnalyticsAgent extends BaseAgent {
           addToDept(o.payload.department || 'Unknown', 'order', spending);
         });
 
-        // 转换为数组并排序
+        // Convert to array and sort
         const comparison = Object.entries(deptStats)
           .map(([dept, stats]) => ({
             department: dept,
@@ -676,14 +676,14 @@ class AnalyticsAgent extends BaseAgent {
 
         const anomalies = [];
 
-        // 设置 Z-score 阈值
+        // Set Z-score threshold
         const zScoreThreshold = {
           low: 3.0,
           medium: 2.5,
           high: 2.0,
         }[sensitivity];
 
-        // 1. 价格异常检测（使用 Z-score）
+        // 1. Price anomaly detection (using Z-score)
         if (type === 'price' || type === 'all') {
           const priceByItem = {};
 
@@ -699,7 +699,7 @@ class AnalyticsAgent extends BaseAgent {
           });
 
           Object.entries(priceByItem).forEach(([itemName, prices]) => {
-            if (prices.length < 5) return; // 至少需要5个数据点
+            if (prices.length < 5) return; // At least 5 data points needed
 
             const detected = detectAnomaliesZScore(prices, zScoreThreshold);
 
@@ -712,13 +712,13 @@ class AnalyticsAgent extends BaseAgent {
                 zScore: anomaly.zScore.toFixed(2),
                 severity: anomaly.severity,
                 deviation: ((anomaly.value / (prices.reduce((a, b) => a + b) / prices.length) - 1) * 100).toFixed(1) + '%',
-                message: `${itemName}: 价格 MYR ${anomaly.value.toFixed(2)} (Z-score: ${anomaly.zScore.toFixed(2)})`,
+                message: `${itemName}: price MYR ${anomaly.value.toFixed(2)} (Z-score: ${anomaly.zScore.toFixed(2)})`,
               });
             });
           });
         }
 
-        // 2. 数量异常检测
+        // 2. Quantity anomaly detection
         if (type === 'quantity' || type === 'all') {
           const quantityByItem = {};
 
@@ -746,13 +746,13 @@ class AnalyticsAgent extends BaseAgent {
                 mean: (quantities.reduce((a, b) => a + b) / quantities.length).toFixed(0),
                 zScore: anomaly.zScore.toFixed(2),
                 severity: anomaly.severity,
-                message: `${itemName}: 异常数量 ${anomaly.value.toFixed(0)} (Z-score: ${anomaly.zScore.toFixed(2)})`,
+                message: `${itemName}: abnormal quantity ${anomaly.value.toFixed(0)} (Z-score: ${anomaly.zScore.toFixed(2)})`,
               });
             });
           });
         }
 
-        // 3. 频率异常检测（同一天多次大额采购）
+        // 3. Frequency anomaly detection (multiple large purchases on the same day)
         if (type === 'frequency' || type === 'all') {
           const ordersByDate = {};
 
@@ -765,7 +765,7 @@ class AnalyticsAgent extends BaseAgent {
               0
             );
 
-            if (totalAmount > 10000) { // 只关注大额订单
+            if (totalAmount > 10000) { // Only focus on large orders
               ordersByDate[date].push({
                 poNumber: order.payload.poNumber,
                 amount: totalAmount,
@@ -774,24 +774,24 @@ class AnalyticsAgent extends BaseAgent {
           });
 
           Object.entries(ordersByDate).forEach(([date, dayOrders]) => {
-            if (dayOrders.length >= 5) { // 一天内5个或更多大额订单
+            if (dayOrders.length >= 5) { // 5 or more large orders in one day
               anomalies.push({
                 type: 'frequency',
                 date,
                 orderCount: dayOrders.length,
                 totalAmount: dayOrders.reduce((sum, o) => sum + o.amount, 0).toFixed(2),
                 severity: dayOrders.length >= 10 ? 'critical' : 'high',
-                message: `${date}: ${dayOrders.length} 个大额订单，总计 MYR ${dayOrders.reduce((sum, o) => sum + o.amount, 0).toFixed(2)}`,
+                message: `${date}: ${dayOrders.length} large orders, totaling MYR ${dayOrders.reduce((sum, o) => sum + o.amount, 0).toFixed(2)}`,
               });
             }
           });
         }
 
-        // 按严重性排序
+        // Sort by severity
         const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
         anomalies.sort((a, b) => severityOrder[b.severity] - severityOrder[a.severity]);
 
-        // 统计
+        // Statistics
         const bySeverity = {
           critical: anomalies.filter(a => a.severity === 'critical').length,
           high: anomalies.filter(a => a.severity === 'high').length,
@@ -799,7 +799,7 @@ class AnalyticsAgent extends BaseAgent {
           low: anomalies.filter(a => a.severity === 'low').length,
         };
 
-        // 计算风险评分
+        // Calculate risk score
         const riskScore = (
           bySeverity.critical * 10 +
           bySeverity.high * 5 +
@@ -824,12 +824,12 @@ class AnalyticsAgent extends BaseAgent {
           anomalies: anomalies.slice(0, 20), // Top 20
 
           recommendation: anomalies.length === 0
-            ? '✅ 未检测到显著异常'
+            ? '✅ No significant anomalies detected'
             : bySeverity.critical > 0
-            ? `🔴 发现 ${bySeverity.critical} 个严重异常，需要立即调查`
+            ? `🔴 Found ${bySeverity.critical} critical anomalies — immediate investigation required`
             : bySeverity.high > 0
-            ? `⚠️ 发现 ${bySeverity.high} 个高风险异常，建议尽快审查`
-            : '🟡 发现一些中低风险异常，建议定期监控',
+            ? `⚠️ Found ${bySeverity.high} high-risk anomalies — review as soon as possible`
+            : '🟡 Found some low-to-medium risk anomalies — recommend regular monitoring',
         };
       },
 
@@ -946,7 +946,7 @@ class AnalyticsAgent extends BaseAgent {
       generate_insights_report: async (input) => {
         const { reportType, department, period } = input;
 
-        // 这是一个综合报告生成器
+        // This is a comprehensive report generator
         const requests = await prisma.purchaseRequestRecord.findMany();
         const orders = await prisma.purchaseOrderRecord.findMany();
 

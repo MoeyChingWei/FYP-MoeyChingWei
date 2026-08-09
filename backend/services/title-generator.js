@@ -18,7 +18,7 @@ Examples:
 - "Show my purchase requests" -> "Purchase Request List"
 - "create purchase request for 10 laptops" -> "Create Laptop Purchase Request"
 - "pending approvals" -> "Pending Approval Requests"
-- "帮我分析IT部门支出" -> "IT部门支出分析"
+- "Analyze IT department spending" -> "IT Department Spending Analysis"
 - "office chair supplier?" -> "Office Chair Supplier"
 
 Respond with ONLY the title.`;

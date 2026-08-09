@@ -104,7 +104,8 @@ export default function ApprovalSubmodule(): React.ReactElement {
       const matchesDate =
         !selectedDate || request.requestDate === selectedDate;
 
-      const itemText = request.lineItems
+      const lineItems = Array.isArray(request.lineItems) ? request.lineItems : [];
+      const itemText = lineItems
         .map((item) =>
           [
             item.itemName,
@@ -308,14 +309,18 @@ export default function ApprovalSubmodule(): React.ReactElement {
                 title: t('purchaseRequest.approval.table.items'),
                 key: "itemCount",
                 align: "center",
-                render: (_, request) => request.lineItems.length,
+                render: (_, request) =>
+                  (Array.isArray(request.lineItems) ? request.lineItems : []).length,
               },
               {
                 title: t('purchaseRequest.approval.table.total'),
                 key: "total",
                 align: "right",
                 render: (_, request) => {
-                  const total = request.lineItems.reduce(
+                  const lineItems = Array.isArray(request.lineItems)
+                    ? request.lineItems
+                    : [];
+                  const total = lineItems.reduce(
                     (sum, item) => sum + item.quantity * item.unitPrice,
                     0,
                   );

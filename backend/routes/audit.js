@@ -298,38 +298,38 @@ router.get("/dashboard", async (req, res) => {
     <div class="header">
       <div>
         <h1><span class="pulse-dot"></span>Audit Trail Dashboard</h1>
-        <div class="subtitle">系统操作审计 • 最后更新: ${new Date().toLocaleString("zh-CN")}</div>
+        <div class="subtitle">System operation audit • Last updated: ${new Date().toLocaleString("en-US")}</div>
       </div>
-      <button class="btn" onclick="location.reload()">🔄 刷新</button>
+      <button class="btn" onclick="location.reload()">🔄 Refresh</button>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Total Events</div>
         <div class="stat-value">${stats.total}</div>
-        <div class="stat-desc">所有审计记录</div>
+        <div class="stat-desc">All audit records</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-label">Failed Operations</div>
         <div class="stat-value">${stats.failed}</div>
-        <div class="stat-desc">失败的操作</div>
+        <div class="stat-desc">Failed operations</div>
       </div>
 
       ${stats.byAction.slice(0, 4).map(item => `
         <div class="stat-card">
           <div class="stat-label">${item.action}</div>
           <div class="stat-value">${item.count}</div>
-          <div class="stat-desc">操作次数</div>
+          <div class="stat-desc">Occurrences</div>
         </div>
       `).join('')}
     </div>
 
     <div class="section">
-      <div class="section-title">📋 Recent Activity (最近20条)</div>
+      <div class="section-title">📋 Recent Activity (last 20)</div>
       <div class="log-list">
         ${recentLogs.logs.length === 0 ? `
-          <div class="empty">暂无审计记录</div>
+          <div class="empty">No audit records yet</div>
         ` : recentLogs.logs.map(log => {
           const actionClass = log.action.toLowerCase();
           return `

@@ -3,8 +3,8 @@ import {
   ArrowLeftOutlined,
   DeleteOutlined,
   EditOutlined,
-  EnvironmentOutlined,
   InboxOutlined,
+  PictureOutlined,
   PlusOutlined,
   SearchOutlined,
   WarningOutlined,
@@ -25,11 +25,16 @@ import {
   Table,
   Tag,
   Typography,
+  Upload,
   message,
 } from "antd";
 import type { TableProps } from "antd";
 import { useNavigate } from "react-router-dom";
 import { getSessionUser } from "../../shared/auth/session";
+import {
+  fetchPurchasingLookups,
+  mergePurchasingOptions,
+} from "../../shared/api/purchasingLookups";
 import {
   createSupplierInventoryItem,
   loadSupplierInventory,
@@ -40,7 +45,7 @@ import styles from "./SupplierInventorySubmodule.module.css";
 
 const { Text, Title } = Typography;
 
-type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt">;
+type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "imageDataUrl">;
 
 const EMPTY_FORM: InventoryFormValues = {
   itemName: "",
@@ -49,8 +54,45 @@ const EMPTY_FORM: InventoryFormValues = {
   reorderLevel: 0,
   unit: "pcs",
   unitPrice: 0,
-  location: "",
 };
+
+function readImageFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("Please select an image file"));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      reject(new Error("Image must be smaller than 5 MB"));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Image could not be read"));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("Image could not be processed"));
+      image.onload = () => {
+        const maxSide = 720;
+        const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) {
+          reject(new Error("Image could not be processed"));
+          return;
+        }
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      image.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 function stockStatus(row: SupplierInventoryItem): "Healthy" | "Low stock" | "Out of stock" {
   if (row.quantity <= 0) return "Out of stock";
@@ -67,6 +109,8 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<SupplierInventoryItem | null>(null);
+  const [itemImage, setItemImage] = useState<string | undefined>();
+  const [categoryOptions, setCategoryOptions] = useState<string[]>(() => mergePurchasingOptions("ITEM_CATEGORY", []));
   const [form] = Form.useForm<InventoryFormValues>();
 
   useEffect(() => {
@@ -79,11 +123,19 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
     };
   }, [supplierId]);
 
+  useEffect(() => {
+    void fetchPurchasingLookups("ITEM_CATEGORY")
+      .then((customRows) => setCategoryOptions(mergePurchasingOptions("ITEM_CATEGORY", customRows)))
+      .catch(() => {
+        // Built-in categories remain available when the API is offline.
+      });
+  }, []);
+
   const filteredRows = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
     return rows.filter((row) => {
       const matchesSearch = !query
-        || [row.itemName, row.category, row.location].some((value) => value.toLowerCase().includes(query));
+        || [row.itemName, row.category].some((value) => value.toLowerCase().includes(query));
       return matchesSearch && (statusFilter === "ALL" || stockStatus(row) === statusFilter);
     });
   }, [rows, searchValue, statusFilter]);
@@ -94,12 +146,14 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
 
   const openCreate = () => {
     setEditingRow(null);
+    setItemImage(undefined);
     form.setFieldsValue(EMPTY_FORM);
     setModalOpen(true);
   };
 
   const openEdit = (row: SupplierInventoryItem) => {
     setEditingRow(row);
+    setItemImage(row.imageDataUrl);
     form.setFieldsValue({
       itemName: row.itemName,
       category: row.category,
@@ -107,7 +161,6 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       reorderLevel: row.reorderLevel,
       unit: row.unit,
       unitPrice: row.unitPrice,
-      location: row.location,
     });
     setModalOpen(true);
   };
@@ -124,7 +177,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       ...values,
       itemName: values.itemName.trim(),
       category: values.category.trim() || "Uncategorized",
-      location: values.location.trim() || "Main warehouse",
+      imageDataUrl: itemImage,
     };
     if (editingRow) {
       persistRows(rows.map((row) => row.id === editingRow.id ? { ...row, ...normalized, updatedAt: new Date().toISOString() } : row));
@@ -153,7 +206,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
     {
       title: "Item",
       key: "item",
-      render: (_, row) => <div className={styles.itemCell}><strong>{row.itemName}</strong><Text type="secondary">{row.category}</Text></div>,
+      render: (_, row) => <div className={styles.itemCell}>{row.imageDataUrl ? <img src={row.imageDataUrl} alt="" className={styles.itemThumbnail} /> : <span className={styles.itemThumbnailPlaceholder}><PictureOutlined /></span>}<span className={styles.itemCopy}><strong>{row.itemName}</strong><Text type="secondary">{row.category}</Text></span></div>,
     },
     { title: "Category", dataIndex: "category", key: "category" },
     {
@@ -162,7 +215,6 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       sorter: (a, b) => a.quantity - b.quantity,
       render: (_, row) => <strong>{row.quantity.toLocaleString()} {row.unit}</strong>,
     },
-    { title: "Location", dataIndex: "location", key: "location", render: (value: string) => <span><EnvironmentOutlined /> {value}</span> },
     {
       title: "Status",
       key: "status",
@@ -199,7 +251,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
 
       <Card className={styles.tableCard} bordered={false}>
         <Flex justify="space-between" align="center" wrap="wrap" gap={12} className={styles.tableToolbar}>
-          <Input allowClear prefix={<SearchOutlined />} placeholder="Search item, category or location" value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className={styles.search} />
+          <Input allowClear prefix={<SearchOutlined />} placeholder="Search item or category" value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className={styles.search} />
           <Select value={statusFilter} onChange={setStatusFilter} options={[{ value: "ALL", label: "All statuses" }, { value: "Healthy", label: "Healthy" }, { value: "Low stock", label: "Low stock" }, { value: "Out of stock", label: "Out of stock" }]} />
         </Flex>
         {filteredRows.length ? <Table rowKey="id" columns={columns} dataSource={filteredRows} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 980 }} /> : <Empty description={rows.length ? "No matching inventory items" : "No inventory items yet"} className={styles.empty} />}
@@ -207,11 +259,30 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
 
       <Modal title={editingRow ? "Edit inventory item" : "Add inventory item"} open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} okText={editingRow ? "Save changes" : "Add item"} destroyOnHidden>
         <Form form={form} layout="vertical" initialValues={EMPTY_FORM} onFinish={handleSubmit}>
+          <Form.Item label="Item image">
+            <div className={styles.imageField}>
+              <Upload
+                accept="image/png,image/jpeg,image/webp"
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  void readImageFile(file)
+                    .then(setItemImage)
+                    .catch((error: Error) => message.error(error.message));
+                  return false;
+                }}
+              >
+                <button type="button" className={styles.imageUploadButton}>
+                  {itemImage ? <img src={itemImage} alt="Item preview" /> : <><PictureOutlined /><span>Upload image</span><small>PNG, JPG or WebP</small></>}
+                </button>
+              </Upload>
+              {itemImage && <Button type="text" danger icon={<DeleteOutlined />} onClick={() => setItemImage(undefined)}>Remove image</Button>}
+            </div>
+          </Form.Item>
           <Row gutter={12}>
             <Col span={24}><Form.Item name="itemName" label="Item name" rules={[{ required: true, message: "Enter an item name" }]}><Input placeholder="Product or material name" /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
-            <Col span={12}><Form.Item name="category" label="Category"><Input placeholder="Electronics, office supplies..." /></Form.Item></Col>
+            <Col span={12}><Form.Item name="category" label="Category" rules={[{ required: true, message: "Select a category" }]}><Select showSearch placeholder="Select category" optionFilterProp="label" options={categoryOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
             <Col span={12}><Form.Item name="unit" label="Unit" rules={[{ required: true }]}><Select options={["pcs", "box", "carton", "kg", "litre", "set"].map((value) => ({ value, label: value }))} /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
@@ -219,8 +290,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
             <Col span={12}><Form.Item name="reorderLevel" label="Reorder level"><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
-            <Col span={12}><Form.Item name="unitPrice" label="Unit price"><InputNumber min={0} precision={2} style={{ width: "100%" }} /></Form.Item></Col>
-            <Col span={12}><Form.Item name="location" label="Location"><Input prefix={<EnvironmentOutlined />} placeholder="Main warehouse" /></Form.Item></Col>
+            <Col span={24}><Form.Item name="unitPrice" label="Unit price"><InputNumber min={0} precision={2} style={{ width: "100%" }} /></Form.Item></Col>
           </Row>
         </Form>
       </Modal>

@@ -6,7 +6,7 @@ class ClaudeAIService {
       apiKey: process.env.CLAUDE_API_KEY,
     });
 
-    // 不同Agent使用的模型配置
+    // Model configuration used by different agents
     this.models = {
       chatbot: process.env.CLAUDE_DEFAULT_MODEL || 'claude-opus-4-20250514',
       procurement: process.env.CLAUDE_DEFAULT_MODEL || 'claude-opus-4-20250514',
@@ -20,7 +20,7 @@ class ClaudeAIService {
   }
 
   /**
-   * 统一的Claude API调用方法
+   * Unified Claude API call method
    */
   async chat({
     agentType = 'chatbot',
@@ -39,7 +39,7 @@ class ClaudeAIService {
         messages,
       };
 
-      // 只有在有工具时才添加tools参数
+      // Only add tools parameter when tools are present
       if (tools && tools.length > 0) {
         requestPayload.tools = tools;
       }
@@ -62,7 +62,7 @@ class ClaudeAIService {
   }
 
   /**
-   * 流式响应（用于ChatBot实时显示）
+   * Streaming response (used for ChatBot real-time display)
    */
   async *chatStream({
     agentType = 'chatbot',
@@ -90,7 +90,7 @@ class ClaudeAIService {
   }
 
   /**
-   * 带工具调用的智能路由
+   * Intelligent routing with tool calls
    */
   async chatWithTools({
     agentType = 'chatbot',
@@ -115,11 +115,11 @@ class ClaudeAIService {
         return response;
       }
 
-      // 查找是否有工具调用
+      // Check if there's a tool call
       const toolUseBlock = response.content.find(block => block.type === 'tool_use');
 
       if (!toolUseBlock) {
-        // 没有工具调用，返回最终文本响应
+        // No tool call, return final text response
         const textBlock = response.content.find(block => block.type === 'text');
         return {
           success: true,
@@ -128,7 +128,7 @@ class ClaudeAIService {
         };
       }
 
-      // 执行工具调用
+      // Execute tool call
       const toolName = toolUseBlock.name;
       const toolInput = toolUseBlock.input;
 
@@ -149,7 +149,7 @@ class ClaudeAIService {
         };
       }
 
-      // 将工具结果添加到对话历史
+      // Add tool result to conversation history
       currentMessages.push({
         role: 'assistant',
         content: response.content,
@@ -174,7 +174,7 @@ class ClaudeAIService {
   }
 
   /**
-   * 提取文本响应
+   * Extract text response
    */
   extractText(content) {
     if (typeof content === 'string') {

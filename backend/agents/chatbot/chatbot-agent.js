@@ -552,7 +552,7 @@ class ChatBotAgent {
           orderBy: { createdAt: 'desc' },
         });
 
-        // 过滤属于该用户部门的申请
+        // Filter requests belonging to the user's department
         const user = await prisma.user.findUnique({
           where: { id: userId },
           select: { department: true, role: true },
@@ -611,7 +611,7 @@ class ChatBotAgent {
       get_dashboard_stats: async (input) => {
         const { department } = input;
 
-        // 获取采购申请
+        // Get purchase requests
         const requestRecords = await prisma.purchaseRequestRecord.findMany();
         const orderRecords = await prisma.purchaseOrderRecord.findMany();
 
@@ -623,11 +623,11 @@ class ChatBotAgent {
           filteredOrders = orderRecords.filter(r => r.payload.department === department);
         }
 
-        // 计算统计数据
+        // Calculate statistics
         const totalRequests = filteredRequests.length;
         const totalOrders = filteredOrders.length;
 
-        // 计算支出
+        // Calculate spending
         let totalSpending = 0;
         filteredOrders.forEach(order => {
           if (order.payload.items && Array.isArray(order.payload.items)) {
@@ -640,7 +640,7 @@ class ChatBotAgent {
           }
         });
 
-        // 待审批数量
+        // Pending approvals count
         const pendingApprovals = filteredRequests.filter(r => r.payload.status === 'pending').length;
 
         return {
@@ -867,8 +867,8 @@ class ChatBotAgent {
         if (!user) {
           return {
             success: false,
-            error: '❌ 找不到用户信息',
-            message: '无法验证用户权限，请重新登录。',
+            error: '❌ User information not found',
+            message: 'Could not verify user permissions. Please log in again.',
           };
         }
 
@@ -892,15 +892,15 @@ class ChatBotAgent {
           }[format] || '📁';
 
           const dataTypeLabel = {
-            'purchase-requests': '采购申请',
-            'purchase-orders': '采购订单',
-            'invoices': '发票',
-            'suppliers': '供应商',
+            'purchase-requests': 'Purchase Requests',
+            'purchase-orders': 'Purchase Orders',
+            'invoices': 'Invoices',
+            'suppliers': 'Suppliers',
           }[dataType] || dataType;
 
           return {
             success: true,
-            message: `✅ ${dataTypeLabel}数据导出成功！\n\n${formatEmoji} 格式: ${format.toUpperCase()}\n📦 记录数: ${result.recordCount || '未知'}\n📂 文件名: ${result.filename}\n🔗 下载链接: ${result.downloadUrl}\n⏰ 生成时间: ${new Date(result.timestamp).toLocaleString('zh-CN')}`,
+            message: `✅ ${dataTypeLabel} data exported successfully!\n\n${formatEmoji} Format: ${format.toUpperCase()}\n📦 Record count: ${result.recordCount || 'Unknown'}\n📂 Filename: ${result.filename}\n🔗 Download link: ${result.downloadUrl}\n⏰ Generated at: ${new Date(result.timestamp).toLocaleString('en-US')}`,
             filename: result.filename,
             downloadUrl: result.downloadUrl,
             recordCount: result.recordCount,
@@ -910,18 +910,18 @@ class ChatBotAgent {
         } else {
           // Format error messages in Chinese
           const errorMessages = {
-            'INVALID_DATA_TYPE': '❌ 数据类型无效',
-            'INVALID_FORMAT': '❌ 导出格式无效',
-            'MISSING_AUTH': '❌ 缺少身份验证',
-            'CONNECTION_REFUSED': '❌ 无法连接到导出服务',
-            'TIMEOUT': '⏰ 导出超时',
-            'PERMISSION_DENIED': '🚫 权限不足',
-            'NO_DATA': '📭 没有找到数据',
-            'BAD_REQUEST': '❌ 请求参数错误',
-            'SERVER_ERROR': '🔧 服务器错误',
+            'INVALID_DATA_TYPE': '❌ Invalid data type',
+            'INVALID_FORMAT': '❌ Invalid export format',
+            'MISSING_AUTH': '❌ Missing authentication',
+            'CONNECTION_REFUSED': '❌ Unable to connect to export service',
+            'TIMEOUT': '⏰ Export timed out',
+            'PERMISSION_DENIED': '🚫 Insufficient permissions',
+            'NO_DATA': '📭 No data found',
+            'BAD_REQUEST': '❌ Invalid request parameters',
+            'SERVER_ERROR': '🔧 Server error',
           };
 
-          const errorTitle = errorMessages[result.error] || '❌ 导出失败';
+          const errorTitle = errorMessages[result.error] || '❌ Export failed';
 
           return {
             success: false,
@@ -941,7 +941,7 @@ class ChatBotAgent {
   }
 
   async chat({ userId, message, sessionId, attachmentData }) {
-    // 1. 加载用户信息
+    // 1. Load user information
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { name: true, email: true, role: true, department: true },
@@ -954,7 +954,7 @@ class ChatBotAgent {
       };
     }
 
-    // 2. 确保会话存在
+    // 2. Ensure session exists
     await this.ensureSession(sessionId, userId);
 
     const guidedResponse = await this.handlePurchaseRequestFlow({
@@ -968,7 +968,7 @@ class ChatBotAgent {
       return guidedResponse;
     }
 
-    // 3. 分析图片附件（如果有）- 在 AI 回复之前完成分析
+    // 3. Analyze image attachments (if any) - complete analysis before the AI response
     let imageAnalysisText = '';
     if (attachmentData && attachmentData.length > 0) {
       const imageAttachments = attachmentData.filter(att =>
@@ -994,7 +994,7 @@ class ChatBotAgent {
           }
         }
 
-        // 构建图片分析文本
+        // Build image analysis text
         if (analysisResults.length > 0) {
           imageAnalysisText = '\n\n[Image Analysis]\n' + analysisResults.map(r =>
             `📷 ${r.fileName}:\n${r.analysis}`
@@ -1003,14 +1003,14 @@ class ChatBotAgent {
       }
     }
 
-    // 4. 加载会话历史
+    // 4. Load session history
     const history = await this.loadSessionHistory(sessionId);
 
-    // 5. 构建系统提示词
+    // 5. Build system prompt
     const sourceContext = await this.loadRelevantSourceContext(userId, sessionId, message);
     const systemPrompt = `${this.buildSystemPrompt(user)}${sourceContext}`;
 
-    // 6. 构建消息数组（注入userId到工具调用中，并包含图片分析结果）
+    // 6. Build messages array (inject userId into tool calls, and include image analysis results)
     const userMessage = message + imageAnalysisText;
     const messages = [
       ...history,
@@ -1020,7 +1020,7 @@ class ChatBotAgent {
       },
     ];
 
-    // 7. 调用DeepSeek API（带工具调用）
+    // 7. Call DeepSeek API (with tool calling)
     const response = await deepseekService.chatWithTools({
       agentType: this.agentType,
       systemPrompt,
@@ -1029,11 +1029,11 @@ class ChatBotAgent {
       toolHandlers: this.enrichToolHandlers(userId),
     });
 
-    // 8. 保存对话历史（带附件）
+    // 8. Save conversation history (with attachments)
     await this.saveMessage(sessionId, 'user', message, null, attachmentData);
     await this.generateSessionTitle(sessionId, message);
 
-    // 保存图片分析结果到数据库（异步，用于后续查询）
+    // Save image analysis results to the database (async, for later queries)
     if (attachmentData && attachmentData.length > 0) {
       this.saveImageAnalysisToDatabase(sessionId, attachmentData).catch(error => {
         console.error('⚠️ Failed to save image analysis to database:', error.message);
@@ -1048,7 +1048,7 @@ class ChatBotAgent {
   }
 
   enrichToolHandlers(userId) {
-    // 为工具注入userId
+    // Inject userId into the tools
     const enriched = {};
     for (const [name, handler] of Object.entries(this.toolHandlers)) {
       enriched[name] = (input) => handler({ ...input, userId });
@@ -1071,7 +1071,7 @@ class ChatBotAgent {
     const sourceContext = await this.loadRelevantSourceContext(userId, sessionId, message);
     const systemPrompt = `${this.buildSystemPrompt(user)}${sourceContext}`;
 
-    // 保存用户消息
+    // Save user message
     await this.saveMessage(sessionId, 'user', message);
     await this.generateSessionTitle(sessionId, message);
 

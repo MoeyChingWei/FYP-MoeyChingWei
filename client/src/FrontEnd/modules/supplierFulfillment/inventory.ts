@@ -7,7 +7,7 @@ export interface SupplierInventoryItem {
   reorderLevel: number;
   unit: string;
   unitPrice: number;
-  location: string;
+  imageDataUrl?: string;
   updatedAt: string;
 }
 

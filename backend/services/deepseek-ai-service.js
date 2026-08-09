@@ -6,8 +6,8 @@ class DeepSeekAIService {
     this.client = new OpenAI({
       apiKey: process.env.DEEPSEEK_API_KEY,
       baseURL: 'https://api.deepseek.com',
-      timeout: 30000, // 30秒API超时
-      maxRetries: 0,  // 我们自己控制重试逻辑
+      timeout: 30000, // 30 second API timeout
+      maxRetries: 0,  // We control retry logic ourselves
     });
 
     this.model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
@@ -17,10 +17,10 @@ class DeepSeekAIService {
   }
 
   /**
-   * 判断错误是否可重试
+   * Determine whether an error is retryable
    */
   isRetryableError(error) {
-    // 网络错误
+    // Network errors
     if (error.code === 'ECONNRESET' ||
         error.code === 'ETIMEDOUT' ||
         error.code === 'ENOTFOUND' ||
@@ -28,7 +28,7 @@ class DeepSeekAIService {
       return true;
     }
 
-    // HTTP 状态码
+    // HTTP status codes
     const status = error.response?.status || error.status;
     if (status === 429 || // Rate limit
         status === 500 || // Server error
@@ -42,14 +42,14 @@ class DeepSeekAIService {
   }
 
   /**
-   * 延迟函数
+   * Delay function
    */
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
-   * 带重试机制的API调用
+   * API call with retry mechanism
    */
   async chatWithRetry(params, maxRetries = 3) {
     let lastError;
@@ -76,16 +76,16 @@ class DeepSeekAIService {
 
         logger.logAPICall('DeepSeek', 'chat.completions', duration, false, attempt);
 
-        // 判断是否应该重试
+        // Determine whether to retry
         const shouldRetry = this.isRetryableError(error) && attempt < maxRetries;
 
         if (shouldRetry) {
-          // 指数退避：1s, 2s, 4s
+          // Exponential backoff: 1s, 2s, 4s
           const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
           logger.logRetry('DeepSeek', attempt, maxRetries, error.message);
           await this.sleep(delay);
         } else {
-          // 不重试，记录最终错误
+          // No more retries, log the final error
           logger.error('DeepSeekAPI', `Failed after ${attempt} attempts: ${error.message}`, {
             attempts: attempt,
             error: error.message,
@@ -97,12 +97,12 @@ class DeepSeekAIService {
       }
     }
 
-    // 所有重试都失败
+    // All retries failed
     throw lastError;
   }
 
   /**
-   * 基础聊天方法（带重试）
+   * Basic chat method (with retry)
    */
   async chat({
     systemPrompt,
@@ -115,11 +115,11 @@ class DeepSeekAIService {
       const formattedMessages = [
         { role: 'system', content: systemPrompt },
         ...messages.filter(msg => {
-          // 过滤掉无效的消息格式
+          // Filter out invalid message formats
           if (msg.role === 'tool' && !msg.tool_call_id) return false;
           return true;
         }).map(msg => {
-          // 只传递 DeepSeek 接受的字段
+          // Only pass fields accepted by DeepSeek
           if (msg.role === 'assistant') {
             const assistantMsg = { role: 'assistant', content: msg.content || '' };
             if (msg.tool_calls) assistantMsg.tool_calls = msg.tool_calls;
@@ -151,7 +151,7 @@ class DeepSeekAIService {
         }));
       }
 
-      // 使用带重试的API调用
+      // Use the API call with retry
       const response = await this.chatWithRetry(requestPayload);
 
       const message = response.choices[0].message;
@@ -171,7 +171,7 @@ class DeepSeekAIService {
           output_tokens: response.usage.completion_tokens,
         },
         stopReason: response.choices[0].finish_reason,
-        reasoningContent: message.reasoning_content, // 保存思考内容
+        reasoningContent: message.reasoning_content, // Save reasoning content
       };
     } catch (error) {
       logger.error('DeepSeekChat', `API Error: ${error.message}`, {
@@ -189,7 +189,7 @@ class DeepSeekAIService {
   }
 
   /**
-   * 带工具调用的聊天（带超时保护）
+   * Chat with tool calling (with timeout protection)
    */
   async chatWithTools({
     systemPrompt,
@@ -197,15 +197,15 @@ class DeepSeekAIService {
     availableTools = [],
     toolHandlers = {},
     maxIterations = 5,
-    overallTimeoutMs = 90000,  // 整体90秒超时
-    toolTimeoutMs = 30000,     // 单个工具30秒超时
+    overallTimeoutMs = 90000,  // Overall 90 second timeout
+    toolTimeoutMs = 30000,     // Single tool 30 second timeout
   }) {
     const startTime = Date.now();
     let currentMessages = [...messages];
     let iterations = 0;
 
     while (iterations < maxIterations) {
-      // ✅ 检查总超时
+      // ✅ Check overall timeout
       const elapsed = Date.now() - startTime;
       if (elapsed > overallTimeoutMs) {
         logger.logTimeout('ChatWithTools', 'Overall execution', overallTimeoutMs);
@@ -216,7 +216,7 @@ class DeepSeekAIService {
         };
       }
 
-      // Step 1: 调用LLM
+      // Step 1: Call the LLM
       const response = await this.chat({
         systemPrompt,
         messages: currentMessages,
@@ -229,7 +229,7 @@ class DeepSeekAIService {
 
       const toolUseBlock = response.content.find(block => block.type === 'tool_use');
 
-      // Step 2: 如果没有工具调用，返回文本响应
+      // Step 2: If there's no tool call, return the text response
       if (!toolUseBlock) {
         const textBlock = response.content.find(block => block.type === 'text');
         return {
@@ -239,7 +239,7 @@ class DeepSeekAIService {
         };
       }
 
-      // Step 3: 执行工具调用（带超时）
+      // Step 3: Execute the tool call (with timeout)
       const toolName = toolUseBlock.name;
       const toolInput = toolUseBlock.input;
       const toolStartTime = Date.now();
@@ -248,13 +248,13 @@ class DeepSeekAIService {
 
       let toolResult;
       try {
-        // ✅ 工具调用带超时保护
+        // ✅ Tool call with timeout protection
         toolResult = await Promise.race([
           toolHandlers[toolName] ?
             toolHandlers[toolName](toolInput) :
             Promise.resolve({ error: `Tool handler not found: ${toolName}` }),
 
-          // 超时Promise
+          // Timeout promise
           new Promise((_, reject) =>
             setTimeout(
               () => reject(new Error(`Tool ${toolName} timeout after ${toolTimeoutMs}ms`)),
@@ -284,7 +284,7 @@ class DeepSeekAIService {
         };
       }
 
-      // Step 4: 添加对话历史
+      // Step 4: Add to conversation history
       const assistantMsg = {
         role: 'assistant',
         content: '',
@@ -298,14 +298,14 @@ class DeepSeekAIService {
         }]
       };
 
-      // 如果有 reasoning_content，添加它
+      // If there is reasoning_content, add it
       if (response.reasoningContent) {
         assistantMsg.reasoning_content = response.reasoningContent;
       }
 
       currentMessages.push(assistantMsg);
 
-      // 添加 tool 消息（工具结果）
+      // Add the tool message (tool result)
       currentMessages.push({
         role: 'tool',
         tool_call_id: toolUseBlock.id,
@@ -315,7 +315,7 @@ class DeepSeekAIService {
       iterations++;
     }
 
-    // 达到最大迭代次数
+    // Reached the maximum number of iterations
     logger.warn('ChatWithTools', `Max iterations (${maxIterations}) reached`);
     return {
       success: false,

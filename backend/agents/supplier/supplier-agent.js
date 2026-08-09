@@ -2,8 +2,8 @@ import BaseAgent from '../base-agent.js';
 import prisma from '../../config/prisma.js';
 
 /**
- * 基于订单创建时间计算订单状态
- * 这是一个智能状态推断系统，基于时间和业务逻辑
+ * Calculate order status based on order creation time
+ * This is a smart status inference system based on time and business logic
  */
 function calculateOrderStatus(order) {
   const createdAt = new Date(order.createdAt);
@@ -11,7 +11,7 @@ function calculateOrderStatus(order) {
   const daysSinceCreation = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
   const hoursSinceCreation = Math.floor((now - createdAt) / (1000 * 60 * 60));
 
-  // 检查是否有明确的状态字段
+  // Check whether there is an explicit status field
   if (order.payload?.orderStatus) {
     return {
       status: order.payload.orderStatus,
@@ -20,7 +20,7 @@ function calculateOrderStatus(order) {
     };
   }
 
-  // 智能状态推断
+  // Smart status inference
   let status, statusIndicator;
 
   if (hoursSinceCreation < 2) {
@@ -52,7 +52,7 @@ function calculateOrderStatus(order) {
 }
 
 /**
- * 获取状态图标
+ * Get the status icon
  */
 function getStatusIndicator(status) {
   const indicators = {
@@ -69,18 +69,18 @@ function getStatusIndicator(status) {
 }
 
 /**
- * 计算预计交付日期
+ * Calculate the expected delivery date
  */
 function calculateExpectedDelivery(order, currentStatus) {
   const createdAt = new Date(order.createdAt);
 
-  // 如果有明确的交付日期
+  // If there is an explicit delivery date
   if (order.payload?.expectedDeliveryDate) {
     return order.payload.expectedDeliveryDate;
   }
 
-  // 基于状态计算预计日期
-  const standardLeadTime = 14; // 标准14天
+  // Calculate the expected date based on status
+  const standardLeadTime = 14; // Standard 14 days
   const expectedDate = new Date(createdAt);
 
   if (currentStatus === 'pending' || currentStatus === 'acknowledged') {
@@ -95,7 +95,7 @@ function calculateExpectedDelivery(order, currentStatus) {
 }
 
 /**
- * 计算供应商绩效评分
+ * Calculate the supplier performance score
  */
 function calculateSupplierPerformance(orders) {
   if (!orders || orders.length === 0) {
@@ -108,22 +108,22 @@ function calculateSupplierPerformance(orders) {
 
   const total = orders.length;
 
-  // 模拟绩效指标（实际应从真实数据计算）
+  // Simulated performance metrics (should be calculated from real data in production)
   const onTimeCount = Math.floor(total * (0.85 + Math.random() * 0.1));
   const onTimeRate = (onTimeCount / total) * 100;
 
   const qualityScore = 85 + Math.random() * 10;
-  const responseTime = 8 + Math.random() * 8; // 小时
+  const responseTime = 8 + Math.random() * 8; // hours
 
   let rating;
   if (onTimeRate >= 95 && qualityScore >= 90) {
-    rating = '⭐⭐⭐⭐⭐ 优秀';
+    rating = '⭐⭐⭐⭐⭐ Excellent';
   } else if (onTimeRate >= 85 && qualityScore >= 80) {
-    rating = '⭐⭐⭐⭐ 良好';
+    rating = '⭐⭐⭐⭐ Good';
   } else if (onTimeRate >= 70) {
-    rating = '⭐⭐⭐ 一般';
+    rating = '⭐⭐⭐ Average';
   } else {
-    rating = '⭐⭐ 需改进';
+    rating = '⭐⭐ Needs Improvement';
   }
 
   return {
@@ -272,7 +272,7 @@ Remember: You are a COORDINATOR. Be proactive, communicative, and solution-orien
 /**
  * Supplier Agent - Supplier Relationship and Logistics Coordinator
  *
- * 专注于供应商沟通、订单跟踪、交付协调
+ * Focuses on supplier communication, order tracking, and delivery coordination
  */
 class SupplierAgent extends BaseAgent {
   constructor() {
@@ -473,7 +473,7 @@ class SupplierAgent extends BaseAgent {
       track_order_status: async (input) => {
         const { poNumber, supplier, status = 'all', limit = 10 } = input;
 
-        // 构建查询条件
+        // Build the query condition
         let whereClause = {};
 
         if (poNumber) {
@@ -487,7 +487,7 @@ class SupplierAgent extends BaseAgent {
 
         const orders = await prisma.purchaseOrderRecord.findMany({
           where: whereClause,
-          take: poNumber ? 1 : limit * 2, // 获取更多以便过滤
+          take: poNumber ? 1 : limit * 2, // Fetch more so we can filter afterward
           orderBy: { createdAt: 'desc' },
           select: {
             localId: true,
@@ -496,7 +496,7 @@ class SupplierAgent extends BaseAgent {
           },
         });
 
-        // 供应商过滤
+        // Filter by supplier
         let filtered = orders;
         if (supplier) {
           filtered = orders.filter(o =>
@@ -506,24 +506,24 @@ class SupplierAgent extends BaseAgent {
           );
         }
 
-        // 处理每个订单
+        // Process each order
         const tracked = filtered.map(order => {
           const payload = order.payload;
 
-          // 使用智能状态计算
+          // Use smart status calculation
           const statusInfo = calculateOrderStatus(order);
           const expectedDelivery = calculateExpectedDelivery(order, statusInfo.status);
 
-          // 计算总金额
+          // Calculate the total amount
           const totalAmount = (payload.items || []).reduce((sum, item) =>
             sum + parseFloat(item.totalPrice || 0), 0);
 
-          // 延迟检测
+          // Delay detection
           const expectedDate = new Date(expectedDelivery);
           const now = new Date();
           const isDelayed = statusInfo.status !== 'delivered' && now > expectedDate;
 
-          // 获取主要供应商
+          // Get the main supplier
           const mainSupplier = payload.items?.[0]?.supplierName || 'Not assigned';
 
           return {
@@ -553,16 +553,16 @@ class SupplierAgent extends BaseAgent {
           };
         });
 
-        // 状态过滤
+        // Filter by status
         let finalFiltered = tracked;
         if (status !== 'all') {
           finalFiltered = tracked.filter(o => o.status === status);
         }
 
-        // 限制结果数量
+        // Limit the number of results
         finalFiltered = finalFiltered.slice(0, limit);
 
-        // 生成统计
+        // Generate the summary
         const summary = {
           pending: tracked.filter(o => o.status === 'pending').length,
           acknowledged: tracked.filter(o => o.status === 'acknowledged').length,
@@ -574,19 +574,19 @@ class SupplierAgent extends BaseAgent {
           needsAttention: tracked.filter(o => o.needsAttention).length,
         };
 
-        // 生成建议
+        // Generate recommendations
         const recommendations = [];
         if (summary.needsAttention > 0) {
-          recommendations.push(`⚠️ ${summary.needsAttention} 个订单需要关注`);
+          recommendations.push(`⚠️ ${summary.needsAttention} order(s) need attention`);
         }
         if (summary.delayed > 0) {
-          recommendations.push(`🔴 ${summary.delayed} 个订单延迟交付`);
+          recommendations.push(`🔴 ${summary.delayed} order(s) delivered late`);
         }
         if (summary.pending > 5) {
-          recommendations.push(`📋 ${summary.pending} 个订单等待确认，建议跟进`);
+          recommendations.push(`📋 ${summary.pending} order(s) awaiting confirmation — recommend follow-up`);
         }
         if (recommendations.length === 0) {
-          recommendations.push('✅ 所有订单进展正常');
+          recommendations.push('✅ All orders are progressing normally');
         }
 
         return {
@@ -609,7 +609,7 @@ class SupplierAgent extends BaseAgent {
       send_supplier_notification: async (input) => {
         const { supplier, poNumber, messageType, urgency = 'normal' } = input;
 
-        // 模拟发送通知
+        // Simulate sending the notification
         const templates = {
           order_confirmation: `Order confirmation for PO ${poNumber}. Please acknowledge receipt and confirm delivery timeline.`,
           delivery_request: `Requesting delivery update for PO ${poNumber}. Please provide current status and ETA.`,
@@ -620,7 +620,7 @@ class SupplierAgent extends BaseAgent {
         const message = templates[messageType];
         const timestamp = new Date().toISOString();
 
-        // 在实际项目中，这里会发送真实的邮件或通知
+        // In a real project, this would send an actual email or notification
         return {
           success: true,
           supplier,
@@ -639,7 +639,7 @@ class SupplierAgent extends BaseAgent {
       update_delivery_schedule: async (input) => {
         const { poNumber, expectedDate, reason, notifyDepartment = true } = input;
 
-        // 查找订单
+        // Look up the order
         const order = await prisma.purchaseOrderRecord.findFirst({
           where: {
             payload: {
@@ -653,7 +653,7 @@ class SupplierAgent extends BaseAgent {
           return { success: false, error: 'Purchase order not found' };
         }
 
-        // 在实际项目中，这里会更新数据库中的交付日期
+        // In a real project, this would update the delivery date in the database
         return {
           success: true,
           poNumber,
@@ -688,7 +688,7 @@ class SupplierAgent extends BaseAgent {
           },
         });
 
-        // 供应商过滤
+        // Filter by supplier
         let filtered = orders;
         if (supplier) {
           filtered = orders.filter(o =>
@@ -703,16 +703,16 @@ class SupplierAgent extends BaseAgent {
             supplier: supplier || 'All Suppliers',
             period: `${months} months`,
             error: 'No orders found for analysis',
-            recommendation: '无法评估绩效，缺少历史数据',
+            recommendation: 'Unable to assess performance — insufficient historical data',
           };
         }
 
         const totalOrders = filtered.length;
 
-        // 使用辅助函数计算绩效
+        // Use the helper function to calculate performance
         const performance = calculateSupplierPerformance(filtered);
 
-        // 分析趋势（对比前半期和后半期）
+        // Analyze the trend (compare first half vs second half of the period)
         const midpoint = new Date(startDate);
         midpoint.setMonth(midpoint.getMonth() + Math.floor(months / 2));
 
@@ -725,17 +725,17 @@ class SupplierAgent extends BaseAgent {
         const trendChange = parseFloat(secondHalfPerf.score) - parseFloat(firstHalfPerf.score);
         let trend, trendIndicator;
         if (trendChange > 5) {
-          trend = '改善';
+          trend = 'Improving';
           trendIndicator = '📈';
         } else if (trendChange < -5) {
-          trend = '下降';
+          trend = 'Declining';
           trendIndicator = '📉';
         } else {
-          trend = '稳定';
+          trend = 'Stable';
           trendIndicator = '➡️';
         }
 
-        // 问题分析
+        // Issue analysis
         const issues = [];
         const onTimeRate = parseFloat(performance.metrics.onTimeDeliveryRate);
         const qualityScore = parseFloat(performance.metrics.qualityScore);
@@ -744,13 +744,13 @@ class SupplierAgent extends BaseAgent {
           issues.push({
             type: 'delivery',
             severity: 'high',
-            message: `准时交付率仅${performance.metrics.onTimeDeliveryRate}，低于标准`,
+            message: `On-time delivery rate is only ${performance.metrics.onTimeDeliveryRate}, below standard`,
           });
         } else if (onTimeRate < 85) {
           issues.push({
             type: 'delivery',
             severity: 'medium',
-            message: `准时交付率${performance.metrics.onTimeDeliveryRate}，有改进空间`,
+            message: `On-time delivery rate is ${performance.metrics.onTimeDeliveryRate}, room for improvement`,
           });
         }
 
@@ -758,7 +758,7 @@ class SupplierAgent extends BaseAgent {
           issues.push({
             type: 'quality',
             severity: 'high',
-            message: `质量评分${qualityScore.toFixed(1)}，需要改进`,
+            message: `Quality score is ${qualityScore.toFixed(1)}, needs improvement`,
           });
         }
 
@@ -766,27 +766,27 @@ class SupplierAgent extends BaseAgent {
           issues.push({
             type: 'trend',
             severity: 'high',
-            message: `绩效下降明显 (${trendChange.toFixed(1)}分)`,
+            message: `Significant performance decline (${trendChange.toFixed(1)} points)`,
           });
         }
 
-        // 生成建议
+        // Generate the recommendation
         let recommendation;
         const score = parseFloat(performance.score);
 
         if (score >= 90 && issues.length === 0) {
-          recommendation = '✅ 优秀供应商，建议继续合作并考虑增加订单量';
+          recommendation = '✅ Excellent supplier — recommend continuing the partnership and considering more orders';
         } else if (score >= 80) {
-          recommendation = '🟢 可靠供应商，维持当前合作关系';
+          recommendation = '🟢 Reliable supplier — maintain the current relationship';
         } else if (score >= 70) {
-          recommendation = '🟡 一般供应商，建议与供应商讨论改进计划';
+          recommendation = '🟡 Average supplier — recommend discussing an improvement plan with the supplier';
         } else if (score >= 60) {
-          recommendation = '🟠 表现不佳，考虑寻找替代供应商';
+          recommendation = '🟠 Underperforming — consider finding an alternative supplier';
         } else {
-          recommendation = '🔴 严重问题，建议立即更换供应商';
+          recommendation = '🔴 Serious issues — recommend replacing the supplier immediately';
         }
 
-        // 月度分解
+        // Monthly breakdown
         const monthlyBreakdown = [];
         for (let i = 0; i < months; i++) {
           const monthStart = new Date(startDate);
@@ -834,13 +834,13 @@ class SupplierAgent extends BaseAgent {
 
           actionItems: issues.length > 0
             ? [
-                '📋 安排供应商会议讨论改进',
-                '📊 设定改进KPI和时间表',
-                '🔍 每月审查绩效进展',
+                '📋 Schedule a supplier meeting to discuss improvements',
+                '📊 Set improvement KPIs and a timeline',
+                '🔍 Review performance progress monthly',
               ]
             : [
-                '✅ 维持当前合作关系',
-                '📈 考虑增加订单量',
+                '✅ Maintain the current partnership',
+                '📈 Consider increasing order volume',
               ],
         };
       },
@@ -848,7 +848,7 @@ class SupplierAgent extends BaseAgent {
       coordinate_delivery_time: async (input) => {
         const { poNumber, department, preferredDate, preferredTime = 'any' } = input;
 
-        // 模拟协调过程
+        // Simulate the coordination process
         const coordination = {
           poNumber,
           department,
@@ -947,7 +947,7 @@ class SupplierAgent extends BaseAgent {
       get_supplier_contact_info: async (input) => {
         const { supplier, includeHistory = false } = input;
 
-        // 模拟供应商联系信息
+        // Simulated supplier contact information
         const contacts = {
           'Tech Solutions Sdn Bhd': {
             name: 'Tech Solutions Sdn Bhd',

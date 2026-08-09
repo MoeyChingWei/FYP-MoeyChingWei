@@ -4,10 +4,10 @@ import path from 'path';
 /**
  * Simple Logger Service
  *
- * 提供基础日志功能：
- * - 控制台输出（带颜色和emoji）
- * - 文件输出（JSON格式，按级别分文件）
- * - Agent请求追踪
+ * Provides basic logging functionality:
+ * - Console output (with colors and emoji)
+ * - File output (JSON format, split by level)
+ * - Agent request tracking
  */
 class SimpleLogger {
   constructor() {
@@ -32,7 +32,7 @@ class SimpleLogger {
       ...metadata,
     };
 
-    // 控制台输出
+    // Console output
     const emoji = {
       info: '💬',
       warn: '⚠️',
@@ -55,12 +55,12 @@ class SimpleLogger {
       `${emoji[level] || '📝'} ${color[level] || ''}[${level.toUpperCase()}]${reset} ${context}: ${message}`
     );
 
-    // 文件输出
+    // File output
     try {
       const logFile = path.join(this.logDir, `${level}.log`);
       fs.appendFileSync(logFile, JSON.stringify(logEntry) + '\n');
 
-      // 所有日志也写入combined.log
+      // All logs are also written to combined.log
       const combinedFile = path.join(this.logDir, 'combined.log');
       fs.appendFileSync(combinedFile, JSON.stringify(logEntry) + '\n');
     } catch (error) {
@@ -90,7 +90,7 @@ class SimpleLogger {
     }
   }
 
-  // 专门用于Agent请求追踪
+  // Specifically for Agent request tracking
   logAgentRequest(agentType, userId, sessionId, messageLength) {
     this.info('AgentRequest', `${agentType} from user ${userId}`, {
       agentType,

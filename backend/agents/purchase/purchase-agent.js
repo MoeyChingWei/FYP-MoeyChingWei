@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { generatePRNumber } from '../../utils/pr-number-generator.js';
 
 /**
- * 计算标准差
+ * Calculate standard deviation
  */
 function calculateStdDev(numbers) {
   if (numbers.length === 0) return 0;
@@ -14,7 +14,7 @@ function calculateStdDev(numbers) {
 }
 
 /**
- * 计算线性回归
+ * Calculate linear regression
  */
 function calculateLinearRegression(data) {
   const n = data.length;
@@ -146,7 +146,7 @@ Remember: You are a procurement EXPERT. Be confident, analytical, and always add
 /**
  * Purchase Agent - Procurement Specialist
  *
- * 专注于采购流程优化、供应商管理、成本分析
+ * Focused on procurement process optimization, supplier management, and cost analysis
  */
 class PurchaseAgent extends BaseAgent {
   constructor() {
@@ -365,7 +365,7 @@ class PurchaseAgent extends BaseAgent {
       recommend_suppliers: async (input) => {
         const { category, itemName, limit = 3 } = input;
 
-        // 获取所有相关订单（最近6个月）
+        // Get all related orders (last 6 months)
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
@@ -382,7 +382,7 @@ class PurchaseAgent extends BaseAgent {
           },
         });
 
-        // 收集供应商统计数据
+        // Collect supplier statistics
         const supplierStats = {};
         const now = Date.now();
 
@@ -397,7 +397,7 @@ class PurchaseAgent extends BaseAgent {
                   supplierStats[supplier] = {
                     name: supplier,
                     totalOrders: 0,
-                    recentOrders: 0, // 最近3个月
+                    recentOrders: 0, // last 3 months
                     categories: new Set(),
                     totalValue: 0,
                     prices: [],
@@ -410,13 +410,13 @@ class PurchaseAgent extends BaseAgent {
                 supplierStats[supplier].totalValue += parseFloat(item.totalPrice || 0);
                 supplierStats[supplier].prices.push(parseFloat(item.unitPrice || 0));
 
-                // 记录最近订单日期
+                // Record the most recent order date
                 const orderDate = new Date(order.createdAt);
                 if (!supplierStats[supplier].lastOrderDate || orderDate > supplierStats[supplier].lastOrderDate) {
                   supplierStats[supplier].lastOrderDate = orderDate;
                 }
 
-                // 统计最近3个月的订单
+                // Count orders from the last 3 months
                 const threeMonthsAgo = new Date();
                 threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
                 if (orderDate >= threeMonthsAgo) {
@@ -427,7 +427,7 @@ class PurchaseAgent extends BaseAgent {
           }
         });
 
-        // 过滤掉订单数少于3的供应商
+        // Filter out suppliers with fewer than 3 orders
         const validSuppliers = Object.values(supplierStats).filter(s => s.totalOrders >= 3);
 
         if (validSuppliers.length === 0) {
@@ -444,29 +444,29 @@ class PurchaseAgent extends BaseAgent {
           };
         }
 
-        // 加权评分算法
+        // Weighted scoring algorithm
         const scoredSuppliers = validSuppliers.map(s => {
-          // 1. 订单量评分 (0-30分)
+          // 1. Order volume score (0-30 points)
           const volumeScore = Math.min((s.totalOrders / 20) * 30, 30);
 
-          // 2. 最近活跃度评分 (0-25分)
+          // 2. Recent activity score (0-25 points)
           const recencyRatio = s.recentOrders / s.totalOrders;
           const recencyScore = recencyRatio * 25;
 
-          // 3. 新鲜度评分 (0-20分) - 最近下单时间
+          // 3. Freshness score (0-20 points) - based on the most recent order time
           const daysSinceLastOrder = (now - s.lastOrderDate.getTime()) / (1000 * 60 * 60 * 24);
-          const freshnessScore = Math.max(0, 20 - (daysSinceLastOrder / 30) * 20); // 30天为满分
+          const freshnessScore = Math.max(0, 20 - (daysSinceLastOrder / 30) * 20); // 30 days = full score
 
-          // 4. 价格稳定性评分 (0-15分)
+          // 4. Price stability score (0-15 points)
           const priceStdDev = calculateStdDev(s.prices);
           const priceAvg = s.prices.reduce((a, b) => a + b, 0) / s.prices.length;
-          const priceCV = priceStdDev / priceAvg; // 变异系数
-          const stabilityScore = Math.max(0, 15 - priceCV * 100); // CV越小，分数越高
+          const priceCV = priceStdDev / priceAvg; // coefficient of variation
+          const stabilityScore = Math.max(0, 15 - priceCV * 100); // lower CV = higher score
 
-          // 5. 品类专注度评分 (0-10分)
-          const specializationScore = s.categories.size === 1 ? 10 : 5; // 专注单一品类得分更高
+          // 5. Category specialization score (0-10 points)
+          const specializationScore = s.categories.size === 1 ? 10 : 5; // focusing on a single category scores higher
 
-          // 综合评分
+          // Overall score
           const totalScore = volumeScore + recencyScore + freshnessScore + stabilityScore + specializationScore;
 
           return {
@@ -474,14 +474,14 @@ class PurchaseAgent extends BaseAgent {
             totalOrders: s.totalOrders,
             recentOrders: s.recentOrders,
             avgPrice: priceAvg.toFixed(2),
-            priceStability: priceCV < 0.1 ? '高' : priceCV < 0.2 ? '中' : '低',
+            priceStability: priceCV < 0.1 ? 'High' : priceCV < 0.2 ? 'Medium' : 'Low',
             lastOrderDate: s.lastOrderDate.toISOString().split('T')[0],
             daysSinceLastOrder: Math.floor(daysSinceLastOrder),
             categories: Array.from(s.categories),
             score: totalScore.toFixed(1),
-            rating: totalScore > 80 ? '⭐⭐⭐⭐⭐ 强烈推荐' :
-                    totalScore > 65 ? '⭐⭐⭐⭐ 推荐' :
-                    totalScore > 50 ? '⭐⭐⭐ 可考虑' : '⭐⭐ 不推荐',
+            rating: totalScore > 80 ? '⭐⭐⭐⭐⭐ Strongly Recommended' :
+                    totalScore > 65 ? '⭐⭐⭐⭐ Recommended' :
+                    totalScore > 50 ? '⭐⭐⭐ Worth Considering' : '⭐⭐ Not Recommended',
             breakdown: {
               volume: volumeScore.toFixed(1),
               recency: recencyScore.toFixed(1),
@@ -492,7 +492,7 @@ class PurchaseAgent extends BaseAgent {
           };
         });
 
-        // 按分数排序
+        // Sort by score
         scoredSuppliers.sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
 
         return {
@@ -507,7 +507,7 @@ class PurchaseAgent extends BaseAgent {
       analyze_price_history: async (input) => {
         const { itemName, category, months = 6 } = input;
 
-        // 查找历史订单
+        // Look up historical orders
         const monthsAgo = new Date();
         monthsAgo.setMonth(monthsAgo.getMonth() - months);
 
@@ -524,7 +524,7 @@ class PurchaseAgent extends BaseAgent {
           },
         });
 
-        // 提取价格历史
+        // Extract price history
         const priceHistory = [];
 
         orders.forEach(order => {
@@ -555,7 +555,7 @@ class PurchaseAgent extends BaseAgent {
           };
         }
 
-        // 计算基础统计
+        // Calculate basic statistics
         const prices = priceHistory.map(p => p.unitPrice).filter(p => p > 0);
         if (prices.length === 0) {
           return {
@@ -570,59 +570,59 @@ class PurchaseAgent extends BaseAgent {
         const minPrice = Math.min(...prices);
         const maxPrice = Math.max(...prices);
         const stdDev = calculateStdDev(prices);
-        const priceCV = stdDev / avgPrice; // 变异系数
+        const priceCV = stdDev / avgPrice; // coefficient of variation
 
-        // 计算移动平均（最近4个数据点）
+        // Calculate moving average (last 4 data points)
         const movingAverages = prices.map((_, idx, arr) => {
           const window = arr.slice(Math.max(0, idx - 3), idx + 1);
           return window.reduce((sum, p) => sum + p, 0) / window.length;
         });
         const latestMA = movingAverages[movingAverages.length - 1];
 
-        // 线性回归分析趋势
+        // Linear regression trend analysis
         const regression = calculateLinearRegression(prices);
         const trendSlope = regression.slope;
 
         let trend, trendIndicator;
         if (trendSlope > 0.5) {
-          trend = '上涨';
+          trend = 'Rising';
           trendIndicator = '📈';
         } else if (trendSlope < -0.5) {
-          trend = '下降';
+          trend = 'Falling';
           trendIndicator = '📉';
         } else {
-          trend = '稳定';
+          trend = 'Stable';
           trendIndicator = '➡️';
         }
 
-        // 预测未来价格（基于线性回归）
+        // Predict future price (based on linear regression)
         const predictedNextPrice = regression.intercept + regression.slope * prices.length;
 
-        // 价格波动性评估
+        // Price volatility assessment
         let volatilityLevel, volatilityIndicator;
         if (priceCV < 0.1) {
-          volatilityLevel = '低';
+          volatilityLevel = 'Low';
           volatilityIndicator = '🟢';
         } else if (priceCV < 0.2) {
-          volatilityLevel = '中等';
+          volatilityLevel = 'Medium';
           volatilityIndicator = '🟡';
         } else {
-          volatilityLevel = '高';
+          volatilityLevel = 'High';
           volatilityIndicator = '🔴';
         }
 
-        // 生成采购建议
+        // Generate procurement recommendation
         let recommendation;
         if (trendSlope > 1 && priceCV > 0.15) {
-          recommendation = '⚠️ 价格快速上涨且波动大，建议立即采购并考虑批量购买';
+          recommendation = '⚠️ Price is rising fast with high volatility — buy now and consider bulk purchasing';
         } else if (trendSlope > 0.5) {
-          recommendation = '📈 价格上涨趋势，建议尽快采购';
+          recommendation = '📈 Price is trending upward — recommend purchasing soon';
         } else if (trendSlope < -0.5) {
-          recommendation = '💡 价格下降趋势，可以等待更好价格或协商折扣';
+          recommendation = '💡 Price is trending downward — can wait for a better price or negotiate a discount';
         } else if (priceCV < 0.1) {
-          recommendation = '✅ 价格稳定，正常采购即可';
+          recommendation = '✅ Price is stable — proceed with normal purchasing';
         } else {
-          recommendation = '🟡 价格波动较大，建议多询价对比';
+          recommendation = '🟡 Price is fairly volatile — recommend comparing multiple quotes';
         }
 
         return {
@@ -668,7 +668,7 @@ class PurchaseAgent extends BaseAgent {
       check_inventory_status: async (input) => {
         const { itemName, department } = input;
 
-        // 模拟库存检查（实际项目中需要真实库存表）
+        // Simulated inventory check (a real inventory table would be needed in production)
         return {
           itemName,
           department: department || 'All',

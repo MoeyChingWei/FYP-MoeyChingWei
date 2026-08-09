@@ -9,7 +9,7 @@ import {
   TruckOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Empty, Flex, List, Popconfirm, Tabs, Tag, Typography, message } from "antd";
+import { Button, Card, Empty, Flex, Popconfirm, Tabs, Tag, Typography, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../../shared/auth/session";
 import { UserRole } from "../../shared/types/roles";
@@ -306,11 +306,9 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
     }
 
     return (
-      <List
-        size="small"
-        dataSource={items}
-        renderItem={(n) => (
-          <List.Item className={`${styles.notificationItem} ${styles.notificationUnread}`}>
+      <ul className={styles.notificationList}>
+        {items.map((n) => (
+          <li key={n.id} className={`${styles.notificationItem} ${styles.notificationUnread}`}>
             <Flex vertical gap={6} style={{ width: "100%" }}>
               <Flex justify="space-between" align="center" gap={12}>
                 <Button
@@ -337,9 +335,9 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
               </Text>
               <Text type="secondary" className={styles.notificationTime}>{n.when}</Text>
             </Flex>
-          </List.Item>
-        )}
-      />
+          </li>
+        ))}
+      </ul>
     );
   }
 
@@ -353,13 +351,36 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
     }
 
     return (
-      <List
-        size="small"
-        dataSource={items}
-        renderItem={(n) => (
-          <List.Item
-            className={`${styles.notificationItem} ${styles.notificationRead}`}
-            extra={
+      <ul className={styles.notificationList}>
+        {items.map((n) => (
+          <li key={n.id} className={`${styles.notificationItem} ${styles.notificationRead}`}>
+            <Flex vertical gap={6} style={{ width: "100%" }}>
+              <Flex justify="space-between" align="center" gap={12}>
+                <Button
+                  type="link"
+                  className={styles.notificationTitle}
+                  onClick={() => void openNotification(n)}
+                >
+                  {n.title}
+                </Button>
+                <Tag
+                  color={
+                    n.type === "success"
+                      ? "green"
+                      : n.type === "warning"
+                        ? "orange"
+                        : "blue"
+                  }
+                >
+                  {t(`notifications.type.${n.type}`)}
+                </Tag>
+              </Flex>
+              <Text type="secondary" className={styles.notificationMessage}>
+                {n.message}
+              </Text>
+              <Text type="secondary" className={styles.notificationTime}>{n.when}</Text>
+            </Flex>
+            <div className={styles.notificationExtra}>
               <Popconfirm
                 title={t("notifications.deleteOneConfirm")}
                 okText={t("common.delete")}
@@ -374,37 +395,10 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
                   icon={<DeleteOutlined />}
                 />
               </Popconfirm>
-            }
-          >
-            <Flex vertical gap={6} style={{ width: "100%" }}>
-              <Flex justify="space-between" align="center" gap={12}>
-                <Button
-                  type="link"
-                  className={styles.notificationTitle}
-                  onClick={() => void openNotification(n)}
-                >
-                  {n.title}
-                </Button>
-                <Tag
-                  color={
-                    n.type === "success"
-                      ? "green"
-                      : n.type === "warning"
-                        ? "orange"
-                        : "blue"
-                  }
-                >
-                  {t(`notifications.type.${n.type}`)}
-                </Tag>
-              </Flex>
-              <Text type="secondary" className={styles.notificationMessage}>
-                {n.message}
-              </Text>
-              <Text type="secondary" className={styles.notificationTime}>{n.when}</Text>
-            </Flex>
-          </List.Item>
-        )}
-      />
+            </div>
+          </li>
+        ))}
+      </ul>
     );
   }
 
@@ -422,7 +416,7 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
         {!isAdmin && (
           <Card
             className={styles.notifications}
-            bordered={false}
+            variant="borderless"
             styles={{ body: { padding: 16 } }}
           >
             <div className={styles.notificationsBody}>
@@ -496,7 +490,7 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
               <Card
                 key={item.label}
                 className={styles.statusCard}
-                bordered={false}
+                variant="borderless"
                 styles={{ body: { padding: 16 } }}
               >
                 <div className={styles.statusLabel}>{item.label}</div>
@@ -514,7 +508,7 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
               <Card
                 key={item.route}
                 className={styles.tile}
-                bordered={false}
+                variant="borderless"
                 hoverable
                 onClick={() => navigate(item.route)}
                 styles={{ body: { padding: 0 } }}

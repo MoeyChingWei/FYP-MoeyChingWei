@@ -23,6 +23,7 @@ import debugLogsRoutes from "./routes/debug-logs.js";
 import { performanceMiddleware } from "./routes/debug-logs.js";
 import auditRoutes from "./routes/audit.js";
 import backupRoutes from "./routes/backup.js";
+import homeRoutes from "./routes/home.js";
 import { auditMiddleware } from "./middleware/auditMiddleware.js";
 
 const app = express();
@@ -52,9 +53,7 @@ app.use("/api/agents", agentsRoutes);
 app.use("/api", languageRoutes);
 app.use("/api/export", exportRoutes);
 
-app.get("/", (req, res) => {
-  res.redirect("/api/debug/dashboard");
-});
+app.use("/", homeRoutes);
 
 app.listen(4000, () => {
   console.log("Server running on port 4000");

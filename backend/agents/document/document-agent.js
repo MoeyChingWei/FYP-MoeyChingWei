@@ -2,13 +2,13 @@ import BaseAgent from '../base-agent.js';
 import prisma from '../../config/prisma.js';
 
 /**
- * 验证规则引擎
+ * Validation rules engine
  */
 const VALIDATION_RULES = {
   purchaseRequest: {
     required: ['prNumber', 'department', 'requestBy', 'lineItems'],
     lineItemRequired: ['itemName', 'itemCategory', 'quantity', 'unitOfMeasurement'],
-    amountThreshold: 100000, // 超过此金额需额外验证
+    amountThreshold: 100000, // Requires extra verification above this amount
   },
   purchaseOrder: {
     required: ['poNumber', 'department', 'items'],
@@ -18,7 +18,7 @@ const VALIDATION_RULES = {
 };
 
 /**
- * 计算文档完整性评分
+ * Calculate document completeness score
  */
 function calculateCompletenessScore(document, docType) {
   const rules = VALIDATION_RULES[docType];
@@ -27,7 +27,7 @@ function calculateCompletenessScore(document, docType) {
   const issues = [];
   let score = 100;
 
-  // 检查必填字段
+  // Check required fields
   rules.required.forEach(field => {
     if (!document[field]) {
       score -= 15;
@@ -35,7 +35,7 @@ function calculateCompletenessScore(document, docType) {
     }
   });
 
-  // 检查line items
+  // Check line items
   if (document.lineItems || document.items) {
     const items = document.lineItems || document.items;
     const itemRules = rules.lineItemRequired || rules.itemRequired;
@@ -61,7 +61,7 @@ function calculateCompletenessScore(document, docType) {
 }
 
 /**
- * 验证金额计算
+ * Verify amount calculations
  */
 function verifyAmountCalculations(items) {
   const errors = [];
@@ -94,7 +94,7 @@ function verifyAmountCalculations(items) {
 }
 
 /**
- * 检测文档异常
+ * Detect document anomalies
  */
 function detectDocumentAnomalies(document, docType) {
   const anomalies = [];
@@ -103,60 +103,60 @@ function detectDocumentAnomalies(document, docType) {
   const totalAmount = items.reduce((sum, item) =>
     sum + parseFloat(item.totalPrice || item.unitPrice * item.quantity || 0), 0);
 
-  // 1. 金额异常
+  // 1. Amount anomaly
   const threshold = VALIDATION_RULES[docType]?.amountThreshold || 100000;
   if (totalAmount > threshold) {
     anomalies.push({
       type: 'high_value',
       severity: 'medium',
-      message: `总金额 ${totalAmount.toFixed(2)} 超过阈值 ${threshold}`,
-      recommendation: '需要额外审批',
+      message: `Total amount ${totalAmount.toFixed(2)} exceeds the threshold ${threshold}`,
+      recommendation: 'Requires additional approval',
     });
   }
 
-  // 2. 数量异常
+  // 2. Quantity anomaly
   items.forEach((item, idx) => {
     const qty = parseFloat(item.quantity || 0);
     if (qty > 1000) {
       anomalies.push({
         type: 'high_quantity',
         severity: 'low',
-        message: `Item ${idx + 1} (${item.itemName}): 数量 ${qty} 异常高`,
-        recommendation: '确认数量是否正确',
+        message: `Item ${idx + 1} (${item.itemName}): quantity ${qty} is unusually high`,
+        recommendation: 'Confirm the quantity is correct',
       });
     }
     if (qty === 0) {
       anomalies.push({
         type: 'zero_quantity',
         severity: 'high',
-        message: `Item ${idx + 1} (${item.itemName}): 数量为0`,
-        recommendation: '必须修正',
+        message: `Item ${idx + 1} (${item.itemName}): quantity is 0`,
+        recommendation: 'Must be corrected',
       });
     }
   });
 
-  // 3. 价格异常
+  // 3. Price anomaly
   items.forEach((item, idx) => {
     const price = parseFloat(item.unitPrice || 0);
     if (price === 0 && docType === 'purchaseOrder') {
       anomalies.push({
         type: 'zero_price',
         severity: 'high',
-        message: `Item ${idx + 1} (${item.itemName}): 价格为0`,
-        recommendation: '需要设置价格',
+        message: `Item ${idx + 1} (${item.itemName}): price is 0`,
+        recommendation: 'Price needs to be set',
       });
     }
   });
 
-  // 4. 供应商异常
+  // 4. Supplier anomaly
   if (docType === 'purchaseOrder') {
     const missingSupplier = items.filter(item => !item.supplierName);
     if (missingSupplier.length > 0) {
       anomalies.push({
         type: 'missing_supplier',
         severity: 'high',
-        message: `${missingSupplier.length} 个商品缺少供应商信息`,
-        recommendation: '必须指定供应商',
+        message: `${missingSupplier.length} item(s) missing supplier information`,
+        recommendation: 'Supplier must be specified',
       });
     }
   }
@@ -165,7 +165,7 @@ function detectDocumentAnomalies(document, docType) {
 }
 
 /**
- * 检查重复商品
+ * Check for duplicate items
  */
 function checkDuplicateItems(items) {
   const duplicates = [];
@@ -178,7 +178,7 @@ function checkDuplicateItems(items) {
         item1: seen[key],
         item2: idx + 1,
         name: item.itemName,
-        suggestion: '考虑合并为一项',
+        suggestion: 'Consider merging into a single item',
       });
     } else {
       seen[key] = idx + 1;
@@ -189,7 +189,7 @@ function checkDuplicateItems(items) {
 }
 
 /**
- * 检查价格一致性
+ * Check price consistency
  */
 function checkPriceConsistency(items) {
   const priceByItem = {};
@@ -214,7 +214,7 @@ function checkPriceConsistency(items) {
         inconsistencies.push({
           item: name,
           prices: uniquePrices,
-          message: `同一商品有不同价格: ${uniquePrices.join(', ')}`,
+          message: `Same item has different prices: ${uniquePrices.join(', ')}`,
         });
       }
     }
@@ -227,7 +227,7 @@ function checkPriceConsistency(items) {
 }
 
 /**
- * 检查数量合理性
+ * Check quantity reasonableness
  */
 function checkQuantityReasonableness(items) {
   const issues = [];
@@ -235,13 +235,13 @@ function checkQuantityReasonableness(items) {
   items.forEach((item, idx) => {
     const qty = parseFloat(item.quantity || 0);
 
-    // 检查是否为小数（某些单位不应该有小数）
+    // Check if it's a decimal (some units should not have decimals)
     const wholeNumberUnits = ['piece', 'unit', 'box', 'set', 'pack'];
     if (wholeNumberUnits.includes(item.unitOfMeasurement) && qty % 1 !== 0) {
       issues.push({
         item: idx + 1,
         name: item.itemName,
-        issue: `数量 ${qty} 不应该是小数 (单位: ${item.unitOfMeasurement})`,
+        issue: `Quantity ${qty} should not be a decimal (unit: ${item.unitOfMeasurement})`,
       });
     }
   });
@@ -389,7 +389,7 @@ Remember: You are a DOCUMENT EXPERT. Be precise, thorough, and always verify you
 /**
  * Document Agent - Document Processing and Analysis Specialist
  *
- * 专注于文档生成、数据提取、文档验证
+ * Focused on document generation, data extraction, and document verification
  */
 class DocumentAgent extends BaseAgent {
   constructor() {
@@ -795,23 +795,23 @@ class DocumentAgent extends BaseAgent {
         const payload = record.payload;
         const items = payload.lineItems || payload.items || [];
 
-        // 1. 完整性检查
+        // 1. Completeness check
         const completenessResult = calculateCompletenessScore(payload, docTypeKey);
 
-        // 2. 金额计算验证
+        // 2. Amount calculation verification
         const amountVerification = verifyAmountCalculations(items);
 
-        // 3. 异常检测
+        // 3. Anomaly detection
         const anomalies = detectDocumentAnomalies(payload, docTypeKey);
 
-        // 4. 数据质量检查
+        // 4. Data quality checks
         const qualityChecks = {
           duplicateItems: checkDuplicateItems(items),
           priceConsistency: checkPriceConsistency(items),
           quantityReasonableness: checkQuantityReasonableness(items),
         };
 
-        // 综合评估
+        // Combined assessment
         const allIssues = [
           ...completenessResult.issues.map(msg => ({
             category: 'completeness',
@@ -821,7 +821,7 @@ class DocumentAgent extends BaseAgent {
           ...amountVerification.errors.map(err => ({
             category: 'calculation',
             severity: 'high',
-            message: `Item ${err.item}: 计算错误 (预期: ${err.expected}, 实际: ${err.actual})`,
+            message: `Item ${err.item}: calculation error (expected: ${err.expected}, actual: ${err.actual})`,
           })),
           ...anomalies.map(a => ({
             category: 'anomaly',
@@ -831,27 +831,27 @@ class DocumentAgent extends BaseAgent {
           })),
         ];
 
-        // 添加数据质量问题
+        // Add data quality issues
         if (qualityChecks.duplicateItems.length > 0) {
           allIssues.push({
             category: 'quality',
             severity: 'medium',
-            message: `发现 ${qualityChecks.duplicateItems.length} 组重复商品`,
+            message: `Found ${qualityChecks.duplicateItems.length} group(s) of duplicate items`,
             details: qualityChecks.duplicateItems,
           });
         }
 
-        // 计算总体评分 (0-100)
+        // Calculate overall score (0-100)
         let overallScore = completenessResult.score;
 
-        // 扣分项
+        // Deductions
         if (!amountVerification.isValid) overallScore -= 10;
         overallScore -= Math.min(anomalies.length * 5, 20);
         overallScore -= Math.min(qualityChecks.duplicateItems.length * 3, 10);
 
         overallScore = Math.max(0, Math.min(100, overallScore));
 
-        // 评级
+        // Grade
         let grade, gradeIndicator;
         if (overallScore >= 90) {
           grade = 'Excellent';
@@ -867,22 +867,22 @@ class DocumentAgent extends BaseAgent {
           gradeIndicator = '🔴';
         }
 
-        // 生成建议
+        // Generate recommendations
         const recommendations = [];
         if (completenessResult.score < 90) {
-          recommendations.push('📋 补充缺失的必填字段');
+          recommendations.push('📋 Fill in the missing required fields');
         }
         if (!amountVerification.isValid) {
-          recommendations.push('🔢 修正金额计算错误');
+          recommendations.push('🔢 Fix the amount calculation errors');
         }
         if (anomalies.some(a => a.severity === 'high')) {
-          recommendations.push('⚠️ 处理高优先级异常');
+          recommendations.push('⚠️ Address the high-priority anomalies');
         }
         if (qualityChecks.duplicateItems.length > 0) {
-          recommendations.push('🔍 检查并合并重复项');
+          recommendations.push('🔍 Review and merge duplicate items');
         }
         if (recommendations.length === 0) {
-          recommendations.push('✅ 文档质量良好，可以批准');
+          recommendations.push('✅ Document quality is good, can be approved');
         }
 
         return {
@@ -941,7 +941,7 @@ class DocumentAgent extends BaseAgent {
       compare_documents: async (input) => {
         const { document1Id, document2Id, comparisonType = 'all' } = input;
 
-        // 简化比较 - 在实际项目中需要更复杂的逻辑
+        // Simplified comparison - a real project would need more complex logic
         return {
           document1: document1Id,
           document2: document2Id,
@@ -974,7 +974,7 @@ class DocumentAgent extends BaseAgent {
       analyze_invoice: async (input) => {
         const { invoiceNumber, poNumber, checkDiscrepancies = true } = input;
 
-        // 模拟发票分析
+        // Simulated invoice analysis
         return {
           invoiceNumber,
           relatedPO: poNumber || 'Not specified',

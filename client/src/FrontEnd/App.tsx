@@ -607,7 +607,7 @@ function MainLayout(): React.ReactElement {
       </Layout>
 
       {/* ChatBot Widget - Global floating chatbot */}
-      {sessionUser && !isChatbotPage && <ChatBotWidget userId={sessionUser.id} />}
+      {sessionUser && !isChatbotPage && <ChatBotWidget />}
 
       {/* Scroll Buttons - Only show on specific pages */}
       {(location.pathname.startsWith('/users-access') ||

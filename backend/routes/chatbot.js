@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 /**
  * POST /api/chatbot/chat
- * 标准ChatBot对话接口
+ * Standard ChatBot chat endpoint
  */
 router.post('/chat', async (req, res) => {
   try {
@@ -77,7 +77,7 @@ router.post('/chat', async (req, res) => {
 
 /**
  * POST /api/chatbot/chat/stream
- * 流式对话接口（SSE - Server-Sent Events）
+ * Streaming chat endpoint (SSE - Server-Sent Events)
  */
 router.post('/chat/stream', async (req, res) => {
   try {
@@ -130,7 +130,7 @@ router.post('/chat/stream', async (req, res) => {
 
 /**
  * GET /api/chatbot/sessions
- * 获取用户的会话列表
+ * Get the user's session list
  */
 router.get('/sessions', async (req, res) => {
   try {

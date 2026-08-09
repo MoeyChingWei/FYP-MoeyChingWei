@@ -6,29 +6,29 @@ import titleGenerator from '../services/title-generator.js';
 /**
  * Base Agent Class
  *
- * 所有AI Agent的基类，提供通用功能：
- * - 对话管理（标准 & 流式）
- * - 会话持久化
- * - 历史记录管理
- * - 工具调用框架
+ * Base class for all AI agents, providing common functionality:
+ * - Chat management (standard & streaming)
+ * - Session persistence
+ * - History management
+ * - Tool-calling framework
  *
- * 每个具体的Agent只需要：
- * 1. 继承这个类
- * 2. 定义自己的 systemPrompt
- * 3. 定义自己的 tools
- * 4. 实现自己的 toolHandlers
+ * Each concrete agent only needs to:
+ * 1. Extend this class
+ * 2. Define its own systemPrompt
+ * 3. Define its own tools
+ * 4. Implement its own toolHandlers
  */
 class BaseAgent {
   /**
-   * @param {Object} config - Agent配置
-   * @param {string} config.agentType - Agent类型标识（如 'chatbot', 'purchase', 'analytics'）
-   * @param {string} config.name - Agent显示名称
-   * @param {string} config.description - Agent描述
-   * @param {string} config.personality - Agent个性描述
-   * @param {string} config.expertise - Agent专长领域
-   * @param {string} config.systemPromptTemplate - System Prompt模板（支持变量替换）
-   * @param {Array} config.tools - Agent可用的工具定义
-   * @param {Object} config.toolHandlers - 工具处理函数映射
+   * @param {Object} config - Agent configuration
+   * @param {string} config.agentType - Agent type identifier (e.g. 'chatbot', 'purchase', 'analytics')
+   * @param {string} config.name - Agent display name
+   * @param {string} config.description - Agent description
+   * @param {string} config.personality - Agent personality description
+   * @param {string} config.expertise - Agent area of expertise
+   * @param {string} config.systemPromptTemplate - System prompt template (supports variable substitution)
+   * @param {Array} config.tools - Tool definitions available to the agent
+   * @param {Object} config.toolHandlers - Map of tool handler functions
    */
   constructor(config) {
     this.agentType = config.agentType;
@@ -44,7 +44,7 @@ class BaseAgent {
   }
 
   /**
-   * 构建System Prompt，替换用户变量
+   * Build the system prompt, substituting user variables
    */
   buildSystemPrompt(user) {
     return this.systemPromptTemplate
@@ -55,16 +55,16 @@ class BaseAgent {
   }
 
   /**
-   * 标准对话接口（带日志和错误处理）
+   * Standard chat interface (with logging and error handling)
    */
   async chat({ userId, message, sessionId }) {
     const startTime = Date.now();
 
     try {
-      // 记录请求
+      // Log the request
       logger.logAgentRequest(this.agentType, userId, sessionId, message.length);
 
-      // 1. 加载用户信息
+      // 1. Load user info
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: { name: true, email: true, role: true, department: true },
@@ -78,16 +78,16 @@ class BaseAgent {
         };
       }
 
-      // 2. 确保会话存在
+      // 2. Ensure the session exists
       await this.ensureSession(sessionId, userId);
 
-      // 3. 加载会话历史（带token限制）
+      // 3. Load session history (with token limit)
       const history = await this.loadSessionHistory(sessionId);
 
-      // 4. 构建System Prompt
+      // 4. Build the system prompt
       const systemPrompt = this.buildSystemPrompt(user);
 
-      // 5. 构建消息数组
+      // 5. Build the messages array
       const messages = [
         ...history,
         {
@@ -96,7 +96,7 @@ class BaseAgent {
         },
       ];
 
-      // 6. 调用DeepSeek API（带工具调用）
+      // 6. Call the DeepSeek API (with tool calling)
       const response = await deepseekService.chatWithTools({
         agentType: this.agentType,
         systemPrompt,
@@ -105,24 +105,24 @@ class BaseAgent {
         toolHandlers: this.enrichToolHandlers(userId, user),
       });
 
-      // 7. 保存对话历史
+      // 7. Save chat history
       await this.saveMessage(sessionId, 'user', message);
 
       if (response.success) {
         await this.saveMessage(sessionId, 'assistant', response.content);
       }
 
-      // 8. 如果是第一条消息，自动生成标题
+      // 8. Auto-generate a title if this is the first message
       if (history.length === 0) {
         try {
           await this.generateSessionTitle(sessionId, message);
         } catch (error) {
-          // 标题生成失败不影响主流程
+          // Title generation failure doesn't affect the main flow
           logger.warn('TitleGeneration', `Failed for session ${sessionId}: ${error.message}`);
         }
       }
 
-      // 记录响应
+      // Log the response
       const duration = Date.now() - startTime;
       logger.logAgentResponse(
         this.agentType,
@@ -157,10 +157,10 @@ class BaseAgent {
   }
 
   /**
-   * 流式对话接口（Server-Sent Events）
+   * Streaming chat interface (Server-Sent Events)
    */
   async chatStream({ userId, message, sessionId }) {
-    // 1. 加载用户信息
+    // 1. Load user info
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { name: true, email: true, role: true, department: true },
@@ -170,19 +170,19 @@ class BaseAgent {
       throw new Error('User not found');
     }
 
-    // 2. 确保会话存在
+    // 2. Ensure the session exists
     await this.ensureSession(sessionId, userId);
 
-    // 3. 加载会话历史
+    // 3. Load session history
     const history = await this.loadSessionHistory(sessionId);
 
-    // 4. 构建System Prompt
+    // 4. Build the system prompt
     const systemPrompt = this.buildSystemPrompt(user);
 
-    // 5. 保存用户消息
+    // 5. Save the user message
     await this.saveMessage(sessionId, 'user', message);
 
-    // 6. 返回流式迭代器
+    // 6. Return the streaming iterator
     return deepseekService.chatStream({
       agentType: this.agentType,
       systemPrompt,
@@ -194,7 +194,7 @@ class BaseAgent {
   }
 
   /**
-   * 为工具注入userId和user对象
+   * Inject userId and the user object into tool handlers
    */
   enrichToolHandlers(userId, user) {
     const enriched = {};
@@ -205,7 +205,7 @@ class BaseAgent {
   }
 
   /**
-   * 确保会话存在
+   * Ensure the session exists
    */
   async ensureSession(sessionId, userId) {
     const exists = await prisma.chatSession.findUnique({
@@ -224,27 +224,27 @@ class BaseAgent {
   }
 
   /**
-   * 加载会话历史（带token限制和智能裁剪）
+   * Load session history (with token limit and smart trimming)
    */
   async loadSessionHistory(sessionId, maxMessages = 20, maxTokens = 3000, includeAttachments = false) {
     const messages = await prisma.chatMessage.findMany({
       where: { sessionId },
       orderBy: { createdAt: 'desc' },
-      take: maxMessages, // 最多取20条最新的
+      take: maxMessages, // Take at most the 20 most recent
       ...(includeAttachments ? { include: { attachments: true } } : {}),
     });
 
-    // 反转顺序（从旧到新）
+    // Reverse order (oldest to newest)
     const sortedMessages = messages.reverse();
 
-    // 估算token并裁剪
+    // Estimate tokens and trim
     let totalTokens = 0;
     const result = [];
 
     for (const msg of sortedMessages) {
       const tokens = this.estimateTokens(msg.content);
 
-      // 如果超过限制且已有至少5条消息，停止
+      // Stop if over the limit and we already have at least 5 messages
       if (totalTokens + tokens > maxTokens && result.length >= 5) {
         logger.warn(
           'HistoryTruncated',
@@ -278,8 +278,8 @@ class BaseAgent {
   }
 
   /**
-   * 简单token估算
-   * 中文约1字符=1token，英文约4字符=1token
+   * Simple token estimation
+   * Chinese: ~1 char = 1 token, English: ~4 chars = 1 token
    */
   estimateTokens(text) {
     if (!text) return 0;
@@ -289,7 +289,7 @@ class BaseAgent {
   }
 
   /**
-   * 保存消息
+   * Save a message
    */
   async saveMessage(sessionId, role, content, metadata = null) {
     const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
@@ -303,7 +303,7 @@ class BaseAgent {
       },
     });
 
-    // 更新会话的updatedAt
+    // Update the session's updatedAt
     await prisma.chatSession.update({
       where: { id: sessionId },
       data: { updatedAt: new Date() },
@@ -311,7 +311,7 @@ class BaseAgent {
   }
 
   /**
-   * 获取用户的所有会话
+   * Get all sessions for a user
    */
   async getUserSessions(userId, limit = 100) {
     return await prisma.chatSession.findMany({
@@ -331,7 +331,7 @@ class BaseAgent {
   }
 
   /**
-   * 删除单个会话
+   * Delete a single session
    */
   async deleteSession(sessionId) {
     await prisma.chatSession.delete({
@@ -340,17 +340,17 @@ class BaseAgent {
   }
 
   /**
-   * 删除用户的所有会话
+   * Delete all sessions for a user
    */
   async deleteAllUserSessions(userId) {
-    // 先删除消息
+    // Delete messages first
     await prisma.chatMessage.deleteMany({
       where: {
         session: { userId },
       },
     });
 
-    // 再删除会话
+    // Then delete sessions
     const result = await prisma.chatSession.deleteMany({
       where: { userId },
     });
@@ -359,11 +359,11 @@ class BaseAgent {
   }
 
   /**
-   * 自动生成会话标题
+   * Auto-generate a session title
    */
   async generateSessionTitle(sessionId, firstMessage) {
     try {
-      // 获取当前会话
+      // Get the current session
       const session = await prisma.chatSession.findUnique({
         where: { id: sessionId },
         select: { title: true },
@@ -374,16 +374,16 @@ class BaseAgent {
         return;
       }
 
-      // 检查是否需要生成标题
+      // Check whether a title needs to be generated
       if (!titleGenerator.shouldGenerateTitle(session.title)) {
         logger.debug('TitleGeneration', `Session ${sessionId} already has a custom title`);
         return;
       }
 
-      // 生成标题
+      // Generate the title
       const newTitle = await titleGenerator.generateTitle(firstMessage);
 
-      // 更新数据库
+      // Update the database
       await prisma.chatSession.update({
         where: { id: sessionId },
         data: { title: newTitle },
@@ -397,7 +397,7 @@ class BaseAgent {
   }
 
   /**
-   * 获取Agent信息
+   * Get agent info
    */
   getInfo() {
     return {

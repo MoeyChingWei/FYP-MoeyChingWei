@@ -218,7 +218,7 @@ Please respond in friendly, professional English.`;
 /**
  * ChatBot Agent - General Assistant
  *
- * 通用AI助手，处理系统使用咨询、数据查询、基础操作引导
+ * General AI assistant that handles system usage questions, data queries, and basic operation guidance
  */
 class ChatBotAgent extends BaseAgent {
   constructor() {
@@ -235,7 +235,7 @@ class ChatBotAgent extends BaseAgent {
   }
 
   /**
-   * 定义ChatBot可用的工具
+   * Define the tools available to the ChatBot
    */
   static defineTools() {
     return [
@@ -345,14 +345,14 @@ class ChatBotAgent extends BaseAgent {
   }
 
   /**
-   * 定义工具处理函数
+   * Define the tool handler functions
    */
   static defineToolHandlers() {
     return {
       get_purchase_requests: async (input) => {
         const { userId, limit = 10 } = input;
 
-        // 1. 获取用户信息
+        // 1. Get user information
         const user = await prisma.user.findUnique({
           where: { id: userId },
           select: { department: true, role: true },
@@ -366,7 +366,7 @@ class ChatBotAgent extends BaseAgent {
           };
         }
 
-        // 2. 构建查询条件 - 在数据库层过滤
+        // 2. Build query condition - filter at the database level
         const whereClause = user.role !== 'Super Admin' && user.department
           ? {
               payload: {
@@ -376,9 +376,9 @@ class ChatBotAgent extends BaseAgent {
             }
           : {};
 
-        // 3. 并行执行查询 - 提升性能
+        // 3. Run queries in parallel - improve performance
         const [records, totalCount] = await Promise.all([
-          // 获取显示数据
+          // Get data to display
           prisma.purchaseRequestRecord.findMany({
             where: whereClause,
             take: limit,
@@ -389,15 +389,15 @@ class ChatBotAgent extends BaseAgent {
               createdAt: true,
             },
           }),
-          // 获取总数
+          // Get total count
           prisma.purchaseRequestRecord.count({
             where: whereClause,
           }),
         ]);
 
-        // 4. 计算统计数据 - 只在已加载的记录上计算，避免额外查询
-        // 注意：这里为了性能，统计基于显示的记录，不是全部记录
-        // 如果需要全部记录的统计，需要额外的聚合查询
+        // 4. Calculate statistics - only computed on the loaded records, to avoid an extra query
+        // Note: for performance, statistics are based on the displayed records, not all records
+        // If statistics for all records are needed, an additional aggregate query would be required
         const allRecordsForStats = await prisma.purchaseRequestRecord.findMany({
           where: whereClause,
           select: {
@@ -413,7 +413,7 @@ class ChatBotAgent extends BaseAgent {
           rejected: allRecordsForStats.filter(r => r.payload.status === 'REJECTED').length,
         };
 
-        // 5. 格式化结果
+        // 5. Format the result
         const requests = records.map(r => ({
           id: r.localId,
           ...r.payload,
@@ -432,7 +432,7 @@ class ChatBotAgent extends BaseAgent {
       get_purchase_orders: async (input) => {
         const { limit = 10 } = input;
 
-        // 并行查询：数据 + 总数
+        // Run queries in parallel: data + total count
         const [records, totalCount] = await Promise.all([
           prisma.purchaseOrderRecord.findMany({
             take: limit,
@@ -463,7 +463,7 @@ class ChatBotAgent extends BaseAgent {
       get_dashboard_stats: async (input) => {
         const { department } = input;
 
-        // 构建查询条件
+        // Build query condition
         const requestWhere = department
           ? {
               payload: {
@@ -482,7 +482,7 @@ class ChatBotAgent extends BaseAgent {
             }
           : {};
 
-        // 并行查询所有统计数据
+        // Run all statistics queries in parallel
         const [totalRequests, totalOrders, pendingApprovals, orderRecords] = await Promise.all([
           prisma.purchaseRequestRecord.count({ where: requestWhere }),
           prisma.purchaseOrderRecord.count({ where: orderWhere }),
@@ -503,7 +503,7 @@ class ChatBotAgent extends BaseAgent {
           }),
         ]);
 
-        // 计算总支出
+        // Calculate total spending
         let totalSpending = 0;
         orderRecords.forEach(order => {
           if (order.payload.items && Array.isArray(order.payload.items)) {

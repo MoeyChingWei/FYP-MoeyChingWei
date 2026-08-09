@@ -14,21 +14,21 @@ const router = express.Router();
 /**
  * Agent Registry
  *
- * 所有可用的Agent都在这里注册
- * 添加新Agent时，只需在这里添加一行
+ * All available agents are registered here.
+ * To add a new agent, just add one line here.
  */
 const AGENTS = {
   chatbot: chatbotAgent,
-  purchase: purchaseAgent,       // ✅ 采购专家
-  analytics: analyticsAgent,     // ✅ 数据分析专家
-  approval: approvalAgent,       // ✅ 审批建议助手
-  supplier: supplierAgent,       // ✅ 供应商协调员
-  document: documentAgent,       // ✅ 文档处理专家
+  purchase: purchaseAgent,       // ✅ Procurement expert
+  analytics: analyticsAgent,     // ✅ Data analytics expert
+  approval: approvalAgent,       // ✅ Approval advisor
+  supplier: supplierAgent,       // ✅ Supplier coordinator
+  document: documentAgent,       // ✅ Document processing expert
 };
 
 /**
  * GET /api/agents/list
- * 获取所有可用的Agent列表
+ * Get the list of all available agents
  */
 router.get('/list', (req, res) => {
   try {
@@ -53,7 +53,7 @@ router.get('/list', (req, res) => {
 
 /**
  * GET /api/agents/:agentType/info
- * 获取特定Agent的详细信息
+ * Get detailed info for a specific agent
  */
 router.get('/:agentType/info', (req, res) => {
   try {
@@ -83,7 +83,7 @@ router.get('/:agentType/info', (req, res) => {
 
 /**
  * POST /api/agents/:agentType/chat
- * 与指定Agent进行标准对话
+ * Standard chat with the specified agent
  */
 router.post('/:agentType/chat', async (req, res) => {
   try {
@@ -148,7 +148,7 @@ router.post('/:agentType/chat', async (req, res) => {
 
 /**
  * POST /api/agents/:agentType/chat/stream
- * 与指定Agent进行流式对话（SSE）
+ * Streaming chat with the specified agent (SSE)
  */
 router.post('/:agentType/chat/stream', async (req, res) => {
   try {
@@ -217,7 +217,7 @@ router.post('/:agentType/chat/stream', async (req, res) => {
 
 /**
  * POST /api/agents/:agentType/new-session
- * 创建新会话
+ * Create a new session
  */
 router.post('/:agentType/new-session', async (req, res) => {
   try {
@@ -260,7 +260,7 @@ router.post('/:agentType/new-session', async (req, res) => {
 
 /**
  * GET /api/agents/:agentType/sessions
- * 获取用户在该Agent的所有会话
+ * Get all of the user's sessions for this agent
  */
 router.get('/:agentType/sessions', async (req, res) => {
   try {
@@ -301,7 +301,7 @@ router.get('/:agentType/sessions', async (req, res) => {
 
 /**
  * GET /api/agents/:agentType/history/:sessionId
- * 获取会话历史记录
+ * Get session history
  */
 router.get('/:agentType/history/:sessionId', async (req, res) => {
   try {
@@ -335,7 +335,7 @@ router.get('/:agentType/history/:sessionId', async (req, res) => {
 
 /**
  * DELETE /api/agents/:agentType/session/:sessionId
- * 删除单个会话
+ * Delete a single session
  */
 router.delete('/:agentType/session/:sessionId', async (req, res) => {
   try {
@@ -366,7 +366,7 @@ router.delete('/:agentType/session/:sessionId', async (req, res) => {
 
 /**
  * DELETE /api/agents/:agentType/sessions
- * 删除用户在该Agent的所有会话
+ * Delete all of the user's sessions for this agent
  */
 router.delete('/:agentType/sessions', async (req, res) => {
   try {

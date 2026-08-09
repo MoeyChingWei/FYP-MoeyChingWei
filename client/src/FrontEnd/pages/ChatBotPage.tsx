@@ -637,7 +637,7 @@ const ChatBotPage: React.FC = () => {
                   }
                 }}
                 placeholder={agentModeEnabled ? `New chat in ${agentName}...` : 'New chat in OptiMind...'}
-                bordered={false}
+                variant="borderless"
                 autoSize={{ minRows: 1, maxRows: 5 }}
                 disabled={loading || uploadingFiles}
               />
@@ -835,7 +835,7 @@ const ChatBotPage: React.FC = () => {
             placeholder={`Message ${agentName}...`}
             autoSize={{ minRows: 1, maxRows: 5 }}
             disabled={loading || uploadingFiles}
-            bordered={false}
+            variant="borderless"
           />
           <div className="assistant-chat-toolbar">
             {composerTools}

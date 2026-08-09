@@ -124,7 +124,16 @@
   padding: 8px 0;
 }
 
+.notificationList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .notificationItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 10px 12px !important;
@@ -155,6 +164,10 @@
 
 .notificationTime {
   font-size: 12px;
+}
+
+.notificationExtra {
+  flex: 0 0 auto;
 }
 
 .moduleGrid {

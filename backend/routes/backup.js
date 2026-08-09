@@ -355,13 +355,13 @@ router.get("/dashboard", async (req, res) => {
     <div class="header">
       <div>
         <h1><span class="pulse-dot"></span>Backup Management</h1>
-        <div class="subtitle">数据备份管理 • 最后更新: ${new Date().toLocaleString("zh-CN")}</div>
+        <div class="subtitle">Data backup management • Last updated: ${new Date().toLocaleString("en-US")}</div>
       </div>
       <div class="actions">
         <button class="btn" onclick="triggerBackup('database')">🗄️ Backup Database</button>
         <button class="btn" onclick="triggerBackup('files')">📁 Backup Files</button>
         <button class="btn" onclick="triggerBackup('full')">🚀 Full Backup</button>
-        <button class="btn secondary" onclick="location.reload()">🔄 刷新</button>
+        <button class="btn secondary" onclick="location.reload()">🔄 Refresh</button>
       </div>
     </div>
 
@@ -369,37 +369,37 @@ router.get("/dashboard", async (req, res) => {
       <div class="stat-card">
         <div class="stat-label">Total Backups</div>
         <div class="stat-value">${history.length}</div>
-        <div class="stat-desc">所有备份记录</div>
+        <div class="stat-desc">All backup records</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-label">Success Rate</div>
         <div class="stat-value">${history.length ? Math.round(successCount / history.length * 100) : 0}%</div>
-        <div class="stat-desc">${successCount} 成功 / ${failedCount} 失败</div>
+        <div class="stat-desc">${successCount} succeeded / ${failedCount} failed</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-label">Total Size</div>
         <div class="stat-value">${formatBytes(totalSize)}</div>
-        <div class="stat-desc">备份文件总大小</div>
+        <div class="stat-desc">Total backup file size</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-label">Database Backups</div>
         <div class="stat-value">${dbBackups.length}</div>
-        <div class="stat-desc">数据库备份</div>
+        <div class="stat-desc">Database backups</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-label">File Backups</div>
         <div class="stat-value">${fileBackups.length}</div>
-        <div class="stat-desc">文件备份</div>
+        <div class="stat-desc">File backups</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-label">Last Backup</div>
-        <div class="stat-value">${history.length ? new Date(history[0].startedAt).toLocaleString("zh-CN", {month: "numeric", day: "numeric"}) : "-"}</div>
-        <div class="stat-desc">${history.length ? new Date(history[0].startedAt).toLocaleTimeString("zh-CN") : "无备份"}</div>
+        <div class="stat-value">${history.length ? new Date(history[0].startedAt).toLocaleString("en-US", {month: "numeric", day: "numeric"}) : "-"}</div>
+        <div class="stat-desc">${history.length ? new Date(history[0].startedAt).toLocaleTimeString("en-US") : "No backups"}</div>
       </div>
     </div>
 
@@ -407,7 +407,7 @@ router.get("/dashboard", async (req, res) => {
       <div class="section-title">📦 Recent Backups</div>
       <div class="backup-list">
         ${history.length === 0 ? `
-          <div class="empty">暂无备份记录</div>
+          <div class="empty">No backup records yet</div>
         ` : history.map(backup => {
           const isFailed = backup.status === "FAILED";
           const duration = backup.completedAt

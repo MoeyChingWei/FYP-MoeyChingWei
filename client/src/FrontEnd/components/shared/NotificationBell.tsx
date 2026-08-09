@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Badge, Button, Dropdown, List, Typography, Empty, Spin } from "antd";
+import { Badge, Button, Dropdown, Typography, Empty, Spin } from "antd";
 import {
   BellOutlined,
   CheckCircleOutlined,
@@ -137,14 +137,12 @@ export default function NotificationBell(): React.ReactElement {
           <Empty description="No new notifications" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         </div>
       ) : (
-        <List
-          className={styles.notificationList}
-          dataSource={unreadNotifications.slice(0, 5)}
-          renderItem={(n) => {
+        <ul className={styles.notificationList}>
+          {unreadNotifications.slice(0, 5).map((n) => {
             const presentation = getNotificationPresentation(n);
 
             return (
-              <List.Item className={styles.notificationItem}>
+              <li key={n.id} className={styles.notificationItem}>
                 <button
                   type="button"
                   className={styles.notificationAction}
@@ -170,10 +168,10 @@ export default function NotificationBell(): React.ReactElement {
                   </span>
                   <span className={styles.unreadDot} aria-label="Unread" />
                 </button>
-              </List.Item>
+              </li>
             );
-          }}
-        />
+          })}
+        </ul>
       )}
     </div>
   );
@@ -182,7 +180,7 @@ export default function NotificationBell(): React.ReactElement {
     <Dropdown
       open={dropdownOpen}
       onOpenChange={setDropdownOpen}
-      dropdownRender={() => dropdownContent}
+      popupRender={() => dropdownContent}
       trigger={["click"]}
       placement="bottomRight"
     >

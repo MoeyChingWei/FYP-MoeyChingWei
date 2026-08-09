@@ -700,13 +700,13 @@ router.get("/dashboard", (req, res) => {
       <div class="header-left">
         <h1><span class="pulse-dot"></span>OptiMind Backend Monitor</h1>
         <div class="subtitle">
-          <span>实时监控系统日志和邮件通知</span>
+          <span>Real-time monitoring of system logs and email notifications</span>
           <span>•</span>
-          <span>最后更新: ${new Date().toLocaleString("zh-CN")}</span>
+          <span>Last updated: ${new Date().toLocaleString("en-US")}</span>
         </div>
       </div>
       <button class="btn" onclick="location.reload()" style="margin: 0;">
-        🔄 手动刷新
+        🔄 Manual Refresh
       </button>
     </div>
 
@@ -717,7 +717,7 @@ router.get("/dashboard", (req, res) => {
           <span>Total Logs</span>
         </div>
         <div class="stat-value">${logs.length}</div>
-        <div class="stat-desc">所有日志记录</div>
+        <div class="stat-desc">All log entries</div>
         <div class="stat-trend up">↑ ${last5Minutes.length} in last 5 min</div>
       </div>
 
@@ -727,7 +727,7 @@ router.get("/dashboard", (req, res) => {
           <span>Email Success</span>
         </div>
         <div class="stat-value">${emailSuccessCount}</div>
-        <div class="stat-desc">邮件发送成功</div>
+        <div class="stat-desc">Emails sent successfully</div>
         ${emailSuccessCount > 0 ? `<div class="stat-trend up">↑ Active</div>` : ''}
       </div>
 
@@ -737,7 +737,7 @@ router.get("/dashboard", (req, res) => {
           <span>Email Errors</span>
         </div>
         <div class="stat-value">${emailErrorCount}</div>
-        <div class="stat-desc">邮件发送失败</div>
+        <div class="stat-desc">Emails failed to send</div>
         ${emailErrorCount > 0 ? `<div class="stat-trend down">⚠ Requires attention</div>` : ''}
       </div>
 
@@ -747,7 +747,7 @@ router.get("/dashboard", (req, res) => {
           <span>Workflow Events</span>
         </div>
         <div class="stat-value">${workflowCount}</div>
-        <div class="stat-desc">工作流处理</div>
+        <div class="stat-desc">Workflow processing</div>
         ${workflowErrorCount > 0 ? `<div class="stat-trend down">⚠ ${workflowErrorCount} errors</div>` : ''}
       </div>
 
@@ -757,7 +757,7 @@ router.get("/dashboard", (req, res) => {
           <span>Email Activity</span>
         </div>
         <div class="stat-value">${emailCount}</div>
-        <div class="stat-desc">邮件相关事件</div>
+        <div class="stat-desc">Email-related events</div>
       </div>
     </div>
 
@@ -809,7 +809,7 @@ router.get("/dashboard", (req, res) => {
           <span class="stat-icon">🌐</span>
           <div class="stat-label"><span>API Endpoints</span></div>
           <div class="stat-value">${apiMetrics.length}</div>
-          <div class="stat-desc">被追踪</div>
+          <div class="stat-desc">Tracked</div>
         </div>
       </div>
     </div>
@@ -820,7 +820,7 @@ router.get("/dashboard", (req, res) => {
       </div>
       <div class="log-list">
         ${apiMetrics.length === 0 ? `
-          <div class="empty">暂无API调用数据，开始使用系统后会自动追踪</div>
+          <div class="empty">No API call data yet, tracking starts automatically once the system is used</div>
         ` : apiMetrics.map((metric, index) => `
           <div class="log-entry" style="border-left-color: ${metric.errors > 0 ? '#F97316' : '#4FD1C5'};">
             <div class="log-header">
@@ -846,7 +846,7 @@ router.get("/dashboard", (req, res) => {
       </div>
       <div class="log-list">
         ${slowestEndpoints.length === 0 ? `
-          <div class="empty">暂无性能数据</div>
+          <div class="empty">No performance data yet</div>
         ` : slowestEndpoints.map((metric, index) => `
           <div class="log-entry" style="border-left-color: ${metric.avgTime > 1000 ? '#F97316' : metric.avgTime > 500 ? '#F59E0B' : '#4FD1C5'};">
             <div class="log-header">
@@ -872,7 +872,7 @@ router.get("/dashboard", (req, res) => {
       </div>
       <div class="log-list">
         ${recentSlowQueries.length === 0 ? `
-          <div class="empty">✅ 暂无慢查询，所有请求都很快！</div>
+          <div class="empty">✅ No slow queries, all requests are fast!</div>
         ` : recentSlowQueries.map((query) => `
           <div class="log-entry" style="border-left-color: ${query.duration > 2000 ? '#F97316' : '#F59E0B'};">
             <div class="log-header">
@@ -894,18 +894,18 @@ router.get("/dashboard", (req, res) => {
 
     <div class="section">
       <div class="section-header">
-        <div class="section-title">Recent Activity (最近20条)</div>
+        <div class="section-title">Recent Activity (Last 20)</div>
         <div class="controls">
-          <a href="/api/debug/logs/html" class="btn">📋 完整日志</a>
-          <a href="/api/debug/logs/html?category=EMAIL-SUCCESS" class="btn">✅ 邮件成功</a>
-          <a href="/api/debug/logs/html?category=EMAIL-ERROR" class="btn">❌ 邮件失败</a>
-          <button class="btn primary" onclick="location.reload()">🔄 刷新</button>
+          <a href="/api/debug/logs/html" class="btn">📋 Full Logs</a>
+          <a href="/api/debug/logs/html?category=EMAIL-SUCCESS" class="btn">✅ Email Success</a>
+          <a href="/api/debug/logs/html?category=EMAIL-ERROR" class="btn">❌ Email Failures</a>
+          <button class="btn primary" onclick="location.reload()">🔄 Refresh</button>
         </div>
       </div>
 
       <div class="log-list">
         ${recentLogs.length === 0 ? `
-          <div class="empty">暂无日志记录，请触发一些操作后查看</div>
+          <div class="empty">No log entries yet, trigger some actions and check back</div>
         ` : recentLogs.map((log) => {
           const categoryClass = log.category.toLowerCase().replace(/_/g, "-");
           return `
