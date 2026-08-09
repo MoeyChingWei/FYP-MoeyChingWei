@@ -189,10 +189,6 @@
   min-height: 190px;
 }
 
-.moduleGrid > :last-child {
-  max-width: 260px;
-}
-
 .iconWrap {
   width: 74px;
   height: 74px;

@@ -16,6 +16,16 @@ export interface AgentMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp?: Date;
+  attachments?: Array<{
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    fileSize: number;
+    mimeType?: string;
+    thumbnailUrl?: string;
+    aiAnalysis?: string;
+  }>;
 }
 
 /**

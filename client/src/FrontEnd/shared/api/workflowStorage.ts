@@ -40,12 +40,15 @@ export async function saveWorkflowRows<T extends { localId: string }>(
   rows: T[],
 ): Promise<void> {
   if (!WORKFLOW_SYNC_ENABLED) {
+    console.log(`⚠️ [WORKFLOW-SYNC] DISABLED - skipping save for store: ${store}`);
     return;
   }
+  console.log(`🔄 [WORKFLOW-SYNC] Saving ${rows.length} rows to store: ${store}`);
   const res = await axios.put(`${API}/${store}`, { rows });
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? `Failed to save ${store}`);
   }
+  console.log(`✅ [WORKFLOW-SYNC] Successfully saved to store: ${store}`);
 }
 
 export function queueWorkflowRowsSave<T extends { localId: string }>(
@@ -54,8 +57,10 @@ export function queueWorkflowRowsSave<T extends { localId: string }>(
   onError?: (error: unknown) => void,
 ): void {
   if (!WORKFLOW_SYNC_ENABLED) {
+    console.log(`⚠️ [WORKFLOW-SYNC] DISABLED - skipping queue for store: ${store}`);
     return;
   }
+  console.log(`📋 [WORKFLOW-SYNC] Queuing ${rows.length} rows for store: ${store}`);
   pendingRowsByStore.set(store, [...rows]);
 
   const previousTimer = pendingTimerByStore.get(store);

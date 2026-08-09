@@ -1,15 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Input, Button, Spin, message } from 'antd';
-import { SendOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { Card, Input, Button, Spin, Tooltip, message } from 'antd';
+import { SendOutlined, PlusOutlined, ExpandOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { sendMessage, createNewSession, getSessionHistory } from '../../shared/api/chatbot';
+import { useNavigate } from 'react-router-dom';
+import {
+  sendMessage,
+  createNewSession,
+  getSessionHistory,
+  uploadAttachment,
+} from '../../shared/api/chatbot';
 import MessageList from './MessageList';
+import InputToolbar from './InputToolbar';
+import AttachmentPreview from './AttachmentPreview';
 import './ChatWindow.css';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp?: Date;
+  attachments?: Array<{
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    fileSize: number;
+    mimeType?: string;
+    thumbnailUrl?: string;
+    aiAnalysis?: string;
+  }>;
 }
 
 interface ChatWindowProps {
@@ -20,16 +38,45 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }) => {
   const { t: tMsg } = useTranslation('messages');
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize session
+  // Show the welcome state locally. A session is created only after the first message is sent.
   useEffect(() => {
-    initializeSession();
-  }, []);
+    const savedSessionId = window.localStorage.getItem(`optimind-chat-session-${userId}`);
+    if (!savedSessionId) {
+      setSessionId(null);
+      setMessages([
+        {
+          role: 'assistant',
+          content: tMsg('chatbotWelcome'),
+          timestamp: new Date(),
+        },
+      ]);
+      return;
+    }
+
+    setSessionId(savedSessionId);
+    getSessionHistory(savedSessionId)
+      .then((history) => {
+        setMessages(history.map((msg: any) => ({
+          role: msg.role,
+          content: msg.content,
+          timestamp: new Date(msg.createdAt || Date.now()),
+          attachments: msg.attachments || undefined,
+        })));
+      })
+      .catch(() => {
+        window.localStorage.removeItem(`optimind-chat-session-${userId}`);
+        setSessionId(null);
+        setMessages([{ role: 'assistant', content: tMsg('chatbotWelcome'), timestamp: new Date() }]);
+      });
+  }, [userId, tMsg]);
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -40,44 +87,45 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const initializeSession = async () => {
-    try {
-      const newSessionId = await createNewSession(userId);
-      setSessionId(newSessionId);
-
-      // Add welcome message
-      setMessages([
-        {
-          role: 'assistant',
-          content: tMsg('chatbotWelcome'),
-          timestamp: new Date(),
-        },
-      ]);
-    } catch (error) {
-      message.error(tMsg('sessionInitFailed'));
-      console.error(error);
-    }
-  };
-
   const sendChatMessage = async (messageText: string) => {
-    if (!messageText.trim() || loading || !sessionId) return;
+    if ((!messageText.trim() && selectedFiles.length === 0) || loading) return;
 
-    const userMessage: Message = {
-      role: 'user',
-      content: messageText,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue('');
+    let activeSessionId = sessionId;
     setLoading(true);
 
     try {
+      if (!activeSessionId) {
+        activeSessionId = await createNewSession(userId);
+        setSessionId(activeSessionId);
+      }
+      window.localStorage.setItem(`optimind-chat-session-${userId}`, activeSessionId);
+
+      const attachments: any[] = [];
+      for (const file of selectedFiles) {
+        attachments.push(await uploadAttachment(file, activeSessionId, userId));
+      }
+
+      const content = messageText.trim() || (attachments.length > 0 ? '[Image]' : '');
+
+      const userMessage: Message = {
+        role: 'user',
+        content,
+        timestamp: new Date(),
+        attachments: attachments.length > 0 ? attachments : undefined,
+      };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
       const response = await sendMessage({
         userId,
-        message: messageText,
-        sessionId,
+        message: content,
+        sessionId: activeSessionId,
+        attachmentData: attachments.length > 0 ? attachments : undefined,
       });
+
+      if (response.sessionId && response.sessionId !== activeSessionId) {
+        setSessionId(response.sessionId);
+      }
 
       const assistantMessage: Message = {
         role: 'assistant',
@@ -91,6 +139,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
       if (onNewMessage) {
         onNewMessage();
       }
+      setSelectedFiles([]);
     } catch (error: any) {
       message.error(error.message || tMsg('sendMessageFailed'));
       console.error(error);
@@ -110,21 +159,24 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
     }
   };
 
-  const handleNewChat = async () => {
-    try {
-      const newSessionId = await createNewSession(userId);
-      setSessionId(newSessionId);
-      setMessages([
-        {
-          role: 'assistant',
-          content: tMsg('newConversationStarted'),
-          timestamp: new Date(),
-        },
-      ]);
-      message.success(tMsg('newConversationCreated'));
-    } catch (error) {
-      message.error(tMsg('createConversationFailed'));
-    }
+  const handleNewChat = () => {
+    window.localStorage.removeItem(`optimind-chat-session-${userId}`);
+    setSessionId(null);
+    setInputValue('');
+    setSelectedFiles([]);
+    setMessages([
+      {
+        role: 'assistant',
+        content: tMsg('newConversationStarted'),
+        timestamp: new Date(),
+      },
+    ]);
+  };
+
+  const handleExpand = () => {
+    navigate('/chatbot', {
+      state: sessionId ? { sessionId } : undefined,
+    });
   };
 
   return (
@@ -143,7 +195,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
             >
               New Chat
             </Button>
-            <Button type="text" size="small" icon={<CloseOutlined />} onClick={onClose} />
+            <Tooltip title="Open full chat">
+              <Button
+                type="text"
+                size="small"
+                icon={<ExpandOutlined />}
+                onClick={handleExpand}
+                aria-label="Open full chat"
+              />
+            </Tooltip>
           </div>
         </div>
       }
@@ -164,6 +224,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
               <Spin size="small" /> AI is thinking...
             </div>
           )}
+          <AttachmentPreview files={selectedFiles} onRemove={(index) => setSelectedFiles((prev) => prev.filter((_, i) => i !== index))} />
+          <div className="chatbot-input-row">
+            <InputToolbar
+              onFileSelect={(files) => setSelectedFiles((prev) => [...prev, ...files].slice(0, 5))}
+              onImageSelect={(files) => setSelectedFiles((prev) => [...prev, ...files].slice(0, 5))}
+              disabled={loading}
+            />
           <Input.TextArea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -177,11 +244,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
             type="primary"
             icon={<SendOutlined />}
             onClick={handleSendMessage}
-            disabled={!inputValue.trim() || loading}
+            disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading}
             style={{ marginLeft: 8 }}
-          >
+            >
             Send
           </Button>
+          </div>
         </div>
       </div>
     </Card>

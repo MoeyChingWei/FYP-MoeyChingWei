@@ -38,6 +38,10 @@
     "grn": {
       "title": "Nota Barang Diterima",
       "hint": "Jejak status nota barang diterima daripada pembelian"
+    },
+    "inventory": {
+      "title": "Inventori",
+      "hint": "Urus stok tersedia dan tahap pesanan semula"
     }
   },
   "orderAcknowledgement": {

@@ -1,0 +1,138 @@
+
+> client@0.1.0 start
+> webpack serve --config webpack.config.cjs --mode development
+
+◇ injected env (3) from .env // tip: ⌘ override existing { override: true }
+assets by chunk 7.6 MiB (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_ant-design_icons_es_icons_ArrowDownOutlined_js-node_modules_ant-design_i-edd2a3.6beab9d7.chunk.js[39m[22m 3.41 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_antd_es_table_index_js.85eed7c0.chunk.js[39m[22m 1.42 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_antd_es_date-picker_index_js.f9fad539.chunk.js[39m[22m 1.3 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_ant-design_icons_es_icons_AudioFilled_js-node_modules_ant-design_icons_e-bd32a7.b7335b13.chunk.js[39m[22m 429 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_antd_es_modal_index_js.381d370e.chunk.js[39m[22m 262 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_antd_es_input-number_index_js.d0948d13.chunk.js[39m[22m 194 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_ant-design_icons_EnvironmentOutlined_js-node_modules_ant-design_icons_Me-44edd1.9fad11c3.chunk.js[39m[22m 135 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_ant-design_icons_es_icons_ClockCircleOutlined_js-node_modules_ant-design-59669b.16d01cb4.chunk.js[39m[22m 97.4 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_antd_es_descriptions_index_js.7c161236.chunk.js[39m[22m 71.2 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_ant-design_icons_es_icons_DeleteOutlined_js-node_modules_ant-design_icon-5e4111.db0ee352.chunk.js[39m[22m 59.3 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_antd_es_alert_index_js.b46556dd.chunk.js[39m[22m 55 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  asset [1m[32mstatic/js/vendors-node_modules_ant-design_icons_es_icons_DeleteOutlined_js-node_modules_antd_es_popconf-f88d540.8f2d8beb.chunk.js[39m[22m 50.3 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (id hint: vendors)
+  + 3 assets
++ 53 assets
+orphan modules 3.48 MiB [1m[33m[orphan][39m[22m 1951 modules
+runtime modules 12.4 KiB 14 modules
+javascript modules 7.88 MiB
+  modules by path [1m./node_modules/[39m[22m 6.68 MiB 2001 modules
+  modules by path [1m./src/[39m[22m 1.2 MiB 192 modules
+json modules 115 KiB
+  modules by path [1m./src/i18n/locales/en/*.json[39m[22m 47 KiB
+    [1m./src/i18n/locales/en/common.json[39m[22m 1.56 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    + 16 modules
+  modules by path [1m./src/i18n/locales/zh/*.json[39m[22m 31 KiB
+    [1m./src/i18n/locales/zh/common.json[39m[22m 1.2 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    + 16 modules
+  modules by path [1m./src/i18n/locales/ms/*.json[39m[22m 37.3 KiB
+    [1m./src/i18n/locales/ms/common.json[39m[22m 1.66 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    + 16 modules
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 9757 ms
+assets by status 12.4 MiB [1m[32m[cached][39m[22m 65 assets
+assets by status 15.3 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.972422d3.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mstatic/js/src_FrontEnd_pages_TrackingItemManagement_tsx.5c0728d1.chunk.js[39m[22m 343 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.4 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/pages/TrackingItemManagement.tsx[39m[22m 35.6 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 652 ms
+assets by status 12.7 MiB [1m[32m[cached][39m[22m 66 assets
+assets by status 15 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.600fe8ab.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/components/ChatBot/ChatBotWidget.tsx[39m[22m 1.6 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 688 ms
+assets by status 12.7 MiB [1m[32m[cached][39m[22m 66 assets
+assets by status 15 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.0e01eafd.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/components/ChatBot/ChatBotWidget.tsx[39m[22m 1.6 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 442 ms
+assets by status 12.1 MiB [1m[32m[cached][39m[22m 65 assets
+assets by status 15.6 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.dad6259e.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mstatic/js/src_FrontEnd_pages_ChatBotPage_tsx.d4847a2d.chunk.js[39m[22m 587 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.4 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]![1m./src/FrontEnd/pages/ChatBotPage.css[39m[22m 113 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 608 ms
+assets by status 12.7 MiB [1m[32m[cached][39m[22m 66 assets
+assets by status 15 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.c980bd6b.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/components/ChatBot/ChatBotWidget.tsx[39m[22m 1.7 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 379 ms
+assets by status 12.7 MiB [1m[32m[cached][39m[22m 66 assets
+assets by status 15 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.03b42739.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]![1m./src/FrontEnd/components/ChatBot/ChatBotWidget.css[39m[22m 2.08 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 350 ms
+assets by status 12.7 MiB [1m[32m[cached][39m[22m 66 assets
+assets by status 15 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.30205568.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/components/ChatBot/ChatBotWidget.tsx[39m[22m 1.7 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 473 ms
+assets by status 12.7 MiB [1m[32m[cached][39m[22m 66 assets
+assets by status 15 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.143db13e.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/components/ChatBot/ChatWindow.tsx[39m[22m 7.68 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 633 ms
+assets by status 12.1 MiB [1m[32m[cached][39m[22m 65 assets
+assets by status 15.6 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.4c7168b6.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mstatic/js/src_FrontEnd_pages_ChatBotPage_tsx.1896429d.chunk.js[39m[22m 587 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.4 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/pages/ChatBotPage.tsx[39m[22m 31.7 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 895 ms
+assets by status 12.1 MiB [1m[32m[cached][39m[22m 65 assets
+assets by status 15.6 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.ad0d0acb.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mstatic/js/src_FrontEnd_pages_ChatBotPage_tsx.02862c4e.chunk.js[39m[22m 588 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.4 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]![1m./src/FrontEnd/pages/ChatBotPage.css[39m[22m 113 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 665 ms
+assets by status 12.1 MiB [1m[32m[cached][39m[22m 65 assets
+assets by status 15.6 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.6b10a80a.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mstatic/js/src_FrontEnd_pages_ChatBotPage_tsx.154b650f.chunk.js[39m[22m 591 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.4 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]![1m./src/FrontEnd/pages/ChatBotPage.css[39m[22m 114 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 668 ms
+assets by status 12.6 MiB [1m[32m[cached][39m[22m 65 assets
+assets by status 15.1 MiB [1m[32m[emitted][39m[22m
+  asset [1m[32mstatic/js/main.fd5a2b0c.js[39m[22m 15 MiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m (name: main)
+  asset [1m[32mstatic/js/src_FrontEnd_pages_purchasing_ReviewSubmodule_tsx.7a93a579.chunk.js[39m[22m 109 KiB [1m[32m[emitted][39m[22m [1m[32m[immutable][39m[22m
+  asset [1m[32mindex.html[39m[22m 469 bytes [1m[32m[emitted][39m[22m
+cached modules 11.5 MiB [1m[32m[cached][39m[22m 4194 modules
+runtime modules 12.4 KiB 14 modules
+[1m./src/FrontEnd/pages/purchasing/ReviewSubmodule.tsx[39m[22m 12.2 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.106.2 compiled [1m[32msuccessfully[39m[22m in 446 ms

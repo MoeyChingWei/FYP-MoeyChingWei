@@ -42,6 +42,7 @@ export default function Dashboard(): React.ReactElement {
 
   const isAdmin = role === UserRole.ADMIN;
   const isSupplier = role === UserRole.SUPPLIER;
+  const isEmployee = role === UserRole.EMPLOYEE;
 
   useEffect(() => {
     const loadData = async () => {
@@ -247,6 +248,7 @@ export default function Dashboard(): React.ReactElement {
         </Button>
       </div>
 
+      {!isEmployee && <>
       {/* Statistics Cards */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} sm={12} lg={6}>
@@ -312,10 +314,11 @@ export default function Dashboard(): React.ReactElement {
           <SpendingByCategory data={categoryData} loading={loading} />
         </Col>
       </Row>
+      </>}
 
       {/* Quick Actions and Recent Activity */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={12}>
+        <Col xs={24} lg={isEmployee ? 24 : 12}>
           <Card
             title={t('quickActions.title')}
             bordered={false}
@@ -366,7 +369,7 @@ export default function Dashboard(): React.ReactElement {
           </Card>
         </Col>
 
-        <Col xs={24} lg={12}>
+        {!isEmployee && <Col xs={24} lg={12}>
           <Card
             title={t('recentActivity.title')}
             extra={
@@ -427,7 +430,7 @@ export default function Dashboard(): React.ReactElement {
               />
             )}
           </Card>
-        </Col>
+        </Col>}
       </Row>
 
       <UserGuideModal

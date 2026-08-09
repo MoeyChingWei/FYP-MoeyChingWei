@@ -262,16 +262,16 @@ function getTrackingStage(
   t: any,
 ): { stage: StageKey; statusLabel: string; isRejected?: boolean } {
   const relatedOrders = purchaseOrders.filter((order) =>
-    order.lineItems.some((item) => item.tempId === itemTempId),
+    (order.lineItems ?? []).some((item) => item.tempId === itemTempId),
   );
   const relatedAcks = acknowledgements.filter((row) =>
-    row.items.some((item) => item.tempId === itemTempId),
+    (row.items ?? []).some((item) => item.tempId === itemTempId),
   );
   const relatedDeliveries = deliveries.filter((row) =>
-    row.items.some((item) => item.tempId === itemTempId),
+    (row.items ?? []).some((item) => item.tempId === itemTempId),
   );
   const relatedGrns = grns.filter((row) =>
-    row.items.some((item) => item.tempId === itemTempId),
+    (row.items ?? []).some((item) => item.tempId === itemTempId),
   );
   const latestDelivery =
     relatedDeliveries.length > 0 ? relatedDeliveries[relatedDeliveries.length - 1] : undefined;
@@ -650,7 +650,7 @@ export default function TrackingItemManagement(): React.ReactElement {
         const relatedDeliveries = requestDeliveriesMap.get(requestKey) ?? [];
         const relatedGrns = requestGrnsMap.get(requestKey) ?? [];
 
-        return request.lineItems
+        return (request.lineItems ?? [])
           .map((requestItem) => {
             const stageInfo = getTrackingStage(
               request,
@@ -1082,11 +1082,11 @@ export default function TrackingItemManagement(): React.ReactElement {
               </div>
             </div>
 
-            {selectedRow.sourceRequest.lineItems.length > 1 ? (
+            {(selectedRow.sourceRequest.lineItems ?? []).length > 1 ? (
               <div className={styles.detailSection}>
                 <Text strong>{t('details.otherItems')}</Text>
                 <div className={styles.detailList}>
-                  {selectedRow.sourceRequest.lineItems
+                  {(selectedRow.sourceRequest.lineItems ?? [])
                     .filter((item) => item.tempId !== selectedRow.itemTempId)
                     .map((item) => (
                       <div key={item.tempId} className={styles.detailCard}>

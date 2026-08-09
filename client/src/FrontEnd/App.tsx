@@ -7,9 +7,10 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { Avatar, Button, Dropdown, Flex, Layout, Menu, Spin, theme } from "antd";
+import { Avatar, Button, Dropdown, Flex, Layout, Menu, Spin, theme, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
 import {
+  AppstoreOutlined,
   DashboardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -21,7 +22,6 @@ import {
   InboxOutlined,
   SettingOutlined,
   CommentOutlined,
-  RobotOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
@@ -46,6 +46,7 @@ import appStyles from "./App.module.css";
 const { Sider, Content } = Layout;
 
 const Dashboard = lazy(() => import("./pages/DashboardNew"));
+const AdminOverview = lazy(() => import("./pages/AdminOverview"));
 const UserAccessLayout = lazy(() => import("./pages/userAccess/UserAccessLayout"));
 const UserAccessUserManagement = lazy(
   () => import("./pages/userAccess/UserManagementSubmodule"),
@@ -91,6 +92,9 @@ const PurchasingGoodsReceivedNoteDetailSubmodule = lazy(
 const SupplierFulfillmentHome = lazy(
   () => import("./pages/supplierFulfillment/SupplierFulfillmentHome"),
 );
+const SupplierInventorySubmodule = lazy(
+  () => import("./pages/supplierFulfillment/SupplierInventorySubmodule"),
+);
 const DeliverySubmodule = lazy(() => import("./pages/supplierFulfillment/DeliverySubmodule"));
 const OrderAcknowledgementSubmodule = lazy(
   () => import("./pages/supplierFulfillment/OrderAcknowledgementSubmodule"),
@@ -121,7 +125,6 @@ const AIAssistantSubmodule = lazy(() => import("./pages/settings/AIAssistantSubm
 const AIAssistantRedesign = lazy(() => import("./pages/settings/AIAssistantRedesign"));
 const SubAgentsPage = lazy(() => import("./pages/settings/SubAgentsPage"));
 const ChatBotPage = lazy(() => import("./pages/ChatBotPage"));
-const MultiAgentPage = lazy(() => import("./pages/MultiAgentPage"));
 
 type MenuKey =
   | "overview"
@@ -130,7 +133,6 @@ type MenuKey =
   | "supplier-overview"
   | "tracking-item"
   | "chatbot"
-  | "ai-agents"
   | "settings";
 
 function useMenuKeyFromPath(pathname: string): MenuKey {
@@ -139,7 +141,6 @@ function useMenuKeyFromPath(pathname: string): MenuKey {
   if (pathname.startsWith("/supplier-overview")) return "supplier-overview";
   if (pathname.startsWith("/tracking-item")) return "tracking-item";
   if (pathname.startsWith("/chatbot")) return "chatbot";
-  if (pathname.startsWith("/ai-agents")) return "ai-agents";
   if (
     pathname.startsWith("/settings") ||
     pathname.startsWith("/category-selection")
@@ -228,7 +229,6 @@ function MainLayout(): React.ReactElement {
       "supplier-overview": "#14b8a6",
       "tracking-item": "#ec4899",
       chatbot: "#f59e0b",
-      "ai-agents": "#8b5cf6",
       settings: "#64748b",
     }),
     [],
@@ -240,9 +240,15 @@ function MainLayout(): React.ReactElement {
     "supplier-overview": "/supplier-overview",
     "tracking-item": "/tracking-item",
     chatbot: "/chatbot",
-    "ai-agents": "/ai-agents",
     settings: "/settings",
   };
+
+  const primaryAdminMenuKeys: MenuKey[] = [
+    "overview",
+    "users-access",
+    "chatbot",
+    "settings",
+  ];
 
   const canSeeMenuKey = (key: MenuKey): boolean => {
     if (!role) return true;
@@ -257,15 +263,32 @@ function MainLayout(): React.ReactElement {
         key === "purchasing" ||
         key === "tracking-item" ||
         key === "chatbot" ||
-        key === "ai-agents" ||
         key === "settings"
       );
     }
     if (role === UserRole.SUPPLIER) {
-      return key === "supplier-overview" || key === "chatbot" || key === "ai-agents";
+      return key === "supplier-overview" || key === "chatbot";
     }
     return true;
   };
+
+  const menuItems = [
+    { key: "overview", icon: <DashboardOutlined />, label: t("sidebar.overview") },
+    { key: "users-access", icon: <TeamOutlined />, label: t("sidebar.userAccess") },
+    { key: "purchasing", icon: <ShoppingCartOutlined />, label: t("sidebar.purchasing") },
+    { key: "tracking-item", icon: <InboxOutlined />, label: t("sidebar.trackingItem") },
+    { key: "supplier-overview", icon: <ShopOutlined />, label: t("sidebar.supplierOverview") },
+    { key: "chatbot", icon: <CommentOutlined />, label: t("sidebar.chatbot") },
+    { key: "settings", icon: <SettingOutlined />, label: t("sidebar.settings") },
+  ];
+  const sidebarItems = menuItems.filter((item) => {
+    const key = item.key as MenuKey;
+    return canSeeMenuKey(key) && (role !== UserRole.ADMIN || primaryAdminMenuKeys.includes(key));
+  });
+  const otherModuleItems = menuItems.filter((item) => {
+    const key = item.key as MenuKey;
+    return role === UserRole.ADMIN && canSeeMenuKey(key) && !primaryAdminMenuKeys.includes(key);
+  });
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden" }}>
@@ -304,36 +327,7 @@ function MainLayout(): React.ReactElement {
                   ["--active-accent-softer" as any]: `${accentByKey[selectedKey]}14`,
                 } as React.CSSProperties
               }
-              items={[
-                { key: "overview", icon: <DashboardOutlined />, label: t('sidebar.overview') },
-                { key: "users-access", icon: <TeamOutlined />, label: t('sidebar.userAccess') },
-                { key: "purchasing", icon: <ShoppingCartOutlined />, label: t('sidebar.purchasing') },
-                {
-                  key: "tracking-item",
-                  icon: <InboxOutlined />,
-                  label: t('sidebar.trackingItem'),
-                },
-                {
-                  key: "supplier-overview",
-                  icon: <ShopOutlined />,
-                  label: t('sidebar.supplierOverview'),
-                },
-                {
-                  key: "chatbot",
-                  icon: <CommentOutlined />,
-                  label: t('sidebar.chatbot'),
-                },
-                {
-                  key: "ai-agents",
-                  icon: <RobotOutlined />,
-                  label: t('sidebar.aiAgents'),
-                },
-                {
-                  key: "settings",
-                  icon: <SettingOutlined />,
-                  label: t('sidebar.settings'),
-                },
-              ].filter((item) => canSeeMenuKey(item.key as MenuKey))}
+              items={sidebarItems}
             />
           </div>
 
@@ -400,6 +394,27 @@ function MainLayout(): React.ReactElement {
         }}>
           <BreadcrumbNav />
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {otherModuleItems.length > 0 && (
+              <Dropdown
+                trigger={["click"]}
+                placement="bottomRight"
+                menu={{
+                  items: otherModuleItems,
+                  selectedKeys: primaryAdminMenuKeys.includes(selectedKey) ? [] : [selectedKey],
+                  onClick: ({ key }) => navigate(routes[key as MenuKey]),
+                }}
+              >
+                <Tooltip title={t("sidebar.otherModules")}>
+                  <Button
+                    type="text"
+                    shape="circle"
+                    aria-label={t("sidebar.otherModules")}
+                    className={appStyles.moduleSwitcherButton}
+                    icon={<AppstoreOutlined />}
+                  />
+                </Tooltip>
+              </Dropdown>
+            )}
             <NotificationBell />
             <LanguageSelector />
           </div>
@@ -429,7 +444,16 @@ function MainLayout(): React.ReactElement {
             }
           >
             <Routes>
-          <Route path="/overview" element={<Dashboard />} />
+          <Route
+            path="/overview"
+            element={
+              role === UserRole.ADMIN ? (
+                <AdminOverview />
+              ) : (
+                <Dashboard />
+              )
+            }
+          />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/profile/reset-password" element={<ProfileResetPassword />} />
           <Route path="/profile" element={<Profile />} />
@@ -512,6 +536,10 @@ function MainLayout(): React.ReactElement {
           <Route path="/tracking-item" element={<TrackingItemManagement />} />
           <Route path="/supplier-overview" element={<SupplierFulfillmentHome />} />
           <Route
+            path="/supplier-overview/inventory"
+            element={<SupplierInventorySubmodule />}
+          />
+          <Route
             path="/supplier-overview/delivery"
             element={<DeliverySubmodule />}
           />
@@ -549,7 +577,7 @@ function MainLayout(): React.ReactElement {
           />
           <Route path="/tracking-item/*" element={<Navigate to="/tracking-item" replace />} />
           <Route path="/chatbot" element={<ChatBotPage />} />
-          <Route path="/ai-agents" element={<MultiAgentPage userId={sessionUser?.id || 0} />} />
+          <Route path="/ai-agents" element={<Navigate to="/chatbot" replace />} />
           <Route path="/settings" element={<SettingsHome />} />
           <Route
             path="/settings/company-address"

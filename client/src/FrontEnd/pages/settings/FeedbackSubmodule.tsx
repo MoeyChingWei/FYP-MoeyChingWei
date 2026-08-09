@@ -43,9 +43,13 @@ export default function FeedbackSubmodule(): React.ReactElement {
   const [rows, setRows] = useState<FeedbackRow[]>([]);
 
   const load = async () => {
+    if (!sessionUser?.id || !sessionUser.email) {
+      setRows([]);
+      return;
+    }
     setLoading(true);
     try {
-      const data = await fetchFeedbacks();
+      const data = await fetchFeedbacks(sessionUser);
       setRows(data);
     } catch (err: any) {
       message.error(err?.message ?? tMsg('loadFeedbackFailed'));
@@ -67,6 +71,7 @@ export default function FeedbackSubmodule(): React.ReactElement {
     try {
       await submitFeedback({
         userId: sessionUser.id,
+        email: sessionUser.email,
         type: values.type,
         description: values.description.trim(),
       });
@@ -179,4 +184,3 @@ export default function FeedbackSubmodule(): React.ReactElement {
     </Space>
   );
 }
-

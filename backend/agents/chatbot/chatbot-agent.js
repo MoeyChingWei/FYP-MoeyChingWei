@@ -1539,7 +1539,12 @@ class ChatBotAgent {
 
   async getUserSessions(userId, limit = 100) {
     const sessions = await prisma.chatSession.findMany({
-      where: { userId },
+      // Sessions are only conversation history after at least one message was saved.
+      // This prevents abandoned New Chat drafts from appearing in the history list.
+      where: {
+        userId,
+        messages: { some: {} },
+      },
       orderBy: { updatedAt: 'desc' },
       take: limit,
       include: {
@@ -1552,7 +1557,10 @@ class ChatBotAgent {
     await this.generateMissingTitles(sessions);
 
     return await prisma.chatSession.findMany({
-      where: { userId },
+      where: {
+        userId,
+        messages: { some: {} },
+      },
       orderBy: { updatedAt: 'desc' },
       take: limit,
       include: {

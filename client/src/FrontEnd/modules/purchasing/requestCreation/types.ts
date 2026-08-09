@@ -28,4 +28,6 @@ export interface PurchaseRequestDraft {
   notes?: string;
   rejectionReason?: string;
   rejectedBy?: string;
+  requesterRole: string;
+  isSelfApproved?: boolean;
 }

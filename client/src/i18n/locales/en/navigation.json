@@ -6,8 +6,8 @@
     "supplierOverview": "Supplier Overview",
     "trackingItem": "Tracking Item",
     "chatbot": "AI Assistant",
-    "aiAgents": "AI Agents",
-    "settings": "Settings"
+    "settings": "Settings",
+    "otherModules": "Other modules"
   },
   "breadcrumb": {
     "home": "Home",

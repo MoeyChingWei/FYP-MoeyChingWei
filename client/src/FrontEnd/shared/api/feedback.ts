@@ -1,6 +1,8 @@
 import axios from "axios";
 import { API_ROOT } from "./base";
 
+type FeedbackSession = { id: number; email: string };
+
 export type FeedbackType = "ISSUE" | "IMPROVEMENT" | "COMMENT";
 
 export type FeedbackRow = {
@@ -22,8 +24,10 @@ export type FeedbackRow = {
 
 const API = `${API_ROOT}/feedback`;
 
-export async function fetchFeedbacks(): Promise<FeedbackRow[]> {
-  const res = await axios.get(API);
+export async function fetchFeedbacks(session: FeedbackSession): Promise<FeedbackRow[]> {
+  const res = await axios.get(API, {
+    params: { userId: session.id, email: session.email },
+  });
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? "Failed to load feedback");
   }
@@ -32,6 +36,7 @@ export async function fetchFeedbacks(): Promise<FeedbackRow[]> {
 
 export async function submitFeedback(input: {
   userId: number;
+  email: string;
   type: FeedbackType;
   description: string;
 }): Promise<FeedbackRow> {
@@ -41,4 +46,3 @@ export async function submitFeedback(input: {
   }
   return res.data.feedback as FeedbackRow;
 }
-

@@ -157,11 +157,18 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
       appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
     }
 
+    const isSelfApproved =
+      nextStatus === "APPROVED" &&
+      sessionUser?.role === "Manager" &&
+      request.requesterRole === "Manager" &&
+      request.createdByUserId === sessionUser.id;
+
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: nextStatus,
       rejectionReason:
         nextStatus === "REJECTED" ? rejectionReason : draft.rejectionReason,
+      isSelfApproved: isSelfApproved || draft.isSelfApproved,
     }));
 
     message.success(

@@ -241,8 +241,8 @@ router.post('/:agentType/new-session', async (req, res) => {
 
     const sessionId = uuidv4();
 
-    await agent.ensureSession(sessionId, userId);
-
+    // Reserve an id for the client. The session is persisted by agent.chat()
+    // only after the first non-empty message is received.
     res.json({
       success: true,
       sessionId,
@@ -315,7 +315,7 @@ router.get('/:agentType/history/:sessionId', async (req, res) => {
       });
     }
 
-    const messages = await agent.loadSessionHistory(sessionId, 100);
+    const messages = await agent.loadSessionHistory(sessionId, 100, 3000, true);
 
     res.json({
       success: true,

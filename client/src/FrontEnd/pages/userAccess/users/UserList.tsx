@@ -195,7 +195,6 @@ export default function UserList(): React.ReactElement {
         dataSource={data}
         pagination={{ pageSize: 8 }}
         columns={[
-          { title: t("userList.table.id"), dataIndex: "id", width: 80 },
           { title: t("userList.table.name"), dataIndex: "name", render: (v) => v ?? "-" },
           { title: t("userList.table.email"), dataIndex: "email" },
           {

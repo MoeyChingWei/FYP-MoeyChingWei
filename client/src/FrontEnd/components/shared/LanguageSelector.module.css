@@ -8,19 +8,93 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  transition: background-color 0.2s;
+  color: #344054;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .languageButton:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: #edfdf3;
+  color: #16a34a;
 }
 
-.languageButton:focus {
-  outline: 2px solid #1890ff;
+.languageButton:focus-visible {
+  outline: 2px solid #22c55e;
   outline-offset: 2px;
 }
 
 .icon {
   font-size: 20px;
-  color: rgba(0, 0, 0, 0.65);
+  color: currentColor;
+}
+
+.languageMenu {
+  width: 224px;
+  padding: 6px !important;
+  border: 1px solid #e7ecf0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.languageMenu :global(.ant-dropdown-menu-item) {
+  min-height: 42px;
+  margin: 2px 0;
+  padding: 8px 10px !important;
+  border-radius: 6px;
+  color: #344054;
+  font-size: 13px;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.languageMenu :global(.ant-dropdown-menu-item:hover) {
+  background: #f6fbf7 !important;
+  color: #166534;
+}
+
+.languageMenu :global(.ant-dropdown-menu-item-selected) {
+  background: #edfdf3 !important;
+  color: #166534 !important;
+  font-weight: 600;
+}
+
+.languageMenu :global(.ant-dropdown-menu-item-icon) {
+  width: 17px;
+  margin-inline-end: 7px;
+  color: #16a34a;
+  font-size: 13px;
+}
+
+.languageLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.languageCode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 22px;
+  border: 1px solid #d9e2dc;
+  border-radius: 4px;
+  background: #f8faf9;
+  color: #667085;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.languageMenu :global(.ant-dropdown-menu-item-selected) .languageCode {
+  border-color: #a7e3b9;
+  background: #dcfce7;
+  color: #15803d;
+}
+
+@media (max-width: 480px) {
+  .languageMenu {
+    width: min(224px, calc(100vw - 20px));
+  }
 }

@@ -1,442 +1,255 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button, Input, Spin, Empty, message, Tabs, Dropdown, Modal, Upload, Tooltip } from 'antd';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Button, Dropdown, Empty, Input, message, Spin, Tabs, Tooltip, Upload } from 'antd';
 import {
-  PlusOutlined,
-  SendOutlined,
   DeleteOutlined,
-  EditOutlined,
-  RobotOutlined,
-  MoreOutlined,
-  FilePdfOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  DownOutlined,
   FileExcelOutlined,
+  FilePdfOutlined,
   FileTextOutlined,
   FileWordOutlined,
-  CloudUploadOutlined,
+  HistoryOutlined,
   InboxOutlined,
-  ClockCircleOutlined,
-  DatabaseOutlined,
+  InfoCircleOutlined,
+  MoreOutlined,
+  PaperClipOutlined,
+  PlusOutlined,
+  RobotOutlined,
+  SendOutlined,
 } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import InputToolbar from '../components/ChatBot/InputToolbar';
+import MessageList from '../components/ChatBot/MessageList';
 import AttachmentPreview from '../components/ChatBot/AttachmentPreview';
-import MessageAttachment from '../components/ChatBot/MessageAttachment';
 import VoiceInput from '../components/ChatBot/VoiceInput';
-import './ChatBotPage.css';
-
-// Unified API and Types import
 import {
-  // Types
-  type AttachmentMetadata,
-  type Message,
-  type Session,
-  type Source,
-  // API Functions
-  sendMessage,
+  createAgentSession,
+  deleteAgentSession,
+  getAgentHistory,
+  getAgentSessions,
+  getAllAgents,
+  sendMessageToAgent,
+  type Agent,
+  type AgentMessage,
+} from '../shared/api/agents';
+import {
   createNewSession,
-  getUserSessions,
-  deleteSession,
-  renameSession,
-  clearAllChatHistory,
-  uploadAttachment,
-  uploadSource,
-  getUserSources,
   deleteSource,
   getSessionUser,
+  getUserSources,
+  uploadAttachment,
+  uploadSource,
+  type Source,
 } from './chatbot-api';
+import { sendMessage as sendChatbotMessage } from '../shared/api/chatbot';
+import './ChatBotPage.css';
 
-const { TextArea } = Input;
-
-function parseAssistantOptions(content: string) {
-  const marker = '\nOPTIONS:\n';
-  const markerIndex = content.indexOf(marker);
-
-  if (markerIndex === -1) {
-    return { text: content, options: [] as string[] };
-  }
-
-  const text = content.slice(0, markerIndex).trim();
-  const optionBlock = content.slice(markerIndex + marker.length);
-  const options = optionBlock
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('- '))
-    .map((line) => line.slice(2).trim())
-    .filter(Boolean);
-
-  return { text, options };
+interface AgentSession {
+  id: string;
+  title: string;
+  updatedAt: string;
+  _count?: { messages: number };
 }
 
-const tableBorderPattern = /^[\s|+\-=:╔╗╚╝╠╣╦╩╬═║│┌┐└┘├┤┬┴┼─━┃┏┓┗┛┣┫┳┻╋]+$/;
-
-function splitTableCells(line: string) {
-  const normalized = line
-    .replace(/[║│┃]/g, '|')
-    .replace(/[╔╗╚╝╠╣╦╩╬═┌┐└┘├┤┬┴┼─━┏┓┗┛┣┫┳┻╋]/g, '')
-    .trim();
-
-  if (!normalized.includes('|')) return [];
-
-  return normalized
-    .split('|')
-    .map((cell) => cell.trim())
-    .filter(Boolean);
-}
-
-function looksLikeTableLine(line: string) {
-  const trimmed = line.trim();
-  if (!trimmed) return false;
-  return trimmed.includes('|') || /[║│┃╔╗╚╝╠╣╦╩╬═┌┐└┘├┤┬┴┼─━┏┓┗┛┣┫┳┻╋]/.test(trimmed);
-}
-
-function convertTableBlock(lines: string[]) {
-  const rows = lines
-    .filter((line) => !tableBorderPattern.test(line.trim()) || /[A-Za-z0-9]/.test(line))
-    .map(splitTableCells)
-    .filter((cells) => cells.length > 1);
-
-  if (rows.length < 2) {
-    return lines.join('\n');
-  }
-
-  const header = rows[0];
-  const body = rows.slice(1);
-  const separator = header.map(() => '---');
-
-  return [header, separator, ...body]
-    .map((row) => `| ${row.join(' | ')} |`)
-    .join('\n');
-}
-
-function normalizeAssistantMarkdown(content: string) {
-  const withoutDecorativeFences = content.replace(/```(?:\w+)?\n([\s\S]*?)```/g, (match, block) => {
-    return looksLikeTableLine(block) ? `\n${block.trim()}\n` : match;
-  });
-
-  const lines = withoutDecorativeFences.split('\n');
-  const output: string[] = [];
-
-  for (let index = 0; index < lines.length; index += 1) {
-    if (!looksLikeTableLine(lines[index])) {
-      output.push(lines[index]);
-      continue;
-    }
-
-    const block: string[] = [];
-    while (index < lines.length && looksLikeTableLine(lines[index])) {
-      block.push(lines[index]);
-      index += 1;
-    }
-    index -= 1;
-
-    output.push(convertTableBlock(block));
-  }
-
-  return output
-    .join('\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
-function renderAssistantMessage(text: string) {
-  const displayText = normalizeAssistantMarkdown(text);
-
-  return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        table: ({ node, ...props }) => (
-          <div className="assistant-table-scroll">
-            <table className="assistant-table" {...props} />
-          </div>
-        ),
-        th: ({ node, ...props }) => <th className="assistant-table-header" {...props} />,
-        td: ({ node, ...props }) => <td className="assistant-table-cell" {...props} />,
-        h1: ({ node, ...props }) => <h3 className="assistant-heading" {...props} />,
-        h2: ({ node, ...props }) => <h3 className="assistant-heading" {...props} />,
-        h3: ({ node, ...props }) => <h3 className="assistant-heading" {...props} />,
-        p: ({ node, ...props }) => <p className="assistant-paragraph" {...props} />,
-        code: ({ node, className, children, ...props }) => (
-          <code className={className ? `assistant-code ${className}` : 'assistant-code'} {...props}>
-            {children}
-          </code>
-        ),
-        pre: ({ node, ...props }) => <pre className="assistant-code-block" {...props} />,
-      }}
-    >
-      {displayText}
-    </ReactMarkdown>
-  );
-}
+const AGENT_COLORS: Record<string, string> = {
+  chatbot: '#1677ff',
+  purchase: '#389e0d',
+  analytics: '#7c3aed',
+  approval: '#d97706',
+  supplier: '#0891b2',
+  document: '#db2777',
+};
 
 const ChatBotPage: React.FC = () => {
-  const { t, i18n } = useTranslation('chatbot');
-  const { t: tMsg } = useTranslation('messages');
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const sessionUser = getSessionUser();
+  const userId = sessionUser?.id;
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState('chatbot');
+  const [sessions, setSessions] = useState<AgentSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingSessions, setLoadingSessions] = useState(true);
+  const [loadingSessions, setLoadingSessions] = useState(false);
+  const [activeTab, setActiveTab] = useState('chats');
   const [sources, setSources] = useState<Source[]>([]);
   const [loadingSources, setLoadingSources] = useState(false);
   const [uploadingSource, setUploadingSource] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
-  const [uploadedAttachments, setUploadedAttachments] = useState<AttachmentMetadata[]>([]);
-  const [renameModalOpen, setRenameModalOpen] = useState(false);
-  const [renameTarget, setRenameTarget] = useState<Session | null>(null);
-  const [renameValue, setRenameValue] = useState('');
-  const [renamingChat, setRenamingChat] = useState(false);
-  const [voiceRecording, setVoiceRecording] = useState(false);
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
+  const [agentModeEnabled, setAgentModeEnabled] = useState(false);
+  const [agentModeOpen, setAgentModeOpen] = useState(false);
+  const agentModeCloseTimerRef = useRef<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const sessionUser = getSessionUser();
-  const userId = sessionUser?.id;
+  const activeAgent = useMemo(
+    () => agents.find((agent) => agent.type === selectedAgent),
+    [agents, selectedAgent],
+  );
+  const agentName = activeAgent?.name ?? 'General Assistant';
+  const agentColor = AGENT_COLORS[selectedAgent] ?? '#1677ff';
+  const agentModePreview = activeAgent ?? agents[0];
 
-  // Determine voice input language based on current i18n language
-  const voiceLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US';
+  const loadSessions = async (agentType = selectedAgent) => {
+    if (!userId) return;
 
-  // Check if user is logged in
-  useEffect(() => {
-    if (!sessionUser || !userId) {
-      message.error(tMsg('error.notSignedIn'));
-      console.error('User not logged in or userId is missing');
-    }
-  }, [sessionUser, userId, t]);
-
-  // Load session list
-  useEffect(() => {
-    if (userId) {
-      loadSessions();
-      loadSources();
-    }
-  }, [userId]);
-
-  // Auto scroll to bottom
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Handle paste event for images
-  useEffect(() => {
-    const handlePaste = async (e: ClipboardEvent) => {
-      // Allow paste anywhere in chatbot page
-      // Skip only if in sidebar or other pages
-      const target = e.target as HTMLElement;
-      const isInSidebar = target.closest('.sidebar') || target.closest('.ant-layout-sider');
-
-      if (isInSidebar) return;
-
-      const items = e.clipboardData?.items;
-      if (!items) return;
-
-      // Check if clipboard contains files
-      const files: File[] = [];
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        if (item.kind === 'file') {
-          const file = item.getAsFile();
-          if (file) {
-            files.push(file);
-          }
-        }
-      }
-
-      if (files.length > 0) {
-        e.preventDefault();
-        handleFileSelect(files);
-        message.success(t('messages.imagePasted', { count: files.length }));
-      }
-    };
-
-    document.addEventListener('paste', handlePaste);
-    return () => {
-      document.removeEventListener('paste', handlePaste);
-    };
-  }, [selectedFiles, currentSessionId]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const loadSessions = async () => {
     try {
       setLoadingSessions(true);
-      const sessionList = await getUserSessions(userId!);
-      setSessions(sessionList);
-      // Don't auto-select any session - let user choose
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
+      const data = await getAgentSessions(agentType, userId);
+      setSessions(data);
+    } catch (error: any) {
+      message.error(error.message || 'Unable to load conversations');
     } finally {
       setLoadingSessions(false);
     }
   };
 
   const loadSources = async () => {
+    if (!userId) return;
+
     try {
       setLoadingSources(true);
-      const sourceList = await getUserSources(userId!);
-      setSources(sourceList);
-    } catch (error) {
-      console.error('Failed to load sources:', error);
+      setSources(await getUserSources(userId));
+    } catch (error: any) {
+      message.error(error.message || 'Unable to load sources');
     } finally {
       setLoadingSources(false);
     }
   };
 
-  const handleUploadSource = async (options: any) => {
-    const { file, onSuccess, onError } = options;
-
-    try {
-      setUploadingSource(true);
-      const result = await uploadSource(file, userId!, currentSessionId || undefined);
-
-      if (result.success) {
-        message.success(tMsg('success.upload'));
-        await loadSources();
-        onSuccess(result.source);
-      } else {
-        message.error(result.message || tMsg('error.upload'));
-        onError(new Error(result.message));
+  useEffect(() => {
+    const loadAgents = async () => {
+      try {
+        setAgents(await getAllAgents());
+      } catch (error: any) {
+        message.error(error.message || 'Unable to load AI assistants');
       }
-    } catch (error: any) {
-      message.error(error.message || tMsg('error.upload'));
-      onError(error);
-    } finally {
-      setUploadingSource(false);
+    };
+
+    void loadAgents();
+  }, []);
+
+  useEffect(() => {
+    setCurrentSessionId(null);
+    setMessages([]);
+    setInputValue('');
+    void loadSessions(selectedAgent);
+  }, [selectedAgent, userId]);
+
+  useEffect(() => {
+    if (activeTab === 'sources') {
+      void loadSources();
+    }
+  }, [activeTab, userId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('.sidebar, .ant-layout-sider')) return;
+
+      const files = Array.from(event.clipboardData?.items || [])
+        .filter((item) => item.kind === 'file')
+        .map((item) => item.getAsFile())
+        .filter((file): file is File => Boolean(file));
+
+      if (files.length === 0) return;
+
+      event.preventDefault();
+      handleFileSelect(files);
+      message.success(`${files.length} file(s) pasted`);
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, [selectedFiles]);
+
+  useEffect(() => () => {
+    if (agentModeCloseTimerRef.current !== null) {
+      window.clearTimeout(agentModeCloseTimerRef.current);
+    }
+  }, []);
+
+  const clearAgentModeCloseTimer = () => {
+    if (agentModeCloseTimerRef.current !== null) {
+      window.clearTimeout(agentModeCloseTimerRef.current);
+      agentModeCloseTimerRef.current = null;
     }
   };
 
-  const handleDeleteSource = async (sourceId: string) => {
-    try {
-      await deleteSource(sourceId, userId!);
-      message.success(t('sources.deleteSuccess'));
-      await loadSources();
-    } catch (error) {
-      message.error(t('sources.deleteFailed'));
+  const handleAgentChange = (agentType: string) => {
+    setSelectedAgent(agentType);
+  };
+
+  const handleNewChat = () => {
+    clearAgentModeCloseTimer();
+    setCurrentSessionId(null);
+    setMessages([]);
+    setInputValue('');
+    setSelectedFiles([]);
+    setUploadingFiles(false);
+    setIsDraggingFiles(false);
+    setAgentModeEnabled(false);
+    setAgentModeOpen(false);
+  };
+
+  const handleCancelAgentMode = () => {
+    clearAgentModeCloseTimer();
+    setAgentModeEnabled(false);
+    setAgentModeOpen(false);
+    if (!currentSessionId) {
+      setSelectedAgent('chatbot');
     }
-  };
-
-  const isSourceFile = (file: File) => {
-    const sourceExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv'];
-    const extension = `.${file.name.split('.').pop()?.toLowerCase() || ''}`;
-    return sourceExtensions.includes(extension);
-  };
-
-  const saveFilesToSources = async (files: File[]) => {
-    if (!userId) return;
-
-    const sourceFiles = files.filter(isSourceFile);
-    if (sourceFiles.length === 0) return;
-
-    try {
-      setUploadingSource(true);
-      const results = await Promise.allSettled(
-        sourceFiles.map((file) => uploadSource(file, userId, currentSessionId || undefined))
-      );
-      const savedCount = results.filter(
-        (result) => result.status === 'fulfilled' && result.value.success
-      ).length;
-
-      if (savedCount > 0) {
-        message.success(`${savedCount} file(s) saved to Sources`);
-        await loadSources();
-      }
-
-      const failedCount = sourceFiles.length - savedCount;
-      if (failedCount > 0) {
-        message.warning(`${failedCount} file(s) could not be saved to Sources`);
-      }
-    } catch (error: any) {
-      message.error(error.message || 'Failed to save file to Sources');
-    } finally {
-      setUploadingSource(false);
-    }
-  };
-
-  const getFileIcon = (fileType: string) => {
-    const type = fileType.toLowerCase();
-    if (type === 'pdf') return <FilePdfOutlined />;
-    if (type === 'xlsx' || type === 'xls' || type === 'csv') return <FileExcelOutlined />;
-    if (type === 'doc' || type === 'docx') return <FileWordOutlined />;
-    return <FileTextOutlined />;
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    }
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const getValidFiles = (files: File[]) => {
-    const allowedExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv', '.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const allowedExtensions = [
+      '.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv',
+      '.jpg', '.jpeg', '.png', '.gif', '.webp',
+    ];
 
     return files.filter((file) => {
       const extension = `.${file.name.split('.').pop()?.toLowerCase() || ''}`;
-      return allowedExtensions.includes(extension);
+      return allowedExtensions.includes(extension) || file.type.startsWith('image/');
     });
   };
 
   const handleFileSelect = (files: File[], showFeedback = false) => {
     const validFiles = getValidFiles(files);
-
     if (validFiles.length === 0) {
       message.error('Unsupported file type. Please upload PDF, Excel, Word, TXT, CSV, or image files.');
       return;
     }
 
-    setSelectedFiles((prev) => {
-      const nextFiles = [...prev, ...validFiles].slice(0, 5);
-
-      if (showFeedback) {
-        message.success(`${validFiles.length} file(s) added`);
-      }
-
-      if (prev.length + validFiles.length > 5) {
+    setSelectedFiles((current) => {
+      const nextFiles = [...current, ...validFiles].slice(0, 5);
+      if (showFeedback) message.success(`${validFiles.length} file(s) added`);
+      if (current.length + validFiles.length > 5) {
         message.warning('Maximum 5 files can be selected at once');
       }
-
       return nextFiles;
     });
-
-    void saveFilesToSources(validFiles);
-  };
-
-  const handleImageSelect = (images: File[]) => {
-    handleFileSelect(images);
   };
 
   const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setSelectedFiles((current) => current.filter((_, itemIndex) => itemIndex !== index));
   };
 
   const handleFileDragEnter = (event: React.DragEvent<HTMLElement>) => {
-    if (event.dataTransfer.types.includes('Files')) {
-      event.preventDefault();
-      setIsDraggingFiles(true);
-    }
+    if (!event.dataTransfer.types.includes('Files')) return;
+    event.preventDefault();
+    setIsDraggingFiles(true);
   };
 
   const handleFileDragOver = (event: React.DragEvent<HTMLElement>) => {
-    if (event.dataTransfer.types.includes('Files')) {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = 'copy';
-      setIsDraggingFiles(true);
-    }
+    if (!event.dataTransfer.types.includes('Files')) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+    setIsDraggingFiles(true);
   };
 
   const handleFileDragLeave = (event: React.DragEvent<HTMLElement>) => {
@@ -448,435 +261,440 @@ const ChatBotPage: React.FC = () => {
   const handleFileDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     setIsDraggingFiles(false);
-
-    const droppedFiles = Array.from(event.dataTransfer.files || []);
-    if (droppedFiles.length > 0) {
-      handleFileSelect(droppedFiles, true);
-    }
+    const files = Array.from(event.dataTransfer.files || []);
+    if (files.length > 0) handleFileSelect(files, true);
   };
 
-  const uploadFiles = async (sessionId: string) => {
-    if (selectedFiles.length === 0 || !sessionId || !userId) {
-      return [];
-    }
+  const isSourceFile = (file: File) => {
+    const sourceExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.txt', '.csv'];
+    const extension = `.${file.name.split('.').pop()?.toLowerCase() || ''}`;
+    return sourceExtensions.includes(extension);
+  };
 
-    setUploadingFiles(true);
-    const attachments: AttachmentMetadata[] = [];
+  const sendMessage = async (text = inputValue) => {
+    const prompt = text.trim();
+    if ((!prompt && selectedFiles.length === 0) || loading || !userId) return;
 
+    setLoading(true);
     try {
-      for (const file of selectedFiles) {
-        const attachment = await uploadAttachment(file, sessionId, userId);
-        attachments.push(attachment);
-      }
-      setUploadedAttachments(attachments);
-      return attachments;
-    } catch (error: any) {
-      message.error(error.message || t('messages.uploadFailed'));
-      throw error;
-    } finally {
-      setUploadingFiles(false);
-    }
-  };
+      if (selectedAgent === 'chatbot') {
+        let sessionId = currentSessionId;
+        if (!sessionId) {
+          sessionId = await createNewSession(userId);
+          setCurrentSessionId(sessionId);
+        }
 
-  const loadSessionMessages = async (sessionId: string) => {
-    try {
-      const history = await fetch(`/api/chatbot/history/${sessionId}`).then(r => r.json());
-      if (history.success) {
-        const msgs = history.messages.map((msg: any) => ({
-          role: msg.role,
-          content: msg.content,
-          timestamp: new Date(msg.createdAt || Date.now()),
-          attachments: msg.attachments || undefined,
-        }));
-        setMessages(msgs);
-      }
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    }
-  };
+        setUploadingFiles(selectedFiles.length > 0);
+        const attachmentData = [];
+        for (const file of selectedFiles) {
+          if (isSourceFile(file)) {
+            const sourceResult = await uploadSource(file, userId, sessionId);
+            if (!sourceResult.success) {
+              throw new Error(sourceResult.message || `Unable to save ${file.name} to Sources`);
+            }
+          }
+          attachmentData.push(await uploadAttachment(file, sessionId, userId));
+        }
 
-  const handleNewChat = async () => {
-    setCurrentSessionId(null);
-    setMessages([]);
-    setInputValue('');
-  };
+        const visiblePrompt = prompt || `Attached files: ${selectedFiles.map((file) => file.name).join(', ')}`;
+        setMessages((current) => [
+          ...current,
+          { role: 'user', content: visiblePrompt, timestamp: new Date(), attachments: attachmentData },
+        ]);
+        setInputValue('');
 
-  const createSession = async () => {
-    if (!userId) {
-      message.error(t('messages.userNotLoggedIn'));
-      console.error('userId is undefined or null');
-      return null;
-    }
+        const response = await sendChatbotMessage({
+          userId,
+          message: prompt,
+          sessionId,
+          attachmentData,
+        });
 
-    try {
-      console.log('Creating new session for userId:', userId);
-      const newSessionId = await createNewSession(userId);
-      setCurrentSessionId(newSessionId);
-      await loadSessions();
-      return newSessionId;
-    } catch (error: any) {
-      console.error('Failed to create new conversation:', error);
-      message.error(`${t('messages.createSessionFailed')}: ${error.message || 'Unknown error'}`);
-      return null;
-    }
-  };
-
-  const sendMessageToSession = async (sessionId: string, messageText: string) => {
-    const trimmedMessage = messageText.trim();
-    if ((!trimmedMessage && selectedFiles.length === 0) || loading || !userId) return;
-
-    // Upload files first if any selected
-    let attachments: AttachmentMetadata[] = [];
-    if (selectedFiles.length > 0) {
-      try {
-        attachments = await uploadFiles(sessionId);
-      } catch (error) {
-        // Upload failed, don't send message
+        setMessages((current) => [
+          ...current,
+          { role: 'assistant', content: response.message, timestamp: new Date() },
+        ]);
+        setSelectedFiles([]);
+        await loadSessions();
+        if (selectedFiles.some(isSourceFile)) await loadSources();
         return;
       }
-    }
 
-    const messageToSend = trimmedMessage || (attachments.length > 0 ? '[Image]' : '');
-    const userMessage: Message = {
-      role: 'user',
-      content: messageToSend,
-      timestamp: new Date(),
-      attachments: attachments.length > 0 ? attachments : undefined,
-    };
+      let sessionId = currentSessionId;
+      if (!sessionId) {
+        sessionId = await createAgentSession(selectedAgent, userId);
+        setCurrentSessionId(sessionId);
+      }
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue('');
-    setSelectedFiles([]);
-    setUploadedAttachments([]);
-    setLoading(true);
+      const attachedFileNames: string[] = [];
+      const sourceFiles = selectedFiles.filter(isSourceFile);
+      for (const file of sourceFiles) {
+        const uploadResult = await uploadSource(file, userId, sessionId);
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.message || `Unable to attach ${file.name}`);
+        }
+        attachedFileNames.push(file.name);
+      }
 
-    try {
-      const response = await sendMessage({
+      const visiblePrompt = prompt || `Attached files: ${attachedFileNames.join(', ')}`;
+      const agentPrompt = attachedFileNames.length > 0
+        ? `${visiblePrompt}\n\nThe following files were added to Sources: ${attachedFileNames.join(', ')}.`
+        : visiblePrompt;
+
+      setMessages((current) => [
+        ...current,
+        { role: 'user', content: visiblePrompt, timestamp: new Date() },
+      ]);
+      setInputValue('');
+
+      const response = await sendMessageToAgent({
+        agentType: selectedAgent,
         userId,
-        message: messageToSend,
+        message: agentPrompt,
         sessionId,
-        attachmentData: attachments.length > 0 ? attachments : undefined,
       });
 
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: response.message,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-      await loadSessions(); // Refresh session list
+      setMessages((current) => [
+        ...current,
+        { role: 'assistant', content: response.message, timestamp: new Date() },
+      ]);
+      setSelectedFiles([]);
+      await loadSessions();
+      if (attachedFileNames.length > 0) await loadSources();
     } catch (error: any) {
-      message.error(error.message || t('messages.sendFailed'));
+      message.error(error.message || 'Message could not be sent');
+    } finally {
+      setUploadingFiles(false);
+      setLoading(false);
+    }
+  };
+
+  const handleLoadSession = async (sessionId: string) => {
+    try {
+      setLoading(true);
+      const history = await getAgentHistory(selectedAgent, sessionId);
+      setMessages(history.map((item) => ({
+        ...item,
+        timestamp: item.timestamp ? new Date(item.timestamp) : undefined,
+      })));
+      setCurrentSessionId(sessionId);
+    } catch (error: any) {
+      message.error(error.message || 'Conversation could not be opened');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSendMessage = async () => {
-    if ((!inputValue.trim() && selectedFiles.length === 0) || loading || !currentSessionId || !userId) return;
-    await sendMessageToSession(currentSessionId, inputValue);
-  };
-
-  const handleOptionClick = async (option: string) => {
-    if (!currentSessionId || loading) return;
-    await sendMessageToSession(currentSessionId, option);
-  };
-
-  const handleStartChat = async () => {
-    const messageText = inputValue.trim();
-    if ((!messageText && selectedFiles.length === 0) || loading) return;
-
-    const newSessionId = await createSession();
-    if (!newSessionId) return;
-
-    setMessages([]);
-    await sendMessageToSession(newSessionId, messageText);
-  };
-
-  const handleSessionClick = (sessionId: string) => {
-    setCurrentSessionId(sessionId);
-    loadSessionMessages(sessionId);
-  };
-
   const handleDeleteSession = async (sessionId: string) => {
     try {
-      await deleteSession(sessionId);
-      setSessions((prev) => prev.filter((session) => session.id !== sessionId));
-      message.success(t('messages.sessionDeleted'));
-
-      // If deleted current session, return to the new-chat screen
-      if (sessionId === currentSessionId) {
+      await deleteAgentSession(selectedAgent, sessionId);
+      setSessions((current) => current.filter((session) => session.id !== sessionId));
+      if (currentSessionId === sessionId) {
         handleNewChat();
       }
+      message.success('Conversation deleted');
     } catch (error: any) {
-      message.error(error.message || t('messages.sessionDeleteFailed'));
+      message.error(error.message || 'Conversation could not be deleted');
     }
   };
 
-  const openRenameModal = (session: Session) => {
-    setRenameTarget(session);
-    setRenameValue(session.title || t('history.newConversation'));
-    setRenameModalOpen(true);
-  };
-
-  const handleRenameChat = async () => {
-    const nextTitle = renameValue.trim();
-
-    if (!renameTarget || !userId) return;
-
-    if (!nextTitle) {
-      message.warning('Chat title is required');
-      return;
-    }
+  const handleSourceUpload = async ({ file, onSuccess, onError }: any) => {
+    if (!userId) return;
 
     try {
-      setRenamingChat(true);
-      const updatedSession = await renameSession(renameTarget.id, nextTitle, userId);
-      setSessions((prev) =>
-        prev.map((session) =>
-          session.id === renameTarget.id
-            ? {
-                ...session,
-                title: updatedSession?.title || nextTitle,
-                updatedAt: updatedSession?.updatedAt || session.updatedAt,
-              }
-            : session
-        )
-      );
-      setRenameModalOpen(false);
-      setRenameTarget(null);
-      setRenameValue('');
-      message.success('Chat renamed');
+      setUploadingSource(true);
+      const result = await uploadSource(file, userId);
+      if (!result.success) throw new Error(result.message || 'Upload failed');
+      await loadSources();
+      onSuccess?.(result.source);
+      message.success('Source added');
     } catch (error: any) {
-      message.error(error.message || 'Failed to rename chat');
+      onError?.(error);
+      message.error(error.message || 'Source could not be uploaded');
     } finally {
-      setRenamingChat(false);
+      setUploadingSource(false);
     }
   };
 
-  const handleClearAllHistory = () => {
-    if (!userId) {
-      message.error(t('messages.cannotClearHistory'));
-      return;
+  const handleDeleteSource = async (sourceId: string) => {
+    if (!userId) return;
+    try {
+      await deleteSource(sourceId, userId);
+      setSources((current) => current.filter((source) => source.id !== sourceId));
+      message.success('Source deleted');
+    } catch (error: any) {
+      message.error(error.message || 'Source could not be deleted');
     }
+  };
 
-    Modal.confirm({
-      title: tMsg('confirm.delete'),
-      content: t('modal.clearHistoryContent'),
-      okText: tMsg('confirm.yes'),
-      okType: 'danger',
-      cancelText: tMsg('confirm.no'),
-      async onOk() {
-        try {
-          await clearAllChatHistory(userId);
-          setSessions([]);
-          setCurrentSessionId(null);
-          setMessages([]);
-          setInputValue('');
-          message.success(t('messages.allHistoryCleared'));
-        } catch (error: any) {
-          message.error(error.message || t('messages.clearHistoryFailed'));
-        }
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const getFileIcon = (fileType: string) => {
+    const type = fileType.toLowerCase();
+    if (type === 'pdf') return <FilePdfOutlined />;
+    if (['xlsx', 'xls', 'csv'].includes(type)) return <FileExcelOutlined />;
+    if (['doc', 'docx'].includes(type)) return <FileWordOutlined />;
+    return <FileTextOutlined />;
+  };
+
+  if (!userId) {
+    return (
+      <div className="assistant-hub assistant-hub-status">
+        <Alert type="warning" showIcon message="Sign in to start an AI conversation" />
+      </div>
+    );
+  }
+
+  const toolsMenu = {
+    items: [
+      { key: 'attach-files', icon: <PaperClipOutlined />, label: 'Add files' },
+      { type: 'divider' as const },
+      {
+        key: 'agent-mode',
+        icon: <RobotOutlined />,
+        label: 'Agent mode',
       },
-    });
+    ],
+    onClick: ({ key }: { key: string }) => {
+      if (key === 'attach-files') {
+        fileInputRef.current?.click();
+        return;
+      }
+      if (key === 'agent-mode') {
+        setAgentModeOpen(true);
+        return;
+      }
+      if (key.startsWith('agent:')) {
+        handleAgentChange(key.slice('agent:'.length));
+      }
+    },
   };
 
-  const renderOptionsMenu = () => (
-    <Dropdown
-      trigger={['click']}
-      placement="bottomRight"
-      menu={{
-        items: [
-          {
-            key: 'clear-all-history',
-            label: t('buttons.clearAllHistory'),
-            danger: true,
-            disabled: sessions.length === 0,
-            onClick: handleClearAllHistory,
-          },
-        ],
-      }}
-    >
-      <Button
-        type="text"
-        shape="circle"
-        icon={<MoreOutlined />}
-        aria-label={t('aria.chatOptions')}
-        className="chatbot-options-button"
-      />
-    </Dropdown>
-  );
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const handleVoiceInput = () => {
-    message.info('Voice input feature - Coming soon!');
-    // TODO: Implement voice input functionality
-  };
-
-  const handleVoiceTranscript = (transcript: string) => {
-    setInputValue((prev) => (prev ? `${prev} ${transcript}` : transcript));
-    message.success('Voice recorded successfully!');
-  };
-
-  return !currentSessionId ? (
-    // Welcome Screen - No Session
-    <div className="chatbot-page">
-      <div className="chatbot-page-options">{renderOptionsMenu()}</div>
-      <div className="chatbot-welcome-container">
-        <div className="chatbot-header">
-          <div className="chatbot-title">
-            <RobotOutlined style={{ fontSize: 32, color: '#1890ff' }} />
-            {t('page.title')}
-          </div>
-
-          {/* Input area with attachment preview - ChatGPT style */}
-          <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
-            {/* Attachment preview above input (ChatGPT style) */}
-            {selectedFiles.length > 0 && (
-              <div style={{
-                marginBottom: '12px',
-                padding: '12px',
-                background: '#f7f7f8',
-                borderRadius: '12px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <AttachmentPreview
-                  files={selectedFiles}
-                  onRemove={handleRemoveFile}
-                />
-              </div>
-            )}
-
-            {/* Upload indicator */}
-            {uploadingFiles && (
-              <div style={{
-                marginBottom: '12px',
-                padding: '8px 12px',
-                textAlign: 'center',
-                background: '#f0f9ff',
-                borderRadius: '8px',
-                color: '#1890ff',
-                fontSize: '14px'
-              }}>
-                <Spin size="small" /> Uploading files...
-              </div>
-            )}
-            {uploadingSource && (
-              <div className="source-save-indicator">
-                <Spin size="small" /> Saving document to Sources...
-              </div>
-            )}
-
-            {/* Input box with toolbar - ChatGPT style */}
-            <div
-              className={`chatbot-drop-input welcome ${isDraggingFiles ? 'drag-over' : ''}`}
-              onDragEnter={handleFileDragEnter}
-              onDragOver={handleFileDragOver}
-              onDragLeave={handleFileDragLeave}
-              onDrop={handleFileDrop}
+  const agentModePanel = (
+    <div className="assistant-agent-mode-panel">
+      <div className="assistant-agent-mode-heading">
+        <div>
+          <strong>Choose agent mode</strong>
+          <span>Select a specialist for this conversation</span>
+        </div>
+        <div className="assistant-agent-mode-heading-actions">
+          <RobotOutlined />
+          <Button
+            type="text"
+            size="small"
+            icon={<CloseOutlined />}
+            onClick={handleCancelAgentMode}
+            aria-label="Cancel agent mode"
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+      <div className="assistant-agent-mode-list">
+        {agents.map((agent) => (
+          <button
+            key={agent.type}
+            type="button"
+            className={`assistant-agent-option ${selectedAgent === agent.type ? 'selected' : ''}`}
+            onClick={() => {
+              handleAgentChange(agent.type);
+              setAgentModeEnabled(true);
+              clearAgentModeCloseTimer();
+              agentModeCloseTimerRef.current = window.setTimeout(() => {
+                setAgentModeOpen(false);
+                agentModeCloseTimerRef.current = null;
+              }, 700);
+            }}
+          >
+            <span
+              className="assistant-agent-option-icon"
+              style={{ backgroundColor: AGENT_COLORS[agent.type] ?? '#1677ff' }}
             >
-              <InputToolbar
-                onFileSelect={handleFileSelect}
-                onImageSelect={handleImageSelect}
-                onVoiceClick={handleVoiceInput}
-                showVoiceButton={false}
-                disabled={loading || uploadingFiles}
+              <RobotOutlined />
+            </span>
+            <span className="assistant-agent-option-copy">
+              <strong>{agent.name}</strong>
+              <span>{agent.description}</span>
+            </span>
+            <Tooltip title={`${agent.name}: ${agent.expertise}`}>
+              <InfoCircleOutlined
+                className="assistant-agent-option-info"
+                onClick={(event) => event.stopPropagation()}
+                aria-label={`About ${agent.name}`}
               />
-              <Input
-                placeholder={t('page.newChatPlaceholder')}
-                size="large"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onPressEnter={handleStartChat}
-                disabled={loading}
-                bordered={false}
-                style={{ flex: 1, fontSize: '15px' }}
-              />
-              <VoiceInput
-                onTranscript={handleVoiceTranscript}
-                onRecordingChange={setVoiceRecording}
-                disabled={loading || uploadingFiles}
-                language={voiceLanguage}
-              />
-              {!voiceRecording && (
-                <Button
-                  type="text"
-                  icon={<SendOutlined style={{ fontSize: '20px', color: inputValue.trim() || selectedFiles.length > 0 ? '#1890ff' : '#d1d5db' }} />}
-                  onClick={handleStartChat}
-                  disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
-                  size="large"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                />
-              )}
-            </div>
+            </Tooltip>
+            {selectedAgent === agent.type && (
+              <CheckOutlined className="assistant-agent-option-check" />
+            )}
+          </button>
+        ))}
+      </div>
+      {agentModeEnabled && agentModePreview && (
+        <div
+          key={agentModePreview.type}
+          className="assistant-agent-mode-preview"
+          style={{ '--preview-agent-color': AGENT_COLORS[agentModePreview.type] ?? '#1677ff' } as React.CSSProperties}
+        >
+          <span className="assistant-agent-mode-preview-icon"><RobotOutlined /></span>
+          <div className="assistant-agent-mode-preview-copy">
+            <span className="assistant-agent-mode-preview-label">Active mode</span>
+            <strong>{agentModePreview.name}</strong>
+            <span>{agentModePreview.description}</span>
+            <small>{agentModePreview.toolCount} tools - {agentModePreview.expertise}</small>
           </div>
         </div>
+      )}
+    </div>
+  );
 
-        <Tabs className="chatbot-tabs" defaultActiveKey="chats" centered>
-          <Tabs.TabPane tab={t('tabs.chats')} key="chats">
-            <div className="chatbot-history-list">
-              {loadingSessions ? (
-                <div style={{ textAlign: 'center', padding: 40 }}>
-                  <Spin size="large" />
-                </div>
-              ) : sessions.length === 0 ? (
-                <Empty description={t('history.noHistory')} />
-              ) : (
-                sessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="chat-history-item"
-                    onClick={() => handleSessionClick(session.id)}
-                    tabIndex={0}
-                  >
-                    <div className="chat-history-title">
-                      <span>{session.title || t('history.newConversation')}</span>
-                      <div className="chat-history-meta">
-                        <span className="chat-history-date">
-                          {new Date(session.updatedAt).toLocaleDateString()}
-                        </span>
+  const queuedFiles = selectedFiles.length > 0 && (
+    <div className="assistant-attachment-queue">
+      <AttachmentPreview files={selectedFiles} onRemove={handleRemoveFile} />
+    </div>
+  );
+
+  const composerTools = (
+    <div className="assistant-composer-tools">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        hidden
+        accept=".pdf,.csv,.xlsx,.xls,.txt,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
+        onChange={(event) => {
+          const files = Array.from(event.target.files || []);
+          handleFileSelect(files, true);
+          event.target.value = '';
+        }}
+      />
+      <Dropdown trigger={['click']} menu={toolsMenu}>
+        <Button
+          type="text"
+          shape="circle"
+          icon={<PlusOutlined />}
+          className="assistant-plus-button"
+          aria-label="Open chat tools"
+        />
+      </Dropdown>
+    </div>
+  );
+
+  const agentModePanelRow = agentModeOpen ? (
+    <div className="assistant-agent-mode-row">
+      {agentModePanel}
+    </div>
+  ) : agentModeEnabled ? (
+    <div
+      className="assistant-agent-mode-summary"
+      role="button"
+      tabIndex={0}
+      onClick={() => setAgentModeOpen(true)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setAgentModeOpen(true);
+        }
+      }}
+      aria-label={`Active agent mode: ${agentName}`}
+    >
+      <span className="assistant-agent-mode-summary-icon"><RobotOutlined /></span>
+      <span className="assistant-agent-mode-summary-label">Agent mode</span>
+      <strong>{agentName}</strong>
+      <DownOutlined />
+    </div>
+  ) : null;
+
+  if (!currentSessionId) {
+    return (
+      <div className="assistant-hub">
+        <div className="assistant-hub-welcome">
+          <div className="assistant-hub-title">
+            <RobotOutlined />
+            <h1>OptiMind AI Assistant</h1>
+          </div>
+
+          <div
+            className={`assistant-welcome-composer ${agentModeEnabled || agentModeOpen ? 'has-agent-mode' : ''} ${isDraggingFiles ? 'assistant-drag-over' : ''}`}
+            onDragEnter={handleFileDragEnter}
+            onDragOver={handleFileDragOver}
+            onDragLeave={handleFileDragLeave}
+            onDrop={handleFileDrop}
+          >
+            {queuedFiles}
+            <div className="assistant-welcome-input-row">
+              {composerTools}
+              <Input.TextArea
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    void sendMessage();
+                  }
+                }}
+                placeholder={agentModeEnabled ? `New chat in ${agentName}...` : 'New chat in OptiMind...'}
+                bordered={false}
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                disabled={loading || uploadingFiles}
+              />
+            </div>
+            <div className="assistant-welcome-toolbar">
+              <div className="assistant-welcome-actions">
+              <VoiceInput onTranscript={(text) => setInputValue((current) => current ? `${current} ${text}` : text)} disabled={loading} />
+              <Button
+                type="text"
+                shape="circle"
+                icon={loading ? <Spin size="small" /> : <SendOutlined />}
+                aria-label="Send message"
+                onClick={() => void sendMessage()}
+                disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+                className="assistant-send-icon"
+                style={{ color: inputValue.trim() ? agentColor : undefined }}
+              />
+              </div>
+            </div>
+            {agentModePanelRow}
+          </div>
+
+          <Tabs
+            centered
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            className="assistant-welcome-tabs"
+            items={[
+              {
+                key: 'chats',
+                label: 'Chats',
+                children: loadingSessions ? (
+                  <div className="assistant-tab-loading"><Spin /></div>
+                ) : sessions.length === 0 ? (
+                  <Empty description="No chat history yet" />
+                ) : (
+                  <div className="assistant-history-list">
+                    {sessions.map((session) => (
+                      <div
+                        key={session.id}
+                        className="assistant-history-card"
+                        onClick={() => void handleLoadSession(session.id)}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <div className="assistant-history-copy">
+                          <strong>{session.title || `${agentName} Conversation`}</strong>
+                          <span>{session._count?.messages ?? 0} messages</span>
+                        </div>
+                        <small>{new Date(session.updatedAt).toLocaleDateString()}</small>
                         <Dropdown
                           trigger={['click']}
-                          placement="bottomRight"
                           menu={{
-                            items: [
-                              {
-                                key: 'rename-chat',
-                                label: 'Rename chat',
-                                icon: <EditOutlined />,
-                              },
-                              {
-                                key: 'delete-chat',
-                                label: 'Delete this chat',
-                                icon: <DeleteOutlined />,
-                                danger: true,
-                              },
-                            ],
-                            onClick: ({ key, domEvent }) => {
+                            items: [{ key: 'delete', danger: true, icon: <DeleteOutlined />, label: 'Delete conversation' }],
+                            onClick: ({ domEvent }) => {
                               domEvent.stopPropagation();
-
-                              if (key === 'rename-chat') {
-                                openRenameModal(session);
-                                return;
-                              }
-
-                              if (key === 'delete-chat') {
-                                handleDeleteSession(session.id);
-                              }
+                              void handleDeleteSession(session.id);
                             },
                           }}
                         >
@@ -884,303 +702,158 @@ const ChatBotPage: React.FC = () => {
                             type="text"
                             size="small"
                             icon={<MoreOutlined />}
-                            aria-label="Chat options"
-                            className="chat-history-option-button"
-                            onClick={(e) => e.stopPropagation()}
+                            aria-label="Conversation options"
+                            onClick={(event) => event.stopPropagation()}
                           />
                         </Dropdown>
                       </div>
-                    </div>
-                    <div className="chat-history-preview">
-                      {session._count.messages} {t('history.messages')}
-                    </div>
+                    ))}
                   </div>
-                ))
-              )}
-            </div>
-          </Tabs.TabPane>
-          <Tabs.TabPane tab={t('tabs.sources')} key="sources">
-            <div className="sources-container">
-              {/* Upload Area */}
-              <Upload.Dragger
-                accept=".pdf,.csv,.xlsx,.xls,.txt,.doc,.docx"
-                customRequest={handleUploadSource}
-                showUploadList={false}
-                disabled={uploadingSource}
-                className="sources-upload-area"
-              >
-                <div className="sources-upload-icon">
-                  <InboxOutlined />
-                </div>
-                <div className="sources-upload-title">
-                  {uploadingSource ? t('sources.uploading') : t('sources.uploadTitle')}
-                </div>
-                <div className="sources-upload-description">
-                  {t('sources.uploadDescription')}
-                </div>
-                <div className="sources-upload-formats">
-                  <span className="source-format-badge">
-                    <FilePdfOutlined className="source-format-icon" />
-                    {t('formats.pdf')}
-                  </span>
-                  <span className="source-format-badge">
-                    <FileExcelOutlined className="source-format-icon" />
-                    {t('formats.excel')}
-                  </span>
-                  <span className="source-format-badge">
-                    <FileWordOutlined className="source-format-icon" />
-                    {t('formats.word')}
-                  </span>
-                  <span className="source-format-badge">
-                    <FileTextOutlined className="source-format-icon" />
-                    {t('formats.text')}
-                  </span>
-                </div>
-              </Upload.Dragger>
-
-              {/* File List */}
-              {loadingSources ? (
-                <div className="sources-loading">
-                  <Spin size="large" />
-                  <div className="sources-loading-text">{t('sources.loadingDocuments')}</div>
-                </div>
-              ) : sources.length === 0 ? (
-                <div className="sources-empty-state">
-                  <div className="sources-empty-icon">
-                    <CloudUploadOutlined />
-                  </div>
-                  <div className="sources-empty-title">{t('sources.noDocuments')}</div>
-                  <div className="sources-empty-description">
-                    {t('sources.noDocumentsDescription')}
-                  </div>
-                </div>
-              ) : (
-                <div className="sources-file-list">
-                  {sources.map((source) => (
-                    <div key={source.id} className="source-file-card">
-                      <div className="source-file-header">
-                        <div className="source-file-icon-wrapper">
-                          {getFileIcon(source.fileType)}
-                        </div>
-                        <div className="source-file-info">
-                          <div className="source-file-name" title={source.fileName}>
-                            {source.fileName}
+                ),
+              },
+              {
+                key: 'sources',
+                label: 'Sources',
+                children: (
+                  <div className="assistant-sources">
+                    <Upload.Dragger
+                      accept=".pdf,.csv,.xlsx,.xls,.txt,.doc,.docx"
+                      customRequest={handleSourceUpload}
+                      showUploadList={false}
+                      disabled={uploadingSource}
+                      className={`assistant-source-upload${uploadingSource ? ' is-uploading' : ''}`}
+                    >
+                      <InboxOutlined />
+                      <strong>{uploadingSource ? 'Adding source...' : 'Add a source'}</strong>
+                      <span>PDF, Excel, Word, TXT, or CSV</span>
+                    </Upload.Dragger>
+                    {loadingSources ? (
+                      <div className="assistant-tab-loading"><Spin /></div>
+                    ) : sources.length === 0 ? (
+                      null
+                    ) : (
+                      <div className="assistant-source-list">
+                        {sources.map((source) => (
+                          <div key={source.id} className="assistant-source-item">
+                            <span className="assistant-source-icon">{getFileIcon(source.fileType)}</span>
+                            <span className="assistant-source-name">{source.fileName}</span>
+                            <small>{formatFileSize(source.fileSize)}</small>
+                            <Button
+                              type="text"
+                              danger
+                              icon={<DeleteOutlined />}
+                              aria-label={`Delete ${source.fileName}`}
+                              onClick={() => void handleDeleteSource(source.id)}
+                            />
                           </div>
-                          <div className="source-file-type">{source.fileType}</div>
-                        </div>
+                        ))}
                       </div>
-                      <div className="source-file-meta">
-                        <div className="source-file-meta-item">
-                          <DatabaseOutlined className="source-file-meta-icon" />
-                          {formatFileSize(source.fileSize)}
-                        </div>
-                        <div className="source-file-meta-item">
-                          <ClockCircleOutlined className="source-file-meta-icon" />
-                          {formatDate(source.uploadedAt)}
-                        </div>
-                      </div>
-                      <div className="source-file-actions">
-                        <Button
-                          danger
-                          className="source-file-action-btn delete"
-                          icon={<DeleteOutlined />}
-                          onClick={() => handleDeleteSource(source.id)}
-                        >
-                          {t('buttons.delete')}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Tabs.TabPane>
-        </Tabs>
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </div>
       </div>
-      <Modal
-        title="Rename chat"
-        open={renameModalOpen}
-        okText="Save"
-        confirmLoading={renamingChat}
-        onOk={handleRenameChat}
-        onCancel={() => {
-          setRenameModalOpen(false);
-          setRenameTarget(null);
-          setRenameValue('');
-        }}
-      >
-        <Input
-          value={renameValue}
-          maxLength={80}
-          showCount
-          autoFocus
-          placeholder="Chat title"
-          onChange={(e) => setRenameValue(e.target.value)}
-          onPressEnter={handleRenameChat}
-        />
-      </Modal>
-    </div>
-  ) : (
-    // Chat View - With Session
-    <div className="chatbot-page">
-      <div className="chatbot-chat-view">
-        <div className="chatbot-sidebar">
-          <div className="chatbot-sidebar-header">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleNewChat}
-              style={{ marginBottom: '8px', width: '100%' }}
+    );
+  }
+
+  return (
+    <div className="assistant-hub assistant-conversation-page">
+      <aside className="assistant-session-sidebar">
+        <Button icon={<PlusOutlined />} type="primary" block onClick={handleNewChat}>
+          New chat
+        </Button>
+        <div className="assistant-session-list">
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              className={`assistant-session-item ${session.id === currentSessionId ? 'active' : ''}`}
+              onClick={() => void handleLoadSession(session.id)}
+              role="button"
+              tabIndex={0}
             >
-              {t('buttons.newChat')}
-            </Button>
-          </div>
-          <div className="chatbot-sessions-list">
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className={`session-item ${currentSessionId === session.id ? 'active' : ''}`}
-                onClick={() => handleSessionClick(session.id)}
+              <span>{session.title || 'New conversation'}</span>
+              <Dropdown
+                trigger={['click']}
+                menu={{
+                  items: [{ key: 'delete', danger: true, icon: <DeleteOutlined />, label: 'Delete conversation' }],
+                  onClick: ({ domEvent }) => {
+                    domEvent.stopPropagation();
+                    void handleDeleteSession(session.id);
+                  },
+                }}
               >
-                <div className="session-content">
-                  <div className="session-title">{session.title || t('history.newConversation')}</div>
-                  <div className="session-time">{session._count.messages} {t('history.messages')}</div>
-                </div>
                 <Button
                   type="text"
-                  danger
                   size="small"
-                  icon={<DeleteOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteSession(session.id);
-                  }}
+                  icon={<MoreOutlined />}
+                  aria-label="Conversation options"
+                  onClick={(event) => event.stopPropagation()}
                 />
-              </div>
-            ))}
+              </Dropdown>
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      <section className="assistant-conversation">
+        <header className="assistant-conversation-header">
+          <span className="assistant-conversation-avatar" style={{ backgroundColor: agentColor }}><RobotOutlined /></span>
+          <div>
+            <strong>{agentName}</strong>
+            <small><span style={{ backgroundColor: agentColor }} /> Online</small>
           </div>
+        </header>
+
+        <div className="assistant-message-area">
+          <MessageList messages={messages} onOptionClick={(option) => void sendMessage(option)} />
+          <div ref={messagesEndRef} />
         </div>
 
-        <div className="chatbot-content">
-          <div className="chatbot-messages-container">
-            <div className="chatbot-messages">
-              {messages.map((msg, index) => (
-                (() => {
-                  const parsed = msg.role === 'assistant'
-                    ? parseAssistantOptions(msg.content)
-                    : { text: msg.content, options: [] as string[] };
-                  const hasAttachments = Boolean(msg.attachments && msg.attachments.length > 0);
-                  const shouldRenderText = msg.role === 'assistant'
-                    ? parsed.text.trim().length > 0
-                    : parsed.text.trim().length > 0 && !(hasAttachments && parsed.text.trim() === '[Image]');
-
-                  return (
-                    <div key={index} className={`chat-message ${msg.role === 'user' ? 'user' : 'assistant'}`}>
-                      <div className="message-content">
-                        {hasAttachments && (
-                          <MessageAttachment
-                            attachments={msg.attachments!}
-                            messageRole={msg.role}
-                          />
-                        )}
-                        {shouldRenderText && (
-                          <div className="message-text">
-                            {msg.role === 'assistant' ? renderAssistantMessage(parsed.text) : parsed.text}
-                          </div>
-                        )}
-                        {parsed.options.length > 0 && (
-                          <div className="message-options">
-                            {parsed.options.map((option) => (
-                              <Button
-                                key={option}
-                                size="small"
-                                className="message-option-button"
-                                onClick={() => handleOptionClick(option)}
-                                disabled={loading}
-                              >
-                                {option}
-                              </Button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+        <div className="assistant-chat-composer">
+          {loading && <div className="assistant-thinking"><Spin size="small" /> {agentName} is thinking...</div>}
+          {uploadingFiles && <div className="assistant-thinking"><Spin size="small" /> Uploading files...</div>}
+          <div
+            className={`assistant-chat-input-stack ${isDraggingFiles ? 'assistant-drag-over' : ''}`}
+            onDragEnter={handleFileDragEnter}
+            onDragOver={handleFileDragOver}
+            onDragLeave={handleFileDragLeave}
+            onDrop={handleFileDrop}
+          >
+          {queuedFiles}
+          <Input.TextArea
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                void sendMessage();
+              }
+            }}
+            placeholder={`Message ${agentName}...`}
+            autoSize={{ minRows: 1, maxRows: 5 }}
+            disabled={loading || uploadingFiles}
+            bordered={false}
+          />
+          <div className="assistant-chat-toolbar">
+            {composerTools}
           </div>
-
-          <div className="chatbot-input-area">
-          <div className="input-card">
-            {loading && (
-              <div className="loading-indicator">
-                <Spin size="small" /> {t('page.thinkingMessage')}
-              </div>
-            )}
-            {uploadingFiles && (
-              <div className="loading-indicator">
-                <Spin size="small" /> Uploading files...
-              </div>
-            )}
-            {uploadingSource && (
-              <div className="loading-indicator source-saving">
-                <Spin size="small" /> Saving document to Sources...
-              </div>
-            )}
-            {selectedFiles.length > 0 && (
-              <AttachmentPreview
-                files={selectedFiles}
-                onRemove={handleRemoveFile}
-              />
-            )}
-            <div
-              className={`input-wrapper chatbot-drop-input ${isDraggingFiles ? 'drag-over' : ''}`}
-              onDragEnter={handleFileDragEnter}
-              onDragOver={handleFileDragOver}
-              onDragLeave={handleFileDragLeave}
-              onDrop={handleFileDrop}
-            >
-              <InputToolbar
-                onFileSelect={handleFileSelect}
-                onImageSelect={handleImageSelect}
-                onVoiceClick={handleVoiceInput}
-                showVoiceButton={false}
-                disabled={loading || uploadingFiles}
-              />
-              <TextArea
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={t('page.typePlaceholder')}
-                autoSize={{ minRows: 1, maxRows: 6 }}
-                disabled={loading || uploadingFiles}
-                className="chat-input"
-              />
-              <VoiceInput
-                onTranscript={handleVoiceTranscript}
-                onRecordingChange={setVoiceRecording}
-                disabled={loading || uploadingFiles}
-                language={voiceLanguage}
-              />
-              {!voiceRecording && (
-                <Button
-                  type="primary"
-                  icon={<SendOutlined />}
-                  onClick={handleSendMessage}
-                  disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
-                  size="large"
-                  className="send-button"
-                >
-                  {t('buttons.send')}
-                </Button>
-              )}
-            </div>
+          {agentModePanelRow}
           </div>
-          </div>
+          <VoiceInput onTranscript={(text) => setInputValue((current) => current ? `${current} ${text}` : text)} disabled={loading || uploadingFiles} />
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={() => void sendMessage()}
+            disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+            style={{ backgroundColor: agentColor, borderColor: agentColor }}
+          >
+            Send
+          </Button>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

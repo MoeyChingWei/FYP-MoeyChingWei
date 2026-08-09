@@ -40,6 +40,10 @@
     "grn": {
       "title": "GRN",
       "hint": "Track goods received note status from purchasing"
+    },
+    "inventory": {
+      "title": "Inventory",
+      "hint": "Manage your available stock and reorder levels"
     }
   },
   "orderAcknowledgement": {

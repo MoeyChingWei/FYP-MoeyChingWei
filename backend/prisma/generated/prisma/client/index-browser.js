@@ -278,6 +278,36 @@ exports.Prisma.SourceChunkScalarFieldEnum = {
   chunkIndex: 'chunkIndex'
 };
 
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  userId: 'userId',
+  userEmail: 'userEmail',
+  userName: 'userName',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  changes: 'changes',
+  metadata: 'metadata',
+  status: 'status',
+  errorMsg: 'errorMsg',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.BackupHistoryScalarFieldEnum = {
+  id: 'id',
+  backupType: 'backupType',
+  fileName: 'fileName',
+  filePath: 'filePath',
+  fileSize: 'fileSize',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  errorMsg: 'errorMsg',
+  metadata: 'metadata'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -330,7 +360,9 @@ exports.Prisma.ModelName = {
   ChatMessage: 'ChatMessage',
   MessageAttachment: 'MessageAttachment',
   Source: 'Source',
-  SourceChunk: 'SourceChunk'
+  SourceChunk: 'SourceChunk',
+  AuditLog: 'AuditLog',
+  BackupHistory: 'BackupHistory'
 };
 
 /**

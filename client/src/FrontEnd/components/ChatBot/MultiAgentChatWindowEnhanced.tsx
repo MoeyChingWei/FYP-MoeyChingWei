@@ -34,7 +34,7 @@ interface MultiAgentChatWindowEnhancedProps {
   userId: number;
   agentType: string;
   agentName: string;
-  onClose: () => void;
+  onClose?: () => void;
   onNewMessage?: () => void;
   onSwitchAgent?: (agentType: string) => void;
 }
@@ -306,14 +306,16 @@ const MultiAgentChatWindowEnhanced: React.FC<MultiAgentChatWindowEnhancedProps> 
             >
               New
             </Button>
-            <Button
-              type="text"
-              size="small"
-              icon={<CloseOutlined />}
-              onClick={onClose}
-              style={{ color: 'white' }}
-            />
-          </div>
+            {onClose && (
+              <Button
+                type="text"
+                size="small"
+                icon={<CloseOutlined />}
+                onClick={onClose}
+                style={{ color: 'white' }}
+              />
+            )}
+          </Space>
         </div>
       }
       bodyStyle={{ padding: 0, height: 'calc(100% - 73px)' }}
@@ -335,7 +337,7 @@ const MultiAgentChatWindowEnhanced: React.FC<MultiAgentChatWindowEnhancedProps> 
           <QuickReplies agentType={agentType} onSelectReply={handleQuickReply} />
 
           {/* Messages */}
-          <MessageList messages={messages} />
+          <MessageList messages={messages} onOptionClick={handleQuickReply} />
           <div ref={messagesEndRef} />
         </div>
 

@@ -1,0 +1,12 @@
+<i> [webpack-dev-server] [HPM] Proxy created: /api,/uploads  -> http://localhost:4000
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: [36mhttp://localhost:3000/[39m, [36mhttp://[::1]:3000/[39m
+<i> [webpack-dev-server] On Your Network (IPv4): [36mhttp://172.18.160.1:3000/[39m
+<i> [webpack-dev-server] Content not from webpack is served from '[36mC:\Users\mch\Desktop\FYP\FYP-MoeyChingWei\client\public[39m' directory
+<i> [webpack-dev-server] 404s will fallback to '[36m/index.html[39m'
+<i> [webpack-dev-middleware] wait until bundle finished: /static/custom.css
+<i> [webpack-dev-middleware] wait until bundle finished: /static/splash.png
+<i> [webpack-dev-middleware] wait until bundle finished: /manifest.json
+<i> [webpack-dev-middleware] wait until bundle finished: /static/loader.js
+(node:47404) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

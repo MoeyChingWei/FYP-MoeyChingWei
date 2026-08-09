@@ -6,6 +6,7 @@ import {
   sendSupplierPendingOrderEmail,
   sendSystemNotificationEmail,
 } from "./emailNotifications.js";
+import { addDebugLog } from "../routes/debug-logs.js";
 
 function uniqueById(users) {
   const seen = new Set();
@@ -32,7 +33,27 @@ function uniqueEmails(users) {
 
 async function sendRoleEventEmails(users, payload) {
   const to = uniqueEmails(users);
-  if (!to.length) return;
+
+  // DEBUG: Log email extraction for troubleshooting
+  console.log("📧 [EMAIL-DEBUG] sendRoleEventEmails called:", {
+    totalUsers: users.length,
+    extractedEmails: to,
+    emailCount: to.length,
+    notificationTitle: payload.title,
+  });
+
+  addDebugLog("EMAIL", "sendRoleEventEmails called", {
+    totalUsers: users.length,
+    extractedEmails: to,
+    emailCount: to.length,
+    notificationTitle: payload.title,
+  });
+
+  if (!to.length) {
+    console.warn("⚠️ [EMAIL-DEBUG] No valid emails found - skipping email send");
+    addDebugLog("EMAIL", "No valid emails found - skipping email send", null);
+    return;
+  }
   try {
     const result = await sendSystemNotificationEmail({
       to,
@@ -44,7 +65,17 @@ async function sendRoleEventEmails(users, payload) {
         `<p><b>Reference:</b> ${payload.refType ?? "-"} ${payload.refId ?? ""}</p>`,
     });
     if (!result?.sent) {
-      console.warn("Notification email not sent:", result?.reason ?? "Unknown reason", {
+      const warnMessage = `Notification email not sent: ${result?.reason ?? "Unknown reason"} ${JSON.stringify({
+        title: payload.title,
+        to,
+        accepted: result?.accepted ?? [],
+        rejected: result?.rejected ?? [],
+        response: result?.response,
+      })}`;
+      console.warn(warnMessage);
+      process.stderr.write(warnMessage + "\n");
+      addDebugLog("EMAIL-ERROR", "Notification email not sent", {
+        reason: result?.reason ?? "Unknown reason",
         title: payload.title,
         to,
         accepted: result?.accepted ?? [],
@@ -52,7 +83,17 @@ async function sendRoleEventEmails(users, payload) {
         response: result?.response,
       });
     } else {
-      console.log("Notification email sent:", {
+      const logMessage = `Notification email sent: ${JSON.stringify({
+        title: payload.title,
+        to,
+        messageId: result?.messageId,
+        accepted: result?.accepted ?? [],
+        rejected: result?.rejected ?? [],
+        response: result?.response,
+      })}`;
+      console.log(logMessage);
+      process.stdout.write(logMessage + "\n");
+      addDebugLog("EMAIL-SUCCESS", "Notification email sent successfully", {
         title: payload.title,
         to,
         messageId: result?.messageId,
@@ -80,6 +121,7 @@ async function createInAppNotifications(
   }));
   if (!data.length) return;
   await prisma.notification.createMany({ data });
+  // Send email notifications for workflow events
   await sendRoleEventEmails(users, payload);
 }
 
@@ -130,6 +172,8 @@ export async function processWorkflowNotifications(
   previousRows,
   nextRows,
 ) {
+  console.log(`📢 [DEBUG] processWorkflowNotifications CALLED - store: ${store}, previousRows: ${previousRows.length}, nextRows: ${nextRows.length}`);
+
   const prevMap = parsePayloadMap(previousRows);
   const nextMap = parsePayloadMap(nextRows);
   let requestContextByPrNumber = null;
@@ -201,7 +245,6 @@ export async function processWorkflowNotifications(
   };
 
   if (store === "purchase-requests") {
-    const departmentExecutives = await findUsersByRoles([ROLES.DEPARTMENT_EXECUTIVE]);
     for (const [localId, row] of nextMap) {
       const before = prevMap.get(localId);
       const nowStatus = String(row.status ?? "");
@@ -222,13 +265,53 @@ export async function processWorkflowNotifications(
         }
       }
       if (nowStatus === "SUBMITTED" && beforeStatus !== "SUBMITTED") {
-        await createInAppNotifications(departmentExecutives, {
-          title: "New Purchase Request Approval",
-          message: `${row.prNumber ?? "PR"} has a new item approval waiting. Please review it in the system.`,
-          type: "PURCHASE_REQUEST_APPROVAL",
-          refType: "purchase-request",
-          refId: localId,
-        });
+        const requesterRole = String(row.requesterRole ?? ROLES.EMPLOYEE);
+        let approvers = [];
+
+        console.log(`🔍 [DEBUG] PR ${row.prNumber} submitted - requesterRole: ${requesterRole}, beforeStatus: ${beforeStatus}, nowStatus: ${nowStatus}`);
+
+        if (requesterRole === ROLES.MANAGER) {
+          // Manager submits PR → Manager self-approves
+          const requesterContext = await resolveRequesterContext(row, localId);
+          if (requesterContext?.user) {
+            approvers = [requesterContext.user];
+            console.log(`📋 [DEBUG] Manager self-approval route - found requester:`, requesterContext.user.email);
+          }
+        } else if (requesterRole === ROLES.DEPARTMENT_EXECUTIVE) {
+          // Department Executive submits PR → Manager approves
+          approvers = await findUsersByRoles([ROLES.MANAGER]);
+          console.log(`📋 [DEBUG] Department Executive → Manager route - found ${approvers.length} managers:`, approvers.map(u => u.email));
+        } else {
+          // Employee submits PR (or missing role) → Department Executive approves
+          approvers = await findUsersByRoles([ROLES.DEPARTMENT_EXECUTIVE]);
+          console.log(`📋 [DEBUG] Employee → Department Executive route - found ${approvers.length} executives:`, approvers.map(u => u.email));
+        }
+
+        if (approvers.length) {
+          console.log(`✅ [DEBUG] Calling createInAppNotifications with ${approvers.length} approvers`);
+          await createInAppNotifications(approvers, {
+            title: "New Purchase Request Approval",
+            message: `${row.prNumber ?? "PR"} has a new item approval waiting. Please review it in the system.`,
+            type: "PURCHASE_REQUEST_APPROVAL",
+            refType: "purchase-request",
+            refId: localId,
+          });
+        } else {
+          console.warn(`⚠️ [DEBUG] No approvers found for PR ${row.prNumber} with requesterRole: ${requesterRole}`);
+        }
+      }
+      if (nowStatus === "REQUEST_CHANGE" && beforeStatus !== "REQUEST_CHANGE") {
+        // Notify original requester that changes are needed
+        const requesterContext = await resolveRequesterContext(row, localId);
+        if (requesterContext?.user) {
+          await createInAppNotifications([requesterContext.user], {
+            title: "Purchase Request - Changes Requested",
+            message: `${row.prNumber ?? "PR"} requires changes. Please review the feedback and resubmit.`,
+            type: "PURCHASE_REQUEST_CHANGE",
+            refType: "purchase-request",
+            refId: localId,
+          });
+        }
       }
       if (before && beforeStatus !== nowStatus) {
         const requesterContext = await resolveRequesterContext(row, localId);
@@ -257,19 +340,51 @@ export async function processWorkflowNotifications(
   }
 
   if (store === "purchase-orders") {
-    const managers = await findUsersByRoles([ROLES.MANAGER]);
     for (const [localId, row] of nextMap) {
       const before = prevMap.get(localId);
       const nowStatus = String(row.status ?? "");
       const beforeStatus = String(before?.status ?? "");
       if (nowStatus === "SUBMITTED" && beforeStatus !== "SUBMITTED") {
-        await createInAppNotifications(managers, {
-          title: "New Purchase Order Approval",
-          message: `${row.poNumber ?? "PO"} has a new item approval waiting. Please review it in the system.`,
-          type: "PURCHASE_ORDER_APPROVAL",
-          refType: "purchase-order",
-          refId: localId,
+        const requesterRole = String(row.requesterRole ?? ROLES.EMPLOYEE);
+        let approvers = [];
+
+        if (requesterRole === ROLES.MANAGER) {
+          // Manager's PR → Manager self-approves PO
+          const requesterContext = await resolveRequesterContext(row, undefined, {
+            preferSourceRequest: true,
+          });
+          if (requesterContext?.user) {
+            approvers = [requesterContext.user];
+          }
+        } else {
+          // Employee or Department Executive's PR → All Managers approve PO
+          approvers = await findUsersByRoles([ROLES.MANAGER]);
+        }
+
+        if (approvers.length) {
+          await createInAppNotifications(approvers, {
+            title: "New Purchase Order Approval",
+            message: `${row.poNumber ?? "PO"} has a new item approval waiting. Please review it in the system.`,
+            type: "PURCHASE_ORDER_APPROVAL",
+            refType: "purchase-order",
+            refId: localId,
+          });
+        }
+      }
+      if (nowStatus === "REQUEST_CHANGE" && beforeStatus !== "REQUEST_CHANGE") {
+        // Notify PO creator (usually Department Executive or Manager)
+        const requesterContext = await resolveRequesterContext(row, undefined, {
+          preferSourceRequest: true,
         });
+        if (requesterContext?.user) {
+          await createInAppNotifications([requesterContext.user], {
+            title: "Purchase Order - Changes Requested",
+            message: `${row.poNumber ?? "PO"} requires changes. Please review the feedback and resubmit.`,
+            type: "PURCHASE_ORDER_CHANGE",
+            refType: "purchase-order",
+            refId: localId,
+          });
+        }
       }
       if (before && beforeStatus !== nowStatus) {
         const requesterContext = await resolveRequesterContext(row, undefined, {

@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import path from "path";
+import { exec } from "child_process";
 
 import authRoutes from "./routes/auth.js";
 import adminUsersRoutes from "./routes/adminUsers.js";
@@ -18,13 +19,24 @@ import sourcesRoutes from "./routes/sources.js";
 import agentsRoutes from "./routes/agents.js";
 import languageRoutes from "./routes/language.js";
 import exportRoutes from "./routes/export.js";
+import debugLogsRoutes from "./routes/debug-logs.js";
+import { performanceMiddleware } from "./routes/debug-logs.js";
+import auditRoutes from "./routes/audit.js";
+import backupRoutes from "./routes/backup.js";
+import { auditMiddleware } from "./middleware/auditMiddleware.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(performanceMiddleware);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
+app.use("/api/audit", auditRoutes);
+app.use("/api/backup", backupRoutes);
+app.use("/api/debug", debugLogsRoutes);
+
+app.use(auditMiddleware);
 app.use("/api", authRoutes);
 app.use("/api/admin", adminUsersRoutes);
 app.use("/api/admin", adminSupplierTypesRoutes);
@@ -41,9 +53,25 @@ app.use("/api", languageRoutes);
 app.use("/api/export", exportRoutes);
 
 app.get("/", (req, res) => {
-  res.send("OptiMind Backend Running");
+  res.redirect("/api/debug/dashboard");
 });
 
 app.listen(4000, () => {
   console.log("Server running on port 4000");
+  console.log("Dashboard: http://localhost:4000");
+
+  // Auto-open dashboard in browser
+  const url = "http://localhost:4000";
+  const platform = process.platform;
+
+  const command =
+    platform === "win32" ? `start ${url}` :
+    platform === "darwin" ? `open ${url}` :
+    `xdg-open ${url}`;
+
+  exec(command, (error) => {
+    if (error) {
+      console.log("Could not auto-open browser. Please visit:", url);
+    }
+  });
 });

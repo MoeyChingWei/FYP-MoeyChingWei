@@ -46,6 +46,7 @@
     "approval": {
       "title": "Purchase Request Approval",
       "hint": "Approve purchase requests",
+      "selfApproval": "Self-Approval",
       "table": {
         "prNo": "PR No",
         "status": "Status",

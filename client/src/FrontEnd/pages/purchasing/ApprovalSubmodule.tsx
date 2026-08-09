@@ -267,12 +267,26 @@ export default function ApprovalSubmodule(): React.ReactElement {
               {
                 title: t('purchaseRequest.approval.table.prNo'),
                 key: "prNumber",
-                render: (_, request) => (
-                  <div className={styles.prCell}>
-                    <Text strong>{request.prNumber}</Text>
-                    <span className={styles.prMeta}>{request.requestDate}</span>
-                  </div>
-                ),
+                render: (_, request) => {
+                  const isSelfApprovalCase =
+                    sessionUser?.role === UserRole.MANAGER &&
+                    request.requesterRole === UserRole.MANAGER &&
+                    request.createdByUserId === sessionUser.id;
+
+                  return (
+                    <div className={styles.prCell}>
+                      <Flex gap={8} align="center">
+                        <Text strong>{request.prNumber}</Text>
+                        {isSelfApprovalCase && (
+                          <Tag color="orange" style={{ fontSize: '11px', padding: '0 6px' }}>
+                            {t('purchaseRequest.approval.selfApproval')}
+                          </Tag>
+                        )}
+                      </Flex>
+                      <span className={styles.prMeta}>{request.requestDate}</span>
+                    </div>
+                  );
+                },
               },
               {
                 title: t('purchaseRequest.approval.table.status'),

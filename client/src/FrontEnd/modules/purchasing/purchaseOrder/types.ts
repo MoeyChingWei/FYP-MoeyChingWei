@@ -17,4 +17,6 @@ export interface PurchaseOrderDraft {
   lineItems: DraftLineItem[];
   rejectionReason?: string;
   rejectedBy?: string;
+  requesterRole: string;
+  isSelfApproved?: boolean;
 }

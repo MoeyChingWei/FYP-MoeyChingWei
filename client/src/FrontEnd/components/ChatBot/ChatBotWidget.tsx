@@ -39,7 +39,7 @@ const ChatBotWidget: React.FC<ChatBotWidgetProps> = ({ userId }) => {
       )}
 
       {/* Floating button */}
-      <div className="chatbot-widget-button">
+      <div className={`chatbot-widget-button${isOpen ? ' is-open' : ''}`}>
         <Badge count={unreadCount} offset={[-5, 5]}>
           <Button
             type="primary"
@@ -47,6 +47,7 @@ const ChatBotWidget: React.FC<ChatBotWidgetProps> = ({ userId }) => {
             size="large"
             icon={isOpen ? <CloseOutlined /> : <MessageOutlined />}
             onClick={toggleChat}
+            aria-label={isOpen ? 'Close chat' : 'Open chat'}
             style={{
               width: 60,
               height: 60,

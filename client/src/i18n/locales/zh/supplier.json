@@ -40,6 +40,10 @@
     "grn": {
       "title": "收货单",
       "hint": "从采购部门跟踪收货单状态"
+    },
+    "inventory": {
+      "title": "库存",
+      "hint": "管理可用库存和补货水平"
     }
   },
   "orderAcknowledgement": {

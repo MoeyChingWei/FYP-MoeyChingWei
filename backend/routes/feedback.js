@@ -1,19 +1,21 @@
 import express from "express";
 import prisma from "../config/prisma.js";
 import { notifyAdminsForFeedback } from "../services/notifications.js";
+import { authenticateToken } from "../src/middleware/auth.js";
 
 const router = express.Router();
 
+// Feedback contains user-submitted information and is only available to the
+// submitting user or an administrator.
+router.use(authenticateToken);
+
 const FEEDBACK_TYPES = new Set(["ISSUE", "IMPROVEMENT", "COMMENT"]);
 
-function parseUserId(value) {
-  const id = Number(value);
-  return Number.isFinite(id) ? id : null;
-}
-
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
   try {
+    const isAdmin = String(req.user.role ?? "").trim().toLowerCase() === "admin";
     const feedbacks = await prisma.feedback.findMany({
+      where: isAdmin ? {} : { userId: req.user.id },
       include: {
         user: {
           select: { id: true, name: true, email: true, role: true },
@@ -30,7 +32,9 @@ router.get("/", async (_req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const userId = parseUserId(req.body?.userId);
+  // The middleware has already verified the submitted identity. Never trust a
+  // client-provided userId for ownership of the new feedback record.
+  const userId = req.user.id;
   const type = String(req.body?.type ?? "").trim().toUpperCase();
   const description = String(req.body?.description ?? "").trim();
 
@@ -48,10 +52,7 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, name: true, email: true },
-    });
+    const user = req.user;
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }

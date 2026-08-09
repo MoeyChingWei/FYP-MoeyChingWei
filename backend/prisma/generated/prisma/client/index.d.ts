@@ -98,6 +98,16 @@ export type Source = $Result.DefaultSelection<Prisma.$SourcePayload>
  * 
  */
 export type SourceChunk = $Result.DefaultSelection<Prisma.$SourceChunkPayload>
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model BackupHistory
+ * 
+ */
+export type BackupHistory = $Result.DefaultSelection<Prisma.$BackupHistoryPayload>
 
 /**
  * Enums
@@ -403,6 +413,26 @@ export class PrismaClient<
     * ```
     */
   get sourceChunk(): Prisma.SourceChunkDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditLogs
+    * const auditLogs = await prisma.auditLog.findMany()
+    * ```
+    */
+  get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.backupHistory`: Exposes CRUD operations for the **BackupHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BackupHistories
+    * const backupHistories = await prisma.backupHistory.findMany()
+    * ```
+    */
+  get backupHistory(): Prisma.BackupHistoryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -853,7 +883,9 @@ export namespace Prisma {
     ChatMessage: 'ChatMessage',
     MessageAttachment: 'MessageAttachment',
     Source: 'Source',
-    SourceChunk: 'SourceChunk'
+    SourceChunk: 'SourceChunk',
+    AuditLog: 'AuditLog',
+    BackupHistory: 'BackupHistory'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -869,7 +901,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "notification" | "feedback" | "roleChangeAudit" | "passwordResetCode" | "purchasingLookup" | "supplierTypeAssignment" | "purchaseRequestRecord" | "purchaseOrderRecord" | "supplierOrderAcknowledgementRecord" | "supplierDeliveryRecordStore" | "supplierGrnRecordStore" | "chatSession" | "chatMessage" | "messageAttachment" | "source" | "sourceChunk"
+      modelProps: "user" | "notification" | "feedback" | "roleChangeAudit" | "passwordResetCode" | "purchasingLookup" | "supplierTypeAssignment" | "purchaseRequestRecord" | "purchaseOrderRecord" | "supplierOrderAcknowledgementRecord" | "supplierDeliveryRecordStore" | "supplierGrnRecordStore" | "chatSession" | "chatMessage" | "messageAttachment" | "source" | "sourceChunk" | "auditLog" | "backupHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2131,6 +2163,154 @@ export namespace Prisma {
           }
         }
       }
+      AuditLog: {
+        payload: Prisma.$AuditLogPayload<ExtArgs>
+        fields: Prisma.AuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.AuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.AuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.AuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          update: {
+            args: Prisma.AuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuditLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.AuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditLog>
+          }
+          groupBy: {
+            args: Prisma.AuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      BackupHistory: {
+        payload: Prisma.$BackupHistoryPayload<ExtArgs>
+        fields: Prisma.BackupHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BackupHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BackupHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.BackupHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BackupHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.BackupHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.BackupHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.BackupHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BackupHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.BackupHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>
+          }
+          update: {
+            args: Prisma.BackupHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.BackupHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BackupHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BackupHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.BackupHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.BackupHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBackupHistory>
+          }
+          groupBy: {
+            args: Prisma.BackupHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BackupHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BackupHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<BackupHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2240,6 +2420,8 @@ export namespace Prisma {
     messageAttachment?: MessageAttachmentOmit
     source?: SourceOmit
     sourceChunk?: SourceChunkOmit
+    auditLog?: AuditLogOmit
+    backupHistory?: BackupHistoryOmit
   }
 
   /* Types for Logging */
@@ -21138,6 +21320,2242 @@ export namespace Prisma {
 
 
   /**
+   * Model AuditLog
+   */
+
+  export type AggregateAuditLog = {
+    _count: AuditLogCountAggregateOutputType | null
+    _avg: AuditLogAvgAggregateOutputType | null
+    _sum: AuditLogSumAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  export type AuditLogAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+  }
+
+  export type AuditLogSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+  }
+
+  export type AuditLogMinAggregateOutputType = {
+    id: number | null
+    action: string | null
+    entity: string | null
+    entityId: string | null
+    userId: number | null
+    userEmail: string | null
+    userName: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    status: string | null
+    errorMsg: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogMaxAggregateOutputType = {
+    id: number | null
+    action: string | null
+    entity: string | null
+    entityId: string | null
+    userId: number | null
+    userEmail: string | null
+    userName: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    status: string | null
+    errorMsg: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogCountAggregateOutputType = {
+    id: number
+    action: number
+    entity: number
+    entityId: number
+    userId: number
+    userEmail: number
+    userName: number
+    ipAddress: number
+    userAgent: number
+    changes: number
+    metadata: number
+    status: number
+    errorMsg: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuditLogAvgAggregateInputType = {
+    id?: true
+    userId?: true
+  }
+
+  export type AuditLogSumAggregateInputType = {
+    id?: true
+    userId?: true
+  }
+
+  export type AuditLogMinAggregateInputType = {
+    id?: true
+    action?: true
+    entity?: true
+    entityId?: true
+    userId?: true
+    userEmail?: true
+    userName?: true
+    ipAddress?: true
+    userAgent?: true
+    status?: true
+    errorMsg?: true
+    createdAt?: true
+  }
+
+  export type AuditLogMaxAggregateInputType = {
+    id?: true
+    action?: true
+    entity?: true
+    entityId?: true
+    userId?: true
+    userEmail?: true
+    userName?: true
+    ipAddress?: true
+    userAgent?: true
+    status?: true
+    errorMsg?: true
+    createdAt?: true
+  }
+
+  export type AuditLogCountAggregateInputType = {
+    id?: true
+    action?: true
+    entity?: true
+    entityId?: true
+    userId?: true
+    userEmail?: true
+    userName?: true
+    ipAddress?: true
+    userAgent?: true
+    changes?: true
+    metadata?: true
+    status?: true
+    errorMsg?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLog to aggregate.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuditLogs
+    **/
+    _count?: true | AuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AuditLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AuditLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type GetAuditLogAggregateType<T extends AuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditLog[P]>
+      : GetScalarType<T[P], AggregateAuditLog[P]>
+  }
+
+
+
+
+  export type AuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithAggregationInput | AuditLogOrderByWithAggregationInput[]
+    by: AuditLogScalarFieldEnum[] | AuditLogScalarFieldEnum
+    having?: AuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditLogCountAggregateInputType | true
+    _avg?: AuditLogAvgAggregateInputType
+    _sum?: AuditLogSumAggregateInputType
+    _min?: AuditLogMinAggregateInputType
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type AuditLogGroupByOutputType = {
+    id: number
+    action: string
+    entity: string
+    entityId: string | null
+    userId: number | null
+    userEmail: string | null
+    userName: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    changes: JsonValue | null
+    metadata: JsonValue | null
+    status: string
+    errorMsg: string | null
+    createdAt: Date
+    _count: AuditLogCountAggregateOutputType | null
+    _avg: AuditLogAvgAggregateOutputType | null
+    _sum: AuditLogSumAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  type GetAuditLogGroupByPayload<T extends AuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    entity?: boolean
+    entityId?: boolean
+    userId?: boolean
+    userEmail?: boolean
+    userName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    changes?: boolean
+    metadata?: boolean
+    status?: boolean
+    errorMsg?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    entity?: boolean
+    entityId?: boolean
+    userId?: boolean
+    userEmail?: boolean
+    userName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    changes?: boolean
+    metadata?: boolean
+    status?: boolean
+    errorMsg?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    entity?: boolean
+    entityId?: boolean
+    userId?: boolean
+    userEmail?: boolean
+    userName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    changes?: boolean
+    metadata?: boolean
+    status?: boolean
+    errorMsg?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectScalar = {
+    id?: boolean
+    action?: boolean
+    entity?: boolean
+    entityId?: boolean
+    userId?: boolean
+    userEmail?: boolean
+    userName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    changes?: boolean
+    metadata?: boolean
+    status?: boolean
+    errorMsg?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "entity" | "entityId" | "userId" | "userEmail" | "userName" | "ipAddress" | "userAgent" | "changes" | "metadata" | "status" | "errorMsg" | "createdAt", ExtArgs["result"]["auditLog"]>
+
+  export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      action: string
+      entity: string
+      entityId: string | null
+      userId: number | null
+      userEmail: string | null
+      userName: string | null
+      ipAddress: string | null
+      userAgent: string | null
+      changes: Prisma.JsonValue | null
+      metadata: Prisma.JsonValue | null
+      status: string
+      errorMsg: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["auditLog"]>
+    composites: {}
+  }
+
+  type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = $Result.GetResult<Prisma.$AuditLogPayload, S>
+
+  type AuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuditLogCountAggregateInputType | true
+    }
+
+  export interface AuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLog'], meta: { name: 'AuditLog' } }
+    /**
+     * Find zero or one AuditLog that matches the filter.
+     * @param {AuditLogFindUniqueArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditLogFindUniqueArgs>(args: SelectSubset<T, AuditLogFindUniqueArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuditLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuditLogFindUniqueOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditLogFindFirstArgs>(args?: SelectSubset<T, AuditLogFindFirstArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany()
+     * 
+     * // Get first 10 AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuditLogFindManyArgs>(args?: SelectSubset<T, AuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuditLog.
+     * @param {AuditLogCreateArgs} args - Arguments to create a AuditLog.
+     * @example
+     * // Create one AuditLog
+     * const AuditLog = await prisma.auditLog.create({
+     *   data: {
+     *     // ... data to create a AuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuditLogCreateArgs>(args: SelectSubset<T, AuditLogCreateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuditLogs.
+     * @param {AuditLogCreateManyArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuditLogCreateManyArgs>(args?: SelectSubset<T, AuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuditLogs and returns the data saved in the database.
+     * @param {AuditLogCreateManyAndReturnArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuditLog.
+     * @param {AuditLogDeleteArgs} args - Arguments to delete one AuditLog.
+     * @example
+     * // Delete one AuditLog
+     * const AuditLog = await prisma.auditLog.delete({
+     *   where: {
+     *     // ... filter to delete one AuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuditLogDeleteArgs>(args: SelectSubset<T, AuditLogDeleteArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuditLog.
+     * @param {AuditLogUpdateArgs} args - Arguments to update one AuditLog.
+     * @example
+     * // Update one AuditLog
+     * const auditLog = await prisma.auditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuditLogUpdateArgs>(args: SelectSubset<T, AuditLogUpdateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuditLogs.
+     * @param {AuditLogDeleteManyArgs} args - Arguments to filter AuditLogs to delete.
+     * @example
+     * // Delete a few AuditLogs
+     * const { count } = await prisma.auditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuditLogDeleteManyArgs>(args?: SelectSubset<T, AuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuditLogUpdateManyArgs>(args: SelectSubset<T, AuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs and returns the data updated in the database.
+     * @param {AuditLogUpdateManyAndReturnArgs} args - Arguments to update many AuditLogs.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AuditLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AuditLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuditLog.
+     * @param {AuditLogUpsertArgs} args - Arguments to update or create a AuditLog.
+     * @example
+     * // Update or create a AuditLog
+     * const auditLog = await prisma.auditLog.upsert({
+     *   create: {
+     *     // ... data to create a AuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditLogUpsertArgs>(args: SelectSubset<T, AuditLogUpsertArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogCountArgs} args - Arguments to filter AuditLogs to count.
+     * @example
+     * // Count the number of AuditLogs
+     * const count = await prisma.auditLog.count({
+     *   where: {
+     *     // ... the filter for the AuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditLogCountArgs>(
+      args?: Subset<T, AuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditLogAggregateArgs>(args: Subset<T, AuditLogAggregateArgs>): Prisma.PrismaPromise<GetAuditLogAggregateType<T>>
+
+    /**
+     * Group by AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: AuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditLog model
+   */
+  readonly fields: AuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditLog model
+   */
+  interface AuditLogFieldRefs {
+    readonly id: FieldRef<"AuditLog", 'Int'>
+    readonly action: FieldRef<"AuditLog", 'String'>
+    readonly entity: FieldRef<"AuditLog", 'String'>
+    readonly entityId: FieldRef<"AuditLog", 'String'>
+    readonly userId: FieldRef<"AuditLog", 'Int'>
+    readonly userEmail: FieldRef<"AuditLog", 'String'>
+    readonly userName: FieldRef<"AuditLog", 'String'>
+    readonly ipAddress: FieldRef<"AuditLog", 'String'>
+    readonly userAgent: FieldRef<"AuditLog", 'String'>
+    readonly changes: FieldRef<"AuditLog", 'Json'>
+    readonly metadata: FieldRef<"AuditLog", 'Json'>
+    readonly status: FieldRef<"AuditLog", 'String'>
+    readonly errorMsg: FieldRef<"AuditLog", 'String'>
+    readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuditLog findUnique
+   */
+  export type AuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findUniqueOrThrow
+   */
+  export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findFirst
+   */
+  export type AuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findFirstOrThrow
+   */
+  export type AuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findMany
+   */
+  export type AuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLogs to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog create
+   */
+  export type AuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AuditLog.
+     */
+    data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * AuditLog createMany
+   */
+  export type AuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog createManyAndReturn
+   */
+  export type AuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog update
+   */
+  export type AuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AuditLog.
+     */
+    data: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which AuditLog to update.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog updateMany
+   */
+  export type AuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog updateManyAndReturn
+   */
+  export type AuditLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog upsert
+   */
+  export type AuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AuditLog to update in case it exists.
+     */
+    where: AuditLogWhereUniqueInput
+    /**
+     * In case the AuditLog found by the `where` argument doesn't exist, create a new AuditLog with this data.
+     */
+    create: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+    /**
+     * In case the AuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditLog delete
+   */
+  export type AuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter which AuditLog to delete.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog deleteMany
+   */
+  export type AuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogs to delete
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog without action
+   */
+  export type AuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BackupHistory
+   */
+
+  export type AggregateBackupHistory = {
+    _count: BackupHistoryCountAggregateOutputType | null
+    _avg: BackupHistoryAvgAggregateOutputType | null
+    _sum: BackupHistorySumAggregateOutputType | null
+    _min: BackupHistoryMinAggregateOutputType | null
+    _max: BackupHistoryMaxAggregateOutputType | null
+  }
+
+  export type BackupHistoryAvgAggregateOutputType = {
+    id: number | null
+    fileSize: number | null
+  }
+
+  export type BackupHistorySumAggregateOutputType = {
+    id: number | null
+    fileSize: bigint | null
+  }
+
+  export type BackupHistoryMinAggregateOutputType = {
+    id: number | null
+    backupType: string | null
+    fileName: string | null
+    filePath: string | null
+    fileSize: bigint | null
+    status: string | null
+    startedAt: Date | null
+    completedAt: Date | null
+    errorMsg: string | null
+  }
+
+  export type BackupHistoryMaxAggregateOutputType = {
+    id: number | null
+    backupType: string | null
+    fileName: string | null
+    filePath: string | null
+    fileSize: bigint | null
+    status: string | null
+    startedAt: Date | null
+    completedAt: Date | null
+    errorMsg: string | null
+  }
+
+  export type BackupHistoryCountAggregateOutputType = {
+    id: number
+    backupType: number
+    fileName: number
+    filePath: number
+    fileSize: number
+    status: number
+    startedAt: number
+    completedAt: number
+    errorMsg: number
+    metadata: number
+    _all: number
+  }
+
+
+  export type BackupHistoryAvgAggregateInputType = {
+    id?: true
+    fileSize?: true
+  }
+
+  export type BackupHistorySumAggregateInputType = {
+    id?: true
+    fileSize?: true
+  }
+
+  export type BackupHistoryMinAggregateInputType = {
+    id?: true
+    backupType?: true
+    fileName?: true
+    filePath?: true
+    fileSize?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    errorMsg?: true
+  }
+
+  export type BackupHistoryMaxAggregateInputType = {
+    id?: true
+    backupType?: true
+    fileName?: true
+    filePath?: true
+    fileSize?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    errorMsg?: true
+  }
+
+  export type BackupHistoryCountAggregateInputType = {
+    id?: true
+    backupType?: true
+    fileName?: true
+    filePath?: true
+    fileSize?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    errorMsg?: true
+    metadata?: true
+    _all?: true
+  }
+
+  export type BackupHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BackupHistory to aggregate.
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupHistories to fetch.
+     */
+    orderBy?: BackupHistoryOrderByWithRelationInput | BackupHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BackupHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BackupHistories
+    **/
+    _count?: true | BackupHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BackupHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BackupHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BackupHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BackupHistoryMaxAggregateInputType
+  }
+
+  export type GetBackupHistoryAggregateType<T extends BackupHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateBackupHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBackupHistory[P]>
+      : GetScalarType<T[P], AggregateBackupHistory[P]>
+  }
+
+
+
+
+  export type BackupHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BackupHistoryWhereInput
+    orderBy?: BackupHistoryOrderByWithAggregationInput | BackupHistoryOrderByWithAggregationInput[]
+    by: BackupHistoryScalarFieldEnum[] | BackupHistoryScalarFieldEnum
+    having?: BackupHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BackupHistoryCountAggregateInputType | true
+    _avg?: BackupHistoryAvgAggregateInputType
+    _sum?: BackupHistorySumAggregateInputType
+    _min?: BackupHistoryMinAggregateInputType
+    _max?: BackupHistoryMaxAggregateInputType
+  }
+
+  export type BackupHistoryGroupByOutputType = {
+    id: number
+    backupType: string
+    fileName: string
+    filePath: string
+    fileSize: bigint | null
+    status: string
+    startedAt: Date
+    completedAt: Date | null
+    errorMsg: string | null
+    metadata: JsonValue | null
+    _count: BackupHistoryCountAggregateOutputType | null
+    _avg: BackupHistoryAvgAggregateOutputType | null
+    _sum: BackupHistorySumAggregateOutputType | null
+    _min: BackupHistoryMinAggregateOutputType | null
+    _max: BackupHistoryMaxAggregateOutputType | null
+  }
+
+  type GetBackupHistoryGroupByPayload<T extends BackupHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BackupHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BackupHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BackupHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], BackupHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BackupHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    backupType?: boolean
+    fileName?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    errorMsg?: boolean
+    metadata?: boolean
+  }, ExtArgs["result"]["backupHistory"]>
+
+  export type BackupHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    backupType?: boolean
+    fileName?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    errorMsg?: boolean
+    metadata?: boolean
+  }, ExtArgs["result"]["backupHistory"]>
+
+  export type BackupHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    backupType?: boolean
+    fileName?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    errorMsg?: boolean
+    metadata?: boolean
+  }, ExtArgs["result"]["backupHistory"]>
+
+  export type BackupHistorySelectScalar = {
+    id?: boolean
+    backupType?: boolean
+    fileName?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    errorMsg?: boolean
+    metadata?: boolean
+  }
+
+  export type BackupHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "backupType" | "fileName" | "filePath" | "fileSize" | "status" | "startedAt" | "completedAt" | "errorMsg" | "metadata", ExtArgs["result"]["backupHistory"]>
+
+  export type $BackupHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BackupHistory"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      backupType: string
+      fileName: string
+      filePath: string
+      fileSize: bigint | null
+      status: string
+      startedAt: Date
+      completedAt: Date | null
+      errorMsg: string | null
+      metadata: Prisma.JsonValue | null
+    }, ExtArgs["result"]["backupHistory"]>
+    composites: {}
+  }
+
+  type BackupHistoryGetPayload<S extends boolean | null | undefined | BackupHistoryDefaultArgs> = $Result.GetResult<Prisma.$BackupHistoryPayload, S>
+
+  type BackupHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BackupHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BackupHistoryCountAggregateInputType | true
+    }
+
+  export interface BackupHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BackupHistory'], meta: { name: 'BackupHistory' } }
+    /**
+     * Find zero or one BackupHistory that matches the filter.
+     * @param {BackupHistoryFindUniqueArgs} args - Arguments to find a BackupHistory
+     * @example
+     * // Get one BackupHistory
+     * const backupHistory = await prisma.backupHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BackupHistoryFindUniqueArgs>(args: SelectSubset<T, BackupHistoryFindUniqueArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BackupHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BackupHistoryFindUniqueOrThrowArgs} args - Arguments to find a BackupHistory
+     * @example
+     * // Get one BackupHistory
+     * const backupHistory = await prisma.backupHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BackupHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, BackupHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BackupHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryFindFirstArgs} args - Arguments to find a BackupHistory
+     * @example
+     * // Get one BackupHistory
+     * const backupHistory = await prisma.backupHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BackupHistoryFindFirstArgs>(args?: SelectSubset<T, BackupHistoryFindFirstArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BackupHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryFindFirstOrThrowArgs} args - Arguments to find a BackupHistory
+     * @example
+     * // Get one BackupHistory
+     * const backupHistory = await prisma.backupHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BackupHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, BackupHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BackupHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BackupHistories
+     * const backupHistories = await prisma.backupHistory.findMany()
+     * 
+     * // Get first 10 BackupHistories
+     * const backupHistories = await prisma.backupHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const backupHistoryWithIdOnly = await prisma.backupHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BackupHistoryFindManyArgs>(args?: SelectSubset<T, BackupHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BackupHistory.
+     * @param {BackupHistoryCreateArgs} args - Arguments to create a BackupHistory.
+     * @example
+     * // Create one BackupHistory
+     * const BackupHistory = await prisma.backupHistory.create({
+     *   data: {
+     *     // ... data to create a BackupHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends BackupHistoryCreateArgs>(args: SelectSubset<T, BackupHistoryCreateArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BackupHistories.
+     * @param {BackupHistoryCreateManyArgs} args - Arguments to create many BackupHistories.
+     * @example
+     * // Create many BackupHistories
+     * const backupHistory = await prisma.backupHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BackupHistoryCreateManyArgs>(args?: SelectSubset<T, BackupHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BackupHistories and returns the data saved in the database.
+     * @param {BackupHistoryCreateManyAndReturnArgs} args - Arguments to create many BackupHistories.
+     * @example
+     * // Create many BackupHistories
+     * const backupHistory = await prisma.backupHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BackupHistories and only return the `id`
+     * const backupHistoryWithIdOnly = await prisma.backupHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BackupHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, BackupHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BackupHistory.
+     * @param {BackupHistoryDeleteArgs} args - Arguments to delete one BackupHistory.
+     * @example
+     * // Delete one BackupHistory
+     * const BackupHistory = await prisma.backupHistory.delete({
+     *   where: {
+     *     // ... filter to delete one BackupHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BackupHistoryDeleteArgs>(args: SelectSubset<T, BackupHistoryDeleteArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BackupHistory.
+     * @param {BackupHistoryUpdateArgs} args - Arguments to update one BackupHistory.
+     * @example
+     * // Update one BackupHistory
+     * const backupHistory = await prisma.backupHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BackupHistoryUpdateArgs>(args: SelectSubset<T, BackupHistoryUpdateArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BackupHistories.
+     * @param {BackupHistoryDeleteManyArgs} args - Arguments to filter BackupHistories to delete.
+     * @example
+     * // Delete a few BackupHistories
+     * const { count } = await prisma.backupHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BackupHistoryDeleteManyArgs>(args?: SelectSubset<T, BackupHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BackupHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BackupHistories
+     * const backupHistory = await prisma.backupHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BackupHistoryUpdateManyArgs>(args: SelectSubset<T, BackupHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BackupHistories and returns the data updated in the database.
+     * @param {BackupHistoryUpdateManyAndReturnArgs} args - Arguments to update many BackupHistories.
+     * @example
+     * // Update many BackupHistories
+     * const backupHistory = await prisma.backupHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BackupHistories and only return the `id`
+     * const backupHistoryWithIdOnly = await prisma.backupHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BackupHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, BackupHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BackupHistory.
+     * @param {BackupHistoryUpsertArgs} args - Arguments to update or create a BackupHistory.
+     * @example
+     * // Update or create a BackupHistory
+     * const backupHistory = await prisma.backupHistory.upsert({
+     *   create: {
+     *     // ... data to create a BackupHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BackupHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BackupHistoryUpsertArgs>(args: SelectSubset<T, BackupHistoryUpsertArgs<ExtArgs>>): Prisma__BackupHistoryClient<$Result.GetResult<Prisma.$BackupHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BackupHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryCountArgs} args - Arguments to filter BackupHistories to count.
+     * @example
+     * // Count the number of BackupHistories
+     * const count = await prisma.backupHistory.count({
+     *   where: {
+     *     // ... the filter for the BackupHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends BackupHistoryCountArgs>(
+      args?: Subset<T, BackupHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BackupHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BackupHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BackupHistoryAggregateArgs>(args: Subset<T, BackupHistoryAggregateArgs>): Prisma.PrismaPromise<GetBackupHistoryAggregateType<T>>
+
+    /**
+     * Group by BackupHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BackupHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BackupHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: BackupHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BackupHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBackupHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BackupHistory model
+   */
+  readonly fields: BackupHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BackupHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BackupHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BackupHistory model
+   */
+  interface BackupHistoryFieldRefs {
+    readonly id: FieldRef<"BackupHistory", 'Int'>
+    readonly backupType: FieldRef<"BackupHistory", 'String'>
+    readonly fileName: FieldRef<"BackupHistory", 'String'>
+    readonly filePath: FieldRef<"BackupHistory", 'String'>
+    readonly fileSize: FieldRef<"BackupHistory", 'BigInt'>
+    readonly status: FieldRef<"BackupHistory", 'String'>
+    readonly startedAt: FieldRef<"BackupHistory", 'DateTime'>
+    readonly completedAt: FieldRef<"BackupHistory", 'DateTime'>
+    readonly errorMsg: FieldRef<"BackupHistory", 'String'>
+    readonly metadata: FieldRef<"BackupHistory", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BackupHistory findUnique
+   */
+  export type BackupHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupHistory to fetch.
+     */
+    where: BackupHistoryWhereUniqueInput
+  }
+
+  /**
+   * BackupHistory findUniqueOrThrow
+   */
+  export type BackupHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupHistory to fetch.
+     */
+    where: BackupHistoryWhereUniqueInput
+  }
+
+  /**
+   * BackupHistory findFirst
+   */
+  export type BackupHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupHistory to fetch.
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupHistories to fetch.
+     */
+    orderBy?: BackupHistoryOrderByWithRelationInput | BackupHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BackupHistories.
+     */
+    cursor?: BackupHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BackupHistories.
+     */
+    distinct?: BackupHistoryScalarFieldEnum | BackupHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * BackupHistory findFirstOrThrow
+   */
+  export type BackupHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupHistory to fetch.
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupHistories to fetch.
+     */
+    orderBy?: BackupHistoryOrderByWithRelationInput | BackupHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BackupHistories.
+     */
+    cursor?: BackupHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BackupHistories.
+     */
+    distinct?: BackupHistoryScalarFieldEnum | BackupHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * BackupHistory findMany
+   */
+  export type BackupHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupHistories to fetch.
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupHistories to fetch.
+     */
+    orderBy?: BackupHistoryOrderByWithRelationInput | BackupHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BackupHistories.
+     */
+    cursor?: BackupHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupHistories.
+     */
+    skip?: number
+    distinct?: BackupHistoryScalarFieldEnum | BackupHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * BackupHistory create
+   */
+  export type BackupHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * The data needed to create a BackupHistory.
+     */
+    data: XOR<BackupHistoryCreateInput, BackupHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * BackupHistory createMany
+   */
+  export type BackupHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BackupHistories.
+     */
+    data: BackupHistoryCreateManyInput | BackupHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BackupHistory createManyAndReturn
+   */
+  export type BackupHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many BackupHistories.
+     */
+    data: BackupHistoryCreateManyInput | BackupHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BackupHistory update
+   */
+  export type BackupHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * The data needed to update a BackupHistory.
+     */
+    data: XOR<BackupHistoryUpdateInput, BackupHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which BackupHistory to update.
+     */
+    where: BackupHistoryWhereUniqueInput
+  }
+
+  /**
+   * BackupHistory updateMany
+   */
+  export type BackupHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BackupHistories.
+     */
+    data: XOR<BackupHistoryUpdateManyMutationInput, BackupHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which BackupHistories to update
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * Limit how many BackupHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BackupHistory updateManyAndReturn
+   */
+  export type BackupHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update BackupHistories.
+     */
+    data: XOR<BackupHistoryUpdateManyMutationInput, BackupHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which BackupHistories to update
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * Limit how many BackupHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BackupHistory upsert
+   */
+  export type BackupHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * The filter to search for the BackupHistory to update in case it exists.
+     */
+    where: BackupHistoryWhereUniqueInput
+    /**
+     * In case the BackupHistory found by the `where` argument doesn't exist, create a new BackupHistory with this data.
+     */
+    create: XOR<BackupHistoryCreateInput, BackupHistoryUncheckedCreateInput>
+    /**
+     * In case the BackupHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BackupHistoryUpdateInput, BackupHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * BackupHistory delete
+   */
+  export type BackupHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+    /**
+     * Filter which BackupHistory to delete.
+     */
+    where: BackupHistoryWhereUniqueInput
+  }
+
+  /**
+   * BackupHistory deleteMany
+   */
+  export type BackupHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BackupHistories to delete
+     */
+    where?: BackupHistoryWhereInput
+    /**
+     * Limit how many BackupHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BackupHistory without action
+   */
+  export type BackupHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupHistory
+     */
+    select?: BackupHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupHistory
+     */
+    omit?: BackupHistoryOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -21360,6 +23778,42 @@ export namespace Prisma {
   export type SourceChunkScalarFieldEnum = (typeof SourceChunkScalarFieldEnum)[keyof typeof SourceChunkScalarFieldEnum]
 
 
+  export const AuditLogScalarFieldEnum: {
+    id: 'id',
+    action: 'action',
+    entity: 'entity',
+    entityId: 'entityId',
+    userId: 'userId',
+    userEmail: 'userEmail',
+    userName: 'userName',
+    ipAddress: 'ipAddress',
+    userAgent: 'userAgent',
+    changes: 'changes',
+    metadata: 'metadata',
+    status: 'status',
+    errorMsg: 'errorMsg',
+    createdAt: 'createdAt'
+  };
+
+  export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const BackupHistoryScalarFieldEnum: {
+    id: 'id',
+    backupType: 'backupType',
+    fileName: 'fileName',
+    filePath: 'filePath',
+    fileSize: 'fileSize',
+    status: 'status',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    errorMsg: 'errorMsg',
+    metadata: 'metadata'
+  };
+
+  export type BackupHistoryScalarFieldEnum = (typeof BackupHistoryScalarFieldEnum)[keyof typeof BackupHistoryScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -21487,6 +23941,20 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt'
+   */
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt[]'
+   */
+  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
 
 
@@ -22591,6 +25059,184 @@ export namespace Prisma {
     sourceId?: StringWithAggregatesFilter<"SourceChunk"> | string
     content?: StringWithAggregatesFilter<"SourceChunk"> | string
     chunkIndex?: IntWithAggregatesFilter<"SourceChunk"> | number
+  }
+
+  export type AuditLogWhereInput = {
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    id?: IntFilter<"AuditLog"> | number
+    action?: StringFilter<"AuditLog"> | string
+    entity?: StringFilter<"AuditLog"> | string
+    entityId?: StringNullableFilter<"AuditLog"> | string | null
+    userId?: IntNullableFilter<"AuditLog"> | number | null
+    userEmail?: StringNullableFilter<"AuditLog"> | string | null
+    userName?: StringNullableFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableFilter<"AuditLog"> | string | null
+    changes?: JsonNullableFilter<"AuditLog">
+    metadata?: JsonNullableFilter<"AuditLog">
+    status?: StringFilter<"AuditLog"> | string
+    errorMsg?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }
+
+  export type AuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    userEmail?: SortOrderInput | SortOrder
+    userName?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    changes?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    status?: SortOrder
+    errorMsg?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    action?: StringFilter<"AuditLog"> | string
+    entity?: StringFilter<"AuditLog"> | string
+    entityId?: StringNullableFilter<"AuditLog"> | string | null
+    userId?: IntNullableFilter<"AuditLog"> | number | null
+    userEmail?: StringNullableFilter<"AuditLog"> | string | null
+    userName?: StringNullableFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableFilter<"AuditLog"> | string | null
+    changes?: JsonNullableFilter<"AuditLog">
+    metadata?: JsonNullableFilter<"AuditLog">
+    status?: StringFilter<"AuditLog"> | string
+    errorMsg?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }, "id">
+
+  export type AuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    userEmail?: SortOrderInput | SortOrder
+    userName?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    changes?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    status?: SortOrder
+    errorMsg?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AuditLogCountOrderByAggregateInput
+    _avg?: AuditLogAvgOrderByAggregateInput
+    _max?: AuditLogMaxOrderByAggregateInput
+    _min?: AuditLogMinOrderByAggregateInput
+    _sum?: AuditLogSumOrderByAggregateInput
+  }
+
+  export type AuditLogScalarWhereWithAggregatesInput = {
+    AND?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    OR?: AuditLogScalarWhereWithAggregatesInput[]
+    NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"AuditLog"> | number
+    action?: StringWithAggregatesFilter<"AuditLog"> | string
+    entity?: StringWithAggregatesFilter<"AuditLog"> | string
+    entityId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    userId?: IntNullableWithAggregatesFilter<"AuditLog"> | number | null
+    userEmail?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    userName?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    changes?: JsonNullableWithAggregatesFilter<"AuditLog">
+    metadata?: JsonNullableWithAggregatesFilter<"AuditLog">
+    status?: StringWithAggregatesFilter<"AuditLog"> | string
+    errorMsg?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
+  export type BackupHistoryWhereInput = {
+    AND?: BackupHistoryWhereInput | BackupHistoryWhereInput[]
+    OR?: BackupHistoryWhereInput[]
+    NOT?: BackupHistoryWhereInput | BackupHistoryWhereInput[]
+    id?: IntFilter<"BackupHistory"> | number
+    backupType?: StringFilter<"BackupHistory"> | string
+    fileName?: StringFilter<"BackupHistory"> | string
+    filePath?: StringFilter<"BackupHistory"> | string
+    fileSize?: BigIntNullableFilter<"BackupHistory"> | bigint | number | null
+    status?: StringFilter<"BackupHistory"> | string
+    startedAt?: DateTimeFilter<"BackupHistory"> | Date | string
+    completedAt?: DateTimeNullableFilter<"BackupHistory"> | Date | string | null
+    errorMsg?: StringNullableFilter<"BackupHistory"> | string | null
+    metadata?: JsonNullableFilter<"BackupHistory">
+  }
+
+  export type BackupHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    backupType?: SortOrder
+    fileName?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrderInput | SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    errorMsg?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+  }
+
+  export type BackupHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: BackupHistoryWhereInput | BackupHistoryWhereInput[]
+    OR?: BackupHistoryWhereInput[]
+    NOT?: BackupHistoryWhereInput | BackupHistoryWhereInput[]
+    backupType?: StringFilter<"BackupHistory"> | string
+    fileName?: StringFilter<"BackupHistory"> | string
+    filePath?: StringFilter<"BackupHistory"> | string
+    fileSize?: BigIntNullableFilter<"BackupHistory"> | bigint | number | null
+    status?: StringFilter<"BackupHistory"> | string
+    startedAt?: DateTimeFilter<"BackupHistory"> | Date | string
+    completedAt?: DateTimeNullableFilter<"BackupHistory"> | Date | string | null
+    errorMsg?: StringNullableFilter<"BackupHistory"> | string | null
+    metadata?: JsonNullableFilter<"BackupHistory">
+  }, "id">
+
+  export type BackupHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    backupType?: SortOrder
+    fileName?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrderInput | SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    errorMsg?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    _count?: BackupHistoryCountOrderByAggregateInput
+    _avg?: BackupHistoryAvgOrderByAggregateInput
+    _max?: BackupHistoryMaxOrderByAggregateInput
+    _min?: BackupHistoryMinOrderByAggregateInput
+    _sum?: BackupHistorySumOrderByAggregateInput
+  }
+
+  export type BackupHistoryScalarWhereWithAggregatesInput = {
+    AND?: BackupHistoryScalarWhereWithAggregatesInput | BackupHistoryScalarWhereWithAggregatesInput[]
+    OR?: BackupHistoryScalarWhereWithAggregatesInput[]
+    NOT?: BackupHistoryScalarWhereWithAggregatesInput | BackupHistoryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"BackupHistory"> | number
+    backupType?: StringWithAggregatesFilter<"BackupHistory"> | string
+    fileName?: StringWithAggregatesFilter<"BackupHistory"> | string
+    filePath?: StringWithAggregatesFilter<"BackupHistory"> | string
+    fileSize?: BigIntNullableWithAggregatesFilter<"BackupHistory"> | bigint | number | null
+    status?: StringWithAggregatesFilter<"BackupHistory"> | string
+    startedAt?: DateTimeWithAggregatesFilter<"BackupHistory"> | Date | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"BackupHistory"> | Date | string | null
+    errorMsg?: StringNullableWithAggregatesFilter<"BackupHistory"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"BackupHistory">
   }
 
   export type UserCreateInput = {
@@ -23708,6 +26354,210 @@ export namespace Prisma {
     chunkIndex?: IntFieldUpdateOperationsInput | number
   }
 
+  export type AuditLogCreateInput = {
+    action: string
+    entity: string
+    entityId?: string | null
+    userId?: number | null
+    userEmail?: string | null
+    userName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    errorMsg?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUncheckedCreateInput = {
+    id?: number
+    action: string
+    entity: string
+    entityId?: string | null
+    userId?: number | null
+    userEmail?: string | null
+    userName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    errorMsg?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateInput = {
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    userEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    userName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    userEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    userName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogCreateManyInput = {
+    id?: number
+    action: string
+    entity: string
+    entityId?: string | null
+    userId?: number | null
+    userEmail?: string | null
+    userName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    errorMsg?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateManyMutationInput = {
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    userEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    userName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    userEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    userName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BackupHistoryCreateInput = {
+    backupType: string
+    fileName: string
+    filePath: string
+    fileSize?: bigint | number | null
+    status: string
+    startedAt: Date | string
+    completedAt?: Date | string | null
+    errorMsg?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type BackupHistoryUncheckedCreateInput = {
+    id?: number
+    backupType: string
+    fileName: string
+    filePath: string
+    fileSize?: bigint | number | null
+    status: string
+    startedAt: Date | string
+    completedAt?: Date | string | null
+    errorMsg?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type BackupHistoryUpdateInput = {
+    backupType?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type BackupHistoryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    backupType?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type BackupHistoryCreateManyInput = {
+    id?: number
+    backupType: string
+    fileName: string
+    filePath: string
+    fileSize?: bigint | number | null
+    status: string
+    startedAt: Date | string
+    completedAt?: Date | string | null
+    errorMsg?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type BackupHistoryUpdateManyMutationInput = {
+    backupType?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type BackupHistoryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    backupType?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    errorMsg?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -24691,6 +27541,164 @@ export namespace Prisma {
     chunkIndex?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type AuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrder
+    userId?: SortOrder
+    userEmail?: SortOrder
+    userName?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    changes?: SortOrder
+    metadata?: SortOrder
+    status?: SortOrder
+    errorMsg?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type AuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrder
+    userId?: SortOrder
+    userEmail?: SortOrder
+    userName?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    status?: SortOrder
+    errorMsg?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrder
+    userId?: SortOrder
+    userEmail?: SortOrder
+    userName?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    status?: SortOrder
+    errorMsg?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type BigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type BackupHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    backupType?: SortOrder
+    fileName?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    errorMsg?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type BackupHistoryAvgOrderByAggregateInput = {
+    id?: SortOrder
+    fileSize?: SortOrder
+  }
+
+  export type BackupHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    backupType?: SortOrder
+    fileName?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    errorMsg?: SortOrder
+  }
+
+  export type BackupHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    backupType?: SortOrder
+    fileName?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    errorMsg?: SortOrder
+  }
+
+  export type BackupHistorySumOrderByAggregateInput = {
+    id?: SortOrder
+    fileSize?: SortOrder
+  }
+
+  export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
+  }
+
   export type RoleChangeAuditCreateNestedManyWithoutTargetInput = {
     create?: XOR<RoleChangeAuditCreateWithoutTargetInput, RoleChangeAuditUncheckedCreateWithoutTargetInput> | RoleChangeAuditCreateWithoutTargetInput[] | RoleChangeAuditUncheckedCreateWithoutTargetInput[]
     connectOrCreate?: RoleChangeAuditCreateOrConnectWithoutTargetInput | RoleChangeAuditCreateOrConnectWithoutTargetInput[]
@@ -25341,6 +28349,22 @@ export namespace Prisma {
     update?: XOR<XOR<SourceUpdateToOneWithWhereWithoutChunksInput, SourceUpdateWithoutChunksInput>, SourceUncheckedUpdateWithoutChunksInput>
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableBigIntFieldUpdateOperationsInput = {
+    set?: bigint | number | null
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -25576,6 +28600,60 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type NestedBigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
   export type RoleChangeAuditCreateWithoutTargetInput = {

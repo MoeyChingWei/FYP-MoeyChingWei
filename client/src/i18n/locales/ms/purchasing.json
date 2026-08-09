@@ -46,6 +46,7 @@
     "approval": {
       "title": "Kelulusan Permintaan Pembelian",
       "hint": "Luluskan permintaan pembelian",
+      "selfApproval": "Kelulusan Sendiri",
       "table": {
         "prNo": "No PR",
         "status": "Status",

@@ -1,0 +1,72 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 24px;
+}
+
+.backButton {
+  padding: 0;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.title {
+  margin: 2px 0 2px !important;
+  color: #0f172a;
+}
+
+.metricCard,
+.tableCard {
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+.metricCard :global(.ant-statistic-title) {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.metricCard :global(.ant-statistic-content) {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.warningMetric :global(.ant-statistic-content) {
+  color: #d97706;
+}
+
+.tableToolbar {
+  margin-bottom: 16px;
+}
+
+.search {
+  width: min(460px, 100%);
+}
+
+.itemCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.empty {
+  padding: 54px 0;
+}
+
+@media (max-width: 640px) {
+  .page {
+    gap: 14px;
+  }
+
+  .tableToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search {
+    width: 100%;
+  }
+}

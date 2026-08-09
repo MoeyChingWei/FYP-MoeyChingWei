@@ -7,7 +7,8 @@
     "trackingItem": "物品跟踪",
     "chatbot": "AI助手",
     "aiAgents": "专业AI顾问",
-    "settings": "设置"
+    "settings": "设置",
+    "otherModules": "其他模块"
   },
   "breadcrumb": {
     "home": "首页",

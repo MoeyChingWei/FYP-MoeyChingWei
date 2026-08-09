@@ -1,0 +1,96 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.headingRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.headingIcon {
+  color: #2563eb;
+  font-size: 21px;
+}
+
+.title {
+  margin: 0 !important;
+}
+
+.headerActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.tableSurface {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.loading,
+.empty {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+}
+
+.empty {
+  padding: 48px 0;
+}
+
+.table :global(.ant-table) {
+  background: transparent;
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.clickableRow:hover > td {
+  background: #f8fbff !important;
+}
+
+.description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.email {
+  color: #6b7280;
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .headerActions {
+    align-self: flex-start;
+  }
+}

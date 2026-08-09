@@ -226,11 +226,12 @@ class BaseAgent {
   /**
    * 加载会话历史（带token限制和智能裁剪）
    */
-  async loadSessionHistory(sessionId, maxMessages = 20, maxTokens = 3000) {
+  async loadSessionHistory(sessionId, maxMessages = 20, maxTokens = 3000, includeAttachments = false) {
     const messages = await prisma.chatMessage.findMany({
       where: { sessionId },
       orderBy: { createdAt: 'desc' },
       take: maxMessages, // 最多取20条最新的
+      ...(includeAttachments ? { include: { attachments: true } } : {}),
     });
 
     // 反转顺序（从旧到新）
@@ -253,10 +254,16 @@ class BaseAgent {
         break;
       }
 
-      result.push({
+      const historyMessage = {
         role: msg.role,
         content: msg.content,
-      });
+      };
+
+      if (includeAttachments && msg.attachments?.length) {
+        historyMessage.attachments = msg.attachments;
+      }
+
+      result.push(historyMessage);
 
       totalTokens += tokens;
     }
@@ -308,7 +315,11 @@ class BaseAgent {
    */
   async getUserSessions(userId, limit = 100) {
     return await prisma.chatSession.findMany({
-      where: { userId },
+      // Empty sessions are transient UI state and should never appear in history.
+      where: {
+        userId,
+        messages: { some: {} },
+      },
       orderBy: { updatedAt: 'desc' },
       take: limit,
       include: {

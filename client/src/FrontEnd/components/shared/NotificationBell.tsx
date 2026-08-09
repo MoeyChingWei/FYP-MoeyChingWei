@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Badge, Button, Dropdown, List, Typography, Empty, Spin } from "antd";
-import { BellOutlined } from "@ant-design/icons";
+import {
+  BellOutlined,
+  CheckCircleOutlined,
+  FileTextOutlined,
+  MessageOutlined,
+  TruckOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getSessionUser } from "../../shared/auth/session";
 import { fetchNotifications, markNotificationRead, type NotificationRow } from "../../shared/api/notifications";
@@ -8,6 +14,43 @@ import { UserRole } from "../../shared/types/roles";
 import styles from "./NotificationBell.module.css";
 
 const { Text } = Typography;
+
+function formatNotificationTime(createdAt: string): string {
+  const date = new Date(createdAt);
+  const elapsed = Date.now() - date.getTime();
+  const minutes = Math.floor(elapsed / 60000);
+
+  if (minutes >= 0 && minutes < 1) return "Just now";
+  if (minutes >= 1 && minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function getNotificationPresentation(notification: NotificationRow): {
+  icon: React.ReactNode;
+  tone: "success" | "info" | "warning" | "feedback";
+  label: string;
+} {
+  if (notification.refType === "feedback" || notification.type === "FEEDBACK") {
+    return { icon: <MessageOutlined />, tone: "feedback", label: "Feedback" };
+  }
+
+  if (notification.refType === "delivery" || notification.refType === "grn") {
+    return { icon: <TruckOutlined />, tone: "warning", label: "Delivery" };
+  }
+
+  if (notification.type.includes("APPROVAL")) {
+    return { icon: <CheckCircleOutlined />, tone: "success", label: "Approval" };
+  }
+
+  return { icon: <FileTextOutlined />, tone: "info", label: "Purchasing" };
+}
 
 export default function NotificationBell(): React.ReactElement {
   const navigate = useNavigate();
@@ -75,7 +118,12 @@ export default function NotificationBell(): React.ReactElement {
   const dropdownContent = (
     <div className={styles.dropdownContent}>
       <div className={styles.dropdownHeader}>
-        <Text strong>Notifications</Text>
+        <div>
+          <Text strong className={styles.headerTitle}>Notifications</Text>
+          <Text className={styles.headerSubtitle}>
+            {unreadCount === 1 ? "1 unread update" : `${unreadCount} unread updates`}
+          </Text>
+        </div>
         <Button type="link" size="small" onClick={() => { setDropdownOpen(false); navigate("/notifications"); }}>
           View All
         </Button>
@@ -92,24 +140,39 @@ export default function NotificationBell(): React.ReactElement {
         <List
           className={styles.notificationList}
           dataSource={unreadNotifications.slice(0, 5)}
-          renderItem={(n) => (
-            <List.Item
-              className={styles.notificationItem}
-              onClick={() => void handleNotificationClick(n)}
-            >
-              <div className={styles.notificationContent}>
-                <Text strong className={styles.notificationTitle}>
-                  {n.title}
-                </Text>
-                <Text type="secondary" className={styles.notificationMessage}>
-                  {n.message}
-                </Text>
-                <Text type="secondary" className={styles.notificationTime}>
-                  {new Date(n.createdAt).toLocaleString()}
-                </Text>
-              </div>
-            </List.Item>
-          )}
+          renderItem={(n) => {
+            const presentation = getNotificationPresentation(n);
+
+            return (
+              <List.Item className={styles.notificationItem}>
+                <button
+                  type="button"
+                  className={styles.notificationAction}
+                  onClick={() => void handleNotificationClick(n)}
+                  aria-label={`${n.title}. ${n.message}`}
+                >
+                  <span className={`${styles.notificationIcon} ${styles[presentation.tone]}`}>
+                    {presentation.icon}
+                  </span>
+                  <span className={styles.notificationContent}>
+                    <span className={styles.notificationMeta}>
+                      <span className={styles.notificationLabel}>{presentation.label}</span>
+                      <time className={styles.notificationTime} dateTime={n.createdAt} title={new Date(n.createdAt).toLocaleString()}>
+                        {formatNotificationTime(n.createdAt)}
+                      </time>
+                    </span>
+                    <Text strong className={styles.notificationTitle}>
+                      {n.title}
+                    </Text>
+                    <Text type="secondary" className={styles.notificationMessage}>
+                      {n.message}
+                    </Text>
+                  </span>
+                  <span className={styles.unreadDot} aria-label="Unread" />
+                </button>
+              </List.Item>
+            );
+          }}
         />
       )}
     </div>

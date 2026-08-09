@@ -117,10 +117,10 @@ export default function ReviewSubmodule(): React.ReactElement {
       }
 
       return (
-        request.requestBy.trim().toLowerCase() ===
+        request.requestBy?.trim().toLowerCase() ===
           (sessionUser.name?.trim().toLowerCase() || "") ||
-        request.requestBy.trim().toLowerCase() ===
-          sessionUser.email.trim().toLowerCase()
+        request.requestBy?.trim().toLowerCase() ===
+          sessionUser.email?.trim().toLowerCase()
       );
     });
   }, [isAdmin, requests, sessionUser]);
@@ -133,7 +133,7 @@ export default function ReviewSubmodule(): React.ReactElement {
       const matchesDate =
         !selectedDate || request.requestDate === selectedDate;
 
-      const itemText = request.lineItems
+      const itemText = (request.lineItems || [])
         .map((item) =>
           [
             item.itemName,
@@ -252,8 +252,10 @@ export default function ReviewSubmodule(): React.ReactElement {
       title: t('purchaseRequest.review.table.itemSummary'),
       key: "itemSummary",
       render: (_: unknown, request: PurchaseRequestDraft) => {
-        const firstItem = request.lineItems[0];
-        const extraCount = Math.max(request.lineItems.length - 1, 0);
+        // Older persisted requests may not contain lineItems yet.
+        const lineItems = Array.isArray(request.lineItems) ? request.lineItems : [];
+        const firstItem = lineItems[0];
+        const extraCount = Math.max(lineItems.length - 1, 0);
 
         return (
           <div className={styles.prCell}>
@@ -285,14 +287,15 @@ export default function ReviewSubmodule(): React.ReactElement {
       key: "itemCount",
       align: "center" as const,
       render: (_: unknown, request: PurchaseRequestDraft) =>
-        request.lineItems.length,
+        (Array.isArray(request.lineItems) ? request.lineItems : []).length,
     },
     {
       title: t('purchaseRequest.review.table.total'),
       key: "total",
       align: "right" as const,
       render: (_: unknown, request: PurchaseRequestDraft) => {
-        const total = request.lineItems.reduce(
+        const lineItems = Array.isArray(request.lineItems) ? request.lineItems : [];
+        const total = lineItems.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
           0,
         );

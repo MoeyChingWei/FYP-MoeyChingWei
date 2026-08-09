@@ -159,5 +159,7 @@ export function createPurchaseOrderFromRequest(
     currency: request.currency,
     status: "DRAFT",
     lineItems: request.lineItems.map((item) => ({ ...item })),
+    requesterRole: request.requesterRole,
+    isSelfApproved: request.isSelfApproved,
   };
 }

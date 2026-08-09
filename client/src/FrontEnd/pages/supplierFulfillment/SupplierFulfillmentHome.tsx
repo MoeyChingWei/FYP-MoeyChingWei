@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   BellOutlined,
   CheckCircleOutlined,
+  DatabaseOutlined,
   DeleteOutlined,
   InboxOutlined,
   ShopOutlined,
@@ -90,6 +91,12 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
         hint: t("modules.grn.hint"),
         icon: <InboxOutlined style={{ fontSize: 28 }} />,
         route: "/supplier-overview/grn-status",
+      },
+      {
+        title: t("modules.inventory.title", { defaultValue: "Inventory" }),
+        hint: t("modules.inventory.hint", { defaultValue: "Manage your available stock and reorder levels" }),
+        icon: <DatabaseOutlined style={{ fontSize: 28 }} />,
+        route: "/supplier-overview/inventory",
       },
     ],
     [t],

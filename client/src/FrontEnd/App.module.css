@@ -11,3 +11,15 @@
   flex: 1;
   min-height: 0;
 }
+
+.moduleSwitcherButton {
+  width: 40px;
+  height: 40px;
+  color: #334155;
+  font-size: 20px;
+}
+
+.moduleSwitcherButton:hover {
+  color: #2563eb !important;
+  background: #eff6ff !important;
+}

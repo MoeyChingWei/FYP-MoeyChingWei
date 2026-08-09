@@ -473,6 +473,7 @@ export default function CreationSubmodule(): React.ReactElement {
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,
+      requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? UserRole.EMPLOYEE,
     };
     if (editingDraft) {
       replacePurchaseRequestDraft(editingDraft.localId, draft);

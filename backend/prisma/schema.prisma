@@ -269,6 +269,46 @@ model SourceChunk {
   @@map("source_chunks")
 }
 
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String   // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, EXPORT, etc.
+  entity      String   // User, PurchaseRequest, PurchaseOrder, File, etc.
+  entityId    String?  // ID of the affected entity
+  userId      Int?     // Who performed the action
+  userEmail   String?  // Email of the actor (for cases where user is deleted)
+  userName    String?  // Name of the actor
+  ipAddress   String?  // IP address of the request
+  userAgent   String?  // Browser/client info
+  changes     Json?    // What changed: {before: {...}, after: {...}}
+  metadata    Json?    // Additional context
+  status      String   @default("SUCCESS") // SUCCESS, FAILED
+  errorMsg    String?  // If failed, why?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model BackupHistory {
+  id          Int      @id @default(autoincrement())
+  backupType  String   // DATABASE, FILES
+  fileName    String
+  filePath    String
+  fileSize    BigInt?  // bytes
+  status      String   // SUCCESS, FAILED
+  startedAt   DateTime
+  completedAt DateTime?
+  errorMsg    String?  @db.Text
+  metadata    Json?    // Additional info like row counts, compression ratio, etc.
+
+  @@index([backupType, status])
+  @@index([startedAt])
+  @@map("backup_history")
+}
+
 generator client {
   provider = "prisma-client-js"
   output   = "./generated/prisma/client"
