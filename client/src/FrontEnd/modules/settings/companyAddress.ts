@@ -1,4 +1,5 @@
 const COMPANY_ADDRESS_KEY = "erp_company_address_v1";
+const SUPPLIER_COMPANY_ADDRESS_KEY_PREFIX = "erp_supplier_company_address_v1";
 
 export const DEFAULT_COMPANY_ADDRESS =
   "Jalan Universiti, Bandar Barat, 31900 Kampar, Perak";
@@ -11,4 +12,17 @@ export function getCompanyAddress(): string {
 export function saveCompanyAddress(address: string): void {
   localStorage.setItem(COMPANY_ADDRESS_KEY, address.trim() || DEFAULT_COMPANY_ADDRESS);
   window.dispatchEvent(new Event("erp-company-address"));
+}
+
+function supplierCompanyAddressKey(supplierId: number): string {
+  return `${SUPPLIER_COMPANY_ADDRESS_KEY_PREFIX}_${supplierId}`;
+}
+
+export function getSupplierCompanyAddress(supplierId: number): string {
+  return localStorage.getItem(supplierCompanyAddressKey(supplierId))?.trim() || "";
+}
+
+export function saveSupplierCompanyAddress(supplierId: number, address: string): void {
+  localStorage.setItem(supplierCompanyAddressKey(supplierId), address.trim());
+  window.dispatchEvent(new Event("erp-supplier-company-address"));
 }

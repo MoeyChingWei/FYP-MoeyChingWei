@@ -3,6 +3,7 @@
   "sections": {
     "categorySelection": "Kategori Pemilihan",
     "companyAddress": "Alamat Syarikat",
+    "supplierCompanyAddress": "Alamat Syarikat Pembekal",
     "feedback": "Maklum Balas",
     "aiAssistant": "Pembantu AI"
   },
@@ -13,9 +14,13 @@
   "description": "Urus keutamaan dan konfigurasi sistem anda",
   "companyAddress": {
     "title": "Alamat Syarikat",
+    "supplierTitle": "Alamat Syarikat Pembekal",
     "label": "Alamat penghantaran / pengakuan pesanan",
+    "supplierLabel": "Alamat syarikat pembekal anda",
     "description": "Alamat ini digunakan apabila sistem menjana butiran pengakuan pesanan untuk pembekal.",
+    "supplierDescription": "Alamat ini disimpan untuk akaun pembekal anda sahaja.",
     "placeholder": "Masukkan alamat syarikat",
+    "supplierPlaceholder": "Masukkan alamat syarikat pembekal anda",
     "saveButton": "Simpan Alamat"
   },
   "feedback": {

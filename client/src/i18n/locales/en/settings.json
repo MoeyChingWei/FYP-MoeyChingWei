@@ -3,6 +3,7 @@
   "sections": {
     "categorySelection": "Category of Selection",
     "companyAddress": "Company Address",
+    "supplierCompanyAddress": "Supplier Company Address",
     "feedback": "Feedback",
     "aiAssistant": "AI Assistant"
   },
@@ -13,9 +14,13 @@
   "description": "Manage your system preferences and configurations",
   "companyAddress": {
     "title": "Company Address",
+    "supplierTitle": "Supplier Company Address",
     "label": "Delivery / order acknowledgement address",
+    "supplierLabel": "Your supplier company address",
     "description": "This address is used when the system generates supplier-facing order acknowledgement details.",
+    "supplierDescription": "This address is saved only for your supplier account.",
     "placeholder": "Enter company address",
+    "supplierPlaceholder": "Enter your supplier company address",
     "saveButton": "Save Address"
   },
   "feedback": {

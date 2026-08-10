@@ -3,6 +3,7 @@
   "sections": {
     "categorySelection": "选择类别",
     "companyAddress": "公司地址",
+    "supplierCompanyAddress": "供应商公司地址",
     "feedback": "反馈",
     "aiAssistant": "AI助手"
   },
@@ -13,9 +14,13 @@
   "description": "管理您的系统偏好和配置",
   "companyAddress": {
     "title": "公司地址",
+    "supplierTitle": "供应商公司地址",
     "label": "交付/订单确认地址",
+    "supplierLabel": "您的供应商公司地址",
     "description": "当系统生成面向供应商的订单确认详细信息时，将使用此地址。",
+    "supplierDescription": "此地址仅保存于您的供应商帐户。",
     "placeholder": "输入公司地址",
+    "supplierPlaceholder": "输入您的供应商公司地址",
     "saveButton": "保存地址"
   },
   "feedback": {

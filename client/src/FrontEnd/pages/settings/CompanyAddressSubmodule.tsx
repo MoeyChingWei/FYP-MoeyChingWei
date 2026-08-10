@@ -6,8 +6,12 @@ import { useTranslation } from "react-i18next";
 
 import {
   getCompanyAddress,
+  getSupplierCompanyAddress,
   saveCompanyAddress,
+  saveSupplierCompanyAddress,
 } from "../../modules/settings/companyAddress";
+import { getSessionUser } from "../../shared/auth/session";
+import { UserRole } from "../../shared/types/roles";
 
 import styles from "./Settings.module.css";
 
@@ -18,16 +22,41 @@ export default function CompanyAddressSubmodule(): React.ReactElement {
   const { t: tCommon } = useTranslation('common');
   const { t: tMsg } = useTranslation('messages');
   const navigate = useNavigate();
+  const sessionUser = getSessionUser();
+  const isSupplier = sessionUser?.role === UserRole.SUPPLIER;
+  const supplierId = sessionUser?.id;
   const [address, setAddress] = useState("");
 
   useEffect(() => {
-    setAddress(getCompanyAddress());
-  }, []);
+    setAddress(isSupplier && supplierId ? getSupplierCompanyAddress(supplierId) : getCompanyAddress());
+  }, [isSupplier, supplierId]);
 
   const onSave = (): void => {
-    saveCompanyAddress(address);
+    const normalizedAddress = address.trim();
+    if (!normalizedAddress) {
+      message.error("Enter a company address");
+      return;
+    }
+    if (isSupplier && supplierId) {
+      saveSupplierCompanyAddress(supplierId, normalizedAddress);
+    } else {
+      saveCompanyAddress(normalizedAddress);
+    }
     message.success(tMsg('companyAddressUpdated'));
   };
+
+  const title = isSupplier
+    ? tSettings('companyAddress.supplierTitle')
+    : tSettings('companyAddress.title');
+  const label = isSupplier
+    ? tSettings('companyAddress.supplierLabel')
+    : tSettings('companyAddress.label');
+  const description = isSupplier
+    ? tSettings('companyAddress.supplierDescription')
+    : tSettings('companyAddress.description');
+  const placeholder = isSupplier
+    ? tSettings('companyAddress.supplierPlaceholder')
+    : tSettings('companyAddress.placeholder');
 
   return (
     <Flex vertical gap={20} className={styles.detailWrap}>
@@ -40,7 +69,7 @@ export default function CompanyAddressSubmodule(): React.ReactElement {
           aria-label={tCommon('backToSettings')}
         />
         <Title level={4} className={styles.pageTitle}>
-          {tSettings('companyAddress.title')}
+          {title}
         </Title>
       </Flex>
 
@@ -51,9 +80,9 @@ export default function CompanyAddressSubmodule(): React.ReactElement {
               <EnvironmentOutlined className={styles.tileIcon} />
             </div>
             <div>
-              <Text strong>{tSettings('companyAddress.label')}</Text>
+              <Text strong>{label}</Text>
               <Paragraph type="secondary" style={{ margin: "4px 0 0" }}>
-                {tSettings('companyAddress.description')}
+                {description}
               </Paragraph>
             </div>
           </Flex>
@@ -62,7 +91,7 @@ export default function CompanyAddressSubmodule(): React.ReactElement {
             rows={4}
             value={address}
             onChange={(event) => setAddress(event.target.value)}
-            placeholder={tSettings('companyAddress.placeholder')}
+            placeholder={placeholder}
           />
 
           <Flex justify="flex-end">

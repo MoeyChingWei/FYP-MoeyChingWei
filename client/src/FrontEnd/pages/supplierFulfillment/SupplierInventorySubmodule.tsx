@@ -111,6 +111,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   const [editingRow, setEditingRow] = useState<SupplierInventoryItem | null>(null);
   const [itemImage, setItemImage] = useState<string | undefined>();
   const [categoryOptions, setCategoryOptions] = useState<string[]>(() => mergePurchasingOptions("ITEM_CATEGORY", []));
+  const [unitOptions, setUnitOptions] = useState<string[]>(() => mergePurchasingOptions("UNIT_OF_MEASURE", []));
   const [form] = Form.useForm<InventoryFormValues>();
 
   useEffect(() => {
@@ -128,6 +129,14 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       .then((customRows) => setCategoryOptions(mergePurchasingOptions("ITEM_CATEGORY", customRows)))
       .catch(() => {
         // Built-in categories remain available when the API is offline.
+      });
+  }, []);
+
+  useEffect(() => {
+    void fetchPurchasingLookups("UNIT_OF_MEASURE")
+      .then((customRows) => setUnitOptions(mergePurchasingOptions("UNIT_OF_MEASURE", customRows)))
+      .catch(() => {
+        // Built-in units remain available when the API is offline.
       });
   }, []);
 
@@ -283,7 +292,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
           </Row>
           <Row gutter={12}>
             <Col span={12}><Form.Item name="category" label="Category" rules={[{ required: true, message: "Select a category" }]}><Select showSearch placeholder="Select category" optionFilterProp="label" options={categoryOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
-            <Col span={12}><Form.Item name="unit" label="Unit" rules={[{ required: true }]}><Select options={["pcs", "box", "carton", "kg", "litre", "set"].map((value) => ({ value, label: value }))} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="unit" label="Unit" rules={[{ required: true }]}><Select showSearch optionFilterProp="label" options={unitOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
             <Col span={12}><Form.Item name="quantity" label="Quantity" rules={[{ required: true }]}><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>

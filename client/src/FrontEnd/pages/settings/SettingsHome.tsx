@@ -8,6 +8,8 @@ import MessageOutlined from "@ant-design/icons/MessageOutlined";
 import RobotOutlined from "@ant-design/icons/RobotOutlined";
 import { useTranslation } from "react-i18next";
 
+import { getSessionUser } from "../../shared/auth/session";
+import { UserRole } from "../../shared/types/roles";
 import styles from "./Settings.module.css";
 
 const { Title, Text } = Typography;
@@ -15,6 +17,10 @@ const { Title, Text } = Typography;
 export default function SettingsHome(): React.ReactElement {
   const navigate = useNavigate();
   const { t } = useTranslation("settings");
+  const isSupplier = getSessionUser()?.role === UserRole.SUPPLIER;
+  const companyAddressTitle = isSupplier
+    ? t("sections.supplierCompanyAddress")
+    : t("sections.companyAddress");
 
   return (
     <Flex vertical gap={20} className={styles.wrap}>
@@ -73,7 +79,7 @@ export default function SettingsHome(): React.ReactElement {
             </div>
             <div className={styles.tileTextBlock}>
               <Text strong className={styles.tileTitle}>
-                {t("sections.companyAddress")}
+                {companyAddressTitle}
               </Text>
               <Flex align="center" gap={6} className={styles.tileAction}>
                 <Text type="secondary">{t("actions.open")}</Text>
@@ -113,7 +119,7 @@ export default function SettingsHome(): React.ReactElement {
           </Flex>
         </Card>
 
-        <Card
+        {!isSupplier && <Card
           hoverable
           className={styles.tile}
           role="button"
@@ -141,7 +147,7 @@ export default function SettingsHome(): React.ReactElement {
               </Flex>
             </div>
           </Flex>
-        </Card>
+        </Card>}
       </Flex>
     </Flex>
   );

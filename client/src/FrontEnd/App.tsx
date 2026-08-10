@@ -206,6 +206,9 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/notifications")) return true;
       if (pathname.startsWith("/chatbot")) return true;
       if (pathname.startsWith("/ai-agents")) return true;
+      if (pathname.startsWith("/settings/ai-assistant")) return false;
+      if (pathname.startsWith("/settings")) return true;
+      if (pathname.startsWith("/category-selection")) return true;
       return false;
     }
     return true;
@@ -267,7 +270,7 @@ function MainLayout(): React.ReactElement {
       );
     }
     if (role === UserRole.SUPPLIER) {
-      return key === "supplier-overview" || key === "chatbot";
+      return key === "supplier-overview" || key === "chatbot" || key === "settings";
     }
     return true;
   };
