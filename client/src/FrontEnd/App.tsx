@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import {
   AppstoreOutlined,
   DashboardOutlined,
+  DollarOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -125,11 +126,15 @@ const AIAssistantSubmodule = lazy(() => import("./pages/settings/AIAssistantSubm
 const AIAssistantRedesign = lazy(() => import("./pages/settings/AIAssistantRedesign"));
 const SubAgentsPage = lazy(() => import("./pages/settings/SubAgentsPage"));
 const ChatBotPage = lazy(() => import("./pages/ChatBotPage"));
+const BudgetManagementHome = lazy(
+  () => import("./pages/budgetManagement/BudgetManagementHome"),
+);
 
 type MenuKey =
   | "overview"
   | "users-access"
   | "purchasing"
+  | "budget-management"
   | "supplier-overview"
   | "tracking-item"
   | "chatbot"
@@ -138,6 +143,7 @@ type MenuKey =
 function useMenuKeyFromPath(pathname: string): MenuKey {
   if (pathname.startsWith("/users-access")) return "users-access";
   if (pathname.startsWith("/purchasing")) return "purchasing";
+  if (pathname.startsWith("/budget-management")) return "budget-management";
   if (pathname.startsWith("/supplier-overview")) return "supplier-overview";
   if (pathname.startsWith("/tracking-item")) return "tracking-item";
   if (pathname.startsWith("/chatbot")) return "chatbot";
@@ -193,6 +199,7 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/purchasing/creation")) return true;
       if (pathname.startsWith("/purchasing/review")) return true;
       if (pathname.startsWith("/purchasing/goods-received-note")) return true;
+      if (pathname.startsWith("/budget-management")) return isFinanceRole(role);
       if (pathname.startsWith("/tracking-item")) return true;
       if (pathname.startsWith("/chatbot")) return true;
       if (pathname.startsWith("/ai-agents")) return true;
@@ -229,6 +236,7 @@ function MainLayout(): React.ReactElement {
       overview: "#0ea5e9",
       "users-access": "#6366f1",
       purchasing: "#22c55e",
+      "budget-management": "#f59e0b",
       "supplier-overview": "#14b8a6",
       "tracking-item": "#ec4899",
       chatbot: "#f59e0b",
@@ -240,6 +248,7 @@ function MainLayout(): React.ReactElement {
     overview: "/overview",
     "users-access": "/users-access",
     purchasing: "/purchasing",
+    "budget-management": "/budget-management",
     "supplier-overview": "/supplier-overview",
     "tracking-item": "/tracking-item",
     chatbot: "/chatbot",
@@ -249,6 +258,7 @@ function MainLayout(): React.ReactElement {
   const primaryAdminMenuKeys: MenuKey[] = [
     "overview",
     "users-access",
+    "budget-management",
     "chatbot",
     "settings",
   ];
@@ -264,6 +274,7 @@ function MainLayout(): React.ReactElement {
       return (
         key === "overview" ||
         key === "purchasing" ||
+        (key === "budget-management" && isFinanceRole(role)) ||
         key === "tracking-item" ||
         key === "chatbot" ||
         key === "settings"
@@ -279,6 +290,7 @@ function MainLayout(): React.ReactElement {
     { key: "overview", icon: <DashboardOutlined />, label: t("sidebar.overview") },
     { key: "users-access", icon: <TeamOutlined />, label: t("sidebar.userAccess") },
     { key: "purchasing", icon: <ShoppingCartOutlined />, label: t("sidebar.purchasing") },
+    { key: "budget-management", icon: <DollarOutlined />, label: t("sidebar.budgetManagement") },
     { key: "tracking-item", icon: <InboxOutlined />, label: t("sidebar.trackingItem") },
     { key: "supplier-overview", icon: <ShopOutlined />, label: t("sidebar.supplierOverview") },
     { key: "chatbot", icon: <CommentOutlined />, label: t("sidebar.chatbot") },
@@ -536,6 +548,11 @@ function MainLayout(): React.ReactElement {
             element={<PurchasingGoodsReceivedNoteDetailSubmodule />}
           />
           <Route path="/purchasing/*" element={<Navigate to="/purchasing" replace />} />
+          <Route path="/budget-management" element={<BudgetManagementHome />} />
+          <Route
+            path="/budget-management/*"
+            element={<Navigate to="/budget-management" replace />}
+          />
           <Route path="/tracking-item" element={<TrackingItemManagement />} />
           <Route path="/supplier-overview" element={<SupplierFulfillmentHome />} />
           <Route

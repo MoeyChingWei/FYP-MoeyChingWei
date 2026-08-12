@@ -39,6 +39,7 @@ import {
   createSupplierInventoryItem,
   loadSupplierInventory,
   saveSupplierInventory,
+  seedSampleSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
 import styles from "./SupplierInventorySubmodule.module.css";
@@ -104,7 +105,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   const navigate = useNavigate();
   const sessionUser = useMemo(() => getSessionUser(), []);
   const supplierId = sessionUser?.id;
-  const [rows, setRows] = useState<SupplierInventoryItem[]>(() => loadSupplierInventory(supplierId));
+  const [rows, setRows] = useState<SupplierInventoryItem[]>(() => seedSampleSupplierInventory(supplierId));
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [modalOpen, setModalOpen] = useState(false);

@@ -2,6 +2,7 @@
   "sidebar": {
     "overview": "概览",
     "purchasing": "采购管理",
+    "budgetManagement": "预算管理",
     "userAccess": "用户权限",
     "supplierOverview": "供应商概览",
     "trackingItem": "物品跟踪",
