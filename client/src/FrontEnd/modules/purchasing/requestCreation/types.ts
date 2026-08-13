@@ -3,6 +3,9 @@ import type { PurchaseOrderStatus } from "../types";
 /** One line on a purchase request (item detail). */
 export interface DraftLineItem {
   tempId: string;
+  /** Inventory record used to create this line, when selected from supplier catalogue. */
+  supplierInventoryItemId?: string;
+  itemImageUrl?: string;
   itemName: string;
   itemDescription: string;
   itemCategory: string;
@@ -12,6 +15,10 @@ export interface DraftLineItem {
   quantity: number;
   unitOfMeasurement: string;
   unitPrice: number;
+  taxType?: string;
+  taxRate?: number;
+  taxAmount?: number;
+  amountAfterTax?: number;
 }
 
 export interface PurchaseRequestDraft {

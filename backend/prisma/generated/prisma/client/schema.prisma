@@ -22,6 +22,7 @@ model User {
   roleChangeAuditsAsTarget RoleChangeAudit[]        @relation("RoleChangeTarget")
   passwordResetCodes       PasswordResetCode[]
   supplierTypeAssignments  SupplierTypeAssignment[]
+  supplierInventoryItems   SupplierInventoryItem[]
   notifications            Notification[]
   feedbacks                Feedback[]
   chatSessions             ChatSession[]
@@ -130,6 +131,29 @@ model SupplierTypeAssignment {
   @@index([userId])
   @@index([category])
   @@map("supplier_type_assignments")
+}
+
+model SupplierInventoryItem {
+  id           String   @id @default(uuid())
+  supplierId   Int
+  itemName     String
+  category     String
+  quantity     Int
+  reorderLevel Int      @default(0)
+  unit         String
+  unitPrice    Float
+  taxType      String   @default("NO_TAX")
+  taxRate      Float    @default(0)
+  imageDataUrl String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  supplier User @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([category])
+  @@index([updatedAt])
+  @@map("supplier_inventory_items")
 }
 
 model PurchaseRequestRecord {

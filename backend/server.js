@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import adminUsersRoutes from "./routes/adminUsers.js";
 import adminSupplierTypesRoutes from "./routes/adminSupplierTypes.js";
 import purchasingLookupsRoutes from "./routes/purchasingLookups.js";
+import supplierInventoryRoutes from "./routes/supplierInventory.js";
 import workflowStorageRoutes from "./routes/workflowStorage.js";
 import notificationsRoutes from "./routes/notifications.js";
 import feedbackRoutes from "./routes/feedback.js";
@@ -30,7 +31,7 @@ import { auditMiddleware } from "./middleware/auditMiddleware.js";
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(performanceMiddleware);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
@@ -43,6 +44,7 @@ app.use("/api", authRoutes);
 app.use("/api/admin", adminUsersRoutes);
 app.use("/api/admin", adminSupplierTypesRoutes);
 app.use("/api/purchasing", purchasingLookupsRoutes);
+app.use("/api/purchasing", supplierInventoryRoutes);
 app.use("/api/workflow", workflowStorageRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/feedback", feedbackRoutes);
@@ -51,8 +53,9 @@ app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/chatbot", chatbotUploadRoutes);
 app.use("/api/sources", sourcesRoutes);
 app.use("/api/agents", agentsRoutes);
-app.use("/api", languageRoutes);
+app.use("/api/language", languageRoutes);
 app.use("/api/export", exportRoutes);
+console.log("🔵 Registering /api/budget routes");
 app.use("/api/budget", budgetRoutes);
 
 app.use("/", homeRoutes);

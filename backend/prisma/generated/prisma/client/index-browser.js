@@ -194,6 +194,22 @@ exports.Prisma.SupplierTypeAssignmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SupplierInventoryItemScalarFieldEnum = {
+  id: 'id',
+  supplierId: 'supplierId',
+  itemName: 'itemName',
+  category: 'category',
+  quantity: 'quantity',
+  reorderLevel: 'reorderLevel',
+  unit: 'unit',
+  unitPrice: 'unitPrice',
+  taxType: 'taxType',
+  taxRate: 'taxRate',
+  imageDataUrl: 'imageDataUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.PurchaseRequestRecordScalarFieldEnum = {
   localId: 'localId',
   payload: 'payload',
@@ -351,6 +367,7 @@ exports.Prisma.ModelName = {
   PasswordResetCode: 'PasswordResetCode',
   PurchasingLookup: 'PurchasingLookup',
   SupplierTypeAssignment: 'SupplierTypeAssignment',
+  SupplierInventoryItem: 'SupplierInventoryItem',
   PurchaseRequestRecord: 'PurchaseRequestRecord',
   PurchaseOrderRecord: 'PurchaseOrderRecord',
   SupplierOrderAcknowledgementRecord: 'SupplierOrderAcknowledgementRecord',

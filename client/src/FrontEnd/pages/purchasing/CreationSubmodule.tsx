@@ -12,6 +12,7 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Typography,
   message,
 } from "antd";
@@ -20,16 +21,21 @@ import {
   CalculatorOutlined,
   ClearOutlined,
   DeleteOutlined,
+  InboxOutlined,
   PlusOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import CreatableLookupSelect from "../../components/purchasing/CreatableLookupSelect";
 import { getSessionUser } from "../../shared/auth/session";
-import { fetchSupplierTypeMap, type SupplierTypeMap } from "../../shared/api/supplierTypes";
 import {
   computeLineTotal,
+  computeTaxAmount,
+  computeAmountAfterTax,
+  taxLabelForCodes,
+  taxRateForCodes,
   generatePrNumber,
   todayIsoDate,
 } from "../../modules/purchasing/requestCreation/constants";
@@ -45,6 +51,12 @@ import type {
 } from "../../modules/purchasing/requestCreation/types";
 import { UserRole } from "../../shared/types/roles";
 import { API_ROOT } from "../../shared/api/base";
+import {
+  createSupplierInventory,
+  fetchSupplierInventory,
+  seedSampleSupplierInventory,
+  type SupplierInventoryItem,
+} from "../../modules/supplierFulfillment/inventory";
 
 import creationStyles from "./CreationSubmodule.module.css";
 
@@ -68,6 +80,9 @@ function newTempId(): string {
 }
 
 type LineItemFormRow = {
+  supplierInventoryItemId?: string;
+  itemImageUrl?: string;
+  inventoryAvailableQuantity?: number;
   itemName?: string;
   itemDescription?: string;
   itemCategory?: string;
@@ -78,7 +93,221 @@ type LineItemFormRow = {
   quantity?: number;
   unitOfMeasurement?: string;
   estimatedUnitPrice?: number;
+  taxType?: string;
+  taxRate?: number;
 };
+
+function InventoryProductPicker({
+  index,
+  supplierUsers,
+}: {
+  index: number;
+  supplierUsers: ApiUser[];
+}): React.ReactElement {
+  const form = Form.useFormInstance();
+  const category = Form.useWatch(["lineItems", index, "itemCategory"], form);
+  const selectedId = Form.useWatch(["lineItems", index, "supplierInventoryItemId"], form);
+  const [inventory, setInventory] = useState<SupplierInventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const localRows = supplierUsers.flatMap((supplier) =>
+      seedSampleSupplierInventory(supplier.id).map((item) => ({
+        ...item,
+        supplierId: supplier.id,
+      })),
+    );
+
+    const itemKey = (item: SupplierInventoryItem) =>
+      `${item.supplierId}|${item.itemName.trim().toLowerCase()}|${item.category.trim().toLowerCase()}`;
+
+    const refreshInventory = async (): Promise<void> => {
+      if (!cancelled) setLoading(true);
+      try {
+        const serverRows = await fetchSupplierInventory();
+        const serverKeys = new Set(serverRows.map(itemKey));
+        const legacyRows = localRows.filter((item) => !serverKeys.has(itemKey(item)));
+        if (!cancelled) setInventory([...serverRows, ...legacyRows]);
+
+        if (legacyRows.length) {
+          const migrated = await Promise.allSettled(
+            legacyRows.map(({ id: _id, updatedAt: _updatedAt, ...item }) =>
+              createSupplierInventory(item),
+            ),
+          );
+          const createdRows = migrated.flatMap((result) =>
+            result.status === "fulfilled" ? [result.value] : [],
+          );
+          if (!cancelled && createdRows.length) {
+            const createdKeys = new Set(createdRows.map(itemKey));
+            setInventory([
+              ...serverRows,
+              ...createdRows,
+              ...legacyRows.filter((item) => !createdKeys.has(itemKey(item))),
+            ]);
+          }
+        }
+      } catch {
+        if (!cancelled) setInventory(localRows);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void refreshInventory();
+    const sync = (): void => { void refreshInventory(); };
+    window.addEventListener("storage", sync);
+    window.addEventListener("erp-supplier-inventory", sync);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("erp-supplier-inventory", sync);
+    };
+  }, [supplierUsers]);
+
+  const products = useMemo(() => {
+    const wanted = String(category ?? "").trim().toLowerCase();
+    if (!wanted) return [];
+    return inventory.filter((item) => item.category.trim().toLowerCase() === wanted);
+  }, [category, inventory]);
+
+  const filteredProducts = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return products;
+    return products.filter((item) => item.itemName.toLowerCase().includes(query));
+  }, [products, searchTerm]);
+
+  useEffect(() => {
+    if (!selectedId || inventory.some((item) => item.id === selectedId && item.quantity > 0 && item.category.trim().toLowerCase() === String(category ?? "").trim().toLowerCase())) return;
+    form.setFieldValue(["lineItems", index, "supplierInventoryItemId"], undefined);
+    form.setFieldValue(["lineItems", index, "itemImageUrl"], undefined);
+    form.setFieldValue(["lineItems", index, "inventoryAvailableQuantity"], undefined);
+    form.setFieldValue(["lineItems", index, "unitOfMeasurement"], undefined);
+  }, [category, form, index, inventory, selectedId]);
+
+  const chooseProduct = (item: SupplierInventoryItem) => {
+    if (item.quantity <= 0) return;
+    const supplier = supplierUsers.find((user) => user.id === item.supplierId);
+    const rows = ([...(form.getFieldValue("lineItems") ?? [])] as LineItemFormRow[]);
+    rows[index] = {
+      ...rows[index],
+      supplierInventoryItemId: item.id,
+      itemImageUrl: item.imageDataUrl,
+      inventoryAvailableQuantity: item.quantity,
+      itemName: item.itemName,
+      itemCategory: item.category,
+      supplierId: item.supplierId,
+      supplierName: supplier?.name ?? supplier?.email,
+      supplierEmail: supplier?.email,
+      supplierDepartment: supplier?.department ?? undefined,
+      quantity: 1,
+      unitOfMeasurement: item.unit,
+      estimatedUnitPrice: item.unitPrice,
+      taxType: item.taxType ?? "",
+      taxRate: taxRateForCodes(item.taxType),
+    } as LineItemFormRow;
+    form.setFieldsValue({ lineItems: rows });
+  };
+
+  if (!category) return <Text type="secondary">Select a category to browse supplier inventory.</Text>;
+  if (loading) return <div className={creationStyles.inventoryLoading}><Spin size="small" /><Text type="secondary">Loading supplier inventory...</Text></div>;
+  if (!products.length) return <Text type="secondary">No inventory items found for this category. You can enter an item manually.</Text>;
+
+  return (
+    <div className={creationStyles.inventoryPicker}>
+      <div className={creationStyles.inventoryPickerHeader}>
+        <Text strong>Available from supplier inventory</Text>
+        <div className={creationStyles.inventoryPickerTools}>
+          <Input
+            allowClear
+            size="small"
+            prefix={<SearchOutlined />}
+            placeholder="Search item"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            className={creationStyles.inventorySearch}
+          />
+          <Text type="secondary">
+            {filteredProducts.length === products.length
+              ? `${products.length} item${products.length === 1 ? "" : "s"}`
+              : `${filteredProducts.length} of ${products.length} items`}
+          </Text>
+        </div>
+      </div>
+      {filteredProducts.length ? (
+        <div className={creationStyles.inventoryProductGrid}>
+          {filteredProducts.map((item) => {
+          const supplier = supplierUsers.find((user) => user.id === item.supplierId);
+          const selected = selectedId === item.id;
+          const outOfStock = item.quantity <= 0;
+          return (
+            <button
+              type="button"
+              key={`${item.supplierId}-${item.id}`}
+              className={`${creationStyles.inventoryProduct} ${selected ? creationStyles.inventoryProductSelected : ""} ${outOfStock ? creationStyles.inventoryProductOutOfStock : ""}`}
+              onClick={() => chooseProduct(item)}
+              disabled={outOfStock}
+            >
+              {item.imageDataUrl ? <img src={item.imageDataUrl} alt="" className={creationStyles.inventoryProductImage} /> : <span className={creationStyles.inventoryProductPlaceholder}><InboxOutlined /></span>}
+              <span className={creationStyles.inventoryProductCopy}>
+                <strong>{item.itemName}</strong>
+                <span>{supplier?.name ?? supplier?.email ?? "Supplier"}</span>
+                <span>{outOfStock ? "Out of stock" : `${item.quantity.toLocaleString()} ${item.unit} available`}</span>
+              </span>
+              <span className={creationStyles.inventoryProductPrice}>MYR {item.unitPrice.toFixed(2)}</span>
+            </button>
+          );
+          })}
+        </div>
+      ) : (
+        <Text type="secondary" className={creationStyles.inventoryEmpty}>No inventory items match your search.</Text>
+      )}
+    </div>
+  );
+}
+
+function InventoryQuantityInput({
+  index,
+  value,
+  onChange,
+}: {
+  index: number;
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+}): React.ReactElement {
+  const form = Form.useFormInstance();
+  const available = Form.useWatch(["lineItems", index, "inventoryAvailableQuantity"], form);
+  return (
+    <InputNumber
+      value={value}
+      onChange={onChange}
+      min={0}
+      max={typeof available === "number" ? available : undefined}
+      step={1}
+      style={{ width: "100%" }}
+    />
+  );
+}
+
+function TaxSummary({ index }: { index: number }): React.ReactElement {
+  const form = Form.useFormInstance();
+  const quantity = Form.useWatch(["lineItems", index, "quantity"], form);
+  const unitPrice = Form.useWatch(["lineItems", index, "estimatedUnitPrice"], form);
+  const taxType = Form.useWatch(["lineItems", index, "taxType"], form);
+  const taxRate = Form.useWatch(["lineItems", index, "taxRate"], form);
+  const taxAmount = computeTaxAmount(quantity, unitPrice, taxRate);
+  const afterTax = computeAmountAfterTax(quantity, unitPrice, taxRate);
+  return (
+    <div className={creationStyles.taxSummary}>
+      <div><span>Applicable taxes</span><strong>{taxLabelForCodes(taxType)}</strong></div>
+      <div><span>Tax amount</span><strong>{DEFAULT_CURRENCY} {taxAmount.toFixed(2)}</strong></div>
+      <div><span>Amount after tax</span><strong>{DEFAULT_CURRENCY} {afterTax.toFixed(2)}</strong></div>
+    </div>
+  );
+}
 
 type FormValues = {
   lineItems: LineItemFormRow[];
@@ -86,21 +315,6 @@ type FormValues = {
 
 function emptyLineRow(): LineItemFormRow {
   return {};
-}
-
-function normalizeCategoryText(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/&/g, " and ")
-    .replace(/\//g, " ")
-    .replace(/\bstationary\b/g, "stationery")
-    .replace(/\bfixtures\b/g, "fixture")
-    .replace(/\bmaterials\b/g, "material")
-    .replace(/\bbooks\b/g, "book")
-    .replace(/\bitems\b/g, "item")
-    .replace(/\s+/g, " ")
-    .replace(/[^a-z0-9 ]/g, "")
-    .trim();
 }
 
 function LineRowTotal({
@@ -111,7 +325,8 @@ function LineRowTotal({
   const form = Form.useFormInstance();
   const q = Form.useWatch(["lineItems", index, "quantity"], form);
   const p = Form.useWatch(["lineItems", index, "estimatedUnitPrice"], form);
-  const total = computeLineTotal(q, p);
+  const taxRate = Form.useWatch(["lineItems", index, "taxRate"], form);
+  const total = computeAmountAfterTax(q, p, taxRate);
 
   return (
     <InputNumber
@@ -134,17 +349,18 @@ function LineRowTotal({
 function SupplierDetailPanel({
   index,
   supplierUsers,
-  supplierTypeMap,
 }: {
   index: number;
   supplierUsers: ApiUser[];
-  supplierTypeMap: SupplierTypeMap;
 }): React.ReactElement {
   const { t } = useTranslation('purchasing');
   const form = Form.useFormInstance();
-  const itemCategory = Form.useWatch(["lineItems", index, "itemCategory"], form);
   const selectedSupplierId = Form.useWatch(
     ["lineItems", index, "supplierId"],
+    form,
+  );
+  const selectedInventoryItemId = Form.useWatch(
+    ["lineItems", index, "supplierInventoryItemId"],
     form,
   );
   const selectedSupplierName = Form.useWatch(
@@ -159,68 +375,15 @@ function SupplierDetailPanel({
     ["lineItems", index, "supplierDepartment"],
     form,
   );
-  const normalizedCategory = String(itemCategory ?? "").trim();
   const normalizedSupplierId =
     selectedSupplierId == null || selectedSupplierId === ""
       ? undefined
       : Number(selectedSupplierId);
 
-  const setSupplierFields = (supplier?: ApiUser): void => {
-    form.setFields([
-      { name: ["lineItems", index, "supplierId"], value: supplier?.id },
-      { name: ["lineItems", index, "supplierName"], value: supplier?.name ?? undefined },
-      { name: ["lineItems", index, "supplierEmail"], value: supplier?.email ?? undefined },
-      {
-        name: ["lineItems", index, "supplierDepartment"],
-        value: supplier?.department ?? undefined,
-      },
-    ]);
-  };
-
-  const matchedSuppliers = useMemo(() => {
-    if (!normalizedCategory) return [];
-    const normalizedSelectedCategory = normalizeCategoryText(normalizedCategory);
-
-    return supplierUsers.filter((user) => {
-      const assignedTypes = supplierTypeMap[String(user.id)] ?? [];
-      return assignedTypes.some(
-        (assignedType) =>
-          normalizeCategoryText(String(assignedType)) === normalizedSelectedCategory,
-      );
-    });
-  }, [normalizedCategory, supplierTypeMap, supplierUsers]);
-
-  useEffect(() => {
-    if (!normalizedCategory) {
-      setSupplierFields(undefined);
-      return;
-    }
-
-    if (matchedSuppliers.length === 1) {
-      setSupplierFields(matchedSuppliers[0]);
-      return;
-    }
-
-    if (
-      matchedSuppliers.length > 1 &&
-      normalizedSupplierId != null &&
-      matchedSuppliers.some((supplier) => supplier.id === normalizedSupplierId)
-    ) {
-      const currentSupplier = matchedSuppliers.find(
-        (supplier) => supplier.id === normalizedSupplierId,
-      );
-      setSupplierFields(currentSupplier);
-      return;
-    }
-
-    setSupplierFields(undefined);
-  }, [form, index, matchedSuppliers, normalizedCategory, normalizedSupplierId]);
-
-  const selectedSupplier =
-    matchedSuppliers.find((supplier) => supplier.id === normalizedSupplierId) ??
-    (matchedSuppliers.length === 1 ? matchedSuppliers[0] : undefined);
   const selectedSupplierDisplay =
-    selectedSupplier ??
+    (selectedInventoryItemId && normalizedSupplierId != null
+      ? supplierUsers.find((supplier) => supplier.id === normalizedSupplierId)
+      : undefined) ??
     (selectedSupplierName || selectedSupplierEmail
       ? {
           id: normalizedSupplierId ?? -1,
@@ -242,60 +405,18 @@ function SupplierDetailPanel({
 
   return (
     <div className={creationStyles.supplierDetailBox}>
-      {!normalizedCategory ? (
-        <Text type="secondary">{t('purchaseRequest.creation.supplier.selectCategory')}</Text>
-      ) : matchedSuppliers.length > 1 ? (
-        <Space direction="vertical" size={10} style={{ width: "100%" }}>
-          <Form.Item
-            name={["lineItems", index, "supplierId"]}
-            label={null}
-            style={{ marginBottom: 0 }}
-          >
-            <Select
-              placeholder="Select supplier"
-              options={matchedSuppliers.map((supplier) => ({
-                value: supplier.id,
-                label: supplier.name ?? supplier.email,
-              }))}
-              onChange={(value) => {
-                const chosenSupplier = matchedSuppliers.find(
-                  (supplier) => supplier.id === Number(value),
-                );
-                setSupplierFields(chosenSupplier);
-              }}
-            />
-          </Form.Item>
-
-          {selectedSupplierDisplay ? (
-            <div className={creationStyles.supplierEntry}>
-              <Text strong>
-                {selectedSupplierDisplay.name ?? selectedSupplierDisplay.email}
-              </Text>
-              <Text type="secondary">{selectedSupplierDisplay.email}</Text>
-              <Text type="secondary">
-                {selectedSupplierDisplay.department || t('purchaseRequest.creation.supplier.noDepartment')}
-              </Text>
-            </div>
-          ) : (
-            <Text type="secondary">
-              {t('purchaseRequest.creation.supplier.multipleMatched')}
-            </Text>
-          )}
-        </Space>
-      ) : matchedSuppliers.length ? (
+      {!selectedInventoryItemId ? (
+        <Text type="secondary">Select an inventory item below to view its supplier.</Text>
+      ) : selectedSupplierDisplay ? (
         <Space direction="vertical" size={8} style={{ width: "100%" }}>
-          {matchedSuppliers.map((supplier) => (
-            <div key={supplier.id} className={creationStyles.supplierEntry}>
-              <Text strong>{supplier.name ?? supplier.email}</Text>
-              <Text type="secondary">{supplier.email}</Text>
-              <Text type="secondary">{supplier.department || t('purchaseRequest.creation.supplier.noDepartment')}</Text>
-            </div>
-          ))}
+          <div className={creationStyles.supplierEntry}>
+            <Text strong>{selectedSupplierDisplay.name ?? selectedSupplierDisplay.email}</Text>
+            <Text type="secondary">{selectedSupplierDisplay.email}</Text>
+            <Text type="secondary">{selectedSupplierDisplay.department || t('purchaseRequest.creation.supplier.noDepartment')}</Text>
+          </div>
         </Space>
       ) : (
-        <Text type="secondary">
-          {t('purchaseRequest.creation.supplier.noMatch', { category: normalizedCategory })}
-        </Text>
+        <Text type="secondary">The selected item's supplier is unavailable.</Text>
       )}
     </div>
   );
@@ -312,7 +433,6 @@ export default function CreationSubmodule(): React.ReactElement {
   const [prNumber, setPrNumber] = useState(() => generatePrNumber());
   const [requestDate, setRequestDate] = useState(() => todayIsoDate());
   const [supplierUsers, setSupplierUsers] = useState<ApiUser[]>([]);
-  const [supplierTypeMap, setSupplierTypeMap] = useState<SupplierTypeMap>({});
   const [editingDraft, setEditingDraft] = useState<PurchaseRequestDraft | null>(null);
 
   useEffect(() => {
@@ -340,12 +460,17 @@ export default function CreationSubmodule(): React.ReactElement {
     setRequestDate(foundDraft.requestDate);
     form.setFieldsValue({
       lineItems: foundDraft.lineItems.map((item) => ({
+        supplierInventoryItemId: item.supplierInventoryItemId,
+        itemImageUrl: item.itemImageUrl,
         itemName: item.itemName,
         itemDescription: item.itemDescription,
         itemCategory: item.itemCategory,
         supplierId: item.supplierId,
         supplierName: item.supplierName,
         supplierEmail: item.supplierEmail,
+        supplierDepartment: item.supplierDepartment,
+        taxType: item.taxType ?? "",
+        taxRate: taxRateForCodes(item.taxType),
         quantity: item.quantity,
         unitOfMeasurement: item.unitOfMeasurement,
         estimatedUnitPrice: item.unitPrice,
@@ -358,10 +483,7 @@ export default function CreationSubmodule(): React.ReactElement {
 
     async function loadSuppliers(): Promise<void> {
       try {
-        const [usersRes, supplierMap] = await Promise.all([
-          axios.get(`${API}/admin/users`),
-          fetchSupplierTypeMap(),
-        ]);
+        const usersRes = await axios.get(`${API}/admin/users`);
         if (!cancelled && usersRes.data?.success) {
           const users = (usersRes.data.users ?? []) as ApiUser[];
           setSupplierUsers(
@@ -369,7 +491,6 @@ export default function CreationSubmodule(): React.ReactElement {
               (user) => user.role === UserRole.SUPPLIER && Boolean(user.isActive),
             ),
           );
-          setSupplierTypeMap(supplierMap);
         }
       } catch {
         /* keep creation usable even when supplier lookup fails */
@@ -409,7 +530,7 @@ export default function CreationSubmodule(): React.ReactElement {
     if (!lineItemsWatch?.length) return 0;
     return lineItemsWatch.reduce((sum, row) => {
       return (
-        sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice)
+        sum + computeAmountAfterTax(row?.quantity, row?.estimatedUnitPrice, row?.taxRate)
       );
     }, 0);
   }, [lineItemsWatch]);
@@ -418,7 +539,7 @@ export default function CreationSubmodule(): React.ReactElement {
     const rows =
       (form.getFieldValue("lineItems") as LineItemFormRow[] | undefined) ?? [];
     const total = rows.reduce(
-      (s, r) => s + computeLineTotal(r?.quantity, r?.estimatedUnitPrice),
+      (s, r) => s + computeAmountAfterTax(r?.quantity, r?.estimatedUnitPrice, r?.taxRate),
       0,
     );
     message.info(
@@ -451,6 +572,8 @@ export default function CreationSubmodule(): React.ReactElement {
 
       return {
         tempId: newTempId(),
+        supplierInventoryItemId: row.supplierInventoryItemId,
+        itemImageUrl: row.itemImageUrl,
         itemName: String(row.itemName ?? "").trim(),
         itemDescription: String(row.itemDescription ?? "").trim(),
         itemCategory: String(row.itemCategory ?? "").trim(),
@@ -460,6 +583,10 @@ export default function CreationSubmodule(): React.ReactElement {
         quantity: Number(row.quantity),
         unitOfMeasurement: String(row.unitOfMeasurement ?? "").trim(),
         unitPrice: Number(row.estimatedUnitPrice),
+        taxType: String(row.taxType ?? ""),
+        taxRate: taxRateForCodes(row.taxType),
+        taxAmount: computeTaxAmount(row.quantity, row.estimatedUnitPrice, row.taxType),
+        amountAfterTax: computeAmountAfterTax(row.quantity, row.estimatedUnitPrice, row.taxType),
       };
     });
     const draft: PurchaseRequestDraft = {
@@ -608,20 +735,33 @@ export default function CreationSubmodule(): React.ReactElement {
                     }
                   >
                     <Row gutter={16}>
-                      <Col xs={24} lg={8}>
-                        <Form.Item
-                          label={t('purchaseRequest.creation.form.itemName')}
-                          name={[field.name, "itemName"]}
-                          rules={[
-                            { required: true, message: t('purchaseRequest.creation.form.validation.itemNameRequired') },
-                          ]}
-                        >
-                          <Input
-                            placeholder={t('purchaseRequest.creation.form.placeholders.itemName')}
-                            allowClear
-                          />
-                        </Form.Item>
-                      </Col>
+                      <Form.Item name={[field.name, "supplierInventoryItemId"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "itemImageUrl"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "inventoryAvailableQuantity"]} hidden>
+                        <InputNumber />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "supplierId"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "supplierName"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "supplierEmail"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "supplierDepartment"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "taxType"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "taxRate"]} hidden>
+                        <InputNumber />
+                      </Form.Item>
                       <Col xs={24} lg={8}>
                         <Form.Item
                           label={t('purchaseRequest.creation.form.itemCategory')}
@@ -644,9 +784,25 @@ export default function CreationSubmodule(): React.ReactElement {
                           <SupplierDetailPanel
                             index={index}
                             supplierUsers={supplierUsers}
-                            supplierTypeMap={supplierTypeMap}
                           />
                         </Form.Item>
+                      </Col>
+                      <Col xs={24} lg={8}>
+                        <Form.Item
+                          label={t('purchaseRequest.creation.form.itemName')}
+                          name={[field.name, "itemName"]}
+                          rules={[
+                            { required: true, message: t('purchaseRequest.creation.form.validation.itemNameRequired') },
+                          ]}
+                        >
+                          <Input
+                            placeholder={t('purchaseRequest.creation.form.placeholders.itemName')}
+                            allowClear
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <InventoryProductPicker index={index} supplierUsers={supplierUsers} />
                       </Col>
                       <Col span={24}>
                         <Form.Item
@@ -669,6 +825,7 @@ export default function CreationSubmodule(): React.ReactElement {
                         <Form.Item
                           label={t('purchaseRequest.creation.form.quantity')}
                           name={[field.name, "quantity"]}
+                          validateTrigger="onChange"
                           rules={[
                             { required: true, message: t('purchaseRequest.creation.form.validation.quantityRequired') },
                             {
@@ -676,26 +833,39 @@ export default function CreationSubmodule(): React.ReactElement {
                               min: 0.0001,
                               message: t('purchaseRequest.creation.form.validation.quantityPositive'),
                             },
+                            {
+                              validator: async (_, value) => {
+                                const available = form.getFieldValue([
+                                  "lineItems",
+                                  field.name,
+                                  "inventoryAvailableQuantity",
+                                ]);
+                                const quantity = Number(value);
+                                if (
+                                  typeof available === "number" &&
+                                  Number.isFinite(quantity) &&
+                                  quantity > available
+                                ) {
+                                  throw new Error(
+                                    `Quantity cannot exceed available inventory (${available}).`,
+                                  );
+                                }
+                              },
+                            },
                           ]}
                         >
-                          <InputNumber
-                            min={0}
-                            step={1}
-                            style={{ width: "100%" }}
-                          />
+                          <InventoryQuantityInput index={index} />
                         </Form.Item>
                       </Col>
                       <Col xs={24} sm={8}>
                         <Form.Item
                           label={t('purchaseRequest.creation.form.unitOfMeasurement')}
                           name={[field.name, "unitOfMeasurement"]}
-                          rules={[
-                            { required: true, message: t('purchaseRequest.creation.form.validation.unitRequired') },
-                          ]}
                         >
-                          <CreatableLookupSelect
-                            kind="UNIT_OF_MEASURE"
+                          <Input
+                            readOnly
                             placeholder={t('purchaseRequest.creation.form.placeholders.unitOfMeasurement')}
+                            aria-label={t('purchaseRequest.creation.form.unitOfMeasurement')}
                           />
                         </Form.Item>
                       </Col>
@@ -724,9 +894,12 @@ export default function CreationSubmodule(): React.ReactElement {
                         </Form.Item>
                       </Col>
                       <Col xs={24} md={16}>
-                        <Form.Item label={t('purchaseRequest.creation.form.lineTotal')}>
+                        <Form.Item label="Amount after tax">
                           <LineRowTotal index={index} />
                         </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <TaxSummary index={index} />
                       </Col>
                     </Row>
                   </Card>

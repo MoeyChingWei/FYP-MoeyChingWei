@@ -31,6 +31,7 @@ import type {
   PurchaseRequestDraft,
 } from "../../modules/purchasing/requestCreation/types";
 import { getSessionUser } from "../../shared/auth/session";
+import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
@@ -51,14 +52,18 @@ function ItemDetailCard({
   index: number;
 }): React.ReactElement {
   const { t } = useTranslation('purchasing');
-  const lineTotal = item.quantity * item.unitPrice;
+  const taxAmount = item.taxAmount ?? Math.round(item.quantity * item.unitPrice * (item.taxRate ?? 0)) / 100;
+  const lineTotal = item.amountAfterTax ?? item.quantity * item.unitPrice + taxAmount;
 
   return (
     <div className={styles.itemCard}>
       <div className={styles.itemHeader}>
         <div>
           <div className={styles.itemIndex}>{t('purchaseRequest.detail.items.item', { index: index + 1 })}</div>
-          <h4 className={styles.itemTitle}>{item.itemName}</h4>
+          <div className={styles.itemTitleRow}>
+            {item.itemImageUrl ? <img src={item.itemImageUrl} alt="" className={styles.itemImage} /> : null}
+            <h4 className={styles.itemTitle}>{item.itemName}</h4>
+          </div>
         </div>
         <Tag>{item.itemCategory || t('common.uncategorized')}</Tag>
       </div>
@@ -91,10 +96,18 @@ function ItemDetailCard({
         </div>
 
         <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>{t('purchaseRequest.detail.items.fields.lineTotal')}</span>
+          <span className={styles.detailLabel}>Amount after tax</span>
           <div className={styles.detailValue}>
             {currencyLabel(currency, lineTotal)}
           </div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax</span>
+          <div className={styles.detailValue}>{taxLabelForCodes(item.taxType)}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax amount</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, taxAmount)}</div>
         </div>
 
         <div className={`${styles.detailBlock} ${styles.detailWide}`}>
@@ -192,7 +205,7 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
   }
 
   const total = request.lineItems.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
+    (sum, item) => sum + (item.amountAfterTax ?? item.quantity * item.unitPrice + (item.taxAmount ?? item.quantity * item.unitPrice * (item.taxRate ?? 0) / 100)),
     0,
   );
   const supplierCount = new Set(

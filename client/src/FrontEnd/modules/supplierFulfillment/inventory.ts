@@ -7,12 +7,14 @@ export interface SupplierInventoryItem {
   reorderLevel: number;
   unit: string;
   unitPrice: number;
+  taxType?: string;
+  taxRate?: number;
   imageDataUrl?: string;
   updatedAt: string;
 }
 
 const STORAGE_PREFIX = "erp_supplier_inventory_v1";
-const SAMPLE_CATALOGUE_VERSION = "4";
+const SAMPLE_CATALOGUE_VERSION = "5";
 
 type InventoryCatalogItem = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt">;
 
@@ -51,7 +53,7 @@ const INVENTORY_IMAGE_URLS: Record<string, string> = {
 
 // Expand the original one-item demonstration inventory into a useful supplier catalogue.
 const SAMPLE_CATALOGUE: InventoryCatalogItem[] = [
-  { itemName: "Laptop", category: "IT Equipment", quantity: 10, reorderLevel: 3, unit: "pcs", unitPrice: 8399 },
+  { itemName: "Laptop", category: "IT Equipment", quantity: 10, reorderLevel: 3, unit: "pcs", unitPrice: 8399, taxType: "TAX", taxRate: 10 },
   { itemName: "24-inch Business Monitor", category: "IT Equipment", quantity: 28, reorderLevel: 8, unit: "pcs", unitPrice: 890 },
   { itemName: "Wireless Keyboard and Mouse Set", category: "IT Equipment", quantity: 45, reorderLevel: 12, unit: "sets", unitPrice: 155 },
   { itemName: "USB-C Docking Station", category: "IT Equipment", quantity: 16, reorderLevel: 6, unit: "pcs", unitPrice: 520 },
@@ -81,7 +83,12 @@ const SAMPLE_CATALOGUE: InventoryCatalogItem[] = [
   { itemName: "Workplace Safety Handbook", category: "Books / Training / Learning Materials", quantity: 15, reorderLevel: 5, unit: "pcs", unitPrice: 42 },
   { itemName: "Product Brochure", category: "Marketing and Printing Materials", quantity: 500, reorderLevel: 150, unit: "pcs", unitPrice: 1.8 },
   { itemName: "Printer Maintenance Service", category: "Services Procurement", quantity: 2, reorderLevel: 1, unit: "services", unitPrice: 280 },
-].map((item) => ({ ...item, imageDataUrl: INVENTORY_IMAGE_URLS[item.itemName] }));
+].map((item) => ({
+  ...item,
+  taxType: "TAX",
+  taxRate: 10,
+  imageDataUrl: INVENTORY_IMAGE_URLS[item.itemName],
+}));
 
 function storageKey(supplierId: number): string {
   return `${STORAGE_PREFIX}_${supplierId}`;
@@ -125,8 +132,14 @@ export function seedSampleSupplierInventory(supplierId?: number): SupplierInvent
   const updatedRows = rows.map((row) => {
     const sampleItem = sampleItemsByName.get(row.itemName.trim().toLowerCase());
     return sampleItem
-      ? { ...row, category: sampleItem.category, imageDataUrl: row.imageDataUrl ?? sampleItem.imageDataUrl }
-      : row;
+      ? {
+        ...row,
+        category: sampleItem.category,
+        taxType: "TAX",
+        taxRate: 10,
+        imageDataUrl: row.imageDataUrl ?? sampleItem.imageDataUrl,
+      }
+      : { ...row, taxType: "TAX", taxRate: 10 };
   });
   const additions = SAMPLE_CATALOGUE
     .filter((item) => !names.has(item.itemName.toLowerCase()))
@@ -148,3 +161,38 @@ export function createSupplierInventoryItem(
     updatedAt: new Date().toISOString(),
   };
 }
+
+export async function fetchSupplierInventory(supplierId?: number): Promise<SupplierInventoryItem[]> {
+  const response = await axios.get<{ success: boolean; items?: SupplierInventoryItem[]; message?: string }>(
+    `${API_ROOT}/purchasing/inventory`,
+    { params: supplierId ? { supplierId } : undefined },
+  );
+  if (!response.data?.success) throw new Error(response.data?.message ?? "Could not load inventory");
+  return response.data.items ?? [];
+}
+
+export async function createSupplierInventory(item: Omit<SupplierInventoryItem, "id" | "updatedAt">): Promise<SupplierInventoryItem> {
+  const response = await axios.post<{ success: boolean; item?: SupplierInventoryItem; message?: string }>(
+    `${API_ROOT}/purchasing/inventory`,
+    item,
+  );
+  if (!response.data?.success || !response.data.item) throw new Error(response.data?.message ?? "Could not add inventory item");
+  return response.data.item;
+}
+
+export async function updateSupplierInventory(item: SupplierInventoryItem): Promise<SupplierInventoryItem> {
+  const response = await axios.put<{ success: boolean; item?: SupplierInventoryItem; message?: string }>(
+    `${API_ROOT}/purchasing/inventory/${item.id}`,
+    item,
+  );
+  if (!response.data?.success || !response.data.item) throw new Error(response.data?.message ?? "Could not update inventory item");
+  return response.data.item;
+}
+
+export async function deleteSupplierInventory(id: string): Promise<void> {
+  const response = await axios.delete<{ success: boolean; message?: string }>(`${API_ROOT}/purchasing/inventory/${id}`);
+  if (!response.data?.success) throw new Error(response.data?.message ?? "Could not delete inventory item");
+}
+import axios from "axios";
+
+import { API_ROOT } from "../../shared/api/base";

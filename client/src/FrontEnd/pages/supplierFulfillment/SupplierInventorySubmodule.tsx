@@ -36,17 +36,23 @@ import {
   mergePurchasingOptions,
 } from "../../shared/api/purchasingLookups";
 import {
-  createSupplierInventoryItem,
+  createSupplierInventory,
+  deleteSupplierInventory,
+  fetchSupplierInventory,
   loadSupplierInventory,
   saveSupplierInventory,
   seedSampleSupplierInventory,
+  updateSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
+import { MALAYSIAN_TAXES, normalizeTaxCodes, taxRateForCodes } from "../../modules/purchasing/requestCreation/constants";
 import styles from "./SupplierInventorySubmodule.module.css";
 
 const { Text, Title } = Typography;
 
-type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "imageDataUrl">;
+type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "imageDataUrl" | "taxType" | "taxRate"> & {
+  taxType?: string[];
+};
 
 const EMPTY_FORM: InventoryFormValues = {
   itemName: "",
@@ -55,6 +61,8 @@ const EMPTY_FORM: InventoryFormValues = {
   reorderLevel: 0,
   unit: "pcs",
   unitPrice: 0,
+  taxType: ["TAX"],
+  taxRate: 10,
 };
 
 function readImageFile(file: File): Promise<string> {
@@ -101,6 +109,13 @@ function stockStatus(row: SupplierInventoryItem): "Healthy" | "Low stock" | "Out
   return "Healthy";
 }
 
+function formatCurrency(amount: number): string {
+  return `RM ${amount.toLocaleString("en-MY", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 export default function SupplierInventorySubmodule(): React.ReactElement {
   const navigate = useNavigate();
   const sessionUser = useMemo(() => getSessionUser(), []);
@@ -114,6 +129,26 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   const [categoryOptions, setCategoryOptions] = useState<string[]>(() => mergePurchasingOptions("ITEM_CATEGORY", []));
   const [unitOptions, setUnitOptions] = useState<string[]>(() => mergePurchasingOptions("UNIT_OF_MEASURE", []));
   const [form] = Form.useForm<InventoryFormValues>();
+
+  useEffect(() => {
+    if (!supplierId) return;
+    void fetchSupplierInventory(supplierId)
+      .then(async (serverRows) => {
+        if (serverRows.length) {
+          setRows(serverRows);
+          saveSupplierInventory(supplierId, serverRows);
+          return;
+        }
+        const legacyRows = seedSampleSupplierInventory(supplierId);
+        if (!legacyRows.length) return;
+        const migrated = await Promise.all(legacyRows.map(({ id: _id, updatedAt: _updatedAt, ...item }) => createSupplierInventory(item)));
+        setRows(migrated);
+        saveSupplierInventory(supplierId, migrated);
+      })
+      .catch(() => {
+        setRows(loadSupplierInventory(supplierId));
+      });
+  }, [supplierId]);
 
   useEffect(() => {
     const sync = () => setRows(loadSupplierInventory(supplierId));
@@ -171,6 +206,8 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       reorderLevel: row.reorderLevel,
       unit: row.unit,
       unitPrice: row.unitPrice,
+      taxType: normalizeTaxCodes(row.taxType),
+      taxRate: taxRateForCodes(row.taxType),
     });
     setModalOpen(true);
   };
@@ -188,15 +225,23 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       itemName: values.itemName.trim(),
       category: values.category.trim() || "Uncategorized",
       imageDataUrl: itemImage,
+      taxType: normalizeTaxCodes(values.taxType).join(","),
+      taxRate: taxRateForCodes(values.taxType),
     };
-    if (editingRow) {
-      persistRows(rows.map((row) => row.id === editingRow.id ? { ...row, ...normalized, updatedAt: new Date().toISOString() } : row));
-      message.success("Inventory item updated");
-    } else {
-      persistRows([...rows, createSupplierInventoryItem(supplierId, normalized)]);
-      message.success("Inventory item added");
+    try {
+      if (editingRow) {
+        const updated = await updateSupplierInventory({ ...editingRow, ...normalized });
+        persistRows(rows.map((row) => row.id === editingRow.id ? updated : row));
+        message.success("Inventory item updated");
+      } else {
+        const created = await createSupplierInventory({ supplierId, ...normalized });
+        persistRows([...rows, created]);
+        message.success("Inventory item added");
+      }
+      setModalOpen(false);
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Inventory could not be saved");
     }
-    setModalOpen(false);
   };
 
   const removeRow = (row: SupplierInventoryItem) => {
@@ -205,9 +250,14 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       content: "This inventory record will be removed from your supplier stock list.",
       okText: "Delete",
       okButtonProps: { danger: true },
-      onOk: () => {
-        persistRows(rows.filter((item) => item.id !== row.id));
-        message.success("Inventory item deleted");
+      onOk: async () => {
+        try {
+          await deleteSupplierInventory(row.id);
+          persistRows(rows.filter((item) => item.id !== row.id));
+          message.success("Inventory item deleted");
+        } catch (error) {
+          message.error(error instanceof Error ? error.message : "Inventory item could not be deleted");
+        }
       },
     });
   };
@@ -224,6 +274,21 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       key: "available",
       sorter: (a, b) => a.quantity - b.quantity,
       render: (_, row) => <strong>{row.quantity.toLocaleString()} {row.unit}</strong>,
+    },
+    {
+      title: "Value",
+      dataIndex: "unitPrice",
+      key: "unitPrice",
+      align: "right",
+      sorter: (a, b) => a.unitPrice - b.unitPrice,
+      render: (value) => formatCurrency(value),
+    },
+    {
+      title: "Total value",
+      key: "totalValue",
+      align: "right",
+      sorter: (a, b) => a.quantity * a.unitPrice - b.quantity * b.unitPrice,
+      render: (_, row) => <strong>{formatCurrency(row.quantity * row.unitPrice)}</strong>,
     },
     {
       title: "Status",
@@ -264,7 +329,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
           <Input allowClear prefix={<SearchOutlined />} placeholder="Search item or category" value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className={styles.search} />
           <Select value={statusFilter} onChange={setStatusFilter} options={[{ value: "ALL", label: "All statuses" }, { value: "Healthy", label: "Healthy" }, { value: "Low stock", label: "Low stock" }, { value: "Out of stock", label: "Out of stock" }]} />
         </Flex>
-        {filteredRows.length ? <Table rowKey="id" columns={columns} dataSource={filteredRows} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 980 }} /> : <Empty description={rows.length ? "No matching inventory items" : "No inventory items yet"} className={styles.empty} />}
+        {filteredRows.length ? <Table rowKey="id" columns={columns} dataSource={filteredRows} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 1180 }} /> : <Empty description={rows.length ? "No matching inventory items" : "No inventory items yet"} className={styles.empty} />}
       </Card>
 
       <Modal title={editingRow ? "Edit inventory item" : "Add inventory item"} open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} okText={editingRow ? "Save changes" : "Add item"} destroyOnHidden>
@@ -300,8 +365,12 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
             <Col span={12}><Form.Item name="reorderLevel" label="Reorder level"><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
-            <Col span={24}><Form.Item name="unitPrice" label="Unit price"><InputNumber min={0} precision={2} style={{ width: "100%" }} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="unitPrice" label="Unit price"><InputNumber min={0} precision={2} style={{ width: "100%" }} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="taxType" label="Applicable taxes"><Select mode="multiple" allowClear placeholder="No tax" options={Object.entries(MALAYSIAN_TAXES).map(([value, tax]) => ({ value, label: `${tax.label} (${tax.rate}%)` }))} /></Form.Item></Col>
           </Row>
+          <Form.Item noStyle shouldUpdate={(prev, next) => prev.taxType !== next.taxType}>
+            {({ getFieldValue }) => <Form.Item label="Tax rate (%)"><InputNumber readOnly value={taxRateForCodes(getFieldValue("taxType"))} precision={2} style={{ width: "100%" }} /></Form.Item>}
+          </Form.Item>
         </Form>
       </Modal>
     </div>

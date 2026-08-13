@@ -75,6 +75,20 @@
   color: #111827;
 }
 
+.itemTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.itemImage {
+  width: 42px;
+  height: 42px;
+  border-radius: 7px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
 .itemGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

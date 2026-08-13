@@ -29,6 +29,7 @@ import {
 } from "../../modules/purchasing/requestCreation/storage";
 import type { PurchaseRequestDraft } from "../../modules/purchasing/requestCreation/types";
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
+import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import { getSessionUser } from "../../shared/auth/session";
 import { UserRole } from "../../shared/types/roles";
 
@@ -63,6 +64,24 @@ function statusColor(status: PurchaseOrderStatus): string {
     default:
       return "default";
   }
+}
+
+function sortRequestsByDate(requests: PurchaseRequestDraft[]): PurchaseRequestDraft[] {
+  return requests
+    .map((request, index) => ({ request, index }))
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.request.requestDate);
+      const rightTime = Date.parse(right.request.requestDate);
+
+      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      // Keep the latest request first when requests share a date (or have an
+      // invalid date), matching the insertion order used by the drafts store.
+      return right.index - left.index;
+    })
+    .map(({ request }) => request);
 }
 
 export default function ReviewSubmodule(): React.ReactElement {
@@ -127,7 +146,7 @@ export default function ReviewSubmodule(): React.ReactElement {
 
   const filteredRequests = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
-    const source = [...userRequests].reverse();
+    const source = sortRequestsByDate(userRequests);
 
     return source.filter((request) => {
       const matchesDate =
@@ -296,7 +315,7 @@ export default function ReviewSubmodule(): React.ReactElement {
       render: (_: unknown, request: PurchaseRequestDraft) => {
         const lineItems = Array.isArray(request.lineItems) ? request.lineItems : [];
         const total = lineItems.reduce(
-          (sum, item) => sum + item.quantity * item.unitPrice,
+          (sum, item) => sum + computeDraftLineAmountAfterTax(item),
           0,
         );
 

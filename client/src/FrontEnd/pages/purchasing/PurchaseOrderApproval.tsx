@@ -27,6 +27,7 @@ import {
   updatePurchaseOrderDraft,
 } from "../../modules/purchasing/purchaseOrder/storage";
 import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/types";
+import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import {
   appendSupplierOrderAcknowledgements,
   createOrderAcknowledgementRecordsFromPurchaseOrder,
@@ -315,7 +316,7 @@ export default function PurchaseOrderApproval(): React.ReactElement {
                 align: "right",
                 render: (_, order) => {
                   const total = order.lineItems.reduce(
-                    (sum, item) => sum + item.quantity * item.unitPrice,
+                    (sum, item) => sum + computeDraftLineAmountAfterTax(item),
                     0,
                   );
 

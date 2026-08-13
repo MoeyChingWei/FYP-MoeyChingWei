@@ -64,3 +64,155 @@
   padding-bottom: 0;
   border-bottom: none;
 }
+
+.inventoryPicker {
+  margin: 0 0 14px;
+  padding: 12px;
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.inventoryLoading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  margin-bottom: 14px;
+}
+
+.inventoryPickerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.inventoryPickerTools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inventorySearch {
+  width: min(260px, 100%);
+}
+
+.inventoryEmpty {
+  display: block;
+  padding: 20px 4px 8px;
+}
+
+.inventoryProductGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.inventoryProduct {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 74px;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.inventoryProduct:hover,
+.inventoryProductSelected {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.12);
+}
+
+.inventoryProductOutOfStock {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.52;
+  background: #f1f5f9;
+}
+
+.inventoryProductOutOfStock:hover {
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+.inventoryProductImage,
+.inventoryProductPlaceholder {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #f1f5f9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.inventoryProductCopy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.inventoryProductCopy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.inventoryProductCopy span {
+  color: #64748b;
+}
+
+.inventoryProductPrice {
+  align-self: start;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.taxSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.taxSummary div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.taxSummary span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.taxSummary strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .taxSummary {
+    grid-template-columns: 1fr;
+  }
+}

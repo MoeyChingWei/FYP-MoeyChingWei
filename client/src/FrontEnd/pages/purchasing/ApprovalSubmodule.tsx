@@ -31,6 +31,7 @@ import {
   createPurchaseOrderFromRequest,
 } from "../../modules/purchasing/purchaseOrder/storage";
 import type { PurchaseRequestDraft } from "../../modules/purchasing/requestCreation/types";
+import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import { getSessionUser } from "../../shared/auth/session";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { UserRole } from "../../shared/types/roles";
@@ -38,6 +39,22 @@ import { UserRole } from "../../shared/types/roles";
 import styles from "./ApprovalSubmodule.module.css";
 
 const { Text, Title } = Typography;
+
+function sortRequestsByDate(requests: PurchaseRequestDraft[]): PurchaseRequestDraft[] {
+  return requests
+    .map((request, index) => ({ request, index }))
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.request.requestDate);
+      const rightTime = Date.parse(right.request.requestDate);
+
+      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      return right.index - left.index;
+    })
+    .map(({ request }) => request);
+}
 
 export default function ApprovalSubmodule(): React.ReactElement {
   const { t: tMsg } = useTranslation('messages');
@@ -93,14 +110,13 @@ export default function ApprovalSubmodule(): React.ReactElement {
           }
 
           return false;
-        })
-        .reverse(),
+        }),
     [requests, sessionUser],
   );
 
   const filteredRequests = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
-    return submittedRequests.filter((request) => {
+    return sortRequestsByDate(submittedRequests).filter((request) => {
       const matchesDate =
         !selectedDate || request.requestDate === selectedDate;
 
@@ -321,7 +337,7 @@ export default function ApprovalSubmodule(): React.ReactElement {
                     ? request.lineItems
                     : [];
                   const total = lineItems.reduce(
-                    (sum, item) => sum + item.quantity * item.unitPrice,
+                    (sum, item) => sum + computeDraftLineAmountAfterTax(item),
                     0,
                   );
 

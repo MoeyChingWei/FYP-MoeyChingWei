@@ -3,8 +3,12 @@ import prisma from "../config/prisma.js";
 
 const router = express.Router();
 
+// Debug: Log all middleware in this router
+console.log("🟢 Budget router initialized - stack length:", router.stack.length);
+
 // GET /api/budget/forecast - Get budget forecast based on approved purchase requests
 router.get("/forecast", async (req, res) => {
+  console.log("🔵 Budget forecast route hit - query:", req.query);
   try {
     const { startDate, endDate, category, period = "monthly" } = req.query;
 

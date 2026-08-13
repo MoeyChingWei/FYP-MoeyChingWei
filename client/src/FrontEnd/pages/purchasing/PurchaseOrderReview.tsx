@@ -30,6 +30,7 @@ import {
 } from "../../modules/purchasing/purchaseOrder/storage";
 import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/types";
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
+import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import { UserRole } from "../../shared/types/roles";
 import ExportButton from "../../components/shared/ExportButton";
 import PrintButton from "../../components/shared/PrintButton";
@@ -273,7 +274,7 @@ export default function PurchaseOrderReview(): React.ReactElement {
       align: "right" as const,
       render: (_: unknown, order: PurchaseOrderDraft) => {
         const total = order.lineItems.reduce(
-          (sum, item) => sum + item.quantity * item.unitPrice,
+          (sum, item) => sum + computeDraftLineAmountAfterTax(item),
           0,
         );
 

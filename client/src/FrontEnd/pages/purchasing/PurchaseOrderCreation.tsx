@@ -26,7 +26,9 @@ import { useTranslation } from "react-i18next";
 import CreatableLookupSelect from "../../components/purchasing/CreatableLookupSelect";
 import { getSessionUser } from "../../shared/auth/session";
 import {
-  computeLineTotal,
+  computeAmountAfterTax,
+  computeTaxAmount,
+  taxRateForCodes,
   todayIsoDate,
 } from "../../modules/purchasing/requestCreation/constants";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
@@ -54,6 +56,8 @@ type LineItemFormRow = {
   quantity?: number;
   unitOfMeasurement?: string;
   estimatedUnitPrice?: number;
+  taxType?: string;
+  taxRate?: number;
 };
 
 type FormValues = {
@@ -74,7 +78,8 @@ function LineRowTotal({ index }: { index: number }): React.ReactElement {
   const form = Form.useFormInstance();
   const q = Form.useWatch(["lineItems", index, "quantity"], form);
   const p = Form.useWatch(["lineItems", index, "estimatedUnitPrice"], form);
-  const total = computeLineTotal(q, p);
+  const taxRate = Form.useWatch(["lineItems", index, "taxRate"], form);
+  const total = computeAmountAfterTax(q, p, taxRate);
 
   return (
     <InputNumber
@@ -139,6 +144,8 @@ export default function PurchaseOrderCreation(): React.ReactElement {
         quantity: item.quantity,
         unitOfMeasurement: item.unitOfMeasurement,
         estimatedUnitPrice: item.unitPrice,
+        taxType: item.taxType,
+        taxRate: item.taxRate,
       })),
     });
   }, [form, localId, navigate]);
@@ -160,7 +167,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
   const orderTotal = useMemo(() => {
     if (!lineItemsWatch?.length) return 0;
     return lineItemsWatch.reduce(
-      (sum, row) => sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice),
+      (sum, row) => sum + computeAmountAfterTax(row?.quantity, row?.estimatedUnitPrice, row?.taxRate),
       0,
     );
   }, [lineItemsWatch]);
@@ -169,7 +176,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
     const rows =
       (form.getFieldValue("lineItems") as LineItemFormRow[] | undefined) ?? [];
     const total = rows.reduce(
-      (sum, row) => sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice),
+      (sum, row) => sum + computeAmountAfterTax(row?.quantity, row?.estimatedUnitPrice, row?.taxRate),
       0,
     );
     message.info(t('purchaseOrder.creation.messages.totalCalculated', { currency: DEFAULT_CURRENCY, total: total.toFixed(2) }));
@@ -200,6 +207,20 @@ export default function PurchaseOrderCreation(): React.ReactElement {
       quantity: Number(row.quantity),
       unitOfMeasurement: String(row.unitOfMeasurement ?? "").trim(),
       unitPrice: Number(row.estimatedUnitPrice),
+      taxType: String(row.taxType ?? "").trim() || undefined,
+      taxRate: Number.isFinite(Number(row.taxRate))
+        ? Number(row.taxRate)
+        : taxRateForCodes(row.taxType),
+      taxAmount: computeTaxAmount(
+        row.quantity,
+        row.estimatedUnitPrice,
+        Number.isFinite(Number(row.taxRate)) ? Number(row.taxRate) : taxRateForCodes(row.taxType),
+      ),
+      amountAfterTax: computeAmountAfterTax(
+        row.quantity,
+        row.estimatedUnitPrice,
+        Number.isFinite(Number(row.taxRate)) ? Number(row.taxRate) : taxRateForCodes(row.taxType),
+      ),
     }));
 
     const draft: PurchaseOrderDraft = {

@@ -9,6 +9,7 @@ import prisma from '../../config/prisma.js';
  * After validation, attaches validated user data to req.user
  */
 export async function authenticateToken(req, res, next) {
+  console.log("🔴 authenticateToken called for:", req.method, req.path, "originalUrl:", req.originalUrl);
   try {
     let userId, email;
 

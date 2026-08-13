@@ -18,6 +18,29 @@ export const UNITS_OF_MEASUREMENT = ["pcs", "box", "unit"] as const;
 
 export type UnitOfMeasurement = (typeof UNITS_OF_MEASUREMENT)[number];
 
+export const MALAYSIAN_TAXES = {
+  TAX: { label: "Tax", rate: 10 },
+  SERVICE_TAX: { label: "Service tax", rate: 6 },
+} as const;
+
+export type MalaysianTaxCode = keyof typeof MALAYSIAN_TAXES;
+
+export function normalizeTaxCodes(value: unknown): MalaysianTaxCode[] {
+  const rawValues = Array.isArray(value) ? value : String(value ?? "").split(",");
+  const codes = rawValues.map((entry) => String(entry).trim().toUpperCase());
+  const normalized = codes.map((code) => code === "SST" || code === "SALES_TAX" ? "TAX" : code);
+  return Array.from(new Set(normalized.filter((code): code is MalaysianTaxCode => code in MALAYSIAN_TAXES)));
+}
+
+export function taxRateForCodes(value: unknown): number {
+  return normalizeTaxCodes(value).reduce((sum, code) => sum + MALAYSIAN_TAXES[code].rate, 0);
+}
+
+export function taxLabelForCodes(value: unknown): string {
+  const codes = normalizeTaxCodes(value);
+  return codes.length ? codes.map((code) => `${MALAYSIAN_TAXES[code].label} (${MALAYSIAN_TAXES[code].rate}%)`).join(" + ") : "No tax";
+}
+
 export function generatePrNumber(): string {
   const d = new Date();
   const y = d.getFullYear();
@@ -41,4 +64,35 @@ export function computeLineTotal(quantity: unknown, unitPrice: unknown): number 
   const p = typeof unitPrice === "number" ? unitPrice : Number(unitPrice);
   if (!Number.isFinite(q) || !Number.isFinite(p)) return 0;
   return Math.round(q * p * 100) / 100;
+}
+
+export function computeTaxAmount(quantity: unknown, unitPrice: unknown, taxRate: unknown): number {
+  const subtotal = computeLineTotal(quantity, unitPrice);
+  const rate = typeof taxRate === "string" || Array.isArray(taxRate)
+    ? taxRateForCodes(taxRate)
+    : Number(taxRate);
+  if (!Number.isFinite(rate) || rate <= 0) return 0;
+  return Math.round(subtotal * rate / 100 * 100) / 100;
+}
+
+export function computeAmountAfterTax(quantity: unknown, unitPrice: unknown, taxRate: unknown): number {
+  return Math.round((computeLineTotal(quantity, unitPrice) + computeTaxAmount(quantity, unitPrice, taxRate)) * 100) / 100;
+}
+
+export function computeDraftLineAmountAfterTax(item: {
+  quantity: number;
+  unitPrice: number;
+  taxRate?: number;
+  taxAmount?: number;
+  amountAfterTax?: number;
+}): number {
+  if (Number.isFinite(item.amountAfterTax)) {
+    return item.amountAfterTax as number;
+  }
+
+  const subtotal = computeLineTotal(item.quantity, item.unitPrice);
+  const taxAmount = Number.isFinite(item.taxAmount)
+    ? (item.taxAmount as number)
+    : computeTaxAmount(item.quantity, item.unitPrice, item.taxRate);
+  return Math.round((subtotal + taxAmount) * 100) / 100;
 }

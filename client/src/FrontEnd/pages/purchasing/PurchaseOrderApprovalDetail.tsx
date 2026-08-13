@@ -24,6 +24,7 @@ import {
 } from "../../modules/purchasing/purchaseOrder/storage";
 import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/types";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
+import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import {
   appendSupplierOrderAcknowledgements,
   createOrderAcknowledgementRecordsFromPurchaseOrder,
@@ -50,14 +51,17 @@ function ItemDetailCard({
   index: number;
   t: any;
 }): React.ReactElement {
-  const lineTotal = item.quantity * item.unitPrice;
+  const lineTotal = computeDraftLineAmountAfterTax(item);
 
   return (
     <div className={styles.itemCard}>
       <div className={styles.itemHeader}>
         <div>
           <div className={styles.itemIndex}>{t('purchaseOrder.detail.items.item', { index: index + 1 })}</div>
-          <h4 className={styles.itemTitle}>{item.itemName}</h4>
+          <div className={styles.itemTitleRow}>
+            {item.itemImageUrl ? <img src={item.itemImageUrl} alt="" className={styles.itemImage} /> : null}
+            <h4 className={styles.itemTitle}>{item.itemName}</h4>
+          </div>
         </div>
         <Tag>{item.itemCategory || t('common.uncategorized')}</Tag>
       </div>
@@ -90,7 +94,7 @@ function ItemDetailCard({
         </div>
 
         <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>{t('purchaseRequest.detail.items.fields.lineTotal')}</span>
+          <span className={styles.detailLabel}>Amount after tax</span>
           <div className={styles.detailValue}>
             {currencyLabel(currency, lineTotal)}
           </div>
@@ -199,7 +203,7 @@ export default function PurchaseOrderApprovalDetail(): React.ReactElement {
   }
 
   const total = order.lineItems.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
+    (sum, item) => sum + computeDraftLineAmountAfterTax(item),
     0,
   );
   const supplierCount = new Set(

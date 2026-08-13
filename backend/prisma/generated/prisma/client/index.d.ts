@@ -49,6 +49,11 @@ export type PurchasingLookup = $Result.DefaultSelection<Prisma.$PurchasingLookup
  */
 export type SupplierTypeAssignment = $Result.DefaultSelection<Prisma.$SupplierTypeAssignmentPayload>
 /**
+ * Model SupplierInventoryItem
+ * 
+ */
+export type SupplierInventoryItem = $Result.DefaultSelection<Prisma.$SupplierInventoryItemPayload>
+/**
  * Model PurchaseRequestRecord
  * 
  */
@@ -313,6 +318,16 @@ export class PrismaClient<
     * ```
     */
   get supplierTypeAssignment(): Prisma.SupplierTypeAssignmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supplierInventoryItem`: Exposes CRUD operations for the **SupplierInventoryItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SupplierInventoryItems
+    * const supplierInventoryItems = await prisma.supplierInventoryItem.findMany()
+    * ```
+    */
+  get supplierInventoryItem(): Prisma.SupplierInventoryItemDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.purchaseRequestRecord`: Exposes CRUD operations for the **PurchaseRequestRecord** model.
@@ -874,6 +889,7 @@ export namespace Prisma {
     PasswordResetCode: 'PasswordResetCode',
     PurchasingLookup: 'PurchasingLookup',
     SupplierTypeAssignment: 'SupplierTypeAssignment',
+    SupplierInventoryItem: 'SupplierInventoryItem',
     PurchaseRequestRecord: 'PurchaseRequestRecord',
     PurchaseOrderRecord: 'PurchaseOrderRecord',
     SupplierOrderAcknowledgementRecord: 'SupplierOrderAcknowledgementRecord',
@@ -901,7 +917,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "notification" | "feedback" | "roleChangeAudit" | "passwordResetCode" | "purchasingLookup" | "supplierTypeAssignment" | "purchaseRequestRecord" | "purchaseOrderRecord" | "supplierOrderAcknowledgementRecord" | "supplierDeliveryRecordStore" | "supplierGrnRecordStore" | "chatSession" | "chatMessage" | "messageAttachment" | "source" | "sourceChunk" | "auditLog" | "backupHistory"
+      modelProps: "user" | "notification" | "feedback" | "roleChangeAudit" | "passwordResetCode" | "purchasingLookup" | "supplierTypeAssignment" | "supplierInventoryItem" | "purchaseRequestRecord" | "purchaseOrderRecord" | "supplierOrderAcknowledgementRecord" | "supplierDeliveryRecordStore" | "supplierGrnRecordStore" | "chatSession" | "chatMessage" | "messageAttachment" | "source" | "sourceChunk" | "auditLog" | "backupHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1420,6 +1436,80 @@ export namespace Prisma {
           count: {
             args: Prisma.SupplierTypeAssignmentCountArgs<ExtArgs>
             result: $Utils.Optional<SupplierTypeAssignmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      SupplierInventoryItem: {
+        payload: Prisma.$SupplierInventoryItemPayload<ExtArgs>
+        fields: Prisma.SupplierInventoryItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SupplierInventoryItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SupplierInventoryItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>
+          }
+          findFirst: {
+            args: Prisma.SupplierInventoryItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SupplierInventoryItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>
+          }
+          findMany: {
+            args: Prisma.SupplierInventoryItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>[]
+          }
+          create: {
+            args: Prisma.SupplierInventoryItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>
+          }
+          createMany: {
+            args: Prisma.SupplierInventoryItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SupplierInventoryItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>[]
+          }
+          delete: {
+            args: Prisma.SupplierInventoryItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>
+          }
+          update: {
+            args: Prisma.SupplierInventoryItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.SupplierInventoryItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SupplierInventoryItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SupplierInventoryItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.SupplierInventoryItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupplierInventoryItemPayload>
+          }
+          aggregate: {
+            args: Prisma.SupplierInventoryItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupplierInventoryItem>
+          }
+          groupBy: {
+            args: Prisma.SupplierInventoryItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SupplierInventoryItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SupplierInventoryItemCountArgs<ExtArgs>
+            result: $Utils.Optional<SupplierInventoryItemCountAggregateOutputType> | number
           }
         }
       }
@@ -2410,6 +2500,7 @@ export namespace Prisma {
     passwordResetCode?: PasswordResetCodeOmit
     purchasingLookup?: PurchasingLookupOmit
     supplierTypeAssignment?: SupplierTypeAssignmentOmit
+    supplierInventoryItem?: SupplierInventoryItemOmit
     purchaseRequestRecord?: PurchaseRequestRecordOmit
     purchaseOrderRecord?: PurchaseOrderRecordOmit
     supplierOrderAcknowledgementRecord?: SupplierOrderAcknowledgementRecordOmit
@@ -2505,6 +2596,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget: number
     passwordResetCodes: number
     supplierTypeAssignments: number
+    supplierInventoryItems: number
     notifications: number
     feedbacks: number
     chatSessions: number
@@ -2515,6 +2607,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: boolean | UserCountOutputTypeCountRoleChangeAuditsAsTargetArgs
     passwordResetCodes?: boolean | UserCountOutputTypeCountPasswordResetCodesArgs
     supplierTypeAssignments?: boolean | UserCountOutputTypeCountSupplierTypeAssignmentsArgs
+    supplierInventoryItems?: boolean | UserCountOutputTypeCountSupplierInventoryItemsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     feedbacks?: boolean | UserCountOutputTypeCountFeedbacksArgs
     chatSessions?: boolean | UserCountOutputTypeCountChatSessionsArgs
@@ -2551,6 +2644,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSupplierTypeAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SupplierTypeAssignmentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSupplierInventoryItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupplierInventoryItemWhereInput
   }
 
   /**
@@ -2921,6 +3021,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: boolean | User$roleChangeAuditsAsTargetArgs<ExtArgs>
     passwordResetCodes?: boolean | User$passwordResetCodesArgs<ExtArgs>
     supplierTypeAssignments?: boolean | User$supplierTypeAssignmentsArgs<ExtArgs>
+    supplierInventoryItems?: boolean | User$supplierInventoryItemsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     feedbacks?: boolean | User$feedbacksArgs<ExtArgs>
     chatSessions?: boolean | User$chatSessionsArgs<ExtArgs>
@@ -2969,6 +3070,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: boolean | User$roleChangeAuditsAsTargetArgs<ExtArgs>
     passwordResetCodes?: boolean | User$passwordResetCodesArgs<ExtArgs>
     supplierTypeAssignments?: boolean | User$supplierTypeAssignmentsArgs<ExtArgs>
+    supplierInventoryItems?: boolean | User$supplierInventoryItemsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     feedbacks?: boolean | User$feedbacksArgs<ExtArgs>
     chatSessions?: boolean | User$chatSessionsArgs<ExtArgs>
@@ -2984,6 +3086,7 @@ export namespace Prisma {
       roleChangeAuditsAsTarget: Prisma.$RoleChangeAuditPayload<ExtArgs>[]
       passwordResetCodes: Prisma.$PasswordResetCodePayload<ExtArgs>[]
       supplierTypeAssignments: Prisma.$SupplierTypeAssignmentPayload<ExtArgs>[]
+      supplierInventoryItems: Prisma.$SupplierInventoryItemPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
       chatSessions: Prisma.$ChatSessionPayload<ExtArgs>[]
@@ -3396,6 +3499,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget<T extends User$roleChangeAuditsAsTargetArgs<ExtArgs> = {}>(args?: Subset<T, User$roleChangeAuditsAsTargetArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleChangeAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     passwordResetCodes<T extends User$passwordResetCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supplierTypeAssignments<T extends User$supplierTypeAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$supplierTypeAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupplierTypeAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supplierInventoryItems<T extends User$supplierInventoryItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$supplierInventoryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedbacks<T extends User$feedbacksArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chatSessions<T extends User$chatSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$chatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3895,6 +3999,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SupplierTypeAssignmentScalarFieldEnum | SupplierTypeAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * User.supplierInventoryItems
+   */
+  export type User$supplierInventoryItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    where?: SupplierInventoryItemWhereInput
+    orderBy?: SupplierInventoryItemOrderByWithRelationInput | SupplierInventoryItemOrderByWithRelationInput[]
+    cursor?: SupplierInventoryItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupplierInventoryItemScalarFieldEnum | SupplierInventoryItemScalarFieldEnum[]
   }
 
   /**
@@ -10704,6 +10832,1218 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SupplierTypeAssignmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SupplierInventoryItem
+   */
+
+  export type AggregateSupplierInventoryItem = {
+    _count: SupplierInventoryItemCountAggregateOutputType | null
+    _avg: SupplierInventoryItemAvgAggregateOutputType | null
+    _sum: SupplierInventoryItemSumAggregateOutputType | null
+    _min: SupplierInventoryItemMinAggregateOutputType | null
+    _max: SupplierInventoryItemMaxAggregateOutputType | null
+  }
+
+  export type SupplierInventoryItemAvgAggregateOutputType = {
+    supplierId: number | null
+    quantity: number | null
+    reorderLevel: number | null
+    unitPrice: number | null
+    taxRate: number | null
+  }
+
+  export type SupplierInventoryItemSumAggregateOutputType = {
+    supplierId: number | null
+    quantity: number | null
+    reorderLevel: number | null
+    unitPrice: number | null
+    taxRate: number | null
+  }
+
+  export type SupplierInventoryItemMinAggregateOutputType = {
+    id: string | null
+    supplierId: number | null
+    itemName: string | null
+    category: string | null
+    quantity: number | null
+    reorderLevel: number | null
+    unit: string | null
+    unitPrice: number | null
+    taxType: string | null
+    taxRate: number | null
+    imageDataUrl: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SupplierInventoryItemMaxAggregateOutputType = {
+    id: string | null
+    supplierId: number | null
+    itemName: string | null
+    category: string | null
+    quantity: number | null
+    reorderLevel: number | null
+    unit: string | null
+    unitPrice: number | null
+    taxType: string | null
+    taxRate: number | null
+    imageDataUrl: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SupplierInventoryItemCountAggregateOutputType = {
+    id: number
+    supplierId: number
+    itemName: number
+    category: number
+    quantity: number
+    reorderLevel: number
+    unit: number
+    unitPrice: number
+    taxType: number
+    taxRate: number
+    imageDataUrl: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SupplierInventoryItemAvgAggregateInputType = {
+    supplierId?: true
+    quantity?: true
+    reorderLevel?: true
+    unitPrice?: true
+    taxRate?: true
+  }
+
+  export type SupplierInventoryItemSumAggregateInputType = {
+    supplierId?: true
+    quantity?: true
+    reorderLevel?: true
+    unitPrice?: true
+    taxRate?: true
+  }
+
+  export type SupplierInventoryItemMinAggregateInputType = {
+    id?: true
+    supplierId?: true
+    itemName?: true
+    category?: true
+    quantity?: true
+    reorderLevel?: true
+    unit?: true
+    unitPrice?: true
+    taxType?: true
+    taxRate?: true
+    imageDataUrl?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SupplierInventoryItemMaxAggregateInputType = {
+    id?: true
+    supplierId?: true
+    itemName?: true
+    category?: true
+    quantity?: true
+    reorderLevel?: true
+    unit?: true
+    unitPrice?: true
+    taxType?: true
+    taxRate?: true
+    imageDataUrl?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SupplierInventoryItemCountAggregateInputType = {
+    id?: true
+    supplierId?: true
+    itemName?: true
+    category?: true
+    quantity?: true
+    reorderLevel?: true
+    unit?: true
+    unitPrice?: true
+    taxType?: true
+    taxRate?: true
+    imageDataUrl?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SupplierInventoryItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupplierInventoryItem to aggregate.
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupplierInventoryItems to fetch.
+     */
+    orderBy?: SupplierInventoryItemOrderByWithRelationInput | SupplierInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SupplierInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupplierInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupplierInventoryItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SupplierInventoryItems
+    **/
+    _count?: true | SupplierInventoryItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SupplierInventoryItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SupplierInventoryItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SupplierInventoryItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SupplierInventoryItemMaxAggregateInputType
+  }
+
+  export type GetSupplierInventoryItemAggregateType<T extends SupplierInventoryItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupplierInventoryItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupplierInventoryItem[P]>
+      : GetScalarType<T[P], AggregateSupplierInventoryItem[P]>
+  }
+
+
+
+
+  export type SupplierInventoryItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupplierInventoryItemWhereInput
+    orderBy?: SupplierInventoryItemOrderByWithAggregationInput | SupplierInventoryItemOrderByWithAggregationInput[]
+    by: SupplierInventoryItemScalarFieldEnum[] | SupplierInventoryItemScalarFieldEnum
+    having?: SupplierInventoryItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SupplierInventoryItemCountAggregateInputType | true
+    _avg?: SupplierInventoryItemAvgAggregateInputType
+    _sum?: SupplierInventoryItemSumAggregateInputType
+    _min?: SupplierInventoryItemMinAggregateInputType
+    _max?: SupplierInventoryItemMaxAggregateInputType
+  }
+
+  export type SupplierInventoryItemGroupByOutputType = {
+    id: string
+    supplierId: number
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel: number
+    unit: string
+    unitPrice: number
+    taxType: string
+    taxRate: number
+    imageDataUrl: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SupplierInventoryItemCountAggregateOutputType | null
+    _avg: SupplierInventoryItemAvgAggregateOutputType | null
+    _sum: SupplierInventoryItemSumAggregateOutputType | null
+    _min: SupplierInventoryItemMinAggregateOutputType | null
+    _max: SupplierInventoryItemMaxAggregateOutputType | null
+  }
+
+  type GetSupplierInventoryItemGroupByPayload<T extends SupplierInventoryItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SupplierInventoryItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SupplierInventoryItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SupplierInventoryItemGroupByOutputType[P]>
+            : GetScalarType<T[P], SupplierInventoryItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SupplierInventoryItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    supplierId?: boolean
+    itemName?: boolean
+    category?: boolean
+    quantity?: boolean
+    reorderLevel?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    imageDataUrl?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    supplier?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplierInventoryItem"]>
+
+  export type SupplierInventoryItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    supplierId?: boolean
+    itemName?: boolean
+    category?: boolean
+    quantity?: boolean
+    reorderLevel?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    imageDataUrl?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    supplier?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplierInventoryItem"]>
+
+  export type SupplierInventoryItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    supplierId?: boolean
+    itemName?: boolean
+    category?: boolean
+    quantity?: boolean
+    reorderLevel?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    imageDataUrl?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    supplier?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplierInventoryItem"]>
+
+  export type SupplierInventoryItemSelectScalar = {
+    id?: boolean
+    supplierId?: boolean
+    itemName?: boolean
+    category?: boolean
+    quantity?: boolean
+    reorderLevel?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    imageDataUrl?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SupplierInventoryItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supplierId" | "itemName" | "category" | "quantity" | "reorderLevel" | "unit" | "unitPrice" | "taxType" | "taxRate" | "imageDataUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["supplierInventoryItem"]>
+  export type SupplierInventoryItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    supplier?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SupplierInventoryItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    supplier?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SupplierInventoryItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    supplier?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $SupplierInventoryItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SupplierInventoryItem"
+    objects: {
+      supplier: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      supplierId: number
+      itemName: string
+      category: string
+      quantity: number
+      reorderLevel: number
+      unit: string
+      unitPrice: number
+      taxType: string
+      taxRate: number
+      imageDataUrl: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["supplierInventoryItem"]>
+    composites: {}
+  }
+
+  type SupplierInventoryItemGetPayload<S extends boolean | null | undefined | SupplierInventoryItemDefaultArgs> = $Result.GetResult<Prisma.$SupplierInventoryItemPayload, S>
+
+  type SupplierInventoryItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SupplierInventoryItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SupplierInventoryItemCountAggregateInputType | true
+    }
+
+  export interface SupplierInventoryItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SupplierInventoryItem'], meta: { name: 'SupplierInventoryItem' } }
+    /**
+     * Find zero or one SupplierInventoryItem that matches the filter.
+     * @param {SupplierInventoryItemFindUniqueArgs} args - Arguments to find a SupplierInventoryItem
+     * @example
+     * // Get one SupplierInventoryItem
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SupplierInventoryItemFindUniqueArgs>(args: SelectSubset<T, SupplierInventoryItemFindUniqueArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SupplierInventoryItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SupplierInventoryItemFindUniqueOrThrowArgs} args - Arguments to find a SupplierInventoryItem
+     * @example
+     * // Get one SupplierInventoryItem
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SupplierInventoryItemFindUniqueOrThrowArgs>(args: SelectSubset<T, SupplierInventoryItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupplierInventoryItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemFindFirstArgs} args - Arguments to find a SupplierInventoryItem
+     * @example
+     * // Get one SupplierInventoryItem
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SupplierInventoryItemFindFirstArgs>(args?: SelectSubset<T, SupplierInventoryItemFindFirstArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupplierInventoryItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemFindFirstOrThrowArgs} args - Arguments to find a SupplierInventoryItem
+     * @example
+     * // Get one SupplierInventoryItem
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SupplierInventoryItemFindFirstOrThrowArgs>(args?: SelectSubset<T, SupplierInventoryItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SupplierInventoryItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SupplierInventoryItems
+     * const supplierInventoryItems = await prisma.supplierInventoryItem.findMany()
+     * 
+     * // Get first 10 SupplierInventoryItems
+     * const supplierInventoryItems = await prisma.supplierInventoryItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const supplierInventoryItemWithIdOnly = await prisma.supplierInventoryItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SupplierInventoryItemFindManyArgs>(args?: SelectSubset<T, SupplierInventoryItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SupplierInventoryItem.
+     * @param {SupplierInventoryItemCreateArgs} args - Arguments to create a SupplierInventoryItem.
+     * @example
+     * // Create one SupplierInventoryItem
+     * const SupplierInventoryItem = await prisma.supplierInventoryItem.create({
+     *   data: {
+     *     // ... data to create a SupplierInventoryItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends SupplierInventoryItemCreateArgs>(args: SelectSubset<T, SupplierInventoryItemCreateArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SupplierInventoryItems.
+     * @param {SupplierInventoryItemCreateManyArgs} args - Arguments to create many SupplierInventoryItems.
+     * @example
+     * // Create many SupplierInventoryItems
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SupplierInventoryItemCreateManyArgs>(args?: SelectSubset<T, SupplierInventoryItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SupplierInventoryItems and returns the data saved in the database.
+     * @param {SupplierInventoryItemCreateManyAndReturnArgs} args - Arguments to create many SupplierInventoryItems.
+     * @example
+     * // Create many SupplierInventoryItems
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SupplierInventoryItems and only return the `id`
+     * const supplierInventoryItemWithIdOnly = await prisma.supplierInventoryItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SupplierInventoryItemCreateManyAndReturnArgs>(args?: SelectSubset<T, SupplierInventoryItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SupplierInventoryItem.
+     * @param {SupplierInventoryItemDeleteArgs} args - Arguments to delete one SupplierInventoryItem.
+     * @example
+     * // Delete one SupplierInventoryItem
+     * const SupplierInventoryItem = await prisma.supplierInventoryItem.delete({
+     *   where: {
+     *     // ... filter to delete one SupplierInventoryItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SupplierInventoryItemDeleteArgs>(args: SelectSubset<T, SupplierInventoryItemDeleteArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SupplierInventoryItem.
+     * @param {SupplierInventoryItemUpdateArgs} args - Arguments to update one SupplierInventoryItem.
+     * @example
+     * // Update one SupplierInventoryItem
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SupplierInventoryItemUpdateArgs>(args: SelectSubset<T, SupplierInventoryItemUpdateArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SupplierInventoryItems.
+     * @param {SupplierInventoryItemDeleteManyArgs} args - Arguments to filter SupplierInventoryItems to delete.
+     * @example
+     * // Delete a few SupplierInventoryItems
+     * const { count } = await prisma.supplierInventoryItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SupplierInventoryItemDeleteManyArgs>(args?: SelectSubset<T, SupplierInventoryItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupplierInventoryItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SupplierInventoryItems
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SupplierInventoryItemUpdateManyArgs>(args: SelectSubset<T, SupplierInventoryItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupplierInventoryItems and returns the data updated in the database.
+     * @param {SupplierInventoryItemUpdateManyAndReturnArgs} args - Arguments to update many SupplierInventoryItems.
+     * @example
+     * // Update many SupplierInventoryItems
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SupplierInventoryItems and only return the `id`
+     * const supplierInventoryItemWithIdOnly = await prisma.supplierInventoryItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SupplierInventoryItemUpdateManyAndReturnArgs>(args: SelectSubset<T, SupplierInventoryItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SupplierInventoryItem.
+     * @param {SupplierInventoryItemUpsertArgs} args - Arguments to update or create a SupplierInventoryItem.
+     * @example
+     * // Update or create a SupplierInventoryItem
+     * const supplierInventoryItem = await prisma.supplierInventoryItem.upsert({
+     *   create: {
+     *     // ... data to create a SupplierInventoryItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SupplierInventoryItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SupplierInventoryItemUpsertArgs>(args: SelectSubset<T, SupplierInventoryItemUpsertArgs<ExtArgs>>): Prisma__SupplierInventoryItemClient<$Result.GetResult<Prisma.$SupplierInventoryItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SupplierInventoryItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemCountArgs} args - Arguments to filter SupplierInventoryItems to count.
+     * @example
+     * // Count the number of SupplierInventoryItems
+     * const count = await prisma.supplierInventoryItem.count({
+     *   where: {
+     *     // ... the filter for the SupplierInventoryItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends SupplierInventoryItemCountArgs>(
+      args?: Subset<T, SupplierInventoryItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SupplierInventoryItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SupplierInventoryItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SupplierInventoryItemAggregateArgs>(args: Subset<T, SupplierInventoryItemAggregateArgs>): Prisma.PrismaPromise<GetSupplierInventoryItemAggregateType<T>>
+
+    /**
+     * Group by SupplierInventoryItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupplierInventoryItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SupplierInventoryItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SupplierInventoryItemGroupByArgs['orderBy'] }
+        : { orderBy?: SupplierInventoryItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SupplierInventoryItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupplierInventoryItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SupplierInventoryItem model
+   */
+  readonly fields: SupplierInventoryItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SupplierInventoryItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SupplierInventoryItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    supplier<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SupplierInventoryItem model
+   */
+  interface SupplierInventoryItemFieldRefs {
+    readonly id: FieldRef<"SupplierInventoryItem", 'String'>
+    readonly supplierId: FieldRef<"SupplierInventoryItem", 'Int'>
+    readonly itemName: FieldRef<"SupplierInventoryItem", 'String'>
+    readonly category: FieldRef<"SupplierInventoryItem", 'String'>
+    readonly quantity: FieldRef<"SupplierInventoryItem", 'Int'>
+    readonly reorderLevel: FieldRef<"SupplierInventoryItem", 'Int'>
+    readonly unit: FieldRef<"SupplierInventoryItem", 'String'>
+    readonly unitPrice: FieldRef<"SupplierInventoryItem", 'Float'>
+    readonly taxType: FieldRef<"SupplierInventoryItem", 'String'>
+    readonly taxRate: FieldRef<"SupplierInventoryItem", 'Float'>
+    readonly imageDataUrl: FieldRef<"SupplierInventoryItem", 'String'>
+    readonly createdAt: FieldRef<"SupplierInventoryItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"SupplierInventoryItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SupplierInventoryItem findUnique
+   */
+  export type SupplierInventoryItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SupplierInventoryItem to fetch.
+     */
+    where: SupplierInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * SupplierInventoryItem findUniqueOrThrow
+   */
+  export type SupplierInventoryItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SupplierInventoryItem to fetch.
+     */
+    where: SupplierInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * SupplierInventoryItem findFirst
+   */
+  export type SupplierInventoryItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SupplierInventoryItem to fetch.
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupplierInventoryItems to fetch.
+     */
+    orderBy?: SupplierInventoryItemOrderByWithRelationInput | SupplierInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupplierInventoryItems.
+     */
+    cursor?: SupplierInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupplierInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupplierInventoryItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupplierInventoryItems.
+     */
+    distinct?: SupplierInventoryItemScalarFieldEnum | SupplierInventoryItemScalarFieldEnum[]
+  }
+
+  /**
+   * SupplierInventoryItem findFirstOrThrow
+   */
+  export type SupplierInventoryItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SupplierInventoryItem to fetch.
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupplierInventoryItems to fetch.
+     */
+    orderBy?: SupplierInventoryItemOrderByWithRelationInput | SupplierInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupplierInventoryItems.
+     */
+    cursor?: SupplierInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupplierInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupplierInventoryItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupplierInventoryItems.
+     */
+    distinct?: SupplierInventoryItemScalarFieldEnum | SupplierInventoryItemScalarFieldEnum[]
+  }
+
+  /**
+   * SupplierInventoryItem findMany
+   */
+  export type SupplierInventoryItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SupplierInventoryItems to fetch.
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupplierInventoryItems to fetch.
+     */
+    orderBy?: SupplierInventoryItemOrderByWithRelationInput | SupplierInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SupplierInventoryItems.
+     */
+    cursor?: SupplierInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupplierInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupplierInventoryItems.
+     */
+    skip?: number
+    distinct?: SupplierInventoryItemScalarFieldEnum | SupplierInventoryItemScalarFieldEnum[]
+  }
+
+  /**
+   * SupplierInventoryItem create
+   */
+  export type SupplierInventoryItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SupplierInventoryItem.
+     */
+    data: XOR<SupplierInventoryItemCreateInput, SupplierInventoryItemUncheckedCreateInput>
+  }
+
+  /**
+   * SupplierInventoryItem createMany
+   */
+  export type SupplierInventoryItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SupplierInventoryItems.
+     */
+    data: SupplierInventoryItemCreateManyInput | SupplierInventoryItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SupplierInventoryItem createManyAndReturn
+   */
+  export type SupplierInventoryItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many SupplierInventoryItems.
+     */
+    data: SupplierInventoryItemCreateManyInput | SupplierInventoryItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupplierInventoryItem update
+   */
+  export type SupplierInventoryItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SupplierInventoryItem.
+     */
+    data: XOR<SupplierInventoryItemUpdateInput, SupplierInventoryItemUncheckedUpdateInput>
+    /**
+     * Choose, which SupplierInventoryItem to update.
+     */
+    where: SupplierInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * SupplierInventoryItem updateMany
+   */
+  export type SupplierInventoryItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SupplierInventoryItems.
+     */
+    data: XOR<SupplierInventoryItemUpdateManyMutationInput, SupplierInventoryItemUncheckedUpdateManyInput>
+    /**
+     * Filter which SupplierInventoryItems to update
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * Limit how many SupplierInventoryItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupplierInventoryItem updateManyAndReturn
+   */
+  export type SupplierInventoryItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * The data used to update SupplierInventoryItems.
+     */
+    data: XOR<SupplierInventoryItemUpdateManyMutationInput, SupplierInventoryItemUncheckedUpdateManyInput>
+    /**
+     * Filter which SupplierInventoryItems to update
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * Limit how many SupplierInventoryItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupplierInventoryItem upsert
+   */
+  export type SupplierInventoryItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SupplierInventoryItem to update in case it exists.
+     */
+    where: SupplierInventoryItemWhereUniqueInput
+    /**
+     * In case the SupplierInventoryItem found by the `where` argument doesn't exist, create a new SupplierInventoryItem with this data.
+     */
+    create: XOR<SupplierInventoryItemCreateInput, SupplierInventoryItemUncheckedCreateInput>
+    /**
+     * In case the SupplierInventoryItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SupplierInventoryItemUpdateInput, SupplierInventoryItemUncheckedUpdateInput>
+  }
+
+  /**
+   * SupplierInventoryItem delete
+   */
+  export type SupplierInventoryItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter which SupplierInventoryItem to delete.
+     */
+    where: SupplierInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * SupplierInventoryItem deleteMany
+   */
+  export type SupplierInventoryItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupplierInventoryItems to delete
+     */
+    where?: SupplierInventoryItemWhereInput
+    /**
+     * Limit how many SupplierInventoryItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupplierInventoryItem without action
+   */
+  export type SupplierInventoryItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupplierInventoryItem
+     */
+    select?: SupplierInventoryItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupplierInventoryItem
+     */
+    omit?: SupplierInventoryItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupplierInventoryItemInclude<ExtArgs> | null
   }
 
 
@@ -23664,6 +25004,25 @@ export namespace Prisma {
   export type SupplierTypeAssignmentScalarFieldEnum = (typeof SupplierTypeAssignmentScalarFieldEnum)[keyof typeof SupplierTypeAssignmentScalarFieldEnum]
 
 
+  export const SupplierInventoryItemScalarFieldEnum: {
+    id: 'id',
+    supplierId: 'supplierId',
+    itemName: 'itemName',
+    category: 'category',
+    quantity: 'quantity',
+    reorderLevel: 'reorderLevel',
+    unit: 'unit',
+    unitPrice: 'unitPrice',
+    taxType: 'taxType',
+    taxRate: 'taxRate',
+    imageDataUrl: 'imageDataUrl',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SupplierInventoryItemScalarFieldEnum = (typeof SupplierInventoryItemScalarFieldEnum)[keyof typeof SupplierInventoryItemScalarFieldEnum]
+
+
   export const PurchaseRequestRecordScalarFieldEnum: {
     localId: 'localId',
     payload: 'payload',
@@ -23931,6 +25290,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -23956,20 +25329,6 @@ export namespace Prisma {
    */
   export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
   /**
    * Deep Input Types
    */
@@ -23991,6 +25350,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditListRelationFilter
     passwordResetCodes?: PasswordResetCodeListRelationFilter
     supplierTypeAssignments?: SupplierTypeAssignmentListRelationFilter
+    supplierInventoryItems?: SupplierInventoryItemListRelationFilter
     notifications?: NotificationListRelationFilter
     feedbacks?: FeedbackListRelationFilter
     chatSessions?: ChatSessionListRelationFilter
@@ -24010,6 +25370,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditOrderByRelationAggregateInput
     passwordResetCodes?: PasswordResetCodeOrderByRelationAggregateInput
     supplierTypeAssignments?: SupplierTypeAssignmentOrderByRelationAggregateInput
+    supplierInventoryItems?: SupplierInventoryItemOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     feedbacks?: FeedbackOrderByRelationAggregateInput
     chatSessions?: ChatSessionOrderByRelationAggregateInput
@@ -24032,6 +25393,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditListRelationFilter
     passwordResetCodes?: PasswordResetCodeListRelationFilter
     supplierTypeAssignments?: SupplierTypeAssignmentListRelationFilter
+    supplierInventoryItems?: SupplierInventoryItemListRelationFilter
     notifications?: NotificationListRelationFilter
     feedbacks?: FeedbackListRelationFilter
     chatSessions?: ChatSessionListRelationFilter
@@ -24479,6 +25841,103 @@ export namespace Prisma {
     category?: StringWithAggregatesFilter<"SupplierTypeAssignment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"SupplierTypeAssignment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SupplierTypeAssignment"> | Date | string
+  }
+
+  export type SupplierInventoryItemWhereInput = {
+    AND?: SupplierInventoryItemWhereInput | SupplierInventoryItemWhereInput[]
+    OR?: SupplierInventoryItemWhereInput[]
+    NOT?: SupplierInventoryItemWhereInput | SupplierInventoryItemWhereInput[]
+    id?: StringFilter<"SupplierInventoryItem"> | string
+    supplierId?: IntFilter<"SupplierInventoryItem"> | number
+    itemName?: StringFilter<"SupplierInventoryItem"> | string
+    category?: StringFilter<"SupplierInventoryItem"> | string
+    quantity?: IntFilter<"SupplierInventoryItem"> | number
+    reorderLevel?: IntFilter<"SupplierInventoryItem"> | number
+    unit?: StringFilter<"SupplierInventoryItem"> | string
+    unitPrice?: FloatFilter<"SupplierInventoryItem"> | number
+    taxType?: StringFilter<"SupplierInventoryItem"> | string
+    taxRate?: FloatFilter<"SupplierInventoryItem"> | number
+    imageDataUrl?: StringNullableFilter<"SupplierInventoryItem"> | string | null
+    createdAt?: DateTimeFilter<"SupplierInventoryItem"> | Date | string
+    updatedAt?: DateTimeFilter<"SupplierInventoryItem"> | Date | string
+    supplier?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type SupplierInventoryItemOrderByWithRelationInput = {
+    id?: SortOrder
+    supplierId?: SortOrder
+    itemName?: SortOrder
+    category?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    imageDataUrl?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    supplier?: UserOrderByWithRelationInput
+  }
+
+  export type SupplierInventoryItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SupplierInventoryItemWhereInput | SupplierInventoryItemWhereInput[]
+    OR?: SupplierInventoryItemWhereInput[]
+    NOT?: SupplierInventoryItemWhereInput | SupplierInventoryItemWhereInput[]
+    supplierId?: IntFilter<"SupplierInventoryItem"> | number
+    itemName?: StringFilter<"SupplierInventoryItem"> | string
+    category?: StringFilter<"SupplierInventoryItem"> | string
+    quantity?: IntFilter<"SupplierInventoryItem"> | number
+    reorderLevel?: IntFilter<"SupplierInventoryItem"> | number
+    unit?: StringFilter<"SupplierInventoryItem"> | string
+    unitPrice?: FloatFilter<"SupplierInventoryItem"> | number
+    taxType?: StringFilter<"SupplierInventoryItem"> | string
+    taxRate?: FloatFilter<"SupplierInventoryItem"> | number
+    imageDataUrl?: StringNullableFilter<"SupplierInventoryItem"> | string | null
+    createdAt?: DateTimeFilter<"SupplierInventoryItem"> | Date | string
+    updatedAt?: DateTimeFilter<"SupplierInventoryItem"> | Date | string
+    supplier?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type SupplierInventoryItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    supplierId?: SortOrder
+    itemName?: SortOrder
+    category?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    imageDataUrl?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SupplierInventoryItemCountOrderByAggregateInput
+    _avg?: SupplierInventoryItemAvgOrderByAggregateInput
+    _max?: SupplierInventoryItemMaxOrderByAggregateInput
+    _min?: SupplierInventoryItemMinOrderByAggregateInput
+    _sum?: SupplierInventoryItemSumOrderByAggregateInput
+  }
+
+  export type SupplierInventoryItemScalarWhereWithAggregatesInput = {
+    AND?: SupplierInventoryItemScalarWhereWithAggregatesInput | SupplierInventoryItemScalarWhereWithAggregatesInput[]
+    OR?: SupplierInventoryItemScalarWhereWithAggregatesInput[]
+    NOT?: SupplierInventoryItemScalarWhereWithAggregatesInput | SupplierInventoryItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SupplierInventoryItem"> | string
+    supplierId?: IntWithAggregatesFilter<"SupplierInventoryItem"> | number
+    itemName?: StringWithAggregatesFilter<"SupplierInventoryItem"> | string
+    category?: StringWithAggregatesFilter<"SupplierInventoryItem"> | string
+    quantity?: IntWithAggregatesFilter<"SupplierInventoryItem"> | number
+    reorderLevel?: IntWithAggregatesFilter<"SupplierInventoryItem"> | number
+    unit?: StringWithAggregatesFilter<"SupplierInventoryItem"> | string
+    unitPrice?: FloatWithAggregatesFilter<"SupplierInventoryItem"> | number
+    taxType?: StringWithAggregatesFilter<"SupplierInventoryItem"> | string
+    taxRate?: FloatWithAggregatesFilter<"SupplierInventoryItem"> | number
+    imageDataUrl?: StringNullableWithAggregatesFilter<"SupplierInventoryItem"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SupplierInventoryItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SupplierInventoryItem"> | Date | string
   }
 
   export type PurchaseRequestRecordWhereInput = {
@@ -25251,6 +26710,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
@@ -25270,6 +26730,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
@@ -25288,6 +26749,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
@@ -25307,6 +26769,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -25755,6 +27218,117 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     category?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupplierInventoryItemCreateInput = {
+    id?: string
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel?: number
+    unit: string
+    unitPrice: number
+    taxType?: string
+    taxRate?: number
+    imageDataUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    supplier: UserCreateNestedOneWithoutSupplierInventoryItemsInput
+  }
+
+  export type SupplierInventoryItemUncheckedCreateInput = {
+    id?: string
+    supplierId: number
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel?: number
+    unit: string
+    unitPrice: number
+    taxType?: string
+    taxRate?: number
+    imageDataUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupplierInventoryItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supplier?: UserUpdateOneRequiredWithoutSupplierInventoryItemsNestedInput
+  }
+
+  export type SupplierInventoryItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supplierId?: IntFieldUpdateOperationsInput | number
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupplierInventoryItemCreateManyInput = {
+    id?: string
+    supplierId: number
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel?: number
+    unit: string
+    unitPrice: number
+    taxType?: string
+    taxRate?: number
+    imageDataUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupplierInventoryItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupplierInventoryItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supplierId?: IntFieldUpdateOperationsInput | number
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26629,6 +28203,12 @@ export namespace Prisma {
     none?: SupplierTypeAssignmentWhereInput
   }
 
+  export type SupplierInventoryItemListRelationFilter = {
+    every?: SupplierInventoryItemWhereInput
+    some?: SupplierInventoryItemWhereInput
+    none?: SupplierInventoryItemWhereInput
+  }
+
   export type NotificationListRelationFilter = {
     every?: NotificationWhereInput
     some?: NotificationWhereInput
@@ -26667,6 +28247,10 @@ export namespace Prisma {
   }
 
   export type SupplierTypeAssignmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SupplierInventoryItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -27109,6 +28693,97 @@ export namespace Prisma {
   export type SupplierTypeAssignmentSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type SupplierInventoryItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    supplierId?: SortOrder
+    itemName?: SortOrder
+    category?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    imageDataUrl?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SupplierInventoryItemAvgOrderByAggregateInput = {
+    supplierId?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unitPrice?: SortOrder
+    taxRate?: SortOrder
+  }
+
+  export type SupplierInventoryItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    supplierId?: SortOrder
+    itemName?: SortOrder
+    category?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    imageDataUrl?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SupplierInventoryItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    supplierId?: SortOrder
+    itemName?: SortOrder
+    category?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    imageDataUrl?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SupplierInventoryItemSumOrderByAggregateInput = {
+    supplierId?: SortOrder
+    quantity?: SortOrder
+    reorderLevel?: SortOrder
+    unitPrice?: SortOrder
+    taxRate?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -27720,6 +29395,13 @@ export namespace Prisma {
     connect?: SupplierTypeAssignmentWhereUniqueInput | SupplierTypeAssignmentWhereUniqueInput[]
   }
 
+  export type SupplierInventoryItemCreateNestedManyWithoutSupplierInput = {
+    create?: XOR<SupplierInventoryItemCreateWithoutSupplierInput, SupplierInventoryItemUncheckedCreateWithoutSupplierInput> | SupplierInventoryItemCreateWithoutSupplierInput[] | SupplierInventoryItemUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: SupplierInventoryItemCreateOrConnectWithoutSupplierInput | SupplierInventoryItemCreateOrConnectWithoutSupplierInput[]
+    createMany?: SupplierInventoryItemCreateManySupplierInputEnvelope
+    connect?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+  }
+
   export type NotificationCreateNestedManyWithoutUserInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -27767,6 +29449,13 @@ export namespace Prisma {
     connectOrCreate?: SupplierTypeAssignmentCreateOrConnectWithoutUserInput | SupplierTypeAssignmentCreateOrConnectWithoutUserInput[]
     createMany?: SupplierTypeAssignmentCreateManyUserInputEnvelope
     connect?: SupplierTypeAssignmentWhereUniqueInput | SupplierTypeAssignmentWhereUniqueInput[]
+  }
+
+  export type SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput = {
+    create?: XOR<SupplierInventoryItemCreateWithoutSupplierInput, SupplierInventoryItemUncheckedCreateWithoutSupplierInput> | SupplierInventoryItemCreateWithoutSupplierInput[] | SupplierInventoryItemUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: SupplierInventoryItemCreateOrConnectWithoutSupplierInput | SupplierInventoryItemCreateOrConnectWithoutSupplierInput[]
+    createMany?: SupplierInventoryItemCreateManySupplierInputEnvelope
+    connect?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
   }
 
   export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
@@ -27853,6 +29542,20 @@ export namespace Prisma {
     update?: SupplierTypeAssignmentUpdateWithWhereUniqueWithoutUserInput | SupplierTypeAssignmentUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SupplierTypeAssignmentUpdateManyWithWhereWithoutUserInput | SupplierTypeAssignmentUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SupplierTypeAssignmentScalarWhereInput | SupplierTypeAssignmentScalarWhereInput[]
+  }
+
+  export type SupplierInventoryItemUpdateManyWithoutSupplierNestedInput = {
+    create?: XOR<SupplierInventoryItemCreateWithoutSupplierInput, SupplierInventoryItemUncheckedCreateWithoutSupplierInput> | SupplierInventoryItemCreateWithoutSupplierInput[] | SupplierInventoryItemUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: SupplierInventoryItemCreateOrConnectWithoutSupplierInput | SupplierInventoryItemCreateOrConnectWithoutSupplierInput[]
+    upsert?: SupplierInventoryItemUpsertWithWhereUniqueWithoutSupplierInput | SupplierInventoryItemUpsertWithWhereUniqueWithoutSupplierInput[]
+    createMany?: SupplierInventoryItemCreateManySupplierInputEnvelope
+    set?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    disconnect?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    delete?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    connect?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    update?: SupplierInventoryItemUpdateWithWhereUniqueWithoutSupplierInput | SupplierInventoryItemUpdateWithWhereUniqueWithoutSupplierInput[]
+    updateMany?: SupplierInventoryItemUpdateManyWithWhereWithoutSupplierInput | SupplierInventoryItemUpdateManyWithWhereWithoutSupplierInput[]
+    deleteMany?: SupplierInventoryItemScalarWhereInput | SupplierInventoryItemScalarWhereInput[]
   }
 
   export type NotificationUpdateManyWithoutUserNestedInput = {
@@ -27959,6 +29662,20 @@ export namespace Prisma {
     update?: SupplierTypeAssignmentUpdateWithWhereUniqueWithoutUserInput | SupplierTypeAssignmentUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SupplierTypeAssignmentUpdateManyWithWhereWithoutUserInput | SupplierTypeAssignmentUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SupplierTypeAssignmentScalarWhereInput | SupplierTypeAssignmentScalarWhereInput[]
+  }
+
+  export type SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput = {
+    create?: XOR<SupplierInventoryItemCreateWithoutSupplierInput, SupplierInventoryItemUncheckedCreateWithoutSupplierInput> | SupplierInventoryItemCreateWithoutSupplierInput[] | SupplierInventoryItemUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: SupplierInventoryItemCreateOrConnectWithoutSupplierInput | SupplierInventoryItemCreateOrConnectWithoutSupplierInput[]
+    upsert?: SupplierInventoryItemUpsertWithWhereUniqueWithoutSupplierInput | SupplierInventoryItemUpsertWithWhereUniqueWithoutSupplierInput[]
+    createMany?: SupplierInventoryItemCreateManySupplierInputEnvelope
+    set?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    disconnect?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    delete?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    connect?: SupplierInventoryItemWhereUniqueInput | SupplierInventoryItemWhereUniqueInput[]
+    update?: SupplierInventoryItemUpdateWithWhereUniqueWithoutSupplierInput | SupplierInventoryItemUpdateWithWhereUniqueWithoutSupplierInput[]
+    updateMany?: SupplierInventoryItemUpdateManyWithWhereWithoutSupplierInput | SupplierInventoryItemUpdateManyWithWhereWithoutSupplierInput[]
+    deleteMany?: SupplierInventoryItemScalarWhereInput | SupplierInventoryItemScalarWhereInput[]
   }
 
   export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
@@ -28093,6 +29810,28 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutSupplierTypeAssignmentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSupplierTypeAssignmentsInput, UserUpdateWithoutSupplierTypeAssignmentsInput>, UserUncheckedUpdateWithoutSupplierTypeAssignmentsInput>
+  }
+
+  export type UserCreateNestedOneWithoutSupplierInventoryItemsInput = {
+    create?: XOR<UserCreateWithoutSupplierInventoryItemsInput, UserUncheckedCreateWithoutSupplierInventoryItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupplierInventoryItemsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutSupplierInventoryItemsNestedInput = {
+    create?: XOR<UserCreateWithoutSupplierInventoryItemsInput, UserUncheckedCreateWithoutSupplierInventoryItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupplierInventoryItemsInput
+    upsert?: UserUpsertWithoutSupplierInventoryItemsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSupplierInventoryItemsInput, UserUpdateWithoutSupplierInventoryItemsInput>, UserUncheckedUpdateWithoutSupplierInventoryItemsInput>
   }
 
   export type UserCreateNestedOneWithoutChatSessionsInput = {
@@ -28555,6 +30294,22 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -28734,6 +30489,46 @@ export namespace Prisma {
 
   export type SupplierTypeAssignmentCreateManyUserInputEnvelope = {
     data: SupplierTypeAssignmentCreateManyUserInput | SupplierTypeAssignmentCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SupplierInventoryItemCreateWithoutSupplierInput = {
+    id?: string
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel?: number
+    unit: string
+    unitPrice: number
+    taxType?: string
+    taxRate?: number
+    imageDataUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupplierInventoryItemUncheckedCreateWithoutSupplierInput = {
+    id?: string
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel?: number
+    unit: string
+    unitPrice: number
+    taxType?: string
+    taxRate?: number
+    imageDataUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SupplierInventoryItemCreateOrConnectWithoutSupplierInput = {
+    where: SupplierInventoryItemWhereUniqueInput
+    create: XOR<SupplierInventoryItemCreateWithoutSupplierInput, SupplierInventoryItemUncheckedCreateWithoutSupplierInput>
+  }
+
+  export type SupplierInventoryItemCreateManySupplierInputEnvelope = {
+    data: SupplierInventoryItemCreateManySupplierInput | SupplierInventoryItemCreateManySupplierInput[]
     skipDuplicates?: boolean
   }
 
@@ -28948,6 +30743,41 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"SupplierTypeAssignment"> | Date | string
   }
 
+  export type SupplierInventoryItemUpsertWithWhereUniqueWithoutSupplierInput = {
+    where: SupplierInventoryItemWhereUniqueInput
+    update: XOR<SupplierInventoryItemUpdateWithoutSupplierInput, SupplierInventoryItemUncheckedUpdateWithoutSupplierInput>
+    create: XOR<SupplierInventoryItemCreateWithoutSupplierInput, SupplierInventoryItemUncheckedCreateWithoutSupplierInput>
+  }
+
+  export type SupplierInventoryItemUpdateWithWhereUniqueWithoutSupplierInput = {
+    where: SupplierInventoryItemWhereUniqueInput
+    data: XOR<SupplierInventoryItemUpdateWithoutSupplierInput, SupplierInventoryItemUncheckedUpdateWithoutSupplierInput>
+  }
+
+  export type SupplierInventoryItemUpdateManyWithWhereWithoutSupplierInput = {
+    where: SupplierInventoryItemScalarWhereInput
+    data: XOR<SupplierInventoryItemUpdateManyMutationInput, SupplierInventoryItemUncheckedUpdateManyWithoutSupplierInput>
+  }
+
+  export type SupplierInventoryItemScalarWhereInput = {
+    AND?: SupplierInventoryItemScalarWhereInput | SupplierInventoryItemScalarWhereInput[]
+    OR?: SupplierInventoryItemScalarWhereInput[]
+    NOT?: SupplierInventoryItemScalarWhereInput | SupplierInventoryItemScalarWhereInput[]
+    id?: StringFilter<"SupplierInventoryItem"> | string
+    supplierId?: IntFilter<"SupplierInventoryItem"> | number
+    itemName?: StringFilter<"SupplierInventoryItem"> | string
+    category?: StringFilter<"SupplierInventoryItem"> | string
+    quantity?: IntFilter<"SupplierInventoryItem"> | number
+    reorderLevel?: IntFilter<"SupplierInventoryItem"> | number
+    unit?: StringFilter<"SupplierInventoryItem"> | string
+    unitPrice?: FloatFilter<"SupplierInventoryItem"> | number
+    taxType?: StringFilter<"SupplierInventoryItem"> | string
+    taxRate?: FloatFilter<"SupplierInventoryItem"> | number
+    imageDataUrl?: StringNullableFilter<"SupplierInventoryItem"> | string | null
+    createdAt?: DateTimeFilter<"SupplierInventoryItem"> | Date | string
+    updatedAt?: DateTimeFilter<"SupplierInventoryItem"> | Date | string
+  }
+
   export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
     where: NotificationWhereUniqueInput
     update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
@@ -29080,6 +30910,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
@@ -29098,6 +30929,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
@@ -29131,6 +30963,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
@@ -29149,6 +30982,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
@@ -29166,6 +31000,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
@@ -29184,6 +31019,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
@@ -29217,6 +31053,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
@@ -29235,6 +31072,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
@@ -29251,6 +31089,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
@@ -29269,6 +31108,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
@@ -29302,6 +31142,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
@@ -29320,6 +31161,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -29337,6 +31179,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
@@ -29355,6 +31198,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
@@ -29388,6 +31232,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
@@ -29406,6 +31251,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -29423,6 +31269,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
@@ -29441,6 +31288,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
@@ -29474,6 +31322,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
@@ -29492,6 +31341,97 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+    sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutSupplierInventoryItemsInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
+    sources?: SourceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSupplierInventoryItemsInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
+    sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSupplierInventoryItemsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSupplierInventoryItemsInput, UserUncheckedCreateWithoutSupplierInventoryItemsInput>
+  }
+
+  export type UserUpsertWithoutSupplierInventoryItemsInput = {
+    update: XOR<UserUpdateWithoutSupplierInventoryItemsInput, UserUncheckedUpdateWithoutSupplierInventoryItemsInput>
+    create: XOR<UserCreateWithoutSupplierInventoryItemsInput, UserUncheckedCreateWithoutSupplierInventoryItemsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSupplierInventoryItemsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSupplierInventoryItemsInput, UserUncheckedUpdateWithoutSupplierInventoryItemsInput>
+  }
+
+  export type UserUpdateWithoutSupplierInventoryItemsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
+    sources?: SourceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSupplierInventoryItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -29510,6 +31450,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
@@ -29528,6 +31469,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
@@ -29620,6 +31562,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
@@ -29638,6 +31581,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
@@ -29870,6 +31814,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
@@ -29888,6 +31833,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
     passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
@@ -29966,6 +31912,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
@@ -29984,6 +31931,7 @@ export namespace Prisma {
     roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
     passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
     supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -30131,6 +32079,21 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type SupplierInventoryItemCreateManySupplierInput = {
+    id?: string
+    itemName: string
+    category: string
+    quantity: number
+    reorderLevel?: number
+    unit: string
+    unitPrice: number
+    taxType?: string
+    taxRate?: number
+    imageDataUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type NotificationCreateManyUserInput = {
     id?: number
     title: string
@@ -30245,6 +32208,51 @@ export namespace Prisma {
   export type SupplierTypeAssignmentUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     category?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupplierInventoryItemUpdateWithoutSupplierInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupplierInventoryItemUncheckedUpdateWithoutSupplierInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupplierInventoryItemUncheckedUpdateManyWithoutSupplierInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

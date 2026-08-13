@@ -1,0 +1,5 @@
+ALTER TABLE "supplier_inventory_items"
+ADD COLUMN IF NOT EXISTS "taxType" TEXT NOT NULL DEFAULT 'NO_TAX';
+
+ALTER TABLE "supplier_inventory_items"
+ADD COLUMN IF NOT EXISTS "taxRate" DOUBLE PRECISION NOT NULL DEFAULT 0;
