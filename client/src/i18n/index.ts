@@ -21,6 +21,7 @@ import enNotifications from './locales/en/notifications.json';
 import enLookupTable from './locales/en/lookupTable.json';
 import enMultiAgent from './locales/en/multiAgent.json';
 import enUserGuide from './locales/en/userGuide.json';
+import enBudgetManagement from './locales/en/budgetManagement.json';
 
 import zhCommon from './locales/zh/common.json';
 import zhNavigation from './locales/zh/navigation.json';
@@ -39,6 +40,7 @@ import zhNotifications from './locales/zh/notifications.json';
 import zhLookupTable from './locales/zh/lookupTable.json';
 import zhMultiAgent from './locales/zh/multiAgent.json';
 import zhUserGuide from './locales/zh/userGuide.json';
+import zhBudgetManagement from './locales/zh/budgetManagement.json';
 
 import msCommon from './locales/ms/common.json';
 import msNavigation from './locales/ms/navigation.json';
@@ -57,6 +59,7 @@ import msNotifications from './locales/ms/notifications.json';
 import msLookupTable from './locales/ms/lookupTable.json';
 import msMultiAgent from './locales/ms/multiAgent.json';
 import msUserGuide from './locales/ms/userGuide.json';
+import msBudgetManagement from './locales/ms/budgetManagement.json';
 
 const resources = {
   en: {
@@ -77,6 +80,7 @@ const resources = {
     lookupTable: enLookupTable,
     multiAgent: enMultiAgent,
     userGuide: enUserGuide,
+    budgetManagement: enBudgetManagement,
   },
   zh: {
     common: zhCommon,
@@ -96,6 +100,7 @@ const resources = {
     lookupTable: zhLookupTable,
     multiAgent: zhMultiAgent,
     userGuide: zhUserGuide,
+    budgetManagement: zhBudgetManagement,
   },
   ms: {
     common: msCommon,
@@ -115,6 +120,7 @@ const resources = {
     lookupTable: msLookupTable,
     multiAgent: msMultiAgent,
     userGuide: msUserGuide,
+    budgetManagement: msBudgetManagement,
   },
 };
 

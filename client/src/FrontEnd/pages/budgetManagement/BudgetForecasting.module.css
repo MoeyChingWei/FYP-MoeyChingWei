@@ -1,0 +1,208 @@
+.container {
+  padding: 24px;
+  background: #f4f6ff;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.select,
+.datePicker {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+}
+
+.select :global(.ant-select-selector) {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+}
+
+.select :global(.ant-select-arrow) {
+  color: #64748b;
+}
+
+.datePicker {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+}
+
+.datePicker :global(.ant-picker-input > input) {
+  color: #0f172a;
+}
+
+.datePicker :global(.ant-picker-suffix) {
+  color: #64748b;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  height: 100%;
+}
+
+.statCard :global(.ant-card-body) {
+  padding: 20px;
+}
+
+.statCard :global(.ant-statistic-title) {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.chartCard {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  margin-bottom: 24px;
+}
+
+.chartCard :global(.ant-card-head) {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.chartCard :global(.ant-card-head-title) {
+  color: #0f172a;
+}
+
+.chartCard :global(.ant-card-body) {
+  padding: 24px;
+}
+
+.tableCard {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+}
+
+.tableCard :global(.ant-card-head) {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.tableCard :global(.ant-card-head-title) {
+  color: #0f172a;
+}
+
+.tableCard :global(.ant-card-body) {
+  padding: 24px;
+}
+
+.table :global(.ant-table) {
+  background: transparent;
+}
+
+.table :global(.ant-table-thead > tr > th) {
+  background: #f8fafc;
+  color: #0f172a;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  font-weight: 600;
+}
+
+.table :global(.ant-table-tbody > tr > td) {
+  background: transparent;
+  color: #334155;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.table :global(.ant-table-tbody > tr:hover > td) {
+  background: #f0fdf4;
+}
+
+.table :global(.ant-pagination-item) {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+}
+
+.table :global(.ant-pagination-item a) {
+  color: #334155;
+}
+
+.table :global(.ant-pagination-item-active) {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.table :global(.ant-pagination-item-active a) {
+  color: #ffffff;
+}
+
+.confidence-medium {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.confidence-high {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.confidence-low {
+  color: #64748b;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 30px;
+  }
+
+  .controls {
+    width: 100%;
+  }
+
+  .select,
+  .datePicker {
+    width: 100%;
+  }
+}

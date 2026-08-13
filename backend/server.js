@@ -24,6 +24,7 @@ import { performanceMiddleware } from "./routes/debug-logs.js";
 import auditRoutes from "./routes/audit.js";
 import backupRoutes from "./routes/backup.js";
 import homeRoutes from "./routes/home.js";
+import budgetRoutes from "./routes/budget.js";
 import { auditMiddleware } from "./middleware/auditMiddleware.js";
 
 const app = express();
@@ -52,6 +53,7 @@ app.use("/api/sources", sourcesRoutes);
 app.use("/api/agents", agentsRoutes);
 app.use("/api", languageRoutes);
 app.use("/api/export", exportRoutes);
+app.use("/api/budget", budgetRoutes);
 
 app.use("/", homeRoutes);
 

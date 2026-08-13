@@ -68,6 +68,12 @@ const ItemCategoriesPage = lazy(() => import("./pages/categorySelection/ItemCate
 const UnitsOfMeasurementPage = lazy(
   () => import("./pages/categorySelection/UnitsOfMeasurementPage"),
 );
+const DepartmentSubmodule = lazy(
+  () => import("./pages/categorySelection/DepartmentSubmodule"),
+);
+const RoleSubmodule = lazy(
+  () => import("./pages/categorySelection/RoleSubmodule"),
+);
 const PurchasingReview = lazy(() => import("./pages/purchasing/ReviewSubmodule"));
 const PurchasingReviewDetail = lazy(() => import("./pages/purchasing/ReviewDetailSubmodule"));
 const PurchasingApproval = lazy(() => import("./pages/purchasing/ApprovalSubmodule"));
@@ -128,6 +134,9 @@ const SubAgentsPage = lazy(() => import("./pages/settings/SubAgentsPage"));
 const ChatBotPage = lazy(() => import("./pages/ChatBotPage"));
 const BudgetManagementHome = lazy(
   () => import("./pages/budgetManagement/BudgetManagementHome"),
+);
+const BudgetForecasting = lazy(
+  () => import("./pages/budgetManagement/BudgetForecasting"),
 );
 
 type MenuKey =
@@ -510,6 +519,11 @@ function MainLayout(): React.ReactElement {
             element={<UnitsOfMeasurementPage />}
           />
           <Route
+            path="/category-selection/departments"
+            element={<DepartmentSubmodule />}
+          />
+          <Route path="/category-selection/roles" element={<RoleSubmodule />} />
+          <Route
             path="/category-selection/*"
             element={<Navigate to="/category-selection" replace />}
           />
@@ -549,6 +563,7 @@ function MainLayout(): React.ReactElement {
           />
           <Route path="/purchasing/*" element={<Navigate to="/purchasing" replace />} />
           <Route path="/budget-management" element={<BudgetManagementHome />} />
+          <Route path="/budget-management/forecasting" element={<BudgetForecasting />} />
           <Route
             path="/budget-management/*"
             element={<Navigate to="/budget-management" replace />}

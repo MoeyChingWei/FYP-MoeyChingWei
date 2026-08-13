@@ -1,24 +1,47 @@
 import React from "react";
-import { Empty, Typography } from "antd";
-import { DollarOutlined } from "@ant-design/icons";
+import { Card, Row, Col } from "antd";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { LineChartOutlined } from "@ant-design/icons";
 
 import styles from "./BudgetManagementHome.module.css";
 
-const { Title, Paragraph } = Typography;
-
 export default function BudgetManagementHome(): React.ReactElement {
+  const navigate = useNavigate();
+  const { t } = useTranslation(["budgetManagement", "common"]);
+
+  const modules = [
+    {
+      key: "forecasting",
+      title: t("budgetManagement:budgetForecasting"),
+      description: t("budgetManagement:forecastingDescription"),
+      icon: <LineChartOutlined className={styles.cardIcon} />,
+      path: "/budget-management/forecasting",
+    },
+  ];
+
   return (
     <div className={styles.container}>
-      <Title level={2}>Budget Management</Title>
-      <Paragraph type="secondary">
-        Budget forecasting and allocation tools will be available here.
-      </Paragraph>
-      <div className={styles.placeholder}>
-        <Empty
-          image={<DollarOutlined className={styles.icon} />}
-          description="No budget tools are available yet."
-        />
-      </div>
+      <h1 className={styles.title}>{t("budgetManagement:budgetManagement")}</h1>
+      <p className={styles.subtitle}>{t("budgetManagement:homeDescription")}</p>
+
+      <Row gutter={[24, 24]} className={styles.cardsRow}>
+        {modules.map((module) => (
+          <Col key={module.key} xs={24} sm={12} lg={8}>
+            <Card
+              hoverable
+              className={styles.moduleCard}
+              onClick={() => navigate(module.path)}
+            >
+              <div className={styles.cardContent}>
+                {module.icon}
+                <h3 className={styles.cardTitle}>{module.title}</h3>
+                <p className={styles.cardDescription}>{module.description}</p>
+              </div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 }

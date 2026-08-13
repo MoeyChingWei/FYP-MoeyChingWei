@@ -2,7 +2,7 @@ export const i18nConfig = {
   fallbackLng: 'en',
   supportedLngs: ['en', 'zh', 'ms'],
   defaultNS: 'common',
-  ns: ['common', 'navigation', 'dashboard', 'settings', 'userGuide'],
+  ns: ['common', 'navigation', 'dashboard', 'settings', 'userGuide', 'budgetManagement'],
   interpolation: {
     escapeValue: false, // React already escapes
   },

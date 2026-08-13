@@ -6,6 +6,8 @@ import {
   ArrowLeftOutlined,
   DeploymentUnitOutlined,
   RightOutlined,
+  SafetyCertificateOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 
 import styles from "./CategorySelection.module.css";
@@ -83,6 +85,68 @@ export default function CategorySelectionManagement(): React.ReactElement {
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
                   Units of measurement
+                </Text>
+                <Flex align="center" gap={6} className={styles.tileAction}>
+                  <Text type="secondary">Open</Text>
+                  <RightOutlined className={styles.tileChevron} />
+                </Flex>
+              </div>
+            </Flex>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={10}>
+          <Card
+            hoverable
+            className={styles.tile}
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/category-selection/departments")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate("/category-selection/departments");
+              }
+            }}
+            aria-label="Open departments"
+          >
+            <Flex vertical align="center" gap={14} className={styles.tileInner}>
+              <div className={styles.iconWrap} aria-hidden>
+                <TeamOutlined className={styles.tileIcon} />
+              </div>
+              <div className={styles.tileTextBlock}>
+                <Text strong className={styles.tileTitle}>
+                  Departments
+                </Text>
+                <Flex align="center" gap={6} className={styles.tileAction}>
+                  <Text type="secondary">Open</Text>
+                  <RightOutlined className={styles.tileChevron} />
+                </Flex>
+              </div>
+            </Flex>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={10}>
+          <Card
+            hoverable
+            className={styles.tile}
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/category-selection/roles")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate("/category-selection/roles");
+              }
+            }}
+            aria-label="Open roles"
+          >
+            <Flex vertical align="center" gap={14} className={styles.tileInner}>
+              <div className={styles.iconWrap} aria-hidden>
+                <SafetyCertificateOutlined className={styles.tileIcon} />
+              </div>
+              <div className={styles.tileTextBlock}>
+                <Text strong className={styles.tileTitle}>
+                  Roles
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
                   <Text type="secondary">Open</Text>

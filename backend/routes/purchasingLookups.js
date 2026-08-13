@@ -50,7 +50,6 @@ router.post("/lookups", async (req, res) => {
       message: "value must be 1–200 characters",
     });
   }
-
   try {
     const created = await prisma.purchasingLookup.create({
       data: { kind, value },
