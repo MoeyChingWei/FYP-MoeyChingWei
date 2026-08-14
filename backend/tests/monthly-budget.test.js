@@ -35,15 +35,15 @@ describe('MonthlyBudget Model', () => {
         departmentId: testDept.id,
         year: 2026,
         month: 8,
-        allocatedAmount: 100000.00,
-        spentAmount: 0,
-        reservedAmount: 0
+        allocatedAmount: 100000.00
+        // spentAmount and reservedAmount omitted to test schema defaults
       }
     });
 
     expect(budget.id).toBeDefined();
     expect(parseFloat(budget.allocatedAmount)).toBe(100000.00);
     expect(parseFloat(budget.spentAmount)).toBe(0);
+    expect(parseFloat(budget.reservedAmount)).toBe(0);
   });
 
   test('should reject duplicate department-year-month', async () => {
