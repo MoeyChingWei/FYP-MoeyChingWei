@@ -383,4 +383,41 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
   return prediction;
 }
 
+/**
+ * Generate predictions for all active departments
+ * @param {number} targetYear - Target year for prediction
+ * @param {number} targetMonth - Target month for prediction (1-12)
+ * @param {number|null} userId - User ID if manually triggered, null for auto
+ * @returns {Promise<Object>} Results object with success and failed arrays
+ */
+export async function generatePredictionsForAllDepartments(targetYear, targetMonth, userId) {
+  const departments = await prisma.department.findMany({
+    where: { isActive: true }
+  });
+
+  const results = {
+    success: [],
+    failed: []
+  };
+
+  for (const dept of departments) {
+    try {
+      const prediction = await generateDepartmentPrediction(dept.code, targetYear, targetMonth, userId);
+      results.success.push({
+        departmentId: dept.id,
+        departmentCode: dept.code,
+        predictionId: prediction.id
+      });
+    } catch (error) {
+      results.failed.push({
+        departmentId: dept.id,
+        departmentCode: dept.code,
+        error: error.message
+      });
+    }
+  }
+
+  return results;
+}
+
 export { getHistoricalSpending, callAnalyticsAgent, handleNewDepartment, findSimilarDepartments };

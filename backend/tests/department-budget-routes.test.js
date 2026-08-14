@@ -1,8 +1,9 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import prisma from '../config/prisma.js';
 import departmentRouter from '../routes/department-budget.js';
+import * as predictionService from '../services/budget-prediction-service.js';
 
 const app = express();
 app.use(express.json());
@@ -234,6 +235,82 @@ describe('Department Budget Routes', () => {
         expect(res.status).toBe(400);
         expect(res.body.success).toBe(false);
         expect(res.body.message).toBe('No fields to update');
+      });
+    });
+  });
+
+  describe('Budget Prediction Trigger Endpoints', () => {
+    describe('POST /api/department-budget/predict/manual', () => {
+      test('should trigger manual prediction for department', async () => {
+        const mockPrediction = {
+          id: 1,
+          departmentId: testDept.id,
+          targetYear: 2026,
+          targetMonth: 9,
+          predictedAmount: 85000,
+          confidence: 'medium',
+          triggerType: 'manual'
+        };
+
+        vi.spyOn(predictionService, 'generateDepartmentPrediction').mockResolvedValue(mockPrediction);
+
+        const res = await request(app)
+          .post('/api/department-budget/predict/manual')
+          .send({
+            departmentCode: testDept.code,
+            targetYear: 2026,
+            targetMonth: 9,
+            userId: 1
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.predictedAmount).toBe(85000);
+        expect(predictionService.generateDepartmentPrediction).toHaveBeenCalledWith(
+          testDept.code,
+          2026,
+          9,
+          1
+        );
+
+        vi.restoreAllMocks();
+      });
+
+      test('should return 400 for missing parameters', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/predict/manual')
+          .send({
+            departmentCode: testDept.code
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+      });
+    });
+
+    describe('POST /api/department-budget/predict/batch', () => {
+      test('should trigger predictions for all active departments', async () => {
+        const mockResults = {
+          success: [{ departmentId: testDept.id, predictionId: 1 }],
+          failed: []
+        };
+
+        vi.spyOn(predictionService, 'generatePredictionsForAllDepartments').mockResolvedValue(mockResults);
+
+        const res = await request(app)
+          .post('/api/department-budget/predict/batch')
+          .send({
+            targetYear: 2026,
+            targetMonth: 9,
+            userId: 1
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.successCount).toBe(1);
+        expect(res.body.data.failedCount).toBe(0);
+
+        vi.restoreAllMocks();
       });
     });
   });

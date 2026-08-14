@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../config/prisma.js';
 import Decimal from 'decimal.js';
+import { generateDepartmentPrediction, generatePredictionsForAllDepartments } from '../services/budget-prediction-service.js';
 
 const router = express.Router();
 
@@ -220,6 +221,75 @@ router.patch('/monthly/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update monthly budget',
+      error: error.message
+    });
+  }
+});
+
+// POST /api/department-budget/predict/manual - Trigger manual prediction
+router.post('/predict/manual', async (req, res) => {
+  try {
+    const { departmentCode, targetYear, targetMonth, userId } = req.body;
+
+    if (!departmentCode || !targetYear || !targetMonth || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: departmentCode, targetYear, targetMonth, userId'
+      });
+    }
+
+    const prediction = await generateDepartmentPrediction(
+      departmentCode,
+      parseInt(targetYear),
+      parseInt(targetMonth),
+      parseInt(userId)
+    );
+
+    res.json({
+      success: true,
+      data: prediction
+    });
+  } catch (error) {
+    console.error('Manual prediction error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate prediction',
+      error: error.message
+    });
+  }
+});
+
+// POST /api/department-budget/predict/batch - Trigger batch predictions for all departments
+router.post('/predict/batch', async (req, res) => {
+  try {
+    const { targetYear, targetMonth, userId } = req.body;
+
+    if (!targetYear || !targetMonth || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: targetYear, targetMonth, userId'
+      });
+    }
+
+    const results = await generatePredictionsForAllDepartments(
+      parseInt(targetYear),
+      parseInt(targetMonth),
+      parseInt(userId)
+    );
+
+    res.json({
+      success: true,
+      data: {
+        successCount: results.success.length,
+        failedCount: results.failed.length,
+        details: results
+      }
+    });
+  } catch (error) {
+    console.error('Batch prediction error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate batch predictions',
       error: error.message
     });
   }
