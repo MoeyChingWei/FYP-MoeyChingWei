@@ -2,6 +2,7 @@ import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
 import prisma from '../config/prisma.js';
 import { deductBudgetForPR, checkBudgetThresholds } from '../services/budget-deduction-service.js';
 import * as notificationService from '../services/notification-service.js';
+import Decimal from 'decimal.js';
 
 vi.mock('../services/notification-service.js');
 
@@ -66,7 +67,7 @@ describe('Budget Deduction Service', () => {
       where: { id: testBudget.id }
     });
 
-    expect(parseFloat(updatedBudget.spentAmount)).toBe(10000);
+    expect(new Decimal(updatedBudget.spentAmount).toNumber()).toBe(10000);
   });
 
   test('checkBudgetThresholds should trigger warning at 80%', async () => {
@@ -140,5 +141,127 @@ describe('Budget Deduction Service', () => {
     expect(result.reason).toContain('No department');
 
     await prisma.user.delete({ where: { id: userNoDept.id } });
+  });
+
+  test('checkBudgetThresholds should notify all department executives in parallel', async () => {
+    // Clear mocks and cleanup any leftover test data
+    notificationService.notifyBudgetThreshold.mockClear();
+    await prisma.user.deleteMany({ where: { email: { in: ['exec2@test.com', 'exec3@test.com'] } } });
+
+    // Count existing executives before adding new ones
+    const existingExecs = await prisma.user.count({
+      where: {
+        OR: [
+          { department: { equals: testDept.code, mode: 'insensitive' } },
+          { department: { equals: testDept.name, mode: 'insensitive' } }
+        ],
+        role: 'Department Executive',
+        isActive: true
+      }
+    });
+
+    // Create multiple department executives
+    const exec2 = await prisma.user.create({
+      data: {
+        email: 'exec2@test.com',
+        password: 'hash',
+        name: 'Executive 2',
+        department: 'Deduction Test',
+        role: 'Department Executive',
+        isActive: true
+      }
+    });
+
+    const exec3 = await prisma.user.create({
+      data: {
+        email: 'exec3@test.com',
+        password: 'hash',
+        name: 'Executive 3',
+        department: 'DEDUCT',
+        role: 'Department Executive',
+        isActive: true
+      }
+    });
+
+    const expectedExecCount = existingExecs + 2;
+
+    notificationService.notifyBudgetThreshold.mockResolvedValue();
+
+    await prisma.monthlyBudget.update({
+      where: { id: testBudget.id },
+      data: { spentAmount: 85000, lastNotifiedThreshold: 0 }
+    });
+
+    const warnings = await checkBudgetThresholds(testBudget.id);
+
+    expect(warnings.length).toBe(1);
+    expect(warnings[0].threshold).toBe(80);
+
+    // Verify all executives were notified
+    expect(notificationService.notifyBudgetThreshold).toHaveBeenCalledTimes(expectedExecCount);
+
+    // Verify parallel execution by checking the new executives were included
+    const calls = notificationService.notifyBudgetThreshold.mock.calls;
+    const notifiedUserIds = calls.map(call => call[0]);
+    expect(notifiedUserIds).toContain(exec2.id);
+    expect(notifiedUserIds).toContain(exec3.id);
+
+    // Cleanup
+    await prisma.user.delete({ where: { id: exec2.id } });
+    await prisma.user.delete({ where: { id: exec3.id } });
+  });
+
+  test('checkBudgetThresholds should notify all executives at 100% threshold', async () => {
+    // Clear mocks and cleanup any leftover test data
+    notificationService.notifyBudgetExceeded.mockClear();
+    await prisma.user.deleteMany({ where: { email: 'exec4@test.com' } });
+
+    // Count existing executives
+    const existingExecs = await prisma.user.count({
+      where: {
+        OR: [
+          { department: { equals: testDept.code, mode: 'insensitive' } },
+          { department: { equals: testDept.name, mode: 'insensitive' } }
+        ],
+        role: 'Department Executive',
+        isActive: true
+      }
+    });
+
+    const exec4 = await prisma.user.create({
+      data: {
+        email: 'exec4@test.com',
+        password: 'hash',
+        name: 'Executive 4',
+        department: 'Deduction Test',
+        role: 'Department Executive',
+        isActive: true
+      }
+    });
+
+    const expectedExecCount = existingExecs + 1;
+
+    notificationService.notifyBudgetExceeded.mockResolvedValue();
+
+    await prisma.monthlyBudget.update({
+      where: { id: testBudget.id },
+      data: { spentAmount: 110000, lastNotifiedThreshold: 0 }
+    });
+
+    const warnings = await checkBudgetThresholds(testBudget.id);
+
+    expect(warnings.length).toBe(1);
+    expect(warnings[0].threshold).toBe(100);
+
+    // Verify all executives were notified
+    expect(notificationService.notifyBudgetExceeded).toHaveBeenCalledTimes(expectedExecCount);
+
+    // Verify the new executive was included
+    const calls = notificationService.notifyBudgetExceeded.mock.calls;
+    const notifiedUserIds = calls.map(call => call[0]);
+    expect(notifiedUserIds).toContain(exec4.id);
+
+    // Cleanup
+    await prisma.user.delete({ where: { id: exec4.id } });
   });
 });

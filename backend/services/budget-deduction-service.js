@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import { notifyBudgetThreshold, notifyBudgetExceeded } from './notification-service.js';
+import Decimal from 'decimal.js';
 
 function isApprovedStatus(status) {
   return String(status ?? "").trim().toUpperCase() === "APPROVED";
@@ -8,10 +9,10 @@ function isApprovedStatus(status) {
 function calculatePRTotal(payload) {
   const items = Array.isArray(payload?.lineItems) ? payload.lineItems : (Array.isArray(payload?.items) ? payload.items : []);
   return items.reduce((sum, item) => {
-    const quantity = parseFloat(item.quantity) || 0;
-    const unitPrice = parseFloat(item.unitPrice) || 0;
-    return sum + quantity * unitPrice;
-  }, 0);
+    const quantity = new Decimal(item.quantity || 0);
+    const unitPrice = new Decimal(item.unitPrice || 0);
+    return sum.plus(quantity.times(unitPrice));
+  }, new Decimal(0));
 }
 
 export async function deductBudgetForPR(prPayload) {
@@ -66,102 +67,108 @@ export async function deductBudgetForPR(prPayload) {
 
   const amount = calculatePRTotal(prPayload);
 
-  const updatedBudget = await prisma.monthlyBudget.update({
-    where: { id: budget.id },
-    data: {
-      spentAmount: {
-        increment: amount
+  const result = await prisma.$transaction(async (tx) => {
+    const updatedBudget = await tx.monthlyBudget.update({
+      where: { id: budget.id },
+      data: {
+        spentAmount: {
+          increment: amount.toNumber()
+        }
       }
-    }
-  });
+    });
 
-  const warnings = await checkBudgetThresholds(budget.id);
+    const warnings = await checkBudgetThresholds(budget.id, tx);
+
+    return { updatedBudget, warnings };
+  });
 
   return {
     success: true,
-    deductedAmount: amount,
+    deductedAmount: amount.toNumber(),
     budgetId: budget.id,
-    warnings
+    warnings: result.warnings
   };
 }
 
-export async function checkBudgetThresholds(budgetId) {
-  const budget = await prisma.monthlyBudget.findUnique({
+async function getDepartmentExecutives(department) {
+  return await prisma.user.findMany({
+    where: {
+      OR: [
+        { department: { equals: department.code, mode: 'insensitive' } },
+        { department: { equals: department.name, mode: 'insensitive' } }
+      ],
+      role: 'Department Executive',
+      isActive: true
+    }
+  });
+}
+
+export async function checkBudgetThresholds(budgetId, tx = prisma) {
+  const budget = await tx.monthlyBudget.findUnique({
     where: { id: budgetId },
     include: { department: true }
   });
 
   if (!budget) return [];
 
-  const spent = parseFloat(budget.spentAmount);
-  const allocated = parseFloat(budget.allocatedAmount);
-  const percentage = (spent / allocated) * 100;
+  const spent = new Decimal(budget.spentAmount);
+  const allocated = new Decimal(budget.allocatedAmount);
+  const percentage = spent.dividedBy(allocated).times(100).toNumber();
 
   const warnings = [];
 
-  const thresholdRecord = await prisma.$queryRaw`
-    SELECT "lastNotifiedThreshold" FROM "monthly_budgets" WHERE id = ${budgetId}
-  `;
-  const lastThreshold = thresholdRecord[0]?.lastNotifiedThreshold || 0;
+  const existingBudget = await tx.monthlyBudget.findUnique({
+    where: { id: budgetId },
+    select: { lastNotifiedThreshold: true }
+  });
+  const lastThreshold = existingBudget?.lastNotifiedThreshold || 0;
 
   if (percentage >= 100 && lastThreshold < 100) {
-    const deptUsers = await prisma.user.findMany({
-      where: {
-        OR: [
-          { department: { equals: budget.department.code, mode: 'insensitive' } },
-          { department: { equals: budget.department.name, mode: 'insensitive' } }
-        ],
-        role: 'Department Executive',
-        isActive: true
-      }
+    const deptUsers = await getDepartmentExecutives(budget.department);
+
+    await Promise.all(
+      deptUsers.map(user =>
+        notifyBudgetExceeded(
+          user.id,
+          budget.department.name,
+          budget.year,
+          budget.month,
+          Math.round(percentage),
+          spent.toNumber(),
+          allocated.toNumber(),
+          budgetId
+        )
+      )
+    );
+
+    await tx.monthlyBudget.update({
+      where: { id: budgetId },
+      data: { lastNotifiedThreshold: 100 }
     });
-
-    for (const user of deptUsers) {
-      await notifyBudgetExceeded(
-        user.id,
-        budget.department.name,
-        budget.year,
-        budget.month,
-        Math.round(percentage),
-        spent,
-        allocated,
-        budgetId
-      );
-    }
-
-    await prisma.$executeRaw`
-      UPDATE "monthly_budgets" SET "lastNotifiedThreshold" = 100 WHERE id = ${budgetId}
-    `;
 
     warnings.push({ threshold: 100, percentage });
   } else if (percentage >= 80 && lastThreshold < 80) {
-    const deptUsers = await prisma.user.findMany({
-      where: {
-        OR: [
-          { department: { equals: budget.department.code, mode: 'insensitive' } },
-          { department: { equals: budget.department.name, mode: 'insensitive' } }
-        ],
-        role: 'Department Executive',
-        isActive: true
-      }
+    const deptUsers = await getDepartmentExecutives(budget.department);
+
+    await Promise.all(
+      deptUsers.map(user =>
+        notifyBudgetThreshold(
+          user.id,
+          budget.department.name,
+          budget.year,
+          budget.month,
+          80,
+          spent.toNumber(),
+          allocated.toNumber(),
+          budgetId
+        )
+      )
+    );
+
+    await tx.monthlyBudget.update({
+      where: { id: budgetId },
+      data: { lastNotifiedThreshold: 80 }
     });
-
-    for (const user of deptUsers) {
-      await notifyBudgetThreshold(
-        user.id,
-        budget.department.name,
-        budget.year,
-        budget.month,
-        80,
-        spent,
-        allocated,
-        budgetId
-      );
-    }
-
-    await prisma.$executeRaw`
-      UPDATE "monthly_budgets" SET "lastNotifiedThreshold" = 80 WHERE id = ${budgetId}
-    `;
 
     warnings.push({ threshold: 80, percentage });
   }

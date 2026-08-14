@@ -659,11 +659,11 @@ router.get('/usage/:departmentId', async (req, res) => {
       });
     }
 
-    const allocated = parseFloat(budget.allocatedAmount);
-    const spent = parseFloat(budget.spentAmount);
-    const reserved = parseFloat(budget.reservedAmount);
-    const remaining = allocated - spent;
-    const usagePercentage = (spent / allocated) * 100;
+    const allocated = new Decimal(budget.allocatedAmount);
+    const spent = new Decimal(budget.spentAmount);
+    const reserved = new Decimal(budget.reservedAmount);
+    const remaining = allocated.minus(spent);
+    const usagePercentage = spent.dividedBy(allocated).times(100);
 
     res.json({
       success: true,
@@ -672,12 +672,12 @@ router.get('/usage/:departmentId', async (req, res) => {
         department: budget.department,
         year: budget.year,
         month: budget.month,
-        allocatedAmount: allocated,
-        spentAmount: spent,
-        reservedAmount: reserved,
-        remainingAmount: remaining,
-        usagePercentage: Math.round(usagePercentage * 100) / 100,
-        status: usagePercentage >= 100 ? 'exceeded' : usagePercentage >= 80 ? 'warning' : 'normal'
+        allocatedAmount: allocated.toNumber(),
+        spentAmount: spent.toNumber(),
+        reservedAmount: reserved.toNumber(),
+        remainingAmount: remaining.toNumber(),
+        usagePercentage: Math.round(usagePercentage.toNumber() * 100) / 100,
+        status: usagePercentage.toNumber() >= 100 ? 'exceeded' : usagePercentage.toNumber() >= 80 ? 'warning' : 'normal'
       }
     });
   } catch (error) {
