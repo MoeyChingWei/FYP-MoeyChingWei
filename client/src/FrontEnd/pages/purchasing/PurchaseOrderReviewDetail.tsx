@@ -21,7 +21,10 @@ import {
 import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/types";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
-import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
+import {
+  computeDraftLineAmountAfterTax,
+  taxLabelForDraftLine,
+} from "../../modules/purchasing/requestCreation/constants";
 
 import styles from "./ReviewDetailSubmodule.module.css";
 
@@ -108,6 +111,24 @@ function ItemDetailCard({
           <span className={styles.detailLabel}>Amount after tax</span>
           <div className={styles.detailValue}>
             {currencyLabel(currency, lineTotal)}
+          </div>
+        </div>
+
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax</span>
+          <div className={styles.detailValue}>
+            {taxLabelForDraftLine(item.taxType, item.taxRate)}
+          </div>
+        </div>
+
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax amount</span>
+          <div className={styles.detailValue}>
+            {currencyLabel(
+              currency,
+              item.taxAmount ??
+                Math.round(item.quantity * item.unitPrice * (item.taxRate ?? 0)) / 100,
+            )}
           </div>
         </div>
 

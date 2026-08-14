@@ -59,6 +59,22 @@ function statusColor(status: PurchaseOrderStatus): string {
   }
 }
 
+function sortOrdersByDate(orders: PurchaseOrderDraft[]): PurchaseOrderDraft[] {
+  return orders
+    .map((order, index) => ({ order, index }))
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.order.createdDate);
+      const rightTime = Date.parse(right.order.createdDate);
+
+      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      return right.index - left.index;
+    })
+    .map(({ order }) => order);
+}
+
 export default function PurchaseOrderReview(): React.ReactElement {
   const { t: tMsg } = useTranslation('messages');
 
@@ -98,7 +114,7 @@ export default function PurchaseOrderReview(): React.ReactElement {
 
   const filteredOrders = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
-    const source = [...orders].reverse().filter((order) => {
+    const source = sortOrdersByDate(orders).filter((order) => {
       if (canViewAllOrders) return true;
       if (!sessionUser) return false;
 

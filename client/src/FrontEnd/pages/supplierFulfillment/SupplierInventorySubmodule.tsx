@@ -45,7 +45,18 @@ import {
   updateSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
-import { MALAYSIAN_TAXES, normalizeTaxCodes, taxRateForCodes } from "../../modules/purchasing/requestCreation/constants";
+import { reserveSupplierInventory } from "../../modules/supplierFulfillment/inventory";
+import {
+  hydratePurchaseRequestDrafts,
+  loadPurchaseRequestDrafts,
+  updatePurchaseRequestDraft,
+} from "../../modules/purchasing/requestCreation/storage";
+import {
+  computeAmountAfterTax,
+  MALAYSIAN_TAXES,
+  normalizeTaxCodes,
+  taxRateForCodes,
+} from "../../modules/purchasing/requestCreation/constants";
 import styles from "./SupplierInventorySubmodule.module.css";
 
 const { Text, Title } = Typography;
@@ -148,6 +159,64 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       .catch(() => {
         setRows(loadSupplierInventory(supplierId));
       });
+  }, [supplierId]);
+
+  // Backfill reservations for PRs approved before inventory reservation was added.
+  useEffect(() => {
+    if (!supplierId) return;
+    let cancelled = false;
+
+    const backfillApprovedRequests = async (): Promise<void> => {
+      await hydratePurchaseRequestDrafts();
+      if (cancelled) return;
+
+      const approvedRequests = loadPurchaseRequestDrafts().filter(
+        (request) => request.status === "APPROVED",
+      );
+
+      for (const request of approvedRequests) {
+        if (cancelled) return;
+
+        const reservedIds = new Set(request.inventoryReservedItemIds ?? []);
+        const pendingItems = request.lineItems
+          .filter(
+            (item) =>
+              item.supplierId === supplierId &&
+              !!item.supplierInventoryItemId &&
+              !reservedIds.has(item.supplierInventoryItemId),
+          )
+          .map((item) => ({
+            inventoryItemId: item.supplierInventoryItemId,
+            quantity: item.quantity,
+            supplierId,
+            itemName: item.itemName,
+            category: item.itemCategory,
+            unit: item.unitOfMeasurement,
+          }));
+
+        if (!pendingItems.length) continue;
+
+        try {
+          await reserveSupplierInventory(pendingItems);
+          updatePurchaseRequestDraft(request.localId, (draft) => ({
+            ...draft,
+            inventoryReservedItemIds: Array.from(
+              new Set([
+                ...(draft.inventoryReservedItemIds ?? []),
+                ...pendingItems.map((item) => item.inventoryItemId),
+              ]),
+            ),
+          }));
+        } catch {
+          // Leave the request unmarked so it can be retried after stock is corrected.
+        }
+      }
+    };
+
+    void backfillApprovedRequests();
+    return () => {
+      cancelled = true;
+    };
   }, [supplierId]);
 
   useEffect(() => {
@@ -284,11 +353,15 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       render: (value) => formatCurrency(value),
     },
     {
-      title: "Total value",
-      key: "totalValue",
+      title: "After tax value",
+      key: "afterTaxValue",
       align: "right",
-      sorter: (a, b) => a.quantity * a.unitPrice - b.quantity * b.unitPrice,
-      render: (_, row) => <strong>{formatCurrency(row.quantity * row.unitPrice)}</strong>,
+      sorter: (a, b) =>
+        computeAmountAfterTax(1, a.unitPrice, a.taxRate) -
+        computeAmountAfterTax(1, b.unitPrice, b.taxRate),
+      render: (_, row) => (
+        <strong>{formatCurrency(computeAmountAfterTax(1, row.unitPrice, row.taxRate))}</strong>
+      ),
     },
     {
       title: "Status",

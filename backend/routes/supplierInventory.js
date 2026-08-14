@@ -98,6 +98,80 @@ router.put("/inventory/:id", async (req, res) => {
   }
 });
 
+// Reserve catalogue quantities when a purchase request is approved. All rows
+// are checked and updated in one transaction so a partial reservation cannot occur.
+router.post("/inventory/reserve", async (req, res) => {
+  const rawItems = Array.isArray(req.body?.items) ? req.body.items : [];
+  const items = rawItems
+    .map((item) => ({
+      id: String(item?.inventoryItemId ?? item?.id ?? "").trim(),
+      supplierId: Number(item?.supplierId),
+      itemName: cleanText(item?.itemName),
+      category: cleanText(item?.category),
+      unit: cleanText(item?.unit, 50),
+      quantity: Number(item?.quantity),
+    }))
+    .filter((item) =>
+      Number.isInteger(item.quantity) &&
+      item.quantity > 0 &&
+      (item.id || (Number.isInteger(item.supplierId) && item.supplierId > 0 && item.itemName)),
+    );
+
+  if (!items.length || items.length !== rawItems.length) {
+    return res.status(400).json({ success: false, message: "Invalid inventory reservation" });
+  }
+
+  try {
+    const updated = await prisma.$transaction(async (tx) => {
+      const quantities = new Map();
+      for (const item of items) {
+        let row = item.id
+          ? await tx.supplierInventoryItem.findUnique({ where: { id: item.id } })
+          : null;
+        if (!row && Number.isInteger(item.supplierId) && item.supplierId > 0 && item.itemName) {
+          row = await tx.supplierInventoryItem.findFirst({
+            where: {
+              supplierId: item.supplierId,
+              itemName: item.itemName,
+              ...(item.category ? { category: item.category } : {}),
+              ...(item.unit ? { unit: item.unit } : {}),
+            },
+          });
+        }
+        if (!row) {
+          const error = new Error("Inventory item not found");
+          error.code = "INVENTORY_UNAVAILABLE";
+          throw error;
+        }
+        quantities.set(row.id, (quantities.get(row.id) ?? 0) + item.quantity);
+      }
+
+      const rows = [];
+      for (const [id, quantity] of quantities) {
+        const result = await tx.supplierInventoryItem.updateMany({
+          where: { id, quantity: { gte: quantity } },
+          data: { quantity: { decrement: quantity } },
+        });
+        if (result.count !== 1) {
+          const error = new Error("Insufficient inventory or item not found");
+          error.code = "INVENTORY_UNAVAILABLE";
+          throw error;
+        }
+        rows.push(await tx.supplierInventoryItem.findUnique({ where: { id } }));
+      }
+      return rows;
+    });
+
+    return res.json({ success: true, items: updated });
+  } catch (error) {
+    if (error?.code === "INVENTORY_UNAVAILABLE") {
+      return res.status(409).json({ success: false, message: "Insufficient inventory" });
+    }
+    console.error("POST /purchasing/inventory/reserve error:", error);
+    return res.status(500).json({ success: false, message: "Could not reserve inventory" });
+  }
+});
+
 router.delete("/inventory/:id", async (req, res) => {
   try {
     await prisma.supplierInventoryItem.delete({ where: { id: req.params.id } });

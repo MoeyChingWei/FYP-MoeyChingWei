@@ -35,6 +35,7 @@ import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/request
 import { getSessionUser } from "../../shared/auth/session";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { UserRole } from "../../shared/types/roles";
+import { reserveSupplierInventory } from "../../modules/supplierFulfillment/inventory";
 
 import styles from "./ApprovalSubmodule.module.css";
 
@@ -65,6 +66,7 @@ export default function ApprovalSubmodule(): React.ReactElement {
   const [searchValue, setSearchValue] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [rejectTarget, setRejectTarget] = useState<PurchaseRequestDraft | null>(null);
+  const [approvingRequestIds, setApprovingRequestIds] = useState<Set<string>>(new Set());
   const sessionUser = useMemo(() => getSessionUser(), []);
 
   useEffect(() => {
@@ -183,11 +185,40 @@ export default function ApprovalSubmodule(): React.ReactElement {
     );
   };
 
-  const onApprove = (request: PurchaseRequestDraft): void => {
+  const onApprove = async (request: PurchaseRequestDraft): Promise<void> => {
+    if (approvingRequestIds.has(request.localId)) return;
+    setApprovingRequestIds((current) => new Set(current).add(request.localId));
+
+    const inventoryReservations = request.lineItems
+      .filter((item) => item.supplierInventoryItemId)
+      .map((item) => ({
+        inventoryItemId: item.supplierInventoryItemId as string,
+        quantity: item.quantity,
+        supplierId: item.supplierId,
+        itemName: item.itemName,
+        category: item.itemCategory,
+        unit: item.unitOfMeasurement,
+      }));
+
+    try {
+      await reserveSupplierInventory(inventoryReservations);
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Could not reserve inventory");
+      setApprovingRequestIds((current) => {
+        const next = new Set(current);
+        next.delete(request.localId);
+        return next;
+      });
+      return;
+    }
+
     appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: "APPROVED",
+      inventoryReservedItemIds: inventoryReservations.map(
+        (item) => item.inventoryItemId,
+      ),
     }));
     message.success(t('purchaseRequest.approval.messages.approved', { prNumber: request.prNumber }));
     navigate("/purchasing/po-review");
@@ -360,7 +391,8 @@ export default function ApprovalSubmodule(): React.ReactElement {
                     <Button
                       type="primary"
                       icon={<CheckOutlined />}
-                      onClick={() => onApprove(request)}
+                      onClick={() => void onApprove(request)}
+                      loading={approvingRequestIds.has(request.localId)}
                     >
                       {t('purchaseRequest.approval.actions.approve')}
                     </Button>

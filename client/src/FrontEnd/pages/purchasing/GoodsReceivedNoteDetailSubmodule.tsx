@@ -19,7 +19,11 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { todayIsoDate } from "../../modules/purchasing/requestCreation/constants";
+import {
+  computeDraftLineAmountAfterTax,
+  taxLabelForDraftLine,
+  todayIsoDate,
+} from "../../modules/purchasing/requestCreation/constants";
 import {
   loadSupplierGrns,
   type SupplierGrnRecord,
@@ -76,7 +80,9 @@ function ItemDetailCard({
   index: number;
   t: any;
 }): React.ReactElement {
-  const lineTotal = item.quantity * item.unitPrice;
+  const lineTotal = computeDraftLineAmountAfterTax(item);
+  const taxAmount = item.taxAmount ??
+    Math.round(item.quantity * item.unitPrice * (item.taxRate ?? 0)) / 100;
 
   return (
     <div className={styles.itemCard}>
@@ -107,8 +113,18 @@ function ItemDetailCard({
           <div className={styles.detailValue}>{currencyLabel(currency, item.unitPrice)}</div>
         </div>
         <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>{t('purchaseRequest.detail.items.fields.lineTotal')}</span>
+          <span className={styles.detailLabel}>Amount after tax</span>
           <div className={styles.detailValue}>{currencyLabel(currency, lineTotal)}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax</span>
+          <div className={styles.detailValue}>
+            {taxLabelForDraftLine(item.taxType, item.taxRate)}
+          </div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax amount</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, taxAmount)}</div>
         </div>
         <div className={`${styles.detailBlock} ${styles.detailWide}`}>
           <span className={styles.detailLabel}>{t('purchaseRequest.detail.items.fields.assignedSupplier')}</span>
@@ -198,7 +214,10 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
     );
   }
 
-  const total = row.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const total = row.items.reduce(
+    (sum, item) => sum + computeDraftLineAmountAfterTax(item),
+    0,
+  );
 
   return (
     <Card>

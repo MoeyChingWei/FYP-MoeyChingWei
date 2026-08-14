@@ -39,6 +39,22 @@ import styles from "./ApprovalSubmodule.module.css";
 
 const { Text, Title } = Typography;
 
+function sortOrdersByDate(orders: PurchaseOrderDraft[]): PurchaseOrderDraft[] {
+  return orders
+    .map((order, index) => ({ order, index }))
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.order.createdDate);
+      const rightTime = Date.parse(right.order.createdDate);
+
+      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      return right.index - left.index;
+    })
+    .map(({ order }) => order);
+}
+
 export default function PurchaseOrderApproval(): React.ReactElement {
   const { t: tMsg } = useTranslation('messages');
 
@@ -88,7 +104,9 @@ export default function PurchaseOrderApproval(): React.ReactElement {
       return !!sessionEmail && creatorEmail === sessionEmail;
     });
 
-    return visibleOrders.filter((order) => order.status === "SUBMITTED").reverse();
+    return sortOrdersByDate(
+      visibleOrders.filter((order) => order.status === "SUBMITTED"),
+    );
   }, [canViewAllOrders, orders, sessionUser]);
 
   const filteredOrders = useMemo(() => {

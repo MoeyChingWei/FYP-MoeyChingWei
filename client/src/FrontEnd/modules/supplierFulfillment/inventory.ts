@@ -189,6 +189,94 @@ export async function updateSupplierInventory(item: SupplierInventoryItem): Prom
   return response.data.item;
 }
 
+export async function reserveSupplierInventory(
+  items: Array<{
+    inventoryItemId?: string;
+    quantity: number;
+    supplierId?: number;
+    itemName?: string;
+    category?: string;
+    unit?: string;
+  }>,
+): Promise<void> {
+  if (!items.length) return;
+
+  try {
+    const response = await axios.post<{
+      success: boolean;
+      message?: string;
+      items?: SupplierInventoryItem[];
+    }>(
+      `${API_ROOT}/purchasing/inventory/reserve`,
+      { items },
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.message ?? "Could not reserve inventory");
+    }
+    const updatedRowsBySupplier = new Map<number, SupplierInventoryItem[]>();
+    for (const row of response.data.items ?? []) {
+      updatedRowsBySupplier.set(row.supplierId, [
+        ...(updatedRowsBySupplier.get(row.supplierId) ?? []).filter(
+          (existing) => existing.id !== row.id,
+        ),
+        row,
+      ]);
+    }
+    for (const [supplierId, updatedRows] of updatedRowsBySupplier) {
+      const existingRows = loadSupplierInventory(supplierId);
+      const updatedIds = new Set(updatedRows.map((row) => row.id));
+      saveSupplierInventory(supplierId, [
+        ...existingRows.filter((row) => !updatedIds.has(row.id)),
+        ...updatedRows,
+      ]);
+    }
+    window.dispatchEvent(new Event("erp-supplier-inventory"));
+    return;
+  } catch (error) {
+    // Keep local/demo catalogues usable when the API is unavailable.
+    if (axios.isAxiosError(error) && error.response?.status === 409) {
+      throw new Error(error.response.data?.message ?? "Insufficient inventory");
+    }
+    if (axios.isAxiosError(error) && error.response && error.response.status !== 404) {
+      throw new Error(error.response.data?.message ?? "Could not reserve inventory");
+    }
+
+    const grouped = new Map<number, typeof items>();
+    for (const item of items) {
+      const supplierId = Number(item.supplierId);
+      if (!Number.isFinite(supplierId)) continue;
+      grouped.set(supplierId, [...(grouped.get(supplierId) ?? []), item]);
+    }
+
+    const localRowsBySupplier = new Map<number, SupplierInventoryItem[]>();
+    for (const [supplierId, reservations] of grouped) {
+      const rows = loadSupplierInventory(supplierId);
+      const requestedById = new Map<string, number>();
+      for (const reservation of reservations) {
+        const matchedRow = rows.find(
+          (row) =>
+            row.id === reservation.inventoryItemId ||
+            (row.itemName.trim().toLowerCase() === reservation.itemName?.trim().toLowerCase() &&
+              (!reservation.category || row.category.trim().toLowerCase() === reservation.category.trim().toLowerCase()) &&
+              (!reservation.unit || row.unit.trim().toLowerCase() === reservation.unit.trim().toLowerCase())),
+        );
+        if (!matchedRow) throw new Error("Inventory item not found");
+        requestedById.set(matchedRow.id, (requestedById.get(matchedRow.id) ?? 0) + reservation.quantity);
+      }
+      const nextRows = rows.map((row) => {
+        const requested = requestedById.get(row.id) ?? 0;
+        if (!requested) return row;
+        if (row.quantity < requested) throw new Error("Insufficient inventory");
+        return { ...row, quantity: row.quantity - requested, updatedAt: new Date().toISOString() };
+      });
+      localRowsBySupplier.set(supplierId, nextRows);
+    }
+    for (const [supplierId, nextRows] of localRowsBySupplier) {
+      saveSupplierInventory(supplierId, nextRows);
+    }
+  }
+}
+
 export async function deleteSupplierInventory(id: string): Promise<void> {
   const response = await axios.delete<{ success: boolean; message?: string }>(`${API_ROOT}/purchasing/inventory/${id}`);
   if (!response.data?.success) throw new Error(response.data?.message ?? "Could not delete inventory item");

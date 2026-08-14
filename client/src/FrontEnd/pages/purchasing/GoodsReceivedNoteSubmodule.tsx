@@ -32,6 +32,22 @@ function displayDeliveryNo(row: SupplierGrnRecord): string {
   return row.deliveryNo || row.poNumber;
 }
 
+function sortRowsByDate(rows: SupplierGrnRecord[]): SupplierGrnRecord[] {
+  return rows
+    .map((row, index) => ({ row, index }))
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.row.createdDate);
+      const rightTime = Date.parse(right.row.createdDate);
+
+      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      return right.index - left.index;
+    })
+    .map(({ row }) => row);
+}
+
 function statusTag(status: SupplierGrnRecord["status"], t: any): React.ReactNode {
   switch (status) {
     case "PENDING_GRN":
@@ -79,7 +95,7 @@ export default function GoodsReceivedNoteSubmodule(): React.ReactElement {
     const sessionName = sessionUser?.name?.trim().toLowerCase() || "";
     const sessionEmail = sessionUser?.email?.trim().toLowerCase() || "";
 
-    return [...rows].reverse().filter((row) => {
+    return sortRowsByDate(rows).filter((row) => {
       const rowRequester = (row.sourceRequester || row.createdBy || "").trim().toLowerCase();
       const isOwnRow =
         (!!sessionName && rowRequester === sessionName) ||

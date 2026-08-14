@@ -37,4 +37,6 @@ export interface PurchaseRequestDraft {
   rejectedBy?: string;
   requesterRole: string;
   isSelfApproved?: boolean;
+  /** Inventory line IDs already reserved when this request was approved. */
+  inventoryReservedItemIds?: string[];
 }

@@ -41,6 +41,14 @@ export function taxLabelForCodes(value: unknown): string {
   return codes.length ? codes.map((code) => `${MALAYSIAN_TAXES[code].label} (${MALAYSIAN_TAXES[code].rate}%)`).join(" + ") : "No tax";
 }
 
+export function taxLabelForDraftLine(taxType: unknown, taxRate: unknown): string {
+  const label = taxLabelForCodes(taxType);
+  if (label !== "No tax") return label;
+
+  const rate = Number(taxRate);
+  return Number.isFinite(rate) && rate > 0 ? `Tax (${rate}%)` : label;
+}
+
 export function generatePrNumber(): string {
   const d = new Date();
   const y = d.getFullYear();
