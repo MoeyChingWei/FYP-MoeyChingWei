@@ -27,6 +27,8 @@ model User {
   feedbacks                Feedback[]
   chatSessions             ChatSession[]
   sources                  Source[]
+  adjustmentRequestsCreated BudgetAdjustmentRequest[] @relation("AdjustmentRequester")
+  adjustmentRequestsReviewed BudgetAdjustmentRequest[] @relation("AdjustmentReviewer")
 
   @@map("users")
 }
@@ -373,10 +375,26 @@ model MonthlyBudget {
 }
 
 model BudgetAdjustmentRequest {
-  id           Int        @id @default(autoincrement())
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
+  id              Int      @id @default(autoincrement())
+  departmentId    Int
+  targetYear      Int
+  targetMonth     Int
+  requestType     String
+  requestedAmount Decimal  @db.Decimal(15, 2)
+  reason          String   @db.Text
+  status          String   @default("pending")
+  requestedBy     Int
+  requestedAt     DateTime @default(now())
+  reviewedBy      Int?
+  reviewedAt      DateTime?
+  reviewNotes     String?  @db.Text
 
+  department      Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  requester       User       @relation("AdjustmentRequester", fields: [requestedBy], references: [id], onDelete: Cascade)
+  reviewer        User?      @relation("AdjustmentReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([departmentId, status])
+  @@index([status, requestedAt])
   @@map("budget_adjustment_requests")
 }
 
