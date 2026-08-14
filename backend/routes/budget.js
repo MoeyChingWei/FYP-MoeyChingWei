@@ -12,6 +12,14 @@ function getRequestItems(payload) {
   return Array.isArray(payload?.items) ? payload.items : [];
 }
 
+function filterByDepartment(requests, departmentCode) {
+  if (!departmentCode) return requests;
+  return requests.filter(pr => {
+    const dept = pr.payload?.department;
+    return dept && String(dept).trim().toUpperCase() === String(departmentCode).trim().toUpperCase();
+  });
+}
+
 // Debug: Log all middleware in this router
 console.log("🟢 Budget router initialized - stack length:", router.stack.length);
 
@@ -42,15 +50,7 @@ router.get("/forecast", async (req, res) => {
     );
 
     // Filter by department if specified
-    let filteredRequests = approvedRequests;
-    if (departmentCode) {
-      filteredRequests = approvedRequests.filter(pr => {
-        const dept = pr.payload?.department;
-        return dept &&
-          (String(dept).trim().toUpperCase() === String(departmentCode).trim().toUpperCase() ||
-           String(dept).trim() === String(departmentCode).trim());
-      });
-    }
+    const filteredRequests = filterByDepartment(approvedRequests, departmentCode);
 
     // Extract and aggregate data from JSON payloads
     const aggregatedData = {};
@@ -221,15 +221,7 @@ router.get("/categories", async (req, res) => {
     );
 
     // Filter by department if specified
-    let filteredRequests = approvedRequests;
-    if (departmentCode) {
-      filteredRequests = approvedRequests.filter(pr => {
-        const dept = pr.payload?.department;
-        return dept &&
-          (String(dept).trim().toUpperCase() === String(departmentCode).trim().toUpperCase() ||
-           String(dept).trim() === String(departmentCode).trim());
-      });
-    }
+    const filteredRequests = filterByDepartment(approvedRequests, departmentCode);
 
     const categoryTotals = {};
 

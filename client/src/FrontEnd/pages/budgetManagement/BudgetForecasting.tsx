@@ -30,6 +30,7 @@ import { DollarOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
 import { getDepartments, type Department } from "../../shared/api/departmentBudget";
+import { API_ROOT } from "../../shared/api/base";
 import styles from "./BudgetForecasting.module.css";
 
 const { RangePicker } = DatePicker;
@@ -95,7 +96,7 @@ const BudgetForecasting: React.FC = () => {
         params.append("departmentCode", selectedDepartmentCode);
       }
 
-      const response = await fetch(`http://localhost:4000/api/budget/forecast?${params}`);
+      const response = await fetch(`${API_ROOT}/budget/forecast?${params}`);
       const result: BudgetForecastResponse = await response.json();
 
       if (result.success) {
@@ -122,7 +123,7 @@ const BudgetForecasting: React.FC = () => {
         params.append("departmentCode", selectedDepartmentCode);
       }
 
-      const response = await fetch(`http://localhost:4000/api/budget/categories?${params}`);
+      const response = await fetch(`${API_ROOT}/budget/categories?${params}`);
       const result = await response.json();
 
       if (result.success) {
@@ -135,8 +136,13 @@ const BudgetForecasting: React.FC = () => {
 
   useEffect(() => {
     const loadDepartments = async () => {
-      const depts = await getDepartments(true);
-      setDepartments(depts);
+      try {
+        const depts = await getDepartments(true);
+        setDepartments(depts);
+      } catch (error) {
+        console.error("Load departments error:", error);
+        message.error(t("common:fetchError"));
+      }
     };
     loadDepartments();
   }, []);
