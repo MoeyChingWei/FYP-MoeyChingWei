@@ -381,10 +381,24 @@ model BudgetAdjustmentRequest {
 }
 
 model BudgetPrediction {
-  id           Int        @id @default(autoincrement())
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
+  id                 Int      @id @default(autoincrement())
+  departmentId       Int?
+  targetYear         Int
+  targetMonth        Int
+  predictedAmount    Decimal  @db.Decimal(15, 2)
+  confidence         String
+  algorithm          String
+  aiInsights         String   @db.Text
+  categoryBreakdown  Json?
+  comparisonData     Json?
+  triggerType        String
+  createdAt          DateTime @default(now())
 
+  department         Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@index([departmentId])
+  @@index([targetYear, targetMonth])
+  @@index([createdAt])
   @@map("budget_predictions")
 }
 
