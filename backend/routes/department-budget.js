@@ -338,6 +338,34 @@ router.post('/adjustments', async (req, res) => {
       });
     }
 
+    // Validate reason length
+    if (!reason || reason.trim().length < 20) {
+      return res.status(400).json({
+        success: false,
+        message: 'Reason must be at least 20 characters'
+      });
+    }
+
+    // Check for duplicate increase requests for same period
+    if (requestType === 'increase') {
+      const existingIncreaseRequest = await prisma.budgetAdjustmentRequest.findFirst({
+        where: {
+          departmentId: parseInt(departmentId),
+          targetYear: parseInt(targetYear),
+          targetMonth: parseInt(targetMonth),
+          requestType: 'increase',
+          status: { in: ['pending', 'approved'] }
+        }
+      });
+
+      if (existingIncreaseRequest) {
+        return res.status(400).json({
+          success: false,
+          message: 'This department already has a pending or approved increase request for this period'
+        });
+      }
+    }
+
     const adjustment = await prisma.budgetAdjustmentRequest.create({
       data: {
         departmentId: parseInt(departmentId),
@@ -453,7 +481,7 @@ router.patch('/adjustments/:id/approve', async (req, res) => {
     if (adjustment.status !== 'pending') {
       return res.status(400).json({
         success: false,
-        message: 'Request already processed'
+        message: 'Request has already been reviewed'
       });
     }
 
@@ -576,7 +604,7 @@ router.patch('/adjustments/:id/reject', async (req, res) => {
     if (adjustment.status !== 'pending') {
       return res.status(400).json({
         success: false,
-        message: 'Request already processed'
+        message: 'Request has already been reviewed'
       });
     }
 

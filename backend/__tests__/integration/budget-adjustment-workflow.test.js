@@ -112,17 +112,17 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
       expect(Number(savedRequest.requestedAmount)).toBe(10000);
       expect(savedRequest.status).toBe("pending");
 
-      // Verify notification sent to finance manager (optional check - may not exist if no active finance managers)
+      // Verify notification sent to finance manager
       const notifications = await prisma.notification.findMany({
         where: {
-          type: "BUDGET_ADJUSTMENT_SUBMITTED",
-          refType: "budget_adjustment",
+          type: "BUDGET_ADJUSTMENT_REQUESTED",
+          refType: "budget_adjustment_request",
           refId: String(requestId)
         }
       });
 
-      // Should have at least attempted to create notifications
-      expect(notifications.length).toBeGreaterThanOrEqual(0);
+      // Should have created notifications for finance managers
+      expect(notifications.length).toBeGreaterThan(0);
 
       // Cleanup
       await prisma.budgetAdjustmentRequest.delete({ where: { id: requestId } });
@@ -209,15 +209,13 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
         where: {
           userId: testUser.id,
           type: "BUDGET_ADJUSTMENT_APPROVED",
-          refType: "budget_adjustment",
+          refType: "budget_adjustment_request",
           refId: String(pendingRequest.id)
         }
       });
 
-      // Notification should exist
-      if (notification) {
-        expect(notification.title).toContain("Approved");
-      }
+      expect(notification).toBeTruthy();
+      expect(notification.title).toContain("Approved");
 
       // Restore budget for other tests
       await prisma.monthlyBudget.update({
@@ -250,7 +248,7 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain("already");
+      expect(response.body.message).toContain("already been reviewed");
 
       // Restore budget
       await prisma.monthlyBudget.update({
@@ -321,15 +319,13 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
         where: {
           userId: testUser.id,
           type: "BUDGET_ADJUSTMENT_REJECTED",
-          refType: "budget_adjustment",
+          refType: "budget_adjustment_request",
           refId: String(pendingRequest.id)
         }
       });
 
-      // Notification should exist
-      if (notification) {
-        expect(notification.title).toContain("Rejected");
-      }
+      expect(notification).toBeTruthy();
+      expect(notification.title).toContain("Rejected");
     });
 
     it("should require rejection comment", async () => {
@@ -416,6 +412,51 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
       await prisma.monthlyBudget.update({
         where: { id: testBudget.id },
         data: { allocatedAmount: initialAllocated }
+      });
+    });
+
+    it("should reject second increase request for same period", async () => {
+      const initialBudget = await prisma.monthlyBudget.findUnique({
+        where: { id: testBudget.id }
+      });
+      const initialAllocated = Number(initialBudget.allocatedAmount);
+
+      // Submit first increase request
+      const response1 = await request(app)
+        .post("/api/department-budget/adjustments")
+        .send({
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "increase",
+          requestedAmount: 10000,
+          reason: "First increase request for facility upgrade",
+          requestedBy: testUser.id
+        });
+
+      expect(response1.status).toBe(201);
+      const request1Id = response1.body.data.id;
+
+      // Try to submit second increase request
+      const response2 = await request(app)
+        .post("/api/department-budget/adjustments")
+        .send({
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "increase",
+          requestedAmount: 8000,
+          reason: "Second increase request should be rejected",
+          requestedBy: testUser.id
+        });
+
+      expect(response2.status).toBe(400);
+      expect(response2.body.success).toBe(false);
+      expect(response2.body.message).toContain("already has a pending or approved increase request");
+
+      // Cleanup
+      await prisma.budgetAdjustmentRequest.delete({
+        where: { id: request1Id }
       });
     });
   });
