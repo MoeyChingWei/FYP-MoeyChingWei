@@ -33,6 +33,7 @@ import type {
 import { getSessionUser } from "../../shared/auth/session";
 import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
+import { deductBudgetForPR } from "../../shared/api/departmentBudget";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
 
@@ -176,6 +177,14 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
       request.requesterRole === "Manager" &&
       request.createdByUserId === sessionUser.id;
 
+    const updatedRequest = {
+      ...request,
+      status: nextStatus,
+      rejectionReason:
+        nextStatus === "REJECTED" ? rejectionReason : request.rejectionReason,
+      isSelfApproved: isSelfApproved || request.isSelfApproved,
+    };
+
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: nextStatus,
@@ -183,6 +192,29 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
         nextStatus === "REJECTED" ? rejectionReason : draft.rejectionReason,
       isSelfApproved: isSelfApproved || draft.isSelfApproved,
     }));
+
+    // Deduct budget when PR is approved
+    if (nextStatus === "APPROVED") {
+      console.log("🔵 [BUDGET] Triggering budget deduction for approved PR");
+
+      deductBudgetForPR(updatedRequest)
+        .then(result => {
+          if (result.success) {
+            console.log(`✅ [BUDGET] Deducted $${result.deductedAmount?.toFixed(2)} from department budget`);
+
+            if (result.warnings && result.warnings.length > 0) {
+              result.warnings.forEach(w => {
+                console.warn(`⚠️ [BUDGET] Warning: ${w.threshold}% budget threshold reached (${w.percentage.toFixed(1)}%)`);
+              });
+            }
+          } else {
+            console.warn(`⚠️ [BUDGET] Budget deduction failed: ${result.reason}`);
+          }
+        })
+        .catch(error => {
+          console.error("❌ [BUDGET] Budget deduction error:", error);
+        });
+    }
 
     message.success(
       nextStatus === "APPROVED"

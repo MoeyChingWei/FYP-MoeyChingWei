@@ -36,6 +36,7 @@ import { getSessionUser } from "../../shared/auth/session";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { UserRole } from "../../shared/types/roles";
 import { reserveSupplierInventory } from "../../modules/supplierFulfillment/inventory";
+import { deductBudgetForPR } from "../../shared/api/departmentBudget";
 
 import styles from "./ApprovalSubmodule.module.css";
 
@@ -213,6 +214,13 @@ export default function ApprovalSubmodule(): React.ReactElement {
     }
 
     appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
+    const updatedRequest = {
+      ...request,
+      status: "APPROVED" as const,
+      inventoryReservedItemIds: inventoryReservations.map(
+        (item) => item.inventoryItemId,
+      ),
+    };
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: "APPROVED",
@@ -220,6 +228,28 @@ export default function ApprovalSubmodule(): React.ReactElement {
         (item) => item.inventoryItemId,
       ),
     }));
+
+    // Deduct budget when PR is approved
+    console.log("🔵 [BUDGET] Triggering budget deduction for approved PR");
+
+    deductBudgetForPR(updatedRequest)
+      .then(result => {
+        if (result.success) {
+          console.log(`✅ [BUDGET] Deducted $${result.deductedAmount?.toFixed(2)} from department budget`);
+
+          if (result.warnings && result.warnings.length > 0) {
+            result.warnings.forEach(w => {
+              console.warn(`⚠️ [BUDGET] Warning: ${w.threshold}% budget threshold reached (${w.percentage.toFixed(1)}%)`);
+            });
+          }
+        } else {
+          console.warn(`⚠️ [BUDGET] Budget deduction failed: ${result.reason}`);
+        }
+      })
+      .catch(error => {
+        console.error("❌ [BUDGET] Budget deduction error:", error);
+      });
+
     message.success(t('purchaseRequest.approval.messages.approved', { prNumber: request.prNumber }));
     navigate("/purchasing/po-review");
   };
