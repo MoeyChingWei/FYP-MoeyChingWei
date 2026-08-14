@@ -170,9 +170,10 @@ async function findSimilarDepartments(departmentId) {
  * @param {number} departmentId - Department ID
  * @param {number} targetYear - Target year
  * @param {number} targetMonth - Target month
+ * @param {number|null} userId - User ID if manually triggered, null for auto
  * @returns {Promise<Object>} Budget prediction record
  */
-async function handleNewDepartment(departmentId, targetYear, targetMonth) {
+async function handleNewDepartment(departmentId, targetYear, targetMonth, userId) {
   const similarDepts = await findSimilarDepartments(departmentId);
 
   if (similarDepts.length === 0) {
@@ -185,7 +186,7 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
         confidence: 'low',
         algorithm: 'default',
         aiInsights: 'No historical data available and no similar departments found. Using system default.',
-        triggerType: 'manual'
+        triggerType: userId ? 'manual' : 'auto'
       }
     });
   }
@@ -209,7 +210,7 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
         similarity: topSimilar.similarity,
         referenceMonths: topSimilar.historicalMonths
       },
-      triggerType: 'manual'
+      triggerType: userId ? 'manual' : 'auto'
     }
   });
 }
@@ -357,7 +358,7 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
 
   // Handle new department with no history
   if (historicalData.length === 0) {
-    return handleNewDepartment(department.id, targetYear, targetMonth);
+    return handleNewDepartment(department.id, targetYear, targetMonth, userId);
   }
 
   // Call analytics agent for prediction
