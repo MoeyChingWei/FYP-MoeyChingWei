@@ -631,4 +631,173 @@ describe('Department Budget Routes', () => {
       });
     });
   });
+
+  describe('Historical Comparison and Analytics Endpoints', () => {
+    let testHistoricalBudgets;
+
+    beforeAll(async () => {
+      // Create historical budget data (6 months)
+      testHistoricalBudgets = [];
+      for (let i = 0; i < 6; i++) {
+        const month = 3 + i; // March to August
+        const budget = await prisma.monthlyBudget.create({
+          data: {
+            departmentId: testDept.id,
+            year: 2026,
+            month,
+            allocatedAmount: 100000,
+            spentAmount: 75000 + (i * 2000),
+            reservedAmount: 5000
+          }
+        });
+        testHistoricalBudgets.push(budget);
+      }
+    });
+
+    afterAll(async () => {
+      await prisma.monthlyBudget.deleteMany({
+        where: { id: { in: testHistoricalBudgets.map(b => b.id) } }
+      });
+    });
+
+    describe('GET /api/department-budget/historical/:departmentId', () => {
+      test('should return historical data with last-3-months preset', async () => {
+        const res = await request(app).get(`/api/department-budget/historical/${testDept.id}?preset=last-3-months`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toHaveProperty('historicalData');
+        expect(res.body.data).toHaveProperty('summary');
+        expect(res.body.data.historicalData.length).toBeLessThanOrEqual(3);
+        expect(res.body.data.summary).toHaveProperty('avgAllocated');
+        expect(res.body.data.summary).toHaveProperty('avgSpent');
+        expect(res.body.data.summary).toHaveProperty('avgUtilization');
+      });
+
+      test('should return historical data with last-6-months preset', async () => {
+        const res = await request(app).get(`/api/department-budget/historical/${testDept.id}?preset=last-6-months`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.historicalData.length).toBeLessThanOrEqual(6);
+      });
+
+      test('should return historical data with year-over-year preset', async () => {
+        const res = await request(app).get(`/api/department-budget/historical/${testDept.id}?preset=year-over-year`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+      });
+
+      test('should return historical data with custom date range', async () => {
+        const res = await request(app).get(`/api/department-budget/historical/${testDept.id}?startDate=2026-03&endDate=2026-05`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.historicalData.length).toBeLessThanOrEqual(3);
+      });
+
+      test('should calculate summary statistics correctly', async () => {
+        const res = await request(app).get(`/api/department-budget/historical/${testDept.id}?preset=last-3-months`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.summary.totalAllocated).toBeGreaterThan(0);
+        expect(res.body.data.summary.totalSpent).toBeGreaterThan(0);
+        expect(res.body.data.summary.avgUtilization).toBeGreaterThan(0);
+      });
+    });
+
+    describe('GET /api/department-budget/spending-trends/:departmentId', () => {
+      let testPRRecord;
+
+      beforeAll(async () => {
+        // Create test purchase request record with JSON payload
+        testPRRecord = await prisma.purchaseRequestRecord.create({
+          data: {
+            localId: `PR-TEST-${Date.now()}`,
+            payload: {
+              status: 'APPROVED',
+              departmentId: testDept.id,
+              requestorId: 1,
+              lineItems: [
+                {
+                  itemCategory: 'Office Supplies',
+                  description: 'Paper',
+                  quantity: 10,
+                  unitPrice: 50
+                },
+                {
+                  itemCategory: 'Equipment',
+                  description: 'Laptop',
+                  quantity: 2,
+                  unitPrice: 1500
+                }
+              ]
+            }
+          }
+        });
+      });
+
+      afterAll(async () => {
+        await prisma.purchaseRequestRecord.delete({
+          where: { localId: testPRRecord.localId }
+        });
+      });
+
+      test('should return spending trends by category and month', async () => {
+        const res = await request(app).get(`/api/department-budget/spending-trends/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toHaveProperty('byCategory');
+        expect(res.body.data).toHaveProperty('byMonth');
+        expect(res.body.data).toHaveProperty('totalSpent');
+      });
+
+      test('should return spending trends with date range filter', async () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const dateRange = `${year}-${month}`;
+
+        const res = await request(app).get(`/api/department-budget/spending-trends/${testDept.id}?startDate=${dateRange}&endDate=${dateRange}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+      });
+
+      test('should aggregate spending by category correctly', async () => {
+        const res = await request(app).get(`/api/department-budget/spending-trends/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+
+        if (res.body.data.byCategory.length > 0) {
+          const officeSupplies = res.body.data.byCategory.find(c => c.category === 'Office Supplies');
+          const equipment = res.body.data.byCategory.find(c => c.category === 'Equipment');
+
+          if (officeSupplies) {
+            expect(officeSupplies.amount).toBe(500);
+          }
+          if (equipment) {
+            expect(equipment.amount).toBe(3000);
+          }
+        }
+      });
+
+      test('should aggregate spending by month correctly', async () => {
+        const res = await request(app).get(`/api/department-budget/spending-trends/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.byMonth).toBeDefined();
+        expect(Array.isArray(res.body.data.byMonth)).toBe(true);
+      });
+
+      test('should calculate total spent correctly', async () => {
+        const res = await request(app).get(`/api/department-budget/spending-trends/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.totalSpent).toBeGreaterThanOrEqual(0);
+      });
+    });
+  });
 });

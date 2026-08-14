@@ -804,4 +804,230 @@ router.get('/predictions/single/:id', async (req, res) => {
   }
 });
 
+// GET /api/department-budget/historical/:departmentId - Get historical comparison data
+router.get('/historical/:departmentId', async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const { preset, startDate, endDate } = req.query;
+
+    let dateFilter = {};
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (preset === 'last-3-months') {
+      const conditions = [];
+      for (let i = 0; i < 3; i++) {
+        let month = currentMonth - i;
+        let year = currentYear;
+        if (month <= 0) {
+          month += 12;
+          year -= 1;
+        }
+        conditions.push({ year, month });
+      }
+      dateFilter = { OR: conditions };
+    } else if (preset === 'last-6-months') {
+      const conditions = [];
+      for (let i = 0; i < 6; i++) {
+        let month = currentMonth - i;
+        let year = currentYear;
+        if (month <= 0) {
+          month += 12;
+          year -= 1;
+        }
+        conditions.push({ year, month });
+      }
+      dateFilter = { OR: conditions };
+    } else if (preset === 'year-over-year') {
+      dateFilter = {
+        OR: [
+          { year: currentYear, month: currentMonth },
+          { year: currentYear - 1, month: currentMonth }
+        ]
+      };
+    } else if (startDate && endDate) {
+      const [startYear, startMonth] = startDate.split('-').map(Number);
+      const [endYear, endMonth] = endDate.split('-').map(Number);
+
+      const conditions = [];
+      let year = startYear;
+      let month = startMonth;
+
+      while (year < endYear || (year === endYear && month <= endMonth)) {
+        conditions.push({ year, month });
+        month++;
+        if (month > 12) {
+          month = 1;
+          year++;
+        }
+      }
+
+      dateFilter = { OR: conditions };
+    }
+
+    const historicalBudgets = await prisma.monthlyBudget.findMany({
+      where: {
+        departmentId: parseInt(departmentId),
+        ...dateFilter
+      },
+      include: {
+        department: true
+      },
+      orderBy: [
+        { year: 'asc' },
+        { month: 'asc' }
+      ]
+    });
+
+    const historicalData = historicalBudgets.map(b => {
+      const allocated = parseFloat(b.allocatedAmount);
+      const spent = parseFloat(b.spentAmount);
+      const reserved = parseFloat(b.reservedAmount);
+      const remaining = allocated - spent - reserved;
+      const utilization = allocated > 0 ? (spent / allocated) * 100 : 0;
+
+      return {
+        year: b.year,
+        month: b.month,
+        period: `${b.year}-${String(b.month).padStart(2, '0')}`,
+        allocatedAmount: allocated,
+        spentAmount: spent,
+        remainingAmount: remaining,
+        utilization: Math.round(utilization * 100) / 100
+      };
+    });
+
+    const summary = {
+      totalPeriods: historicalData.length,
+      avgAllocated: historicalData.length > 0
+        ? Math.round((historicalData.reduce((sum, d) => sum + d.allocatedAmount, 0) / historicalData.length) * 100) / 100
+        : 0,
+      avgSpent: historicalData.length > 0
+        ? Math.round((historicalData.reduce((sum, d) => sum + d.spentAmount, 0) / historicalData.length) * 100) / 100
+        : 0,
+      avgUtilization: historicalData.length > 0
+        ? Math.round((historicalData.reduce((sum, d) => sum + d.utilization, 0) / historicalData.length) * 100) / 100
+        : 0,
+      totalAllocated: Math.round(historicalData.reduce((sum, d) => sum + d.allocatedAmount, 0) * 100) / 100,
+      totalSpent: Math.round(historicalData.reduce((sum, d) => sum + d.spentAmount, 0) * 100) / 100
+    };
+
+    res.json({
+      success: true,
+      data: {
+        historicalData,
+        summary
+      }
+    });
+  } catch (error) {
+    console.error('Historical comparison error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch historical data',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/department-budget/spending-trends/:departmentId - Get spending trends by category and month
+router.get('/spending-trends/:departmentId', async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    // Get department to match against payload.departmentId
+    const department = await prisma.department.findUnique({
+      where: { id: parseInt(departmentId) }
+    });
+
+    if (!department) {
+      return res.status(404).json({
+        success: false,
+        message: 'Department not found'
+      });
+    }
+
+    // Date filter for createdAt
+    let dateFilter = {};
+    if (startDate && endDate) {
+      const [startYear, startMonth] = startDate.split('-').map(Number);
+      const [endYear, endMonth] = endDate.split('-').map(Number);
+
+      const startDateObj = new Date(startYear, startMonth - 1, 1);
+      const endDateObj = new Date(endYear, endMonth, 0, 23, 59, 59);
+
+      dateFilter = {
+        createdAt: {
+          gte: startDateObj,
+          lte: endDateObj
+        }
+      };
+    }
+
+    const records = await prisma.purchaseRequestRecord.findMany({
+      where: dateFilter,
+      orderBy: { createdAt: 'asc' }
+    });
+
+    // Filter by department and APPROVED status, then aggregate
+    const byCategory = {};
+    const byMonth = {};
+
+    records.forEach(record => {
+      const payload = record.payload;
+      const status = String(payload?.status ?? '').trim().toUpperCase();
+      const recordDeptId = payload?.departmentId;
+
+      // Only include APPROVED records for this department
+      if (status !== 'APPROVED' || recordDeptId !== department.id) {
+        return;
+      }
+
+      const date = new Date(record.createdAt);
+      const periodKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+      const items = payload.lineItems || [];
+      items.forEach(item => {
+        const category = item.itemCategory || 'Uncategorized';
+        const qty = parseFloat(item.quantity || 0);
+        const price = parseFloat(item.unitPrice || 0);
+        const amount = qty * price;
+
+        if (!byCategory[category]) byCategory[category] = 0;
+        byCategory[category] += amount;
+
+        if (!byMonth[periodKey]) byMonth[periodKey] = 0;
+        byMonth[periodKey] += amount;
+      });
+    });
+
+    const categoryData = Object.entries(byCategory).map(([category, amount]) => ({
+      category,
+      amount: Math.round(amount * 100) / 100
+    })).sort((a, b) => b.amount - a.amount);
+
+    const monthData = Object.entries(byMonth).map(([period, amount]) => ({
+      period,
+      amount: Math.round(amount * 100) / 100
+    })).sort((a, b) => a.period.localeCompare(b.period));
+
+    res.json({
+      success: true,
+      data: {
+        byCategory: categoryData,
+        byMonth: monthData,
+        totalSpent: Math.round(Object.values(byCategory).reduce((sum, v) => sum + v, 0) * 100) / 100
+      }
+    });
+  } catch (error) {
+    console.error('Spending trends error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch spending trends',
+      error: error.message
+    });
+  }
+});
+
 export default router;
