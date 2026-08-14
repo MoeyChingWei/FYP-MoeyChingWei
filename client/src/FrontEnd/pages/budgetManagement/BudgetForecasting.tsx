@@ -29,6 +29,7 @@ import {
 import { DollarOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
+import { getDepartments, type Department } from "../../shared/api/departmentBudget";
 import styles from "./BudgetForecasting.module.css";
 
 const { RangePicker } = DatePicker;
@@ -79,6 +80,8 @@ const BudgetForecasting: React.FC = () => {
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [forecastData, setForecastData] = useState<BudgetForecastResponse["data"] | null>(null);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [selectedDepartmentCode, setSelectedDepartmentCode] = useState<string | null>(null);
 
   const fetchForecastData = async () => {
     setLoading(true);
@@ -87,6 +90,9 @@ const BudgetForecasting: React.FC = () => {
       if (dateRange) {
         params.append("startDate", dateRange[0].format("YYYY-MM-DD"));
         params.append("endDate", dateRange[1].format("YYYY-MM-DD"));
+      }
+      if (selectedDepartmentCode) {
+        params.append("departmentCode", selectedDepartmentCode);
       }
 
       const response = await fetch(`http://localhost:4000/api/budget/forecast?${params}`);
@@ -112,6 +118,9 @@ const BudgetForecasting: React.FC = () => {
         params.append("startDate", dateRange[0].format("YYYY-MM-DD"));
         params.append("endDate", dateRange[1].format("YYYY-MM-DD"));
       }
+      if (selectedDepartmentCode) {
+        params.append("departmentCode", selectedDepartmentCode);
+      }
 
       const response = await fetch(`http://localhost:4000/api/budget/categories?${params}`);
       const result = await response.json();
@@ -125,9 +134,17 @@ const BudgetForecasting: React.FC = () => {
   };
 
   useEffect(() => {
+    const loadDepartments = async () => {
+      const depts = await getDepartments(true);
+      setDepartments(depts);
+    };
+    loadDepartments();
+  }, []);
+
+  useEffect(() => {
     fetchForecastData();
     fetchCategoryData();
-  }, [period, dateRange]);
+  }, [period, dateRange, selectedDepartmentCode]);
 
   const combinedChartData = [
     ...(forecastData?.historical || []).map((item) => ({
@@ -211,6 +228,20 @@ const BudgetForecasting: React.FC = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>{t("budgetManagement:budgetForecasting")}</h1>
         <div className={styles.controls}>
+          <Select
+            value={selectedDepartmentCode}
+            onChange={setSelectedDepartmentCode}
+            style={{ width: 200 }}
+            placeholder={t("budgetManagement:allDepartments")}
+            allowClear
+            className={styles.select}
+          >
+            {departments.map(d => (
+              <Option key={d.code} value={d.code}>
+                {d.name}
+              </Option>
+            ))}
+          </Select>
           <Select
             value={period}
             onChange={setPeriod}

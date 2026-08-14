@@ -19,7 +19,7 @@ console.log("🟢 Budget router initialized - stack length:", router.stack.lengt
 router.get("/forecast", async (req, res) => {
   console.log("🔵 Budget forecast route hit - query:", req.query);
   try {
-    const { startDate, endDate, category, period = "monthly" } = req.query;
+    const { startDate, endDate, category, period = "monthly", departmentCode } = req.query;
 
     // Fetch approved purchase requests (status: "Approved")
     const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
@@ -41,12 +41,23 @@ router.get("/forecast", async (req, res) => {
       (pr) => isApprovedStatus(pr.payload?.status)
     );
 
+    // Filter by department if specified
+    let filteredRequests = approvedRequests;
+    if (departmentCode) {
+      filteredRequests = approvedRequests.filter(pr => {
+        const dept = pr.payload?.department;
+        return dept &&
+          (String(dept).trim().toUpperCase() === String(departmentCode).trim().toUpperCase() ||
+           String(dept).trim() === String(departmentCode).trim());
+      });
+    }
+
     // Extract and aggregate data from JSON payloads
     const aggregatedData = {};
     let totalAmount = 0;
     let totalApprovedCount = 0;
 
-    approvedRequests.forEach((request) => {
+    filteredRequests.forEach((request) => {
       const payload = request.payload;
 
       // Extract date and amount from payload
@@ -189,7 +200,7 @@ router.get("/forecast", async (req, res) => {
 // GET /api/budget/categories - Get spending by category from approved PRs
 router.get("/categories", async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, departmentCode } = req.query;
 
     const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
       where: {
@@ -209,9 +220,20 @@ router.get("/categories", async (req, res) => {
       (pr) => isApprovedStatus(pr.payload?.status)
     );
 
+    // Filter by department if specified
+    let filteredRequests = approvedRequests;
+    if (departmentCode) {
+      filteredRequests = approvedRequests.filter(pr => {
+        const dept = pr.payload?.department;
+        return dept &&
+          (String(dept).trim().toUpperCase() === String(departmentCode).trim().toUpperCase() ||
+           String(dept).trim() === String(departmentCode).trim());
+      });
+    }
+
     const categoryTotals = {};
 
-    approvedRequests.forEach((request) => {
+    filteredRequests.forEach((request) => {
       const items = getRequestItems(request.payload);
       items.forEach((item) => {
         const category = item.itemCategory || "Uncategorized";

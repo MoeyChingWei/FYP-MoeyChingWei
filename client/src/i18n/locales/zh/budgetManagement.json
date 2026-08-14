@@ -22,5 +22,7 @@
   "forecastSpending": "预测预算",
   "historicalData": "历史数据",
   "categoryBreakdown": "类别细分",
-  "forecastPredictions": "预测预估"
+  "forecastPredictions": "预测预估",
+  "department": "部门",
+  "allDepartments": "所有部门"
 }

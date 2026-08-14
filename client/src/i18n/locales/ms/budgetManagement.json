@@ -22,5 +22,7 @@
   "forecastSpending": "Bajet Ramalan",
   "historicalData": "Data Sejarah",
   "categoryBreakdown": "Pecahan Kategori",
-  "forecastPredictions": "Ramalan Anggaran"
+  "forecastPredictions": "Ramalan Anggaran",
+  "department": "Jabatan",
+  "allDepartments": "Semua Jabatan"
 }
