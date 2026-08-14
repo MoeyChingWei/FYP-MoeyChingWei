@@ -323,13 +323,27 @@ router.post('/adjustments', async (req, res) => {
       });
     }
 
+    // Validate and convert requestedAmount using Decimal.js
+    let amount;
+    try {
+      amount = new Decimal(requestedAmount);
+      if (amount.isNaN() || amount.isNegative() || amount.isZero()) {
+        throw new Error('Invalid amount');
+      }
+    } catch (e) {
+      return res.status(400).json({
+        success: false,
+        message: 'requestedAmount must be a positive number'
+      });
+    }
+
     const adjustment = await prisma.budgetAdjustmentRequest.create({
       data: {
         departmentId: parseInt(departmentId),
         targetYear: parseInt(targetYear),
         targetMonth: parseInt(targetMonth),
         requestType,
-        requestedAmount: parseFloat(requestedAmount),
+        requestedAmount: amount.toNumber(),
         reason,
         requestedBy: parseInt(requestedBy),
         status: 'pending'
@@ -340,23 +354,25 @@ router.post('/adjustments', async (req, res) => {
       }
     });
 
-    // Notify finance managers
+    // Notify finance managers in parallel
     const financeManagers = await prisma.user.findMany({
       where: { role: 'Treasury/Finance Officer', isActive: true }
     });
 
-    for (const fm of financeManagers) {
-      await notifyBudgetAdjustmentRequested(
-        fm.id,
-        fm.role,
-        department.name,
-        parseInt(targetYear),
-        parseInt(targetMonth),
-        parseFloat(requestedAmount),
-        reason,
-        adjustment.id
-      );
-    }
+    await Promise.all(
+      financeManagers.map(fm =>
+        notifyBudgetAdjustmentRequested(
+          fm.id,
+          fm.role,
+          department.name,
+          parseInt(targetYear),
+          parseInt(targetMonth),
+          amount.toNumber(),
+          reason,
+          adjustment.id
+        )
+      )
+    );
 
     res.status(201).json({
       success: true,
@@ -413,6 +429,14 @@ router.patch('/adjustments/:id/approve', async (req, res) => {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
 
+    // Validate required parameters
+    if (!reviewedBy || !reviewComment) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: reviewedBy and reviewComment'
+      });
+    }
+
     const adjustment = await prisma.budgetAdjustmentRequest.findUnique({
       where: { id: parseInt(id) },
       include: { department: true }
@@ -432,69 +456,88 @@ router.patch('/adjustments/:id/approve', async (req, res) => {
       });
     }
 
-    // Update adjustment request
-    const updatedAdjustment = await prisma.budgetAdjustmentRequest.update({
-      where: { id: parseInt(id) },
-      data: {
-        status: 'approved',
-        reviewedBy: parseInt(reviewedBy),
-        reviewNotes: reviewComment,
-        reviewedAt: new Date()
-      },
-      include: {
-        department: true,
-        requester: true,
-        reviewer: true
-      }
-    });
-
-    // Update monthly budget
-    const budget = await prisma.monthlyBudget.findUnique({
-      where: {
-        departmentId_year_month: {
-          departmentId: adjustment.departmentId,
-          year: adjustment.targetYear,
-          month: adjustment.targetMonth
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Update adjustment request
+      const updatedAdjustment = await tx.budgetAdjustmentRequest.update({
+        where: { id: parseInt(id) },
+        data: {
+          status: 'approved',
+          reviewedBy: parseInt(reviewedBy),
+          reviewNotes: reviewComment,
+          reviewedAt: new Date()
+        },
+        include: {
+          department: true,
+          requester: true,
+          reviewer: true
         }
-      }
-    });
-
-    if (!budget) {
-      return res.status(404).json({
-        success: false,
-        message: 'Monthly budget not found for target period'
       });
-    }
 
-    const updatedBudget = await prisma.monthlyBudget.update({
-      where: { id: budget.id },
-      data: {
-        allocatedAmount: {
-          increment: adjustment.requestedAmount
+      // Update monthly budget
+      const budget = await tx.monthlyBudget.findUnique({
+        where: {
+          departmentId_year_month: {
+            departmentId: adjustment.departmentId,
+            year: adjustment.targetYear,
+            month: adjustment.targetMonth
+          }
         }
+      });
+
+      if (!budget) {
+        throw new Error('Monthly budget not found for target period');
       }
+
+      const updatedBudget = await tx.monthlyBudget.update({
+        where: { id: budget.id },
+        data: {
+          allocatedAmount: {
+            increment: adjustment.requestedAmount
+          }
+        }
+      });
+
+      return { updatedAdjustment, updatedBudget };
     });
 
-    // Notify requester
+    // Notify requester after successful transaction
     await notifyBudgetAdjustmentApproved(
       adjustment.requestedBy,
       adjustment.department.name,
       adjustment.targetYear,
       adjustment.targetMonth,
       adjustment.requestedAmount,
-      updatedBudget.allocatedAmount,
+      result.updatedBudget.allocatedAmount,
       adjustment.id
     );
 
+    // Transform reviewNotes to reviewComment for API consistency
+    const responseData = {
+      request: {
+        ...result.updatedAdjustment,
+        reviewComment: result.updatedAdjustment.reviewNotes,
+        reviewNotes: undefined
+      },
+      updatedBudget: result.updatedBudget
+    };
+    delete responseData.request.reviewNotes;
+
     res.json({
       success: true,
-      data: {
-        request: updatedAdjustment,
-        updatedBudget
-      }
+      data: responseData
     });
   } catch (error) {
     console.error('Approve adjustment error:', error);
+
+    // Handle transaction errors
+    if (error.message === 'Monthly budget not found for target period') {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Failed to approve adjustment',
@@ -508,6 +551,14 @@ router.patch('/adjustments/:id/reject', async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
+
+    // Validate required parameters
+    if (!reviewedBy || !reviewComment) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: reviewedBy and reviewComment'
+      });
+    }
 
     const adjustment = await prisma.budgetAdjustmentRequest.findUnique({
       where: { id: parseInt(id) },
@@ -550,13 +601,21 @@ router.patch('/adjustments/:id/reject', async (req, res) => {
       adjustment.targetYear,
       adjustment.targetMonth,
       adjustment.requestedAmount,
-      reviewComment || 'No reason provided',
+      reviewComment,
       adjustment.id
     );
 
+    // Transform reviewNotes to reviewComment for API consistency
+    const responseData = {
+      ...updatedAdjustment,
+      reviewComment: updatedAdjustment.reviewNotes,
+      reviewNotes: undefined
+    };
+    delete responseData.reviewNotes;
+
     res.json({
       success: true,
-      data: updatedAdjustment
+      data: responseData
     });
   } catch (error) {
     console.error('Reject adjustment error:', error);

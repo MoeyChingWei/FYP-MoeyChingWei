@@ -6,6 +6,8 @@ import departmentRouter from '../routes/department-budget.js';
 import * as predictionService from '../services/budget-prediction-service.js';
 import * as notificationService from '../services/notification-service.js';
 
+vi.mock('../services/notification-service.js');
+
 const app = express();
 app.use(express.json());
 app.use('/api/department-budget', departmentRouter);
@@ -348,7 +350,7 @@ describe('Department Budget Routes', () => {
 
     describe('POST /api/department-budget/adjustments', () => {
       test('should create budget adjustment request', async () => {
-        vi.spyOn(notificationService, 'notifyBudgetAdjustmentRequested').mockResolvedValue({});
+        notificationService.notifyBudgetAdjustmentRequested.mockResolvedValue({});
 
         const res = await request(app)
           .post('/api/department-budget/adjustments')
@@ -408,7 +410,7 @@ describe('Department Budget Routes', () => {
 
     describe('PATCH /api/department-budget/adjustments/:id/approve', () => {
       test('should approve adjustment request and update budget', async () => {
-        vi.spyOn(notificationService, 'notifyBudgetAdjustmentApproved').mockResolvedValue({});
+        notificationService.notifyBudgetAdjustmentApproved.mockResolvedValue({});
 
         const res = await request(app)
           .patch(`/api/department-budget/adjustments/${testAdjustment.id}/approve`)
@@ -427,7 +429,7 @@ describe('Department Budget Routes', () => {
 
     describe('PATCH /api/department-budget/adjustments/:id/reject', () => {
       test('should reject adjustment request', async () => {
-        vi.spyOn(notificationService, 'notifyBudgetAdjustmentRejected').mockResolvedValue({});
+        notificationService.notifyBudgetAdjustmentRejected.mockResolvedValue({});
 
         const newRequest = await prisma.budgetAdjustmentRequest.create({
           data: {
