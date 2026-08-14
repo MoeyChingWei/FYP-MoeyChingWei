@@ -86,6 +86,17 @@ describe('Budget Prediction Service', () => {
   });
 
   test('should fallback to average when AI agent fails', async () => {
+    // Create a test user for PSVC department
+    const testUser = await prisma.user.create({
+      data: {
+        name: 'Test User PSVC',
+        email: `test-psvc-${Date.now()}@test.com`,
+        password: 'test123',
+        role: 'user',
+        department: 'PSVC'
+      }
+    });
+
     // Create purchase request history for PSVC department
     const testLocalId = `test-pr-${Date.now()}`;
     await prisma.purchaseRequestRecord.create({
@@ -93,8 +104,10 @@ describe('Budget Prediction Service', () => {
         localId: testLocalId,
         payload: {
           department: 'Prediction Service Test',
-          items: [
-            { itemName: 'Test Item', quantity: 10, unitPrice: 100, totalPrice: 1000 }
+          status: 'APPROVED',
+          requestorId: testUser.id,
+          lineItems: [
+            { itemName: 'Test Item', itemCategory: 'Materials', quantity: 10, unitPrice: 100, totalPrice: 1000 }
           ]
         }
       }
@@ -107,7 +120,7 @@ describe('Budget Prediction Service', () => {
     const prediction = await generateDepartmentPrediction('PSVC', 2026, 12, null);
 
     expect(prediction).toBeDefined();
-    expect(prediction.aiInsights).toContain('AI agent unavailable');
+    expect(prediction.aiInsights).toContain('AI error');
     expect(parseFloat(prediction.predictedAmount)).toBeGreaterThan(0);
 
     // Restore original function
@@ -116,6 +129,9 @@ describe('Budget Prediction Service', () => {
     // Clean up test data
     await prisma.purchaseRequestRecord.delete({
       where: { localId: testLocalId }
+    });
+    await prisma.user.delete({
+      where: { id: testUser.id }
     });
   });
 });

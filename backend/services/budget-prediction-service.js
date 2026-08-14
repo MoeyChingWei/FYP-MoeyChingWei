@@ -122,6 +122,47 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
 }
 
 /**
+ * Parse AI response to extract JSON
+ * @param {string} response - AI response text
+ * @returns {Object} Parsed prediction data
+ */
+function parseAIResponse(response) {
+  try {
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    throw new Error('No JSON found in response');
+  } catch (error) {
+    console.error('Failed to parse AI response:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fallback prediction using moving average
+ * @param {Array} historicalData - Historical spending data
+ * @returns {Object} Fallback prediction result
+ */
+function fallbackPrediction(historicalData) {
+  const recent = historicalData.slice(-3);
+  const avgAmount = recent.reduce((sum, p) => sum + p.amount, 0) / recent.length;
+
+  return {
+    amount: Math.round(avgAmount * 100) / 100,
+    confidence: 'low',
+    insights: 'Fallback prediction using 3-month moving average due to AI error.',
+    categoryBreakdown: {},
+    comparisonData: {
+      lastMonthAmount: historicalData[historicalData.length - 1].amount,
+      avgAmount: avgAmount,
+      trend: 'stable',
+      historicalPeriods: historicalData.length
+    }
+  };
+}
+
+/**
  * Call analytics agent to generate prediction
  * @param {Object} department - Department object
  * @param {Array} historicalData - Historical spending data
@@ -130,43 +171,62 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
  * @returns {Promise<Object>} AI prediction response
  */
 async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
-  const message = `Predict budget for ${department.name} (${department.code}) for ${targetYear}-${String(targetMonth).padStart(2, '0')}. Historical data points: ${historicalData.length}`;
+  const lastPeriod = historicalData[historicalData.length - 1];
+  const avgAmount = historicalData.reduce((sum, p) => sum + p.amount, 0) / historicalData.length;
 
-  // Calculate baseline statistics
-  const amounts = historicalData.map(d => d.amount);
-  const avgAmount = amounts.length > 0
-    ? amounts.reduce((a, b) => a + b, 0) / amounts.length
-    : DEFAULT_FALLBACK_BUDGET;
+  const prompt = `You are a budget forecasting AI using Holt-Winters Triple Exponential Smoothing.
 
-  // Determine confidence based on data quantity
-  const confidence =
-    amounts.length >= CONFIDENCE_THRESHOLD_HIGH ? 'high' :
-    amounts.length >= CONFIDENCE_THRESHOLD_MEDIUM ? 'medium' :
-    'low';
+Department: ${department.name}
+Target Period: ${targetYear}-${String(targetMonth).padStart(2, '0')}
+
+Historical Spending (Last ${historicalData.length} months):
+${historicalData.map(h => `- ${h.period}: $${h.amount.toFixed(2)} (${h.requestCount} requests)`).join('\n')}
+
+Category Breakdown (Latest Period ${lastPeriod.period}):
+${Object.entries(lastPeriod.categoryTotals).map(([cat, amt]) => `- ${cat}: $${amt.toFixed(2)}`).join('\n')}
+
+Please predict next month's budget using Holt-Winters algorithm and provide:
+1. Predicted amount (number only)
+2. Confidence level (low/medium/high)
+3. Key insights (2-3 sentences)
+4. Category breakdown forecast (JSON object)
+
+Format your response as JSON:
+{
+  "predictedAmount": <number>,
+  "confidence": "<low|medium|high>",
+  "insights": "<string>",
+  "categoryBreakdown": {<category>: <amount>, ...}
+}`;
 
   try {
-    const response = await analyticsAgent.chat(message);
+    const aiResponse = await analyticsAgent.chat({
+      userId: 1,
+      message: prompt,
+      sessionId: `budget-prediction-${department.id}-${Date.now()}`
+    });
 
-    // TODO: Parse AI response to extract structured prediction details
-    // For now, use statistical baseline with AI insights text
+    if (!aiResponse.success) {
+      throw new Error('AI agent returned unsuccessful response');
+    }
+
+    const parsed = parseAIResponse(aiResponse.content);
+
     return {
-      amount: avgAmount,
-      confidence,
-      insights: response.response || 'Prediction based on historical spending patterns',
-      // TODO: Implement category breakdown parsing from AI response
-      categoryBreakdown: {},
-      // TODO: Implement comparison data parsing from AI response
-      comparisonData: {}
+      amount: parsed.predictedAmount,
+      confidence: parsed.confidence,
+      insights: parsed.insights,
+      categoryBreakdown: parsed.categoryBreakdown,
+      comparisonData: {
+        lastMonthAmount: lastPeriod.amount,
+        avgAmount: Math.round(avgAmount * 100) / 100,
+        trend: lastPeriod.amount > avgAmount ? 'increasing' : 'decreasing',
+        historicalPeriods: historicalData.length
+      }
     };
   } catch (error) {
-    // Fallback if AI agent fails - use statistical baseline
-    return {
-      amount: avgAmount,
-      confidence,
-      insights: 'Prediction based on historical average (AI agent unavailable)',
-      categoryBreakdown: {},
-      comparisonData: {}
-    };
+    console.error('AI prediction failed:', error);
+    return fallbackPrediction(historicalData);
   }
 }
 
@@ -223,4 +283,4 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
   return prediction;
 }
 
-export { getHistoricalSpending };
+export { getHistoricalSpending, callAnalyticsAgent };
