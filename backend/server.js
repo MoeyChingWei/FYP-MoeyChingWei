@@ -26,6 +26,7 @@ import auditRoutes from "./routes/audit.js";
 import backupRoutes from "./routes/backup.js";
 import homeRoutes from "./routes/home.js";
 import budgetRoutes from "./routes/budget.js";
+import departmentBudgetRoutes from "./routes/department-budget.js";
 import { auditMiddleware } from "./middleware/auditMiddleware.js";
 
 const app = express();
@@ -57,6 +58,7 @@ app.use("/api/language", languageRoutes);
 app.use("/api/export", exportRoutes);
 console.log("🔵 Registering /api/budget routes");
 app.use("/api/budget", budgetRoutes);
+app.use("/api/department-budget", departmentBudgetRoutes);
 
 app.use("/", homeRoutes);
 
