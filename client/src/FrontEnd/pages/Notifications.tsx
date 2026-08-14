@@ -248,7 +248,7 @@ export default function NotificationsPage(): React.ReactElement {
               />
             </Space>
             <Space wrap>
-              <Text strong style={{ marginRight: 8 }}>{tNotif('status')}</Text>
+              <Text strong style={{ marginRight: 8 }}>{tCommon('labels.status')}:</Text>
               <Segmented
                 options={[
                   { label: tCommon('all'), value: "all" },

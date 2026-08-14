@@ -8,6 +8,10 @@ const pendingRowsByStore = new Map<string, { localId: string }[]>();
 const pendingTimerByStore = new Map<string, number>();
 const syncRunningByStore = new Set<string>();
 
+export function isWorkflowSyncEnabled(): boolean {
+  return WORKFLOW_SYNC_ENABLED;
+}
+
 export async function fetchWorkflowRows<T>(store: string, limit?: number): Promise<T[]> {
   return fetchWorkflowRowsInternal<T>(store, false, limit);
 }

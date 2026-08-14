@@ -15,6 +15,11 @@ export type NotificationRow = {
 };
 
 const API = `${API_ROOT}/notifications`;
+export const NOTIFICATIONS_CHANGED_EVENT = "erp-notifications-changed";
+
+function notifyNotificationsChanged(): void {
+  window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT));
+}
 
 export async function fetchNotifications(userId: number): Promise<NotificationRow[]> {
   const res = await axios.get(API, { params: { userId } });
@@ -31,6 +36,7 @@ export async function markNotificationRead(id: number): Promise<void> {
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? "Failed to mark notification as read");
   }
+  notifyNotificationsChanged();
 }
 
 export async function markAllNotificationsRead(userId: number): Promise<void> {
@@ -38,6 +44,7 @@ export async function markAllNotificationsRead(userId: number): Promise<void> {
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? "Failed to mark all notifications as read");
   }
+  notifyNotificationsChanged();
 }
 
 export async function deleteNotification(id: number, userId: number): Promise<void> {

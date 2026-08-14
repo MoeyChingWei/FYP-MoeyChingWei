@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Badge, Button, Dropdown, Typography, Empty, Spin } from "antd";
 import {
   BellOutlined,
@@ -9,7 +9,12 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getSessionUser } from "../../shared/auth/session";
-import { fetchNotifications, markNotificationRead, type NotificationRow } from "../../shared/api/notifications";
+import {
+  fetchNotifications,
+  markNotificationRead,
+  NOTIFICATIONS_CHANGED_EVENT,
+  type NotificationRow,
+} from "../../shared/api/notifications";
 import { UserRole } from "../../shared/types/roles";
 import styles from "./NotificationBell.module.css";
 
@@ -61,7 +66,7 @@ export default function NotificationBell(): React.ReactElement {
 
   const isAdmin = sessionUser?.role === UserRole.ADMIN;
 
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     if (!sessionUser?.id) return;
     setLoading(true);
     try {
@@ -75,7 +80,7 @@ export default function NotificationBell(): React.ReactElement {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAdmin, sessionUser?.id]);
 
   useEffect(() => {
     void loadNotifications();
@@ -83,8 +88,13 @@ export default function NotificationBell(): React.ReactElement {
     const interval = setInterval(() => {
       void loadNotifications();
     }, 30000);
-    return () => clearInterval(interval);
-  }, [sessionUser?.id, isAdmin]);
+    const syncNotifications = () => void loadNotifications();
+    window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, syncNotifications);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, syncNotifications);
+    };
+  }, [loadNotifications]);
 
   const unreadNotifications = notifications.filter((n) => !n.isRead);
   const unreadCount = unreadNotifications.length;
@@ -107,7 +117,6 @@ export default function NotificationBell(): React.ReactElement {
     try {
       if (!n.isRead) {
         await markNotificationRead(n.id);
-        await loadNotifications();
       }
     } catch (err) {
       console.error("Failed to mark notification as read:", err);

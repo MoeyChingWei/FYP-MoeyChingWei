@@ -3,6 +3,15 @@ import prisma from "../config/prisma.js";
 
 const router = express.Router();
 
+function isApprovedStatus(status) {
+  return String(status ?? "").trim().toUpperCase() === "APPROVED";
+}
+
+function getRequestItems(payload) {
+  if (Array.isArray(payload?.lineItems)) return payload.lineItems;
+  return Array.isArray(payload?.items) ? payload.items : [];
+}
+
 // Debug: Log all middleware in this router
 console.log("🟢 Budget router initialized - stack length:", router.stack.length);
 
@@ -27,9 +36,9 @@ router.get("/forecast", async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    // Filter only approved requests
+    // Accept the current workflow's uppercase status and legacy persisted values.
     const approvedRequests = purchaseRequests.filter(
-      (pr) => pr.payload.status === "Approved"
+      (pr) => isApprovedStatus(pr.payload?.status)
     );
 
     // Extract and aggregate data from JSON payloads
@@ -57,7 +66,7 @@ router.get("/forecast", async (req, res) => {
       }
 
       // Extract items and calculate total (reserved budget)
-      const items = payload.items || [];
+      const items = getRequestItems(payload);
       const requestTotal = items.reduce((sum, item) => {
         const quantity = parseFloat(item.quantity) || 0;
         const unitPrice = parseFloat(item.unitPrice) || 0;
@@ -195,15 +204,15 @@ router.get("/categories", async (req, res) => {
       },
     });
 
-    // Filter only approved requests
+    // Accept the current workflow's uppercase status and legacy persisted values.
     const approvedRequests = purchaseRequests.filter(
-      (pr) => pr.payload.status === "Approved"
+      (pr) => isApprovedStatus(pr.payload?.status)
     );
 
     const categoryTotals = {};
 
     approvedRequests.forEach((request) => {
-      const items = request.payload.items || [];
+      const items = getRequestItems(request.payload);
       items.forEach((item) => {
         const category = item.itemCategory || "Uncategorized";
         const itemTotal = (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0);

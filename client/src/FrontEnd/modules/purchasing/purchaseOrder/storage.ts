@@ -4,6 +4,7 @@ import type { PurchaseOrderDraft } from "./types";
 import {
   fetchWorkflowRows,
   fetchWorkflowRowsForRecovery,
+  isWorkflowSyncEnabled,
   queueWorkflowRowsSave,
 } from "../../../shared/api/workflowStorage";
 
@@ -121,17 +122,16 @@ export async function hydratePurchaseOrderDrafts(): Promise<PurchaseOrderDraft[]
     const remoteDrafts = localDrafts.length
       ? await fetchWorkflowRows<PurchaseOrderDraft>(PURCHASE_ORDER_STORE, 200)
       : await fetchWorkflowRowsForRecovery<PurchaseOrderDraft>(PURCHASE_ORDER_STORE);
-    const drafts = mergeByLocalId(localDrafts, remoteDrafts);
-    if (drafts.length) {
-      purchaseOrderDraftCache = drafts;
-      try {
-        window.localStorage.setItem(PURCHASE_ORDER_DRAFTS_KEY, JSON.stringify(drafts));
-      } catch {
-        // Ignore local persistence errors to keep UI usable.
-      }
-      return drafts;
+    const drafts = isWorkflowSyncEnabled()
+      ? remoteDrafts
+      : mergeByLocalId(localDrafts, remoteDrafts);
+    purchaseOrderDraftCache = drafts;
+    try {
+      window.localStorage.setItem(PURCHASE_ORDER_DRAFTS_KEY, JSON.stringify(drafts));
+    } catch {
+      // Ignore local persistence errors to keep UI usable.
     }
-    return loadPurchaseOrderDrafts();
+    return drafts;
   } catch {
     return loadPurchaseOrderDrafts();
   }

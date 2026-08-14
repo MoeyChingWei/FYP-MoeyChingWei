@@ -4,6 +4,7 @@ import { getCompanyAddress } from "../settings/companyAddress";
 import {
   fetchWorkflowRows,
   fetchWorkflowRowsForRecovery,
+  isWorkflowSyncEnabled,
   queueWorkflowRowsSave,
 } from "../../shared/api/workflowStorage";
 
@@ -416,17 +417,16 @@ export async function hydrateSupplierOrderAcknowledgements(): Promise<
     const remoteRows = localRows.length
       ? await fetchWorkflowRows<SupplierOrderAcknowledgementRecord>(ORDER_ACKS_STORE, 200)
       : await fetchWorkflowRowsForRecovery<SupplierOrderAcknowledgementRecord>(ORDER_ACKS_STORE);
-    const rows = mergeByLocalId(localRows, remoteRows);
-    if (rows.length) {
-      supplierOrderAcknowledgementCache = rows;
-      try {
-        window.localStorage.setItem(ORDER_ACKS_KEY, JSON.stringify(rows));
-      } catch {
-        // Ignore local persistence errors to keep UI usable.
-      }
-      return rows;
+    const rows = isWorkflowSyncEnabled()
+      ? remoteRows
+      : mergeByLocalId(localRows, remoteRows);
+    supplierOrderAcknowledgementCache = rows;
+    try {
+      window.localStorage.setItem(ORDER_ACKS_KEY, JSON.stringify(rows));
+    } catch {
+      // Ignore local persistence errors to keep UI usable.
     }
-    return loadSupplierOrderAcknowledgements();
+    return rows;
   } catch {
     return loadSupplierOrderAcknowledgements();
   }
@@ -441,17 +441,16 @@ export async function hydrateSupplierDeliveries(): Promise<SupplierDeliveryRecor
     const remoteRows = localRows.length
       ? await fetchWorkflowRows<SupplierDeliveryRecord>(DELIVERIES_STORE, 200)
       : await fetchWorkflowRowsForRecovery<SupplierDeliveryRecord>(DELIVERIES_STORE);
-    const rows = mergeByLocalId(localRows, remoteRows);
-    if (rows.length) {
-      supplierDeliveryCache = rows;
-      try {
-        window.localStorage.setItem(DELIVERIES_KEY, JSON.stringify(rows));
-      } catch {
-        // Ignore local persistence errors to keep UI usable.
-      }
-      return rows;
+    const rows = isWorkflowSyncEnabled()
+      ? remoteRows
+      : mergeByLocalId(localRows, remoteRows);
+    supplierDeliveryCache = rows;
+    try {
+      window.localStorage.setItem(DELIVERIES_KEY, JSON.stringify(rows));
+    } catch {
+      // Ignore local persistence errors to keep UI usable.
     }
-    return loadSupplierDeliveries();
+    return rows;
   } catch {
     return loadSupplierDeliveries();
   }
@@ -466,17 +465,16 @@ export async function hydrateSupplierGrns(): Promise<SupplierGrnRecord[]> {
     const remoteRows = localRows.length
       ? await fetchWorkflowRows<SupplierGrnRecord>(GRNS_STORE, 200)
       : await fetchWorkflowRowsForRecovery<SupplierGrnRecord>(GRNS_STORE);
-    const rows = mergeByLocalId(localRows, remoteRows);
-    if (rows.length) {
-      supplierGrnCache = rows;
-      try {
-        window.localStorage.setItem(GRNS_KEY, JSON.stringify(rows));
-      } catch {
-        // Ignore local persistence errors to keep UI usable.
-      }
-      return rows;
+    const rows = isWorkflowSyncEnabled()
+      ? remoteRows
+      : mergeByLocalId(localRows, remoteRows);
+    supplierGrnCache = rows;
+    try {
+      window.localStorage.setItem(GRNS_KEY, JSON.stringify(rows));
+    } catch {
+      // Ignore local persistence errors to keep UI usable.
     }
-    return loadSupplierGrns();
+    return rows;
   } catch {
     return loadSupplierGrns();
   }
