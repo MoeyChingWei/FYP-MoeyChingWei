@@ -139,6 +139,7 @@ const BudgetForecasting = lazy(
   () => import("./pages/budgetManagement/BudgetForecasting"),
 );
 const DepartmentBudgetOverview = lazy(() => import("./pages/DepartmentBudgetOverview"));
+const BudgetAdjustmentRequest = lazy(() => import("./pages/BudgetAdjustmentRequest"));
 
 type MenuKey =
   | "overview"
@@ -566,6 +567,7 @@ function MainLayout(): React.ReactElement {
           <Route path="/budget-management" element={<BudgetManagementHome />} />
           <Route path="/budget-management/forecasting" element={<BudgetForecasting />} />
           <Route path="/budget/department-overview" element={<DepartmentBudgetOverview />} />
+          <Route path="/budget/adjustment-request" element={<BudgetAdjustmentRequest />} />
           <Route
             path="/budget-management/*"
             element={<Navigate to="/budget-management" replace />}
