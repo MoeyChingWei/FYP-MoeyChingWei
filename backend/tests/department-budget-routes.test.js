@@ -4,6 +4,7 @@ import express from 'express';
 import prisma from '../config/prisma.js';
 import departmentRouter from '../routes/department-budget.js';
 import * as predictionService from '../services/budget-prediction-service.js';
+import * as notificationService from '../services/notification-service.js';
 
 const app = express();
 app.use(express.json());
@@ -311,6 +312,147 @@ describe('Department Budget Routes', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.data.successCount).toBe(1);
         expect(res.body.data.failedCount).toBe(0);
+      });
+    });
+  });
+
+  describe('Budget Adjustment Request Endpoints', () => {
+    let testUser, financeUser, testBudget, testAdjustment;
+
+    beforeAll(async () => {
+      testUser = await prisma.user.create({
+        data: { email: 'depthead@test.com', password: 'hash', name: 'Dept Head', role: 'Department Executive' }
+      });
+
+      financeUser = await prisma.user.create({
+        data: { email: 'finance@test.com', password: 'hash', name: 'Finance Mgr', role: 'Treasury/Finance Officer' }
+      });
+
+      testBudget = await prisma.monthlyBudget.create({
+        data: {
+          departmentId: testDept.id,
+          year: 2026,
+          month: 10,
+          allocatedAmount: 100000,
+          spentAmount: 0,
+          reservedAmount: 0
+        }
+      });
+    });
+
+    afterAll(async () => {
+      await prisma.budgetAdjustmentRequest.deleteMany({ where: { departmentId: testDept.id } });
+      await prisma.monthlyBudget.delete({ where: { id: testBudget.id } });
+      await prisma.user.deleteMany({ where: { id: { in: [testUser.id, financeUser.id] } } });
+    });
+
+    describe('POST /api/department-budget/adjustments', () => {
+      test('should create budget adjustment request', async () => {
+        vi.spyOn(notificationService, 'notifyBudgetAdjustmentRequested').mockResolvedValue({});
+
+        const res = await request(app)
+          .post('/api/department-budget/adjustments')
+          .send({
+            departmentId: testDept.id,
+            targetYear: 2026,
+            targetMonth: 10,
+            requestType: 'increase',
+            requestedAmount: 25000,
+            reason: 'Emergency equipment purchase',
+            requestedBy: testUser.id
+          });
+
+        expect(res.status).toBe(201);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.requestedAmount).toBe('25000');
+        expect(res.body.data.status).toBe('pending');
+        expect(notificationService.notifyBudgetAdjustmentRequested).toHaveBeenCalled();
+
+        testAdjustment = res.body.data;
+      });
+
+      test('should return 400 for missing parameters', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/adjustments')
+          .send({
+            departmentId: testDept.id
+          });
+
+        expect(res.status).toBe(400);
+      });
+    });
+
+    describe('GET /api/department-budget/adjustments', () => {
+      test('should get all adjustment requests', async () => {
+        const res = await request(app).get('/api/department-budget/adjustments');
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(Array.isArray(res.body.data)).toBe(true);
+      });
+
+      test('should filter by status', async () => {
+        const res = await request(app).get('/api/department-budget/adjustments?status=pending');
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.every(r => r.status === 'pending')).toBe(true);
+      });
+
+      test('should filter by department', async () => {
+        const res = await request(app).get(`/api/department-budget/adjustments?departmentId=${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.every(r => r.departmentId === testDept.id)).toBe(true);
+      });
+    });
+
+    describe('PATCH /api/department-budget/adjustments/:id/approve', () => {
+      test('should approve adjustment request and update budget', async () => {
+        vi.spyOn(notificationService, 'notifyBudgetAdjustmentApproved').mockResolvedValue({});
+
+        const res = await request(app)
+          .patch(`/api/department-budget/adjustments/${testAdjustment.id}/approve`)
+          .send({
+            reviewedBy: financeUser.id,
+            reviewComment: 'Approved for Q3 equipment'
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.request.status).toBe('approved');
+        expect(res.body.data.updatedBudget.allocatedAmount).toBe('125000');
+        expect(notificationService.notifyBudgetAdjustmentApproved).toHaveBeenCalled();
+      });
+    });
+
+    describe('PATCH /api/department-budget/adjustments/:id/reject', () => {
+      test('should reject adjustment request', async () => {
+        vi.spyOn(notificationService, 'notifyBudgetAdjustmentRejected').mockResolvedValue({});
+
+        const newRequest = await prisma.budgetAdjustmentRequest.create({
+          data: {
+            departmentId: testDept.id,
+            targetYear: 2026,
+            targetMonth: 10,
+            requestType: 'additional',
+            requestedAmount: 10000,
+            reason: 'Test reject',
+            requestedBy: testUser.id,
+            status: 'pending'
+          }
+        });
+
+        const res = await request(app)
+          .patch(`/api/department-budget/adjustments/${newRequest.id}/reject`)
+          .send({
+            reviewedBy: financeUser.id,
+            reviewComment: 'Insufficient justification'
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.status).toBe('rejected');
+        expect(notificationService.notifyBudgetAdjustmentRejected).toHaveBeenCalled();
       });
     });
   });
