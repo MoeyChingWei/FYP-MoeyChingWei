@@ -725,4 +725,83 @@ router.post('/usage/deduct', async (req, res) => {
   }
 });
 
+// GET /api/department-budget/predictions/:departmentId - Get predictions for department
+router.get('/predictions/:departmentId', async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const { year, month, confidence, triggerType, limit } = req.query;
+
+    const where = { departmentId: parseInt(departmentId) };
+
+    if (year) where.targetYear = parseInt(year);
+    if (month) where.targetMonth = parseInt(month);
+    if (confidence) where.confidence = confidence;
+    if (triggerType) where.triggerType = triggerType;
+
+    const predictions = await prisma.budgetPrediction.findMany({
+      where,
+      include: {
+        department: true
+      },
+      orderBy: [
+        { targetYear: 'desc' },
+        { targetMonth: 'desc' },
+        { createdAt: 'desc' }
+      ],
+      take: limit ? parseInt(limit) : undefined
+    });
+
+    res.json({
+      success: true,
+      data: predictions.map(p => ({
+        ...p,
+        predictedAmount: parseFloat(p.predictedAmount)
+      }))
+    });
+  } catch (error) {
+    console.error('Get predictions error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch predictions',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/department-budget/predictions/single/:id - Get single prediction by ID
+router.get('/predictions/single/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const prediction = await prisma.budgetPrediction.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        department: true
+      }
+    });
+
+    if (!prediction) {
+      return res.status(404).json({
+        success: false,
+        message: 'Prediction not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        ...prediction,
+        predictedAmount: parseFloat(prediction.predictedAmount)
+      }
+    });
+  } catch (error) {
+    console.error('Get prediction error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch prediction',
+      error: error.message
+    });
+  }
+});
+
 export default router;

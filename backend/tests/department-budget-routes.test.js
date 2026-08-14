@@ -528,4 +528,107 @@ describe('Department Budget Routes', () => {
       });
     });
   });
+
+  describe('Budget Prediction Retrieval Endpoints', () => {
+    let testPrediction, testUser;
+
+    beforeAll(async () => {
+      // Clean up any existing test user
+      await prisma.user.deleteMany({ where: { email: 'prediction@test.com' } });
+
+      testUser = await prisma.user.create({
+        data: {
+          email: 'prediction@test.com',
+          password: 'hash',
+          name: 'Prediction Test User',
+          role: 'Department Executive',
+          department: 'Test Department'
+        }
+      });
+
+      testPrediction = await prisma.budgetPrediction.create({
+        data: {
+          departmentId: testDept.id,
+          targetYear: 2026,
+          targetMonth: 9,
+          predictedAmount: 85000,
+          confidence: 'high',
+          algorithm: 'holt-winters',
+          aiInsights: 'Based on 6 months of historical data',
+          triggerType: 'manual',
+          categoryBreakdown: {
+            salaries: 50000,
+            operations: 35000
+          }
+        }
+      });
+    });
+
+    afterAll(async () => {
+      await prisma.budgetPrediction.delete({ where: { id: testPrediction.id } });
+      await prisma.user.delete({ where: { id: testUser.id } });
+    });
+
+    describe('GET /api/department-budget/predictions/:departmentId', () => {
+      test('should return all predictions for department', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(Array.isArray(res.body.data)).toBe(true);
+        expect(res.body.data.length).toBeGreaterThan(0);
+        expect(res.body.data[0]).toHaveProperty('predictedAmount');
+        expect(res.body.data[0]).toHaveProperty('confidence');
+      });
+
+      test('should filter predictions by year and month', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?year=2026&month=9`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.every(p => p.targetYear === 2026 && p.targetMonth === 9)).toBe(true);
+      });
+
+      test('should filter predictions by confidence level', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?confidence=high`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.every(p => p.confidence === 'high')).toBe(true);
+      });
+
+      test('should filter predictions by trigger type', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?triggerType=manual`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.every(p => p.triggerType === 'manual')).toBe(true);
+      });
+
+      test('should limit results when limit parameter provided', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?limit=5`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.length).toBeLessThanOrEqual(5);
+      });
+    });
+
+    describe('GET /api/department-budget/predictions/single/:id', () => {
+      test('should return single prediction by ID', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/single/${testPrediction.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.id).toBe(testPrediction.id);
+        expect(res.body.data).toHaveProperty('department');
+      });
+
+      test('should return 404 for non-existent prediction', async () => {
+        const res = await request(app).get('/api/department-budget/predictions/single/99999');
+
+        expect(res.status).toBe(404);
+      });
+    });
+  });
 });
