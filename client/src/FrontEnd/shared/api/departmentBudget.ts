@@ -52,3 +52,119 @@ export async function getBudgetUsage(
     return null;
   }
 }
+
+export interface Department {
+  id: number;
+  code: string;
+  name: string;
+  isActive: boolean;
+}
+
+export interface MonthlyBudget {
+  id: number;
+  departmentId: number;
+  year: number;
+  month: number;
+  allocatedAmount: number;
+  spentAmount: number;
+  reservedAmount: number;
+  notes?: string;
+  department?: Department;
+}
+
+export interface BudgetPrediction {
+  id: number;
+  departmentId: number;
+  targetYear: number;
+  targetMonth: number;
+  predictedAmount: number;
+  confidence: "high" | "medium" | "low";
+  triggerType: "automatic" | "manual";
+  triggeredBy: number;
+  metadata?: any;
+  createdAt: string;
+  department?: Department;
+  triggeredByUser?: { id: number; name: string; email: string };
+}
+
+export async function getDepartments(isActive?: boolean): Promise<Department[]> {
+  try {
+    const params = isActive !== undefined ? { isActive: String(isActive) } : {};
+    const res = await axios.get(`${API}/departments`, { params });
+    return res.data.success ? res.data.data : [];
+  } catch (error) {
+    console.error("Get departments error:", error);
+    return [];
+  }
+}
+
+export async function getMonthlyBudgets(
+  departmentId: number,
+  year?: number,
+  month?: number
+): Promise<MonthlyBudget[]> {
+  try {
+    const params: any = {};
+    if (year) params.year = year;
+    if (month) params.month = month;
+    const res = await axios.get(`${API}/monthly/${departmentId}`, { params });
+    return res.data.success ? res.data.data : [];
+  } catch (error) {
+    console.error("Get monthly budgets error:", error);
+    return [];
+  }
+}
+
+export async function getPredictions(
+  departmentId: number,
+  filters?: {
+    year?: number;
+    month?: number;
+    confidence?: string;
+    triggerType?: string;
+    limit?: number;
+  }
+): Promise<BudgetPrediction[]> {
+  try {
+    const res = await axios.get(`${API}/predictions/${departmentId}`, { params: filters || {} });
+    return res.data.success ? res.data.data : [];
+  } catch (error) {
+    console.error("Get predictions error:", error);
+    return [];
+  }
+}
+
+export interface HistoricalData {
+  year: number;
+  month: number;
+  period: string;
+  allocatedAmount: number;
+  spentAmount: number;
+  remainingAmount: number;
+  utilization: number;
+}
+
+export interface HistoricalComparison {
+  historicalData: HistoricalData[];
+  summary: {
+    totalPeriods: number;
+    avgAllocated: number;
+    avgSpent: number;
+    avgUtilization: number;
+    totalAllocated: number;
+    totalSpent: number;
+  };
+}
+
+export async function getHistoricalComparison(
+  departmentId: number,
+  options: { preset?: string; startDate?: string; endDate?: string }
+): Promise<HistoricalComparison | null> {
+  try {
+    const res = await axios.get(`${API}/historical/${departmentId}`, { params: options });
+    return res.data.success ? res.data.data : null;
+  } catch (error) {
+    console.error("Get historical comparison error:", error);
+    return null;
+  }
+}
