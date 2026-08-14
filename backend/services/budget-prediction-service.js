@@ -100,6 +100,73 @@ async function getHistoricalSpending(departmentId) {
 }
 
 /**
+ * Calculate name similarity between two department names
+ * @param {string} name1 - First department name
+ * @param {string} name2 - Second department name
+ * @returns {number} Similarity score (0-1)
+ */
+function calculateNameSimilarity(name1, name2) {
+  const words1 = name1.toLowerCase().split(/\s+/);
+  const words2 = name2.toLowerCase().split(/\s+/);
+
+  let matches = 0;
+  for (const word1 of words1) {
+    for (const word2 of words2) {
+      if (word1.includes(word2) || word2.includes(word1)) {
+        matches++;
+        break;
+      }
+    }
+  }
+
+  return matches / Math.max(words1.length, words2.length);
+}
+
+/**
+ * Find similar departments based on name matching
+ * @param {number} departmentId - Target department ID
+ * @returns {Promise<Array>} Array of similar departments with similarity scores
+ */
+async function findSimilarDepartments(departmentId) {
+  const targetDept = await prisma.department.findUnique({
+    where: { id: departmentId }
+  });
+
+  const allDepts = await prisma.department.findMany({
+    where: {
+      id: { not: departmentId },
+      isActive: true
+    }
+  });
+
+  const similarDepts = [];
+
+  for (const dept of allDepts) {
+    const history = await getHistoricalSpending(dept.id);
+    if (history.length === 0) continue;
+
+    const nameSimilarity = calculateNameSimilarity(targetDept.name, dept.name);
+
+    if (nameSimilarity > 0.3) {
+      const avgSpending = history
+        .reduce((sum, h) => sum.plus(new Decimal(h.amount)), new Decimal(0))
+        .dividedBy(history.length)
+        .toNumber();
+
+      similarDepts.push({
+        id: dept.id,
+        name: dept.name,
+        similarity: nameSimilarity,
+        avgSpending,
+        historicalMonths: history.length
+      });
+    }
+  }
+
+  return similarDepts.sort((a, b) => b.similarity - a.similarity);
+}
+
+/**
  * Handle prediction for new department with no history
  * @param {number} departmentId - Department ID
  * @param {number} targetYear - Target year
@@ -107,15 +174,42 @@ async function getHistoricalSpending(departmentId) {
  * @returns {Promise<Object>} Budget prediction record
  */
 async function handleNewDepartment(departmentId, targetYear, targetMonth) {
+  const similarDepts = await findSimilarDepartments(departmentId);
+
+  if (similarDepts.length === 0) {
+    return await prisma.budgetPrediction.create({
+      data: {
+        departmentId,
+        targetYear,
+        targetMonth,
+        predictedAmount: DEFAULT_NEW_DEPARTMENT_BUDGET,
+        confidence: 'low',
+        algorithm: 'default',
+        aiInsights: 'No historical data available and no similar departments found. Using system default.',
+        triggerType: 'manual'
+      }
+    });
+  }
+
+  const topSimilar = similarDepts[0];
+  const avgAmount = Math.round(topSimilar.avgSpending * 100) / 100;
+
+  const insight = `New department with no historical data. Prediction based on similar department "${topSimilar.name}" (${Math.round(topSimilar.similarity * 100)}% similarity, ${topSimilar.historicalMonths} months of data). Consider adjusting based on department size and objectives.`;
+
   return await prisma.budgetPrediction.create({
     data: {
       departmentId,
       targetYear,
       targetMonth,
-      predictedAmount: DEFAULT_NEW_DEPARTMENT_BUDGET,
+      predictedAmount: avgAmount,
       confidence: 'low',
-      algorithm: 'default',
-      aiInsights: 'No historical data available',
+      algorithm: 'similar_department',
+      aiInsights: insight,
+      comparisonData: {
+        similarDepartment: topSimilar.name,
+        similarity: topSimilar.similarity,
+        referenceMonths: topSimilar.historicalMonths
+      },
       triggerType: 'manual'
     }
   });
@@ -289,4 +383,4 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
   return prediction;
 }
 
-export { getHistoricalSpending, callAnalyticsAgent };
+export { getHistoricalSpending, callAnalyticsAgent, handleNewDepartment, findSimilarDepartments };
