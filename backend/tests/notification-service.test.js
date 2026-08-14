@@ -75,4 +75,41 @@ describe('Notification Service', () => {
     expect(notif.message).toContain('105%');
     expect(notif.message).toContain('exceeded');
   });
+
+  test('notifyBudgetAdjustmentApproved should create approval notification', async () => {
+    const notif = await notifyBudgetAdjustmentApproved(testUser.id, 'Engineering', 2026, 9, 25000, 125000, 321);
+
+    expect(notif.type).toBe('BUDGET_ADJUSTMENT_APPROVED');
+    expect(notif.title).toBe('Budget Adjustment Approved');
+    expect(notif.message).toContain('25000.00');
+    expect(notif.message).toContain('125000.00');
+    expect(notif.message).toContain('approved');
+    expect(notif.refType).toBe('budget_adjustment_request');
+    expect(notif.refId).toBe('321');
+  });
+
+  test('notifyBudgetAdjustmentRejected should create rejection notification', async () => {
+    const notif = await notifyBudgetAdjustmentRejected(testUser.id, 'Marketing', 2026, 8, 15000, 'Insufficient funds', 456);
+
+    expect(notif.type).toBe('BUDGET_ADJUSTMENT_REJECTED');
+    expect(notif.title).toBe('Budget Adjustment Rejected');
+    expect(notif.message).toContain('15000.00');
+    expect(notif.message).toContain('rejected');
+    expect(notif.message).toContain('Insufficient funds');
+    expect(notif.refType).toBe('budget_adjustment_request');
+    expect(notif.refId).toBe('456');
+  });
+
+  test('notifyNewDepartmentSuggestion should create department suggestion notification', async () => {
+    const notif = await notifyNewDepartmentSuggestion(testUser.id, 'Data Science', 85000, 'Engineering', 0.87);
+
+    expect(notif.type).toBe('NEW_DEPARTMENT_SUGGESTION');
+    expect(notif.title).toBe('New Department Budget Suggestion');
+    expect(notif.message).toContain('Data Science');
+    expect(notif.message).toContain('85000.00');
+    expect(notif.message).toContain('87%');
+    expect(notif.message).toContain('Engineering');
+    expect(notif.refType).toBe('department');
+    expect(notif.refId).toBe('Data Science');
+  });
 });
