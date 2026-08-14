@@ -19,14 +19,16 @@ model User {
   isActive          Boolean  @default(true)
   preferredLanguage Language @default(en)
 
-  roleChangeAuditsAsTarget RoleChangeAudit[]        @relation("RoleChangeTarget")
-  passwordResetCodes       PasswordResetCode[]
-  supplierTypeAssignments  SupplierTypeAssignment[]
-  supplierInventoryItems   SupplierInventoryItem[]
-  notifications            Notification[]
-  feedbacks                Feedback[]
-  chatSessions             ChatSession[]
-  sources                  Source[]
+  roleChangeAuditsAsTarget   RoleChangeAudit[]         @relation("RoleChangeTarget")
+  passwordResetCodes         PasswordResetCode[]
+  supplierTypeAssignments    SupplierTypeAssignment[]
+  supplierInventoryItems     SupplierInventoryItem[]
+  notifications              Notification[]
+  feedbacks                  Feedback[]
+  chatSessions               ChatSession[]
+  sources                    Source[]
+  adjustmentRequestsCreated  BudgetAdjustmentRequest[] @relation("AdjustmentRequester")
+  adjustmentRequestsReviewed BudgetAdjustmentRequest[] @relation("AdjustmentReviewer")
 
   @@map("users")
 }
@@ -355,26 +357,69 @@ model Department {
 
 // Stub models for forward references - will be fully implemented in later tasks
 model MonthlyBudget {
-  id           Int        @id @default(autoincrement())
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
+  id                    Int      @id @default(autoincrement())
+  departmentId          Int
+  year                  Int
+  month                 Int
+  allocatedAmount       Decimal  @db.Decimal(15, 2)
+  spentAmount           Decimal  @default(0) @db.Decimal(15, 2)
+  reservedAmount        Decimal  @default(0) @db.Decimal(15, 2)
+  lastNotifiedThreshold Int      @default(0)
+  notes                 String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, year, month])
+  @@index([year, month])
+  @@index([departmentId])
   @@map("monthly_budgets")
 }
 
 model BudgetAdjustmentRequest {
-  id           Int        @id @default(autoincrement())
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
+  id              Int       @id @default(autoincrement())
+  departmentId    Int
+  targetYear      Int
+  targetMonth     Int
+  requestType     String
+  requestedAmount Decimal   @db.Decimal(15, 2)
+  reason          String    @db.Text
+  status          String    @default("pending")
+  requestedBy     Int
+  requestedAt     DateTime  @default(now())
+  reviewedBy      Int?
+  reviewedAt      DateTime?
+  reviewNotes     String?   @db.Text
 
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  requester  User       @relation("AdjustmentRequester", fields: [requestedBy], references: [id], onDelete: Cascade)
+  reviewer   User?      @relation("AdjustmentReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([departmentId, status])
+  @@index([status, requestedAt])
   @@map("budget_adjustment_requests")
 }
 
 model BudgetPrediction {
-  id           Int        @id @default(autoincrement())
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
+  id                Int      @id @default(autoincrement())
+  departmentId      Int?
+  targetYear        Int
+  targetMonth       Int
+  predictedAmount   Decimal  @db.Decimal(15, 2)
+  confidence        String
+  algorithm         String
+  aiInsights        String   @db.Text
+  categoryBreakdown Json?
+  comparisonData    Json?
+  triggerType       String
+  createdAt         DateTime @default(now())
 
+  department Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@index([departmentId])
+  @@index([targetYear, targetMonth])
+  @@index([createdAt])
   @@map("budget_predictions")
 }
 

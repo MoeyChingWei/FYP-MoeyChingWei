@@ -40,7 +40,8 @@ export type RoleChangeAudit = $Result.DefaultSelection<Prisma.$RoleChangeAuditPa
 export type PasswordResetCode = $Result.DefaultSelection<Prisma.$PasswordResetCodePayload>
 /**
  * Model PurchasingLookup
- * * User-added item categories and units of measure for purchasing forms.
+ * *
+ *  * User-added item categories and units of measure for purchasing forms.
  */
 export type PurchasingLookup = $Result.DefaultSelection<Prisma.$PurchasingLookupPayload>
 /**
@@ -2965,6 +2966,8 @@ export namespace Prisma {
     feedbacks: number
     chatSessions: number
     sources: number
+    adjustmentRequestsCreated: number
+    adjustmentRequestsReviewed: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2976,6 +2979,8 @@ export namespace Prisma {
     feedbacks?: boolean | UserCountOutputTypeCountFeedbacksArgs
     chatSessions?: boolean | UserCountOutputTypeCountChatSessionsArgs
     sources?: boolean | UserCountOutputTypeCountSourcesArgs
+    adjustmentRequestsCreated?: boolean | UserCountOutputTypeCountAdjustmentRequestsCreatedArgs
+    adjustmentRequestsReviewed?: boolean | UserCountOutputTypeCountAdjustmentRequestsReviewedArgs
   }
 
   // Custom InputTypes
@@ -3043,6 +3048,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SourceWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdjustmentRequestsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetAdjustmentRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdjustmentRequestsReviewedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetAdjustmentRequestWhereInput
   }
 
 
@@ -3439,6 +3458,8 @@ export namespace Prisma {
     feedbacks?: boolean | User$feedbacksArgs<ExtArgs>
     chatSessions?: boolean | User$chatSessionsArgs<ExtArgs>
     sources?: boolean | User$sourcesArgs<ExtArgs>
+    adjustmentRequestsCreated?: boolean | User$adjustmentRequestsCreatedArgs<ExtArgs>
+    adjustmentRequestsReviewed?: boolean | User$adjustmentRequestsReviewedArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3488,6 +3509,8 @@ export namespace Prisma {
     feedbacks?: boolean | User$feedbacksArgs<ExtArgs>
     chatSessions?: boolean | User$chatSessionsArgs<ExtArgs>
     sources?: boolean | User$sourcesArgs<ExtArgs>
+    adjustmentRequestsCreated?: boolean | User$adjustmentRequestsCreatedArgs<ExtArgs>
+    adjustmentRequestsReviewed?: boolean | User$adjustmentRequestsReviewedArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3504,6 +3527,8 @@ export namespace Prisma {
       feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
       chatSessions: Prisma.$ChatSessionPayload<ExtArgs>[]
       sources: Prisma.$SourcePayload<ExtArgs>[]
+      adjustmentRequestsCreated: Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>[]
+      adjustmentRequestsReviewed: Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3917,6 +3942,8 @@ export namespace Prisma {
     feedbacks<T extends User$feedbacksArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chatSessions<T extends User$chatSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$chatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sources<T extends User$sourcesArgs<ExtArgs> = {}>(args?: Subset<T, User$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    adjustmentRequestsCreated<T extends User$adjustmentRequestsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$adjustmentRequestsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    adjustmentRequestsReviewed<T extends User$adjustmentRequestsReviewedArgs<ExtArgs> = {}>(args?: Subset<T, User$adjustmentRequestsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4532,6 +4559,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SourceScalarFieldEnum | SourceScalarFieldEnum[]
+  }
+
+  /**
+   * User.adjustmentRequestsCreated
+   */
+  export type User$adjustmentRequestsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    where?: BudgetAdjustmentRequestWhereInput
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.adjustmentRequestsReviewed
+   */
+  export type User$adjustmentRequestsReviewedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    where?: BudgetAdjustmentRequestWhereInput
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
   }
 
   /**
@@ -26509,26 +26584,65 @@ export namespace Prisma {
   export type MonthlyBudgetAvgAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    year: number | null
+    month: number | null
+    allocatedAmount: Decimal | null
+    spentAmount: Decimal | null
+    reservedAmount: Decimal | null
+    lastNotifiedThreshold: number | null
   }
 
   export type MonthlyBudgetSumAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    year: number | null
+    month: number | null
+    allocatedAmount: Decimal | null
+    spentAmount: Decimal | null
+    reservedAmount: Decimal | null
+    lastNotifiedThreshold: number | null
   }
 
   export type MonthlyBudgetMinAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    year: number | null
+    month: number | null
+    allocatedAmount: Decimal | null
+    spentAmount: Decimal | null
+    reservedAmount: Decimal | null
+    lastNotifiedThreshold: number | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type MonthlyBudgetMaxAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    year: number | null
+    month: number | null
+    allocatedAmount: Decimal | null
+    spentAmount: Decimal | null
+    reservedAmount: Decimal | null
+    lastNotifiedThreshold: number | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type MonthlyBudgetCountAggregateOutputType = {
     id: number
     departmentId: number
+    year: number
+    month: number
+    allocatedAmount: number
+    spentAmount: number
+    reservedAmount: number
+    lastNotifiedThreshold: number
+    notes: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -26536,26 +26650,65 @@ export namespace Prisma {
   export type MonthlyBudgetAvgAggregateInputType = {
     id?: true
     departmentId?: true
+    year?: true
+    month?: true
+    allocatedAmount?: true
+    spentAmount?: true
+    reservedAmount?: true
+    lastNotifiedThreshold?: true
   }
 
   export type MonthlyBudgetSumAggregateInputType = {
     id?: true
     departmentId?: true
+    year?: true
+    month?: true
+    allocatedAmount?: true
+    spentAmount?: true
+    reservedAmount?: true
+    lastNotifiedThreshold?: true
   }
 
   export type MonthlyBudgetMinAggregateInputType = {
     id?: true
     departmentId?: true
+    year?: true
+    month?: true
+    allocatedAmount?: true
+    spentAmount?: true
+    reservedAmount?: true
+    lastNotifiedThreshold?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type MonthlyBudgetMaxAggregateInputType = {
     id?: true
     departmentId?: true
+    year?: true
+    month?: true
+    allocatedAmount?: true
+    spentAmount?: true
+    reservedAmount?: true
+    lastNotifiedThreshold?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type MonthlyBudgetCountAggregateInputType = {
     id?: true
     departmentId?: true
+    year?: true
+    month?: true
+    allocatedAmount?: true
+    spentAmount?: true
+    reservedAmount?: true
+    lastNotifiedThreshold?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -26648,6 +26801,15 @@ export namespace Prisma {
   export type MonthlyBudgetGroupByOutputType = {
     id: number
     departmentId: number
+    year: number
+    month: number
+    allocatedAmount: Decimal
+    spentAmount: Decimal
+    reservedAmount: Decimal
+    lastNotifiedThreshold: number
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
     _count: MonthlyBudgetCountAggregateOutputType | null
     _avg: MonthlyBudgetAvgAggregateOutputType | null
     _sum: MonthlyBudgetSumAggregateOutputType | null
@@ -26672,27 +26834,63 @@ export namespace Prisma {
   export type MonthlyBudgetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
+    year?: boolean
+    month?: boolean
+    allocatedAmount?: boolean
+    spentAmount?: boolean
+    reservedAmount?: boolean
+    lastNotifiedThreshold?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["monthlyBudget"]>
 
   export type MonthlyBudgetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
+    year?: boolean
+    month?: boolean
+    allocatedAmount?: boolean
+    spentAmount?: boolean
+    reservedAmount?: boolean
+    lastNotifiedThreshold?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["monthlyBudget"]>
 
   export type MonthlyBudgetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
+    year?: boolean
+    month?: boolean
+    allocatedAmount?: boolean
+    spentAmount?: boolean
+    reservedAmount?: boolean
+    lastNotifiedThreshold?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["monthlyBudget"]>
 
   export type MonthlyBudgetSelectScalar = {
     id?: boolean
     departmentId?: boolean
+    year?: boolean
+    month?: boolean
+    allocatedAmount?: boolean
+    spentAmount?: boolean
+    reservedAmount?: boolean
+    lastNotifiedThreshold?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type MonthlyBudgetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId", ExtArgs["result"]["monthlyBudget"]>
+  export type MonthlyBudgetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId" | "year" | "month" | "allocatedAmount" | "spentAmount" | "reservedAmount" | "lastNotifiedThreshold" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["monthlyBudget"]>
   export type MonthlyBudgetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
   }
@@ -26711,6 +26909,15 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       departmentId: number
+      year: number
+      month: number
+      allocatedAmount: Prisma.Decimal
+      spentAmount: Prisma.Decimal
+      reservedAmount: Prisma.Decimal
+      lastNotifiedThreshold: number
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["monthlyBudget"]>
     composites: {}
   }
@@ -27137,6 +27344,15 @@ export namespace Prisma {
   interface MonthlyBudgetFieldRefs {
     readonly id: FieldRef<"MonthlyBudget", 'Int'>
     readonly departmentId: FieldRef<"MonthlyBudget", 'Int'>
+    readonly year: FieldRef<"MonthlyBudget", 'Int'>
+    readonly month: FieldRef<"MonthlyBudget", 'Int'>
+    readonly allocatedAmount: FieldRef<"MonthlyBudget", 'Decimal'>
+    readonly spentAmount: FieldRef<"MonthlyBudget", 'Decimal'>
+    readonly reservedAmount: FieldRef<"MonthlyBudget", 'Decimal'>
+    readonly lastNotifiedThreshold: FieldRef<"MonthlyBudget", 'Int'>
+    readonly notes: FieldRef<"MonthlyBudget", 'String'>
+    readonly createdAt: FieldRef<"MonthlyBudget", 'DateTime'>
+    readonly updatedAt: FieldRef<"MonthlyBudget", 'DateTime'>
   }
     
 
@@ -27566,26 +27782,69 @@ export namespace Prisma {
   export type BudgetAdjustmentRequestAvgAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    requestedAmount: Decimal | null
+    requestedBy: number | null
+    reviewedBy: number | null
   }
 
   export type BudgetAdjustmentRequestSumAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    requestedAmount: Decimal | null
+    requestedBy: number | null
+    reviewedBy: number | null
   }
 
   export type BudgetAdjustmentRequestMinAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    requestType: string | null
+    requestedAmount: Decimal | null
+    reason: string | null
+    status: string | null
+    requestedBy: number | null
+    requestedAt: Date | null
+    reviewedBy: number | null
+    reviewedAt: Date | null
+    reviewNotes: string | null
   }
 
   export type BudgetAdjustmentRequestMaxAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    requestType: string | null
+    requestedAmount: Decimal | null
+    reason: string | null
+    status: string | null
+    requestedBy: number | null
+    requestedAt: Date | null
+    reviewedBy: number | null
+    reviewedAt: Date | null
+    reviewNotes: string | null
   }
 
   export type BudgetAdjustmentRequestCountAggregateOutputType = {
     id: number
     departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: number
+    requestedAmount: number
+    reason: number
+    status: number
+    requestedBy: number
+    requestedAt: number
+    reviewedBy: number
+    reviewedAt: number
+    reviewNotes: number
     _all: number
   }
 
@@ -27593,26 +27852,69 @@ export namespace Prisma {
   export type BudgetAdjustmentRequestAvgAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    requestedAmount?: true
+    requestedBy?: true
+    reviewedBy?: true
   }
 
   export type BudgetAdjustmentRequestSumAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    requestedAmount?: true
+    requestedBy?: true
+    reviewedBy?: true
   }
 
   export type BudgetAdjustmentRequestMinAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    requestType?: true
+    requestedAmount?: true
+    reason?: true
+    status?: true
+    requestedBy?: true
+    requestedAt?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    reviewNotes?: true
   }
 
   export type BudgetAdjustmentRequestMaxAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    requestType?: true
+    requestedAmount?: true
+    reason?: true
+    status?: true
+    requestedBy?: true
+    requestedAt?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    reviewNotes?: true
   }
 
   export type BudgetAdjustmentRequestCountAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    requestType?: true
+    requestedAmount?: true
+    reason?: true
+    status?: true
+    requestedBy?: true
+    requestedAt?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    reviewNotes?: true
     _all?: true
   }
 
@@ -27705,6 +28007,17 @@ export namespace Prisma {
   export type BudgetAdjustmentRequestGroupByOutputType = {
     id: number
     departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal
+    reason: string
+    status: string
+    requestedBy: number
+    requestedAt: Date
+    reviewedBy: number | null
+    reviewedAt: Date | null
+    reviewNotes: string | null
     _count: BudgetAdjustmentRequestCountAggregateOutputType | null
     _avg: BudgetAdjustmentRequestAvgAggregateOutputType | null
     _sum: BudgetAdjustmentRequestSumAggregateOutputType | null
@@ -27729,45 +28042,114 @@ export namespace Prisma {
   export type BudgetAdjustmentRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    requestType?: boolean
+    requestedAmount?: boolean
+    reason?: boolean
+    status?: boolean
+    requestedBy?: boolean
+    requestedAt?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | BudgetAdjustmentRequest$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["budgetAdjustmentRequest"]>
 
   export type BudgetAdjustmentRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    requestType?: boolean
+    requestedAmount?: boolean
+    reason?: boolean
+    status?: boolean
+    requestedBy?: boolean
+    requestedAt?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | BudgetAdjustmentRequest$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["budgetAdjustmentRequest"]>
 
   export type BudgetAdjustmentRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    requestType?: boolean
+    requestedAmount?: boolean
+    reason?: boolean
+    status?: boolean
+    requestedBy?: boolean
+    requestedAt?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | BudgetAdjustmentRequest$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["budgetAdjustmentRequest"]>
 
   export type BudgetAdjustmentRequestSelectScalar = {
     id?: boolean
     departmentId?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    requestType?: boolean
+    requestedAmount?: boolean
+    reason?: boolean
+    status?: boolean
+    requestedBy?: boolean
+    requestedAt?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
   }
 
-  export type BudgetAdjustmentRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId", ExtArgs["result"]["budgetAdjustmentRequest"]>
+  export type BudgetAdjustmentRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId" | "targetYear" | "targetMonth" | "requestType" | "requestedAmount" | "reason" | "status" | "requestedBy" | "requestedAt" | "reviewedBy" | "reviewedAt" | "reviewNotes", ExtArgs["result"]["budgetAdjustmentRequest"]>
   export type BudgetAdjustmentRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | BudgetAdjustmentRequest$reviewerArgs<ExtArgs>
   }
   export type BudgetAdjustmentRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | BudgetAdjustmentRequest$reviewerArgs<ExtArgs>
   }
   export type BudgetAdjustmentRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | BudgetAdjustmentRequest$reviewerArgs<ExtArgs>
   }
 
   export type $BudgetAdjustmentRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BudgetAdjustmentRequest"
     objects: {
       department: Prisma.$DepartmentPayload<ExtArgs>
+      requester: Prisma.$UserPayload<ExtArgs>
+      reviewer: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       departmentId: number
+      targetYear: number
+      targetMonth: number
+      requestType: string
+      requestedAmount: Prisma.Decimal
+      reason: string
+      status: string
+      requestedBy: number
+      requestedAt: Date
+      reviewedBy: number | null
+      reviewedAt: Date | null
+      reviewNotes: string | null
     }, ExtArgs["result"]["budgetAdjustmentRequest"]>
     composites: {}
   }
@@ -28163,6 +28545,8 @@ export namespace Prisma {
   export interface Prisma__BudgetAdjustmentRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    requester<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    reviewer<T extends BudgetAdjustmentRequest$reviewerArgs<ExtArgs> = {}>(args?: Subset<T, BudgetAdjustmentRequest$reviewerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -28194,6 +28578,17 @@ export namespace Prisma {
   interface BudgetAdjustmentRequestFieldRefs {
     readonly id: FieldRef<"BudgetAdjustmentRequest", 'Int'>
     readonly departmentId: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+    readonly targetYear: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+    readonly targetMonth: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+    readonly requestType: FieldRef<"BudgetAdjustmentRequest", 'String'>
+    readonly requestedAmount: FieldRef<"BudgetAdjustmentRequest", 'Decimal'>
+    readonly reason: FieldRef<"BudgetAdjustmentRequest", 'String'>
+    readonly status: FieldRef<"BudgetAdjustmentRequest", 'String'>
+    readonly requestedBy: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+    readonly requestedAt: FieldRef<"BudgetAdjustmentRequest", 'DateTime'>
+    readonly reviewedBy: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+    readonly reviewedAt: FieldRef<"BudgetAdjustmentRequest", 'DateTime'>
+    readonly reviewNotes: FieldRef<"BudgetAdjustmentRequest", 'String'>
   }
     
 
@@ -28590,6 +28985,25 @@ export namespace Prisma {
   }
 
   /**
+   * BudgetAdjustmentRequest.reviewer
+   */
+  export type BudgetAdjustmentRequest$reviewerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * BudgetAdjustmentRequest without action
    */
   export type BudgetAdjustmentRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -28623,26 +29037,58 @@ export namespace Prisma {
   export type BudgetPredictionAvgAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    predictedAmount: Decimal | null
   }
 
   export type BudgetPredictionSumAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    predictedAmount: Decimal | null
   }
 
   export type BudgetPredictionMinAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    predictedAmount: Decimal | null
+    confidence: string | null
+    algorithm: string | null
+    aiInsights: string | null
+    triggerType: string | null
+    createdAt: Date | null
   }
 
   export type BudgetPredictionMaxAggregateOutputType = {
     id: number | null
     departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    predictedAmount: Decimal | null
+    confidence: string | null
+    algorithm: string | null
+    aiInsights: string | null
+    triggerType: string | null
+    createdAt: Date | null
   }
 
   export type BudgetPredictionCountAggregateOutputType = {
     id: number
     departmentId: number
+    targetYear: number
+    targetMonth: number
+    predictedAmount: number
+    confidence: number
+    algorithm: number
+    aiInsights: number
+    categoryBreakdown: number
+    comparisonData: number
+    triggerType: number
+    createdAt: number
     _all: number
   }
 
@@ -28650,26 +29096,58 @@ export namespace Prisma {
   export type BudgetPredictionAvgAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    predictedAmount?: true
   }
 
   export type BudgetPredictionSumAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    predictedAmount?: true
   }
 
   export type BudgetPredictionMinAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    predictedAmount?: true
+    confidence?: true
+    algorithm?: true
+    aiInsights?: true
+    triggerType?: true
+    createdAt?: true
   }
 
   export type BudgetPredictionMaxAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    predictedAmount?: true
+    confidence?: true
+    algorithm?: true
+    aiInsights?: true
+    triggerType?: true
+    createdAt?: true
   }
 
   export type BudgetPredictionCountAggregateInputType = {
     id?: true
     departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    predictedAmount?: true
+    confidence?: true
+    algorithm?: true
+    aiInsights?: true
+    categoryBreakdown?: true
+    comparisonData?: true
+    triggerType?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -28761,7 +29239,17 @@ export namespace Prisma {
 
   export type BudgetPredictionGroupByOutputType = {
     id: number
-    departmentId: number
+    departmentId: number | null
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown: JsonValue | null
+    comparisonData: JsonValue | null
+    triggerType: string
+    createdAt: Date
     _count: BudgetPredictionCountAggregateOutputType | null
     _avg: BudgetPredictionAvgAggregateOutputType | null
     _sum: BudgetPredictionSumAggregateOutputType | null
@@ -28786,45 +29274,95 @@ export namespace Prisma {
   export type BudgetPredictionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    targetYear?: boolean
+    targetMonth?: boolean
+    predictedAmount?: boolean
+    confidence?: boolean
+    algorithm?: boolean
+    aiInsights?: boolean
+    categoryBreakdown?: boolean
+    comparisonData?: boolean
+    triggerType?: boolean
+    createdAt?: boolean
+    department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
   }, ExtArgs["result"]["budgetPrediction"]>
 
   export type BudgetPredictionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    targetYear?: boolean
+    targetMonth?: boolean
+    predictedAmount?: boolean
+    confidence?: boolean
+    algorithm?: boolean
+    aiInsights?: boolean
+    categoryBreakdown?: boolean
+    comparisonData?: boolean
+    triggerType?: boolean
+    createdAt?: boolean
+    department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
   }, ExtArgs["result"]["budgetPrediction"]>
 
   export type BudgetPredictionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     departmentId?: boolean
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    targetYear?: boolean
+    targetMonth?: boolean
+    predictedAmount?: boolean
+    confidence?: boolean
+    algorithm?: boolean
+    aiInsights?: boolean
+    categoryBreakdown?: boolean
+    comparisonData?: boolean
+    triggerType?: boolean
+    createdAt?: boolean
+    department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
   }, ExtArgs["result"]["budgetPrediction"]>
 
   export type BudgetPredictionSelectScalar = {
     id?: boolean
     departmentId?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    predictedAmount?: boolean
+    confidence?: boolean
+    algorithm?: boolean
+    aiInsights?: boolean
+    categoryBreakdown?: boolean
+    comparisonData?: boolean
+    triggerType?: boolean
+    createdAt?: boolean
   }
 
-  export type BudgetPredictionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId", ExtArgs["result"]["budgetPrediction"]>
+  export type BudgetPredictionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId" | "targetYear" | "targetMonth" | "predictedAmount" | "confidence" | "algorithm" | "aiInsights" | "categoryBreakdown" | "comparisonData" | "triggerType" | "createdAt", ExtArgs["result"]["budgetPrediction"]>
   export type BudgetPredictionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
   }
   export type BudgetPredictionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
   }
   export type BudgetPredictionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+    department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
   }
 
   export type $BudgetPredictionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BudgetPrediction"
     objects: {
-      department: Prisma.$DepartmentPayload<ExtArgs>
+      department: Prisma.$DepartmentPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      departmentId: number
+      departmentId: number | null
+      targetYear: number
+      targetMonth: number
+      predictedAmount: Prisma.Decimal
+      confidence: string
+      algorithm: string
+      aiInsights: string
+      categoryBreakdown: Prisma.JsonValue | null
+      comparisonData: Prisma.JsonValue | null
+      triggerType: string
+      createdAt: Date
     }, ExtArgs["result"]["budgetPrediction"]>
     composites: {}
   }
@@ -29219,7 +29757,7 @@ export namespace Prisma {
    */
   export interface Prisma__BudgetPredictionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    department<T extends BudgetPrediction$departmentArgs<ExtArgs> = {}>(args?: Subset<T, BudgetPrediction$departmentArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29251,6 +29789,16 @@ export namespace Prisma {
   interface BudgetPredictionFieldRefs {
     readonly id: FieldRef<"BudgetPrediction", 'Int'>
     readonly departmentId: FieldRef<"BudgetPrediction", 'Int'>
+    readonly targetYear: FieldRef<"BudgetPrediction", 'Int'>
+    readonly targetMonth: FieldRef<"BudgetPrediction", 'Int'>
+    readonly predictedAmount: FieldRef<"BudgetPrediction", 'Decimal'>
+    readonly confidence: FieldRef<"BudgetPrediction", 'String'>
+    readonly algorithm: FieldRef<"BudgetPrediction", 'String'>
+    readonly aiInsights: FieldRef<"BudgetPrediction", 'String'>
+    readonly categoryBreakdown: FieldRef<"BudgetPrediction", 'Json'>
+    readonly comparisonData: FieldRef<"BudgetPrediction", 'Json'>
+    readonly triggerType: FieldRef<"BudgetPrediction", 'String'>
+    readonly createdAt: FieldRef<"BudgetPrediction", 'DateTime'>
   }
     
 
@@ -29647,6 +30195,25 @@ export namespace Prisma {
   }
 
   /**
+   * BudgetPrediction.department
+   */
+  export type BudgetPrediction$departmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    where?: DepartmentWhereInput
+  }
+
+  /**
    * BudgetPrediction without action
    */
   export type BudgetPredictionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -29958,7 +30525,16 @@ export namespace Prisma {
 
   export const MonthlyBudgetScalarFieldEnum: {
     id: 'id',
-    departmentId: 'departmentId'
+    departmentId: 'departmentId',
+    year: 'year',
+    month: 'month',
+    allocatedAmount: 'allocatedAmount',
+    spentAmount: 'spentAmount',
+    reservedAmount: 'reservedAmount',
+    lastNotifiedThreshold: 'lastNotifiedThreshold',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type MonthlyBudgetScalarFieldEnum = (typeof MonthlyBudgetScalarFieldEnum)[keyof typeof MonthlyBudgetScalarFieldEnum]
@@ -29966,7 +30542,18 @@ export namespace Prisma {
 
   export const BudgetAdjustmentRequestScalarFieldEnum: {
     id: 'id',
-    departmentId: 'departmentId'
+    departmentId: 'departmentId',
+    targetYear: 'targetYear',
+    targetMonth: 'targetMonth',
+    requestType: 'requestType',
+    requestedAmount: 'requestedAmount',
+    reason: 'reason',
+    status: 'status',
+    requestedBy: 'requestedBy',
+    requestedAt: 'requestedAt',
+    reviewedBy: 'reviewedBy',
+    reviewedAt: 'reviewedAt',
+    reviewNotes: 'reviewNotes'
   };
 
   export type BudgetAdjustmentRequestScalarFieldEnum = (typeof BudgetAdjustmentRequestScalarFieldEnum)[keyof typeof BudgetAdjustmentRequestScalarFieldEnum]
@@ -29974,7 +30561,17 @@ export namespace Prisma {
 
   export const BudgetPredictionScalarFieldEnum: {
     id: 'id',
-    departmentId: 'departmentId'
+    departmentId: 'departmentId',
+    targetYear: 'targetYear',
+    targetMonth: 'targetMonth',
+    predictedAmount: 'predictedAmount',
+    confidence: 'confidence',
+    algorithm: 'algorithm',
+    aiInsights: 'aiInsights',
+    categoryBreakdown: 'categoryBreakdown',
+    comparisonData: 'comparisonData',
+    triggerType: 'triggerType',
+    createdAt: 'createdAt'
   };
 
   export type BudgetPredictionScalarFieldEnum = (typeof BudgetPredictionScalarFieldEnum)[keyof typeof BudgetPredictionScalarFieldEnum]
@@ -30136,6 +30733,20 @@ export namespace Prisma {
    */
   export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
   /**
    * Deep Input Types
    */
@@ -30162,6 +30773,8 @@ export namespace Prisma {
     feedbacks?: FeedbackListRelationFilter
     chatSessions?: ChatSessionListRelationFilter
     sources?: SourceListRelationFilter
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestListRelationFilter
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -30182,6 +30795,8 @@ export namespace Prisma {
     feedbacks?: FeedbackOrderByRelationAggregateInput
     chatSessions?: ChatSessionOrderByRelationAggregateInput
     sources?: SourceOrderByRelationAggregateInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestOrderByRelationAggregateInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -30205,6 +30820,8 @@ export namespace Prisma {
     feedbacks?: FeedbackListRelationFilter
     chatSessions?: ChatSessionListRelationFilter
     sources?: SourceListRelationFilter
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestListRelationFilter
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -31584,27 +32201,64 @@ export namespace Prisma {
     NOT?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
     id?: IntFilter<"MonthlyBudget"> | number
     departmentId?: IntFilter<"MonthlyBudget"> | number
+    year?: IntFilter<"MonthlyBudget"> | number
+    month?: IntFilter<"MonthlyBudget"> | number
+    allocatedAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFilter<"MonthlyBudget"> | number
+    notes?: StringNullableFilter<"MonthlyBudget"> | string | null
+    createdAt?: DateTimeFilter<"MonthlyBudget"> | Date | string
+    updatedAt?: DateTimeFilter<"MonthlyBudget"> | Date | string
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
   }
 
   export type MonthlyBudgetOrderByWithRelationInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     department?: DepartmentOrderByWithRelationInput
   }
 
   export type MonthlyBudgetWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    departmentId_year_month?: MonthlyBudgetDepartmentIdYearMonthCompoundUniqueInput
     AND?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
     OR?: MonthlyBudgetWhereInput[]
     NOT?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
     departmentId?: IntFilter<"MonthlyBudget"> | number
+    year?: IntFilter<"MonthlyBudget"> | number
+    month?: IntFilter<"MonthlyBudget"> | number
+    allocatedAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFilter<"MonthlyBudget"> | number
+    notes?: StringNullableFilter<"MonthlyBudget"> | string | null
+    createdAt?: DateTimeFilter<"MonthlyBudget"> | Date | string
+    updatedAt?: DateTimeFilter<"MonthlyBudget"> | Date | string
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
-  }, "id">
+  }, "id" | "departmentId_year_month">
 
   export type MonthlyBudgetOrderByWithAggregationInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: MonthlyBudgetCountOrderByAggregateInput
     _avg?: MonthlyBudgetAvgOrderByAggregateInput
     _max?: MonthlyBudgetMaxOrderByAggregateInput
@@ -31618,6 +32272,15 @@ export namespace Prisma {
     NOT?: MonthlyBudgetScalarWhereWithAggregatesInput | MonthlyBudgetScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"MonthlyBudget"> | number
     departmentId?: IntWithAggregatesFilter<"MonthlyBudget"> | number
+    year?: IntWithAggregatesFilter<"MonthlyBudget"> | number
+    month?: IntWithAggregatesFilter<"MonthlyBudget"> | number
+    allocatedAmount?: DecimalWithAggregatesFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalWithAggregatesFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalWithAggregatesFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntWithAggregatesFilter<"MonthlyBudget"> | number
+    notes?: StringNullableWithAggregatesFilter<"MonthlyBudget"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"MonthlyBudget"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MonthlyBudget"> | Date | string
   }
 
   export type BudgetAdjustmentRequestWhereInput = {
@@ -31626,13 +32289,39 @@ export namespace Prisma {
     NOT?: BudgetAdjustmentRequestWhereInput | BudgetAdjustmentRequestWhereInput[]
     id?: IntFilter<"BudgetAdjustmentRequest"> | number
     departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
+    targetYear?: IntFilter<"BudgetAdjustmentRequest"> | number
+    targetMonth?: IntFilter<"BudgetAdjustmentRequest"> | number
+    requestType?: StringFilter<"BudgetAdjustmentRequest"> | string
+    requestedAmount?: DecimalFilter<"BudgetAdjustmentRequest"> | Decimal | DecimalJsLike | number | string
+    reason?: StringFilter<"BudgetAdjustmentRequest"> | string
+    status?: StringFilter<"BudgetAdjustmentRequest"> | string
+    requestedBy?: IntFilter<"BudgetAdjustmentRequest"> | number
+    requestedAt?: DateTimeFilter<"BudgetAdjustmentRequest"> | Date | string
+    reviewedBy?: IntNullableFilter<"BudgetAdjustmentRequest"> | number | null
+    reviewedAt?: DateTimeNullableFilter<"BudgetAdjustmentRequest"> | Date | string | null
+    reviewNotes?: StringNullableFilter<"BudgetAdjustmentRequest"> | string | null
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type BudgetAdjustmentRequestOrderByWithRelationInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestType?: SortOrder
+    requestedAmount?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    requestedAt?: SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewNotes?: SortOrderInput | SortOrder
     department?: DepartmentOrderByWithRelationInput
+    requester?: UserOrderByWithRelationInput
+    reviewer?: UserOrderByWithRelationInput
   }
 
   export type BudgetAdjustmentRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -31641,12 +32330,36 @@ export namespace Prisma {
     OR?: BudgetAdjustmentRequestWhereInput[]
     NOT?: BudgetAdjustmentRequestWhereInput | BudgetAdjustmentRequestWhereInput[]
     departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
+    targetYear?: IntFilter<"BudgetAdjustmentRequest"> | number
+    targetMonth?: IntFilter<"BudgetAdjustmentRequest"> | number
+    requestType?: StringFilter<"BudgetAdjustmentRequest"> | string
+    requestedAmount?: DecimalFilter<"BudgetAdjustmentRequest"> | Decimal | DecimalJsLike | number | string
+    reason?: StringFilter<"BudgetAdjustmentRequest"> | string
+    status?: StringFilter<"BudgetAdjustmentRequest"> | string
+    requestedBy?: IntFilter<"BudgetAdjustmentRequest"> | number
+    requestedAt?: DateTimeFilter<"BudgetAdjustmentRequest"> | Date | string
+    reviewedBy?: IntNullableFilter<"BudgetAdjustmentRequest"> | number | null
+    reviewedAt?: DateTimeNullableFilter<"BudgetAdjustmentRequest"> | Date | string | null
+    reviewNotes?: StringNullableFilter<"BudgetAdjustmentRequest"> | string | null
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type BudgetAdjustmentRequestOrderByWithAggregationInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestType?: SortOrder
+    requestedAmount?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    requestedAt?: SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewNotes?: SortOrderInput | SortOrder
     _count?: BudgetAdjustmentRequestCountOrderByAggregateInput
     _avg?: BudgetAdjustmentRequestAvgOrderByAggregateInput
     _max?: BudgetAdjustmentRequestMaxOrderByAggregateInput
@@ -31660,6 +32373,17 @@ export namespace Prisma {
     NOT?: BudgetAdjustmentRequestScalarWhereWithAggregatesInput | BudgetAdjustmentRequestScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
     departmentId?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
+    targetYear?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
+    targetMonth?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
+    requestType?: StringWithAggregatesFilter<"BudgetAdjustmentRequest"> | string
+    requestedAmount?: DecimalWithAggregatesFilter<"BudgetAdjustmentRequest"> | Decimal | DecimalJsLike | number | string
+    reason?: StringWithAggregatesFilter<"BudgetAdjustmentRequest"> | string
+    status?: StringWithAggregatesFilter<"BudgetAdjustmentRequest"> | string
+    requestedBy?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
+    requestedAt?: DateTimeWithAggregatesFilter<"BudgetAdjustmentRequest"> | Date | string
+    reviewedBy?: IntNullableWithAggregatesFilter<"BudgetAdjustmentRequest"> | number | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"BudgetAdjustmentRequest"> | Date | string | null
+    reviewNotes?: StringNullableWithAggregatesFilter<"BudgetAdjustmentRequest"> | string | null
   }
 
   export type BudgetPredictionWhereInput = {
@@ -31667,13 +32391,33 @@ export namespace Prisma {
     OR?: BudgetPredictionWhereInput[]
     NOT?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
     id?: IntFilter<"BudgetPrediction"> | number
-    departmentId?: IntFilter<"BudgetPrediction"> | number
-    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+    departmentId?: IntNullableFilter<"BudgetPrediction"> | number | null
+    targetYear?: IntFilter<"BudgetPrediction"> | number
+    targetMonth?: IntFilter<"BudgetPrediction"> | number
+    predictedAmount?: DecimalFilter<"BudgetPrediction"> | Decimal | DecimalJsLike | number | string
+    confidence?: StringFilter<"BudgetPrediction"> | string
+    algorithm?: StringFilter<"BudgetPrediction"> | string
+    aiInsights?: StringFilter<"BudgetPrediction"> | string
+    categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
+    comparisonData?: JsonNullableFilter<"BudgetPrediction">
+    triggerType?: StringFilter<"BudgetPrediction"> | string
+    createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
+    department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
   }
 
   export type BudgetPredictionOrderByWithRelationInput = {
     id?: SortOrder
-    departmentId?: SortOrder
+    departmentId?: SortOrderInput | SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
+    confidence?: SortOrder
+    algorithm?: SortOrder
+    aiInsights?: SortOrder
+    categoryBreakdown?: SortOrderInput | SortOrder
+    comparisonData?: SortOrderInput | SortOrder
+    triggerType?: SortOrder
+    createdAt?: SortOrder
     department?: DepartmentOrderByWithRelationInput
   }
 
@@ -31682,13 +32426,33 @@ export namespace Prisma {
     AND?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
     OR?: BudgetPredictionWhereInput[]
     NOT?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
-    departmentId?: IntFilter<"BudgetPrediction"> | number
-    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+    departmentId?: IntNullableFilter<"BudgetPrediction"> | number | null
+    targetYear?: IntFilter<"BudgetPrediction"> | number
+    targetMonth?: IntFilter<"BudgetPrediction"> | number
+    predictedAmount?: DecimalFilter<"BudgetPrediction"> | Decimal | DecimalJsLike | number | string
+    confidence?: StringFilter<"BudgetPrediction"> | string
+    algorithm?: StringFilter<"BudgetPrediction"> | string
+    aiInsights?: StringFilter<"BudgetPrediction"> | string
+    categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
+    comparisonData?: JsonNullableFilter<"BudgetPrediction">
+    triggerType?: StringFilter<"BudgetPrediction"> | string
+    createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
+    department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
   }, "id">
 
   export type BudgetPredictionOrderByWithAggregationInput = {
     id?: SortOrder
-    departmentId?: SortOrder
+    departmentId?: SortOrderInput | SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
+    confidence?: SortOrder
+    algorithm?: SortOrder
+    aiInsights?: SortOrder
+    categoryBreakdown?: SortOrderInput | SortOrder
+    comparisonData?: SortOrderInput | SortOrder
+    triggerType?: SortOrder
+    createdAt?: SortOrder
     _count?: BudgetPredictionCountOrderByAggregateInput
     _avg?: BudgetPredictionAvgOrderByAggregateInput
     _max?: BudgetPredictionMaxOrderByAggregateInput
@@ -31701,7 +32465,17 @@ export namespace Prisma {
     OR?: BudgetPredictionScalarWhereWithAggregatesInput[]
     NOT?: BudgetPredictionScalarWhereWithAggregatesInput | BudgetPredictionScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"BudgetPrediction"> | number
-    departmentId?: IntWithAggregatesFilter<"BudgetPrediction"> | number
+    departmentId?: IntNullableWithAggregatesFilter<"BudgetPrediction"> | number | null
+    targetYear?: IntWithAggregatesFilter<"BudgetPrediction"> | number
+    targetMonth?: IntWithAggregatesFilter<"BudgetPrediction"> | number
+    predictedAmount?: DecimalWithAggregatesFilter<"BudgetPrediction"> | Decimal | DecimalJsLike | number | string
+    confidence?: StringWithAggregatesFilter<"BudgetPrediction"> | string
+    algorithm?: StringWithAggregatesFilter<"BudgetPrediction"> | string
+    aiInsights?: StringWithAggregatesFilter<"BudgetPrediction"> | string
+    categoryBreakdown?: JsonNullableWithAggregatesFilter<"BudgetPrediction">
+    comparisonData?: JsonNullableWithAggregatesFilter<"BudgetPrediction">
+    triggerType?: StringWithAggregatesFilter<"BudgetPrediction"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"BudgetPrediction"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -31721,6 +32495,8 @@ export namespace Prisma {
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -31741,6 +32517,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUpdateInput = {
@@ -31760,6 +32538,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -31780,6 +32560,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -33218,99 +34000,304 @@ export namespace Prisma {
   }
 
   export type MonthlyBudgetCreateInput = {
+    year: number
+    month: number
+    allocatedAmount: Decimal | DecimalJsLike | number | string
+    spentAmount?: Decimal | DecimalJsLike | number | string
+    reservedAmount?: Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
     department: DepartmentCreateNestedOneWithoutMonthlyBudgetsInput
   }
 
   export type MonthlyBudgetUncheckedCreateInput = {
     id?: number
     departmentId: number
+    year: number
+    month: number
+    allocatedAmount: Decimal | DecimalJsLike | number | string
+    spentAmount?: Decimal | DecimalJsLike | number | string
+    reservedAmount?: Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MonthlyBudgetUpdateInput = {
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneRequiredWithoutMonthlyBudgetsNestedInput
   }
 
   export type MonthlyBudgetUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     departmentId?: IntFieldUpdateOperationsInput | number
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MonthlyBudgetCreateManyInput = {
     id?: number
     departmentId: number
+    year: number
+    month: number
+    allocatedAmount: Decimal | DecimalJsLike | number | string
+    spentAmount?: Decimal | DecimalJsLike | number | string
+    reservedAmount?: Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MonthlyBudgetUpdateManyMutationInput = {
-
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MonthlyBudgetUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     departmentId?: IntFieldUpdateOperationsInput | number
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetAdjustmentRequestCreateInput = {
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
     department: DepartmentCreateNestedOneWithoutBudgetAdjustmentRequestsInput
+    requester: UserCreateNestedOneWithoutAdjustmentRequestsCreatedInput
+    reviewer?: UserCreateNestedOneWithoutAdjustmentRequestsReviewedInput
   }
 
   export type BudgetAdjustmentRequestUncheckedCreateInput = {
     id?: number
     departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedBy: number
+    requestedAt?: Date | string
+    reviewedBy?: number | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
   }
 
   export type BudgetAdjustmentRequestUpdateInput = {
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     department?: DepartmentUpdateOneRequiredWithoutBudgetAdjustmentRequestsNestedInput
+    requester?: UserUpdateOneRequiredWithoutAdjustmentRequestsCreatedNestedInput
+    reviewer?: UserUpdateOneWithoutAdjustmentRequestsReviewedNestedInput
   }
 
   export type BudgetAdjustmentRequestUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     departmentId?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedBy?: IntFieldUpdateOperationsInput | number
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BudgetAdjustmentRequestCreateManyInput = {
     id?: number
     departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedBy: number
+    requestedAt?: Date | string
+    reviewedBy?: number | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
   }
 
   export type BudgetAdjustmentRequestUpdateManyMutationInput = {
-
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BudgetAdjustmentRequestUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     departmentId?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedBy?: IntFieldUpdateOperationsInput | number
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BudgetPredictionCreateInput = {
-    department: DepartmentCreateNestedOneWithoutBudgetPredictionsInput
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
+    department?: DepartmentCreateNestedOneWithoutBudgetPredictionsInput
   }
 
   export type BudgetPredictionUncheckedCreateInput = {
     id?: number
-    departmentId: number
+    departmentId?: number | null
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
   }
 
   export type BudgetPredictionUpdateInput = {
-    department?: DepartmentUpdateOneRequiredWithoutBudgetPredictionsNestedInput
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    department?: DepartmentUpdateOneWithoutBudgetPredictionsNestedInput
   }
 
   export type BudgetPredictionUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    departmentId?: IntFieldUpdateOperationsInput | number
+    departmentId?: NullableIntFieldUpdateOperationsInput | number | null
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetPredictionCreateManyInput = {
     id?: number
-    departmentId: number
+    departmentId?: number | null
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
   }
 
   export type BudgetPredictionUpdateManyMutationInput = {
-
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetPredictionUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    departmentId?: IntFieldUpdateOperationsInput | number
+    departmentId?: NullableIntFieldUpdateOperationsInput | number | null
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -33414,6 +34401,12 @@ export namespace Prisma {
     none?: SourceWhereInput
   }
 
+  export type BudgetAdjustmentRequestListRelationFilter = {
+    every?: BudgetAdjustmentRequestWhereInput
+    some?: BudgetAdjustmentRequestWhereInput
+    none?: BudgetAdjustmentRequestWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -33448,6 +34441,10 @@ export namespace Prisma {
   }
 
   export type SourceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34561,12 +35558,6 @@ export namespace Prisma {
     none?: MonthlyBudgetWhereInput
   }
 
-  export type BudgetAdjustmentRequestListRelationFilter = {
-    every?: BudgetAdjustmentRequestWhereInput
-    some?: BudgetAdjustmentRequestWhereInput
-    none?: BudgetAdjustmentRequestWhereInput
-  }
-
   export type BudgetPredictionListRelationFilter = {
     every?: BudgetPredictionWhereInput
     some?: BudgetPredictionWhereInput
@@ -34574,10 +35565,6 @@ export namespace Prisma {
   }
 
   export type MonthlyBudgetOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type BudgetAdjustmentRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34623,84 +35610,241 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type DepartmentScalarRelationFilter = {
     is?: DepartmentWhereInput
     isNot?: DepartmentWhereInput
   }
 
+  export type MonthlyBudgetDepartmentIdYearMonthCompoundUniqueInput = {
+    departmentId: number
+    year: number
+    month: number
+  }
+
   export type MonthlyBudgetCountOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type MonthlyBudgetAvgOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
   }
 
   export type MonthlyBudgetMaxOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type MonthlyBudgetMinOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type MonthlyBudgetSumOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    allocatedAmount?: SortOrder
+    spentAmount?: SortOrder
+    reservedAmount?: SortOrder
+    lastNotifiedThreshold?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type BudgetAdjustmentRequestCountOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestType?: SortOrder
+    requestedAmount?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    requestedAt?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    reviewNotes?: SortOrder
   }
 
   export type BudgetAdjustmentRequestAvgOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestedAmount?: SortOrder
+    requestedBy?: SortOrder
+    reviewedBy?: SortOrder
   }
 
   export type BudgetAdjustmentRequestMaxOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestType?: SortOrder
+    requestedAmount?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    requestedAt?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    reviewNotes?: SortOrder
   }
 
   export type BudgetAdjustmentRequestMinOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestType?: SortOrder
+    requestedAmount?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    requestedAt?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    reviewNotes?: SortOrder
   }
 
   export type BudgetAdjustmentRequestSumOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    requestedAmount?: SortOrder
+    requestedBy?: SortOrder
+    reviewedBy?: SortOrder
+  }
+
+  export type DepartmentNullableScalarRelationFilter = {
+    is?: DepartmentWhereInput | null
+    isNot?: DepartmentWhereInput | null
   }
 
   export type BudgetPredictionCountOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
+    confidence?: SortOrder
+    algorithm?: SortOrder
+    aiInsights?: SortOrder
+    categoryBreakdown?: SortOrder
+    comparisonData?: SortOrder
+    triggerType?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type BudgetPredictionAvgOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
   }
 
   export type BudgetPredictionMaxOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
+    confidence?: SortOrder
+    algorithm?: SortOrder
+    aiInsights?: SortOrder
+    triggerType?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type BudgetPredictionMinOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
+    confidence?: SortOrder
+    algorithm?: SortOrder
+    aiInsights?: SortOrder
+    triggerType?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type BudgetPredictionSumOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    predictedAmount?: SortOrder
   }
 
   export type RoleChangeAuditCreateNestedManyWithoutTargetInput = {
@@ -34759,6 +35903,20 @@ export namespace Prisma {
     connect?: SourceWhereUniqueInput | SourceWhereUniqueInput[]
   }
 
+  export type BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput> | BudgetAdjustmentRequestCreateWithoutRequesterInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput | BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyRequesterInputEnvelope
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+  }
+
+  export type BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput> | BudgetAdjustmentRequestCreateWithoutReviewerInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput | BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyReviewerInputEnvelope
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+  }
+
   export type RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput = {
     create?: XOR<RoleChangeAuditCreateWithoutTargetInput, RoleChangeAuditUncheckedCreateWithoutTargetInput> | RoleChangeAuditCreateWithoutTargetInput[] | RoleChangeAuditUncheckedCreateWithoutTargetInput[]
     connectOrCreate?: RoleChangeAuditCreateOrConnectWithoutTargetInput | RoleChangeAuditCreateOrConnectWithoutTargetInput[]
@@ -34813,6 +35971,20 @@ export namespace Prisma {
     connectOrCreate?: SourceCreateOrConnectWithoutUserInput | SourceCreateOrConnectWithoutUserInput[]
     createMany?: SourceCreateManyUserInputEnvelope
     connect?: SourceWhereUniqueInput | SourceWhereUniqueInput[]
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput> | BudgetAdjustmentRequestCreateWithoutRequesterInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput | BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyRequesterInputEnvelope
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput> | BudgetAdjustmentRequestCreateWithoutReviewerInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput | BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyReviewerInputEnvelope
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -34943,6 +36115,34 @@ export namespace Prisma {
     deleteMany?: SourceScalarWhereInput | SourceScalarWhereInput[]
   }
 
+  export type BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput> | BudgetAdjustmentRequestCreateWithoutRequesterInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput | BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput[]
+    upsert?: BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutRequesterInput | BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutRequesterInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyRequesterInputEnvelope
+    set?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    disconnect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    delete?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutRequesterInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutRequesterInput[]
+    updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutRequesterInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutRequesterInput[]
+    deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+  }
+
+  export type BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput> | BudgetAdjustmentRequestCreateWithoutReviewerInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput | BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput[]
+    upsert?: BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutReviewerInput | BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutReviewerInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyReviewerInputEnvelope
+    set?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    disconnect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    delete?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput[]
+    updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput[]
+    deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -35061,6 +36261,34 @@ export namespace Prisma {
     update?: SourceUpdateWithWhereUniqueWithoutUserInput | SourceUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SourceUpdateManyWithWhereWithoutUserInput | SourceUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SourceScalarWhereInput | SourceScalarWhereInput[]
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput> | BudgetAdjustmentRequestCreateWithoutRequesterInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput | BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput[]
+    upsert?: BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutRequesterInput | BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutRequesterInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyRequesterInputEnvelope
+    set?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    disconnect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    delete?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutRequesterInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutRequesterInput[]
+    updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutRequesterInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutRequesterInput[]
+    deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput> | BudgetAdjustmentRequestCreateWithoutReviewerInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput | BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput[]
+    upsert?: BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutReviewerInput | BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutReviewerInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyReviewerInputEnvelope
+    set?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    disconnect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    delete?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput[]
+    updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput[]
+    deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutNotificationsInput = {
@@ -35565,6 +36793,14 @@ export namespace Prisma {
     connect?: DepartmentWhereUniqueInput
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type DepartmentUpdateOneRequiredWithoutMonthlyBudgetsNestedInput = {
     create?: XOR<DepartmentCreateWithoutMonthlyBudgetsInput, DepartmentUncheckedCreateWithoutMonthlyBudgetsInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutMonthlyBudgetsInput
@@ -35579,6 +36815,18 @@ export namespace Prisma {
     connect?: DepartmentWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutAdjustmentRequestsCreatedInput = {
+    create?: XOR<UserCreateWithoutAdjustmentRequestsCreatedInput, UserUncheckedCreateWithoutAdjustmentRequestsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdjustmentRequestsCreatedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAdjustmentRequestsReviewedInput = {
+    create?: XOR<UserCreateWithoutAdjustmentRequestsReviewedInput, UserUncheckedCreateWithoutAdjustmentRequestsReviewedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdjustmentRequestsReviewedInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type DepartmentUpdateOneRequiredWithoutBudgetAdjustmentRequestsNestedInput = {
     create?: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetAdjustmentRequestsInput
@@ -35587,16 +36835,36 @@ export namespace Prisma {
     update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutBudgetAdjustmentRequestsInput, DepartmentUpdateWithoutBudgetAdjustmentRequestsInput>, DepartmentUncheckedUpdateWithoutBudgetAdjustmentRequestsInput>
   }
 
+  export type UserUpdateOneRequiredWithoutAdjustmentRequestsCreatedNestedInput = {
+    create?: XOR<UserCreateWithoutAdjustmentRequestsCreatedInput, UserUncheckedCreateWithoutAdjustmentRequestsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdjustmentRequestsCreatedInput
+    upsert?: UserUpsertWithoutAdjustmentRequestsCreatedInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdjustmentRequestsCreatedInput, UserUpdateWithoutAdjustmentRequestsCreatedInput>, UserUncheckedUpdateWithoutAdjustmentRequestsCreatedInput>
+  }
+
+  export type UserUpdateOneWithoutAdjustmentRequestsReviewedNestedInput = {
+    create?: XOR<UserCreateWithoutAdjustmentRequestsReviewedInput, UserUncheckedCreateWithoutAdjustmentRequestsReviewedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdjustmentRequestsReviewedInput
+    upsert?: UserUpsertWithoutAdjustmentRequestsReviewedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdjustmentRequestsReviewedInput, UserUpdateWithoutAdjustmentRequestsReviewedInput>, UserUncheckedUpdateWithoutAdjustmentRequestsReviewedInput>
+  }
+
   export type DepartmentCreateNestedOneWithoutBudgetPredictionsInput = {
     create?: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetPredictionsInput
     connect?: DepartmentWhereUniqueInput
   }
 
-  export type DepartmentUpdateOneRequiredWithoutBudgetPredictionsNestedInput = {
+  export type DepartmentUpdateOneWithoutBudgetPredictionsNestedInput = {
     create?: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetPredictionsInput
     upsert?: DepartmentUpsertWithoutBudgetPredictionsInput
+    disconnect?: DepartmentWhereInput | boolean
+    delete?: DepartmentWhereInput | boolean
     connect?: DepartmentWhereUniqueInput
     update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutBudgetPredictionsInput, DepartmentUpdateWithoutBudgetPredictionsInput>, DepartmentUncheckedUpdateWithoutBudgetPredictionsInput>
   }
@@ -35908,6 +37176,33 @@ export namespace Prisma {
     _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type RoleChangeAuditCreateWithoutTargetInput = {
     fromRole: string
     toRole: string
@@ -36153,6 +37448,84 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BudgetAdjustmentRequestCreateWithoutRequesterInput = {
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    department: DepartmentCreateNestedOneWithoutBudgetAdjustmentRequestsInput
+    reviewer?: UserCreateNestedOneWithoutAdjustmentRequestsReviewedInput
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput = {
+    id?: number
+    departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedAt?: Date | string
+    reviewedBy?: number | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+  }
+
+  export type BudgetAdjustmentRequestCreateOrConnectWithoutRequesterInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    create: XOR<BudgetAdjustmentRequestCreateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput>
+  }
+
+  export type BudgetAdjustmentRequestCreateManyRequesterInputEnvelope = {
+    data: BudgetAdjustmentRequestCreateManyRequesterInput | BudgetAdjustmentRequestCreateManyRequesterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BudgetAdjustmentRequestCreateWithoutReviewerInput = {
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    department: DepartmentCreateNestedOneWithoutBudgetAdjustmentRequestsInput
+    requester: UserCreateNestedOneWithoutAdjustmentRequestsCreatedInput
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput = {
+    id?: number
+    departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedBy: number
+    requestedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+  }
+
+  export type BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    create: XOR<BudgetAdjustmentRequestCreateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput>
+  }
+
+  export type BudgetAdjustmentRequestCreateManyReviewerInputEnvelope = {
+    data: BudgetAdjustmentRequestCreateManyReviewerInput | BudgetAdjustmentRequestCreateManyReviewerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RoleChangeAuditUpsertWithWhereUniqueWithoutTargetInput = {
     where: RoleChangeAuditWhereUniqueInput
     update: XOR<RoleChangeAuditUpdateWithoutTargetInput, RoleChangeAuditUncheckedUpdateWithoutTargetInput>
@@ -36395,6 +37768,57 @@ export namespace Prisma {
     uploadedAt?: DateTimeFilter<"Source"> | Date | string
   }
 
+  export type BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutRequesterInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    update: XOR<BudgetAdjustmentRequestUpdateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedUpdateWithoutRequesterInput>
+    create: XOR<BudgetAdjustmentRequestCreateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedCreateWithoutRequesterInput>
+  }
+
+  export type BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutRequesterInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    data: XOR<BudgetAdjustmentRequestUpdateWithoutRequesterInput, BudgetAdjustmentRequestUncheckedUpdateWithoutRequesterInput>
+  }
+
+  export type BudgetAdjustmentRequestUpdateManyWithWhereWithoutRequesterInput = {
+    where: BudgetAdjustmentRequestScalarWhereInput
+    data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterInput>
+  }
+
+  export type BudgetAdjustmentRequestScalarWhereInput = {
+    AND?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+    OR?: BudgetAdjustmentRequestScalarWhereInput[]
+    NOT?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+    id?: IntFilter<"BudgetAdjustmentRequest"> | number
+    departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
+    targetYear?: IntFilter<"BudgetAdjustmentRequest"> | number
+    targetMonth?: IntFilter<"BudgetAdjustmentRequest"> | number
+    requestType?: StringFilter<"BudgetAdjustmentRequest"> | string
+    requestedAmount?: DecimalFilter<"BudgetAdjustmentRequest"> | Decimal | DecimalJsLike | number | string
+    reason?: StringFilter<"BudgetAdjustmentRequest"> | string
+    status?: StringFilter<"BudgetAdjustmentRequest"> | string
+    requestedBy?: IntFilter<"BudgetAdjustmentRequest"> | number
+    requestedAt?: DateTimeFilter<"BudgetAdjustmentRequest"> | Date | string
+    reviewedBy?: IntNullableFilter<"BudgetAdjustmentRequest"> | number | null
+    reviewedAt?: DateTimeNullableFilter<"BudgetAdjustmentRequest"> | Date | string | null
+    reviewNotes?: StringNullableFilter<"BudgetAdjustmentRequest"> | string | null
+  }
+
+  export type BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutReviewerInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    update: XOR<BudgetAdjustmentRequestUpdateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedUpdateWithoutReviewerInput>
+    create: XOR<BudgetAdjustmentRequestCreateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedCreateWithoutReviewerInput>
+  }
+
+  export type BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    data: XOR<BudgetAdjustmentRequestUpdateWithoutReviewerInput, BudgetAdjustmentRequestUncheckedUpdateWithoutReviewerInput>
+  }
+
+  export type BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput = {
+    where: BudgetAdjustmentRequestScalarWhereInput
+    data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerInput>
+  }
+
   export type UserCreateWithoutNotificationsInput = {
     name?: string | null
     email: string
@@ -36411,6 +37835,8 @@ export namespace Prisma {
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -36430,6 +37856,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -36464,6 +37892,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -36483,6 +37913,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateWithoutFeedbacksInput = {
@@ -36501,6 +37933,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutFeedbacksInput = {
@@ -36520,6 +37954,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutFeedbacksInput = {
@@ -36554,6 +37990,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbacksInput = {
@@ -36573,6 +38011,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateWithoutRoleChangeAuditsAsTargetInput = {
@@ -36591,6 +38031,8 @@ export namespace Prisma {
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutRoleChangeAuditsAsTargetInput = {
@@ -36610,6 +38052,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutRoleChangeAuditsAsTargetInput = {
@@ -36644,6 +38088,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoleChangeAuditsAsTargetInput = {
@@ -36663,6 +38109,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateWithoutPasswordResetCodesInput = {
@@ -36681,6 +38129,8 @@ export namespace Prisma {
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetCodesInput = {
@@ -36700,6 +38150,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetCodesInput = {
@@ -36734,6 +38186,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetCodesInput = {
@@ -36753,6 +38207,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateWithoutSupplierTypeAssignmentsInput = {
@@ -36771,6 +38227,8 @@ export namespace Prisma {
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutSupplierTypeAssignmentsInput = {
@@ -36790,6 +38248,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutSupplierTypeAssignmentsInput = {
@@ -36824,6 +38284,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupplierTypeAssignmentsInput = {
@@ -36843,6 +38305,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateWithoutSupplierInventoryItemsInput = {
@@ -36861,6 +38325,8 @@ export namespace Prisma {
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutSupplierInventoryItemsInput = {
@@ -36880,6 +38346,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutSupplierInventoryItemsInput = {
@@ -36914,6 +38382,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupplierInventoryItemsInput = {
@@ -36933,6 +38403,8 @@ export namespace Prisma {
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserCreateWithoutChatSessionsInput = {
@@ -36951,6 +38423,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutChatSessionsInput = {
@@ -36970,6 +38444,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutChatSessionsInput = {
@@ -37063,6 +38539,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatSessionsInput = {
@@ -37082,6 +38560,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type ChatMessageUpsertWithWhereUniqueWithoutSessionInput = {
@@ -37315,6 +38795,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
   }
 
   export type UserUncheckedCreateWithoutSourcesInput = {
@@ -37334,6 +38816,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
   }
 
   export type UserCreateOrConnectWithoutSourcesInput = {
@@ -37413,6 +38897,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSourcesInput = {
@@ -37432,6 +38918,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type ChatSessionUpsertWithoutSourcesInput = {
@@ -37550,11 +39038,28 @@ export namespace Prisma {
   }
 
   export type MonthlyBudgetCreateWithoutDepartmentInput = {
-
+    year: number
+    month: number
+    allocatedAmount: Decimal | DecimalJsLike | number | string
+    spentAmount?: Decimal | DecimalJsLike | number | string
+    reservedAmount?: Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MonthlyBudgetUncheckedCreateWithoutDepartmentInput = {
     id?: number
+    year: number
+    month: number
+    allocatedAmount: Decimal | DecimalJsLike | number | string
+    spentAmount?: Decimal | DecimalJsLike | number | string
+    reservedAmount?: Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MonthlyBudgetCreateOrConnectWithoutDepartmentInput = {
@@ -37568,11 +39073,32 @@ export namespace Prisma {
   }
 
   export type BudgetAdjustmentRequestCreateWithoutDepartmentInput = {
-
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    requester: UserCreateNestedOneWithoutAdjustmentRequestsCreatedInput
+    reviewer?: UserCreateNestedOneWithoutAdjustmentRequestsReviewedInput
   }
 
   export type BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput = {
     id?: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedBy: number
+    requestedAt?: Date | string
+    reviewedBy?: number | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
   }
 
   export type BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput = {
@@ -37586,11 +39112,30 @@ export namespace Prisma {
   }
 
   export type BudgetPredictionCreateWithoutDepartmentInput = {
-
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
   }
 
   export type BudgetPredictionUncheckedCreateWithoutDepartmentInput = {
     id?: number
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
   }
 
   export type BudgetPredictionCreateOrConnectWithoutDepartmentInput = {
@@ -37625,6 +39170,15 @@ export namespace Prisma {
     NOT?: MonthlyBudgetScalarWhereInput | MonthlyBudgetScalarWhereInput[]
     id?: IntFilter<"MonthlyBudget"> | number
     departmentId?: IntFilter<"MonthlyBudget"> | number
+    year?: IntFilter<"MonthlyBudget"> | number
+    month?: IntFilter<"MonthlyBudget"> | number
+    allocatedAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFilter<"MonthlyBudget"> | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFilter<"MonthlyBudget"> | number
+    notes?: StringNullableFilter<"MonthlyBudget"> | string | null
+    createdAt?: DateTimeFilter<"MonthlyBudget"> | Date | string
+    updatedAt?: DateTimeFilter<"MonthlyBudget"> | Date | string
   }
 
   export type BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutDepartmentInput = {
@@ -37641,14 +39195,6 @@ export namespace Prisma {
   export type BudgetAdjustmentRequestUpdateManyWithWhereWithoutDepartmentInput = {
     where: BudgetAdjustmentRequestScalarWhereInput
     data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentInput>
-  }
-
-  export type BudgetAdjustmentRequestScalarWhereInput = {
-    AND?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
-    OR?: BudgetAdjustmentRequestScalarWhereInput[]
-    NOT?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
-    id?: IntFilter<"BudgetAdjustmentRequest"> | number
-    departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
   }
 
   export type BudgetPredictionUpsertWithWhereUniqueWithoutDepartmentInput = {
@@ -37672,7 +39218,17 @@ export namespace Prisma {
     OR?: BudgetPredictionScalarWhereInput[]
     NOT?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
     id?: IntFilter<"BudgetPrediction"> | number
-    departmentId?: IntFilter<"BudgetPrediction"> | number
+    departmentId?: IntNullableFilter<"BudgetPrediction"> | number | null
+    targetYear?: IntFilter<"BudgetPrediction"> | number
+    targetMonth?: IntFilter<"BudgetPrediction"> | number
+    predictedAmount?: DecimalFilter<"BudgetPrediction"> | Decimal | DecimalJsLike | number | string
+    confidence?: StringFilter<"BudgetPrediction"> | string
+    algorithm?: StringFilter<"BudgetPrediction"> | string
+    aiInsights?: StringFilter<"BudgetPrediction"> | string
+    categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
+    comparisonData?: JsonNullableFilter<"BudgetPrediction">
+    triggerType?: StringFilter<"BudgetPrediction"> | string
+    createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
   }
 
   export type DepartmentCreateWithoutMonthlyBudgetsInput = {
@@ -37765,6 +39321,98 @@ export namespace Prisma {
     create: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
   }
 
+  export type UserCreateWithoutAdjustmentRequestsCreatedInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
+    sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+  }
+
+  export type UserUncheckedCreateWithoutAdjustmentRequestsCreatedInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
+    sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+  }
+
+  export type UserCreateOrConnectWithoutAdjustmentRequestsCreatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdjustmentRequestsCreatedInput, UserUncheckedCreateWithoutAdjustmentRequestsCreatedInput>
+  }
+
+  export type UserCreateWithoutAdjustmentRequestsReviewedInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
+    sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+  }
+
+  export type UserUncheckedCreateWithoutAdjustmentRequestsReviewedInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
+    sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  }
+
+  export type UserCreateOrConnectWithoutAdjustmentRequestsReviewedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdjustmentRequestsReviewedInput, UserUncheckedCreateWithoutAdjustmentRequestsReviewedInput>
+  }
+
   export type DepartmentUpsertWithoutBudgetAdjustmentRequestsInput = {
     update: XOR<DepartmentUpdateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedUpdateWithoutBudgetAdjustmentRequestsInput>
     create: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
@@ -37797,6 +39445,110 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     monthlyBudgets?: MonthlyBudgetUncheckedUpdateManyWithoutDepartmentNestedInput
     budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type UserUpsertWithoutAdjustmentRequestsCreatedInput = {
+    update: XOR<UserUpdateWithoutAdjustmentRequestsCreatedInput, UserUncheckedUpdateWithoutAdjustmentRequestsCreatedInput>
+    create: XOR<UserCreateWithoutAdjustmentRequestsCreatedInput, UserUncheckedCreateWithoutAdjustmentRequestsCreatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdjustmentRequestsCreatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdjustmentRequestsCreatedInput, UserUncheckedUpdateWithoutAdjustmentRequestsCreatedInput>
+  }
+
+  export type UserUpdateWithoutAdjustmentRequestsCreatedInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
+    sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdjustmentRequestsCreatedInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+    sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+  }
+
+  export type UserUpsertWithoutAdjustmentRequestsReviewedInput = {
+    update: XOR<UserUpdateWithoutAdjustmentRequestsReviewedInput, UserUncheckedUpdateWithoutAdjustmentRequestsReviewedInput>
+    create: XOR<UserCreateWithoutAdjustmentRequestsReviewedInput, UserUncheckedCreateWithoutAdjustmentRequestsReviewedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdjustmentRequestsReviewedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdjustmentRequestsReviewedInput, UserUncheckedUpdateWithoutAdjustmentRequestsReviewedInput>
+  }
+
+  export type UserUpdateWithoutAdjustmentRequestsReviewedInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
+    sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdjustmentRequestsReviewedInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+    sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
   }
 
   export type DepartmentCreateWithoutBudgetPredictionsInput = {
@@ -37941,6 +39693,36 @@ export namespace Prisma {
     fileType: string
     fileSize: number
     uploadedAt?: Date | string
+  }
+
+  export type BudgetAdjustmentRequestCreateManyRequesterInput = {
+    id?: number
+    departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedAt?: Date | string
+    reviewedBy?: number | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+  }
+
+  export type BudgetAdjustmentRequestCreateManyReviewerInput = {
+    id?: number
+    departmentId: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedBy: number
+    requestedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
   }
 
   export type RoleChangeAuditUpdateWithoutTargetInput = {
@@ -38190,6 +39972,94 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BudgetAdjustmentRequestUpdateWithoutRequesterInput = {
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: DepartmentUpdateOneRequiredWithoutBudgetAdjustmentRequestsNestedInput
+    reviewer?: UserUpdateOneWithoutAdjustmentRequestsReviewedNestedInput
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateWithoutRequesterInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BudgetAdjustmentRequestUpdateWithoutReviewerInput = {
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: DepartmentUpdateOneRequiredWithoutBudgetAdjustmentRequestsNestedInput
+    requester?: UserUpdateOneRequiredWithoutAdjustmentRequestsCreatedNestedInput
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateWithoutReviewerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedBy?: IntFieldUpdateOperationsInput | number
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedBy?: IntFieldUpdateOperationsInput | number
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type ChatMessageCreateManySessionInput = {
     id?: number
     role: string
@@ -38343,50 +40213,167 @@ export namespace Prisma {
 
   export type MonthlyBudgetCreateManyDepartmentInput = {
     id?: number
+    year: number
+    month: number
+    allocatedAmount: Decimal | DecimalJsLike | number | string
+    spentAmount?: Decimal | DecimalJsLike | number | string
+    reservedAmount?: Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type BudgetAdjustmentRequestCreateManyDepartmentInput = {
     id?: number
+    targetYear: number
+    targetMonth: number
+    requestType: string
+    requestedAmount: Decimal | DecimalJsLike | number | string
+    reason: string
+    status?: string
+    requestedBy: number
+    requestedAt?: Date | string
+    reviewedBy?: number | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
   }
 
   export type BudgetPredictionCreateManyDepartmentInput = {
     id?: number
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
   }
 
   export type MonthlyBudgetUpdateWithoutDepartmentInput = {
-
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MonthlyBudgetUncheckedUpdateWithoutDepartmentInput = {
     id?: IntFieldUpdateOperationsInput | number
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MonthlyBudgetUncheckedUpdateManyWithoutDepartmentInput = {
     id?: IntFieldUpdateOperationsInput | number
+    year?: IntFieldUpdateOperationsInput | number
+    month?: IntFieldUpdateOperationsInput | number
+    allocatedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    spentAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastNotifiedThreshold?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetAdjustmentRequestUpdateWithoutDepartmentInput = {
-
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    requester?: UserUpdateOneRequiredWithoutAdjustmentRequestsCreatedNestedInput
+    reviewer?: UserUpdateOneWithoutAdjustmentRequestsReviewedNestedInput
   }
 
   export type BudgetAdjustmentRequestUncheckedUpdateWithoutDepartmentInput = {
     id?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedBy?: IntFieldUpdateOperationsInput | number
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentInput = {
     id?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    requestType?: StringFieldUpdateOperationsInput | string
+    requestedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reason?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    requestedBy?: IntFieldUpdateOperationsInput | number
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BudgetPredictionUpdateWithoutDepartmentInput = {
-
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetPredictionUncheckedUpdateWithoutDepartmentInput = {
     id?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetPredictionUncheckedUpdateManyWithoutDepartmentInput = {
     id?: IntFieldUpdateOperationsInput | number
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

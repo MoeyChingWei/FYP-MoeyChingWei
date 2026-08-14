@@ -7,6 +7,7 @@ import {
   notifyBudgetAdjustmentApproved,
   notifyBudgetAdjustmentRejected
 } from '../services/notification-service.js';
+import { deductBudgetForPR } from '../services/budget-deduction-service.js';
 
 const router = express.Router();
 
@@ -622,6 +623,103 @@ router.patch('/adjustments/:id/reject', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to reject adjustment',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/department-budget/usage/:departmentId - Get budget usage summary
+router.get('/usage/:departmentId', async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const { year, month } = req.query;
+
+    if (!year || !month) {
+      return res.status(400).json({
+        success: false,
+        message: 'year and month parameters required'
+      });
+    }
+
+    const budget = await prisma.monthlyBudget.findUnique({
+      where: {
+        departmentId_year_month: {
+          departmentId: parseInt(departmentId),
+          year: parseInt(year),
+          month: parseInt(month)
+        }
+      },
+      include: { department: true }
+    });
+
+    if (!budget) {
+      return res.status(404).json({
+        success: false,
+        message: 'Budget not found for specified period'
+      });
+    }
+
+    const allocated = parseFloat(budget.allocatedAmount);
+    const spent = parseFloat(budget.spentAmount);
+    const reserved = parseFloat(budget.reservedAmount);
+    const remaining = allocated - spent;
+    const usagePercentage = (spent / allocated) * 100;
+
+    res.json({
+      success: true,
+      data: {
+        budgetId: budget.id,
+        department: budget.department,
+        year: budget.year,
+        month: budget.month,
+        allocatedAmount: allocated,
+        spentAmount: spent,
+        reservedAmount: reserved,
+        remainingAmount: remaining,
+        usagePercentage: Math.round(usagePercentage * 100) / 100,
+        status: usagePercentage >= 100 ? 'exceeded' : usagePercentage >= 80 ? 'warning' : 'normal'
+      }
+    });
+  } catch (error) {
+    console.error('Get budget usage error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch budget usage',
+      error: error.message
+    });
+  }
+});
+
+// POST /api/department-budget/usage/deduct - Deduct budget for approved PR (internal API)
+router.post('/usage/deduct', async (req, res) => {
+  try {
+    const { prPayload } = req.body;
+
+    if (!prPayload) {
+      return res.status(400).json({
+        success: false,
+        message: 'prPayload required'
+      });
+    }
+
+    const result = await deductBudgetForPR(prPayload);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: result.reason
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Budget deduction error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to deduct budget',
       error: error.message
     });
   }

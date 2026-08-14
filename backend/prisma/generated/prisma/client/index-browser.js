@@ -336,17 +336,47 @@ exports.Prisma.DepartmentScalarFieldEnum = {
 
 exports.Prisma.MonthlyBudgetScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId'
+  departmentId: 'departmentId',
+  year: 'year',
+  month: 'month',
+  allocatedAmount: 'allocatedAmount',
+  spentAmount: 'spentAmount',
+  reservedAmount: 'reservedAmount',
+  lastNotifiedThreshold: 'lastNotifiedThreshold',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.BudgetAdjustmentRequestScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId'
+  departmentId: 'departmentId',
+  targetYear: 'targetYear',
+  targetMonth: 'targetMonth',
+  requestType: 'requestType',
+  requestedAmount: 'requestedAmount',
+  reason: 'reason',
+  status: 'status',
+  requestedBy: 'requestedBy',
+  requestedAt: 'requestedAt',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  reviewNotes: 'reviewNotes'
 };
 
 exports.Prisma.BudgetPredictionScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId'
+  departmentId: 'departmentId',
+  targetYear: 'targetYear',
+  targetMonth: 'targetMonth',
+  predictedAmount: 'predictedAmount',
+  confidence: 'confidence',
+  algorithm: 'algorithm',
+  aiInsights: 'aiInsights',
+  categoryBreakdown: 'categoryBreakdown',
+  comparisonData: 'comparisonData',
+  triggerType: 'triggerType',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {

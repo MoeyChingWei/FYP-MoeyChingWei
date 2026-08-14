@@ -458,4 +458,74 @@ describe('Department Budget Routes', () => {
       });
     });
   });
+
+  describe('Budget Usage Endpoints', () => {
+    let testUser, testBudget;
+
+    beforeAll(async () => {
+      testUser = await prisma.user.create({
+        data: {
+          email: 'usage@test.com',
+          password: 'hash',
+          name: 'Usage Test User',
+          role: 'Department Executive',
+          department: 'Test Department'
+        }
+      });
+
+      testBudget = await prisma.monthlyBudget.create({
+        data: {
+          departmentId: testDept.id,
+          year: 2026,
+          month: 8,
+          allocatedAmount: 100000,
+          spentAmount: 0,
+          reservedAmount: 0
+        }
+      });
+    });
+
+    afterAll(async () => {
+      await prisma.monthlyBudget.delete({ where: { id: testBudget.id } });
+      await prisma.user.delete({ where: { id: testUser.id } });
+    });
+
+    describe('GET /api/department-budget/usage/:departmentId', () => {
+      test('should return budget usage summary', async () => {
+        const res = await request(app).get(`/api/department-budget/usage/${testDept.id}?year=2026&month=8`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toHaveProperty('allocatedAmount');
+        expect(res.body.data).toHaveProperty('spentAmount');
+        expect(res.body.data).toHaveProperty('remainingAmount');
+        expect(res.body.data).toHaveProperty('usagePercentage');
+      });
+
+      test('should return 404 for non-existent budget', async () => {
+        const res = await request(app).get(`/api/department-budget/usage/99999?year=2026&month=12`);
+
+        expect(res.status).toBe(404);
+      });
+    });
+
+    describe('POST /api/department-budget/usage/deduct', () => {
+      test('should deduct budget for approved PR', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/usage/deduct')
+          .send({
+            prPayload: {
+              status: 'APPROVED',
+              createdAt: '2026-08-15',
+              requestedBy: testUser.id,
+              lineItems: [{ quantity: 5, unitPrice: 100 }]
+            }
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.deductedAmount).toBe(500);
+      });
+    });
+  });
 });
