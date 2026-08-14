@@ -45,7 +45,6 @@ describe('BudgetAdjustmentRequest Model', () => {
         requestType: 'one_time_increase',
         requestedAmount: 150000.00,
         reason: 'Urgent equipment purchase needed',
-        status: 'pending',
         requestedBy: testUser.id
       }
     });
@@ -54,5 +53,6 @@ describe('BudgetAdjustmentRequest Model', () => {
     expect(request.status).toBe('pending');
     expect(parseFloat(request.requestedAmount)).toBe(150000.00);
     expect(request.reviewedBy).toBeNull();
+    expect(request.requestedAt).toBeInstanceOf(Date);
   });
 });
