@@ -1,0 +1,222 @@
+diff --git a/backend/services/budget-prediction-service.js b/backend/services/budget-prediction-service.js
+index 447fb93..e3b01c5 100644
+--- a/backend/services/budget-prediction-service.js
++++ b/backend/services/budget-prediction-service.js
+@@ -9,78 +9,89 @@ const DEFAULT_NEW_DEPARTMENT_BUDGET = 50000;
+ // High confidence: 12+ months of data (full year for seasonal patterns)
+ // Medium confidence: 6-11 months of data (half year minimum)
+ // Low confidence: <6 months of data (insufficient for reliable trends)
+ const CONFIDENCE_THRESHOLD_HIGH = 12;
+ const CONFIDENCE_THRESHOLD_MEDIUM = 6;
+ 
+ // Default fallback budget when no data exists (MYR)
+ const DEFAULT_FALLBACK_BUDGET = 100000;
+ 
+ /**
+- * Get historical spending data for a department
++ * Get historical spending data aggregated by month for a department
+  * @param {number} departmentId - Department ID
+- * @returns {Promise<Array>} Historical spending data
++ * @returns {Promise<Array<{period: string, amount: number, requestCount: number, categoryTotals: Object}>>} Historical spending data
+  */
+ async function getHistoricalSpending(departmentId) {
+-  // First, fetch the target department to get its name and code
+-  const targetDept = await prisma.department.findUnique({
++  const department = await prisma.department.findUnique({
+     where: { id: departmentId }
+   });
+ 
+-  if (!targetDept) {
++  if (!department) {
+     return [];
+   }
+ 
+-  // Build department name/code matchers (case-insensitive)
+-  const deptMatchers = [
+-    targetDept.name.toLowerCase(),
+-    targetDept.code.toLowerCase()
+-  ];
+-
+-  // Query PurchaseRequestRecord for historical spending
+-  // Filter for requests that have department field populated
+-  const requests = await prisma.purchaseRequestRecord.findMany({
++  const users = await prisma.user.findMany({
+     where: {
+-      payload: {
+-        path: ['department'],
+-        not: null
+-      }
++      OR: [
++        { department: { equals: department.code, mode: 'insensitive' } },
++        { department: { equals: department.name, mode: 'insensitive' } }
++      ]
+     },
+-    orderBy: { createdAt: 'asc' }
++    select: { id: true }
++  });
++
++  const userIds = users.map(u => u.id);
++
++  const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
++    orderBy: { createdAt: 'desc' }
+   });
+ 
+-  // Filter and aggregate in-memory (Prisma JSON filtering is limited)
+-  const historicalData = [];
++  const approvedRequests = purchaseRequests.filter(pr => {
++    const status = String(pr.payload?.status ?? '').trim().toUpperCase();
++    const requestorId = pr.payload?.requestorId;
++    return status === 'APPROVED' && userIds.includes(requestorId);
++  });
+ 
+-  for (const request of requests) {
+-    if (!request.payload || !request.payload.department) continue;
++  const aggregated = {};
+ 
+-    // Match department by name or code (case-insensitive)
+-    const requestDept = request.payload.department.toLowerCase();
+-    if (!deptMatchers.includes(requestDept)) continue;
++  approvedRequests.forEach(request => {
++    const date = new Date(request.createdAt);
++    const period = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+ 
+-    // Calculate total amount from items
+-    let totalAmount = 0;
+-    if (request.payload.items && Array.isArray(request.payload.items)) {
+-      totalAmount = request.payload.items.reduce((sum, item) => {
+-        return sum + (parseFloat(item.totalPrice) || 0);
+-      }, 0);
++    if (!aggregated[period]) {
++      aggregated[period] = {
++        period,
++        amount: 0,
++        requestCount: 0,
++        categoryTotals: {}
++      };
+     }
+ 
+-    historicalData.push({
+-      date: request.createdAt,
+-      amount: totalAmount,
+-      payload: request.payload
++    const items = request.payload.lineItems || request.payload.items || [];
++    let periodTotal = 0;
++
++    items.forEach(item => {
++      const qty = parseFloat(item.quantity) || 0;
++      const price = parseFloat(item.unitPrice) || parseFloat(item.price) || 0;
++      const itemTotal = qty * price;
++      periodTotal += itemTotal;
++
++      const category = item.itemCategory || 'Uncategorized';
++      aggregated[period].categoryTotals[category] =
++        (aggregated[period].categoryTotals[category] || 0) + itemTotal;
+     });
+-  }
+ 
+-  return historicalData;
++    aggregated[period].amount += periodTotal;
++    aggregated[period].requestCount += 1;
++  });
++
++  return Object.values(aggregated).sort((a, b) => a.period.localeCompare(b.period));
+ }
+ 
+ /**
+  * Handle prediction for new department with no history
+  * @param {number} departmentId - Department ID
+  * @param {number} targetYear - Target year
+  * @param {number} targetMonth - Target month
+  * @returns {Promise<Object>} Budget prediction record
+  */
+ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
+@@ -192,10 +203,12 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
+       algorithm: 'holt_winters',
+       aiInsights: aiResponse.insights,
+       categoryBreakdown: aiResponse.categoryBreakdown,
+       comparisonData: aiResponse.comparisonData,
+       triggerType: userId ? 'manual' : 'auto'
+     }
+   });
+ 
+   return prediction;
+ }
++
++export { getHistoricalSpending };
+diff --git a/backend/tests/historical-spending.test.js b/backend/tests/historical-spending.test.js
+new file mode 100644
+index 0000000..3e50c07
+--- /dev/null
++++ b/backend/tests/historical-spending.test.js
+@@ -0,0 +1,71 @@
++import { describe, test, expect, beforeAll, afterAll } from 'vitest';
++import "dotenv/config";
++import { PrismaPg } from "@prisma/adapter-pg";
++import { PrismaClient } from '../prisma/generated/prisma/client/index.js';
++import pg from "pg";
++import { getHistoricalSpending } from '../services/budget-prediction-service.js';
++
++const pool = new pg.Pool({
++  connectionString: process.env.DATABASE_URL,
++});
++
++const adapter = new PrismaPg(pool);
++const prisma = new PrismaClient({ adapter });
++
++describe('Historical Spending Aggregation', () => {
++  let testDept, testUser;
++
++  beforeAll(async () => {
++    testDept = await prisma.department.create({
++      data: { code: 'HIST', name: 'Historical Test' }
++    });
++    testUser = await prisma.user.create({
++      data: {
++        email: 'hist@test.com',
++        password: 'hash',
++        department: 'HIST'
++      }
++    });
++
++    await prisma.purchaseRequestRecord.create({
++      data: {
++        localId: 'PR-HIST-001',
++        payload: {
++          status: 'APPROVED',
++          requestorId: testUser.id,
++          createdAt: '2026-07-15',
++          lineItems: [
++            { itemName: 'Item A', quantity: 5, unitPrice: 100, itemCategory: 'Materials' },
++            { itemName: 'Item B', quantity: 2, unitPrice: 250, itemCategory: 'Services' }
++          ]
++        }
++      }
++    });
++  });
++
++  afterAll(async () => {
++    await prisma.purchaseRequestRecord.deleteMany({});
++    await prisma.user.delete({ where: { id: testUser.id } });
++    await prisma.department.delete({ where: { id: testDept.id } });
++    await prisma.$disconnect();
++    await pool.end();
++  });
++
++  test('should aggregate approved PRs by month', async () => {
++    const history = await getHistoricalSpending(testDept.id);
++
++    expect(history.length).toBeGreaterThan(0);
++    expect(history[0]).toHaveProperty('period');
++    expect(history[0]).toHaveProperty('amount');
++    expect(history[0]).toHaveProperty('requestCount');
++    expect(history[0].amount).toBe(1000);
++  });
++
++  test('should group by item category', async () => {
++    const history = await getHistoricalSpending(testDept.id);
++
++    expect(history[0].categoryTotals).toHaveProperty('Materials');
++    expect(history[0].categoryTotals.Materials).toBe(500);
++    expect(history[0].categoryTotals.Services).toBe(500);
++  });
++});

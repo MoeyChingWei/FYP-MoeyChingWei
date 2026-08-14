@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Typography, Card, Table, Tag, Button, Space, message, Tabs } from "antd";
 import { EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { AdjustmentApprovalModal } from "../components/budget/AdjustmentApprovalModal";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { API_ROOT } from "../shared/api/base";
 
 const { Title } = Typography;
+const MAX_REVIEWED_REQUESTS = 50;
 
 interface AdjustmentRequest {
   id: number;
@@ -72,10 +73,11 @@ export const BudgetApprovalQueue: React.FC = () => {
         return dateB - dateA;
       });
 
-      setReviewedRequests(reviewed.slice(0, 50));
+      setReviewedRequests(reviewed.slice(0, MAX_REVIEWED_REQUESTS));
     } catch (error) {
       console.error("Load requests error:", error);
-      message.error("Failed to load requests");
+      const axiosError = error as AxiosError;
+      message.error(axiosError.response?.data?.message || "Failed to load requests");
     } finally {
       setLoading(false);
     }
@@ -89,6 +91,7 @@ export const BudgetApprovalQueue: React.FC = () => {
   const handleApprove = async (id: number, comment: string) => {
     setActionLoading(true);
     try {
+      // TODO: Replace hardcoded reviewedBy with actual user ID from auth context
       const res = await axios.patch(`${API_ROOT}/department-budget/adjustments/${id}/approve`, {
         reviewedBy: 1,
         reviewComment: comment
@@ -101,9 +104,10 @@ export const BudgetApprovalQueue: React.FC = () => {
       } else {
         message.error(res.data.message || "Failed to approve request");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Approve error:", error);
-      message.error(error.response?.data?.message || "Failed to approve request");
+      const axiosError = error as AxiosError<{ message?: string }>;
+      message.error(axiosError.response?.data?.message || "Failed to approve request");
     } finally {
       setActionLoading(false);
     }
@@ -112,6 +116,7 @@ export const BudgetApprovalQueue: React.FC = () => {
   const handleReject = async (id: number, comment: string) => {
     setActionLoading(true);
     try {
+      // TODO: Replace hardcoded reviewedBy with actual user ID from auth context
       const res = await axios.patch(`${API_ROOT}/department-budget/adjustments/${id}/reject`, {
         reviewedBy: 1,
         reviewComment: comment
@@ -124,9 +129,10 @@ export const BudgetApprovalQueue: React.FC = () => {
       } else {
         message.error(res.data.message || "Failed to reject request");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Reject error:", error);
-      message.error(error.response?.data?.message || "Failed to reject request");
+      const axiosError = error as AxiosError<{ message?: string }>;
+      message.error(axiosError.response?.data?.message || "Failed to reject request");
     } finally {
       setActionLoading(false);
     }
@@ -141,7 +147,7 @@ export const BudgetApprovalQueue: React.FC = () => {
     {
       title: "Period",
       key: "period",
-      render: (_: any, record: AdjustmentRequest) =>
+      render: (_: unknown, record: AdjustmentRequest) =>
         `${record.targetYear}-${String(record.targetMonth).padStart(2, "0")}`
     },
     {
@@ -177,7 +183,7 @@ export const BudgetApprovalQueue: React.FC = () => {
     {
       title: "Action",
       key: "action",
-      render: (_: any, record: AdjustmentRequest) => (
+      render: (_: unknown, record: AdjustmentRequest) => (
         <Button
           type="primary"
           icon={<EyeOutlined />}
@@ -198,7 +204,7 @@ export const BudgetApprovalQueue: React.FC = () => {
     {
       title: "Period",
       key: "period",
-      render: (_: any, record: AdjustmentRequest) =>
+      render: (_: unknown, record: AdjustmentRequest) =>
         `${record.targetYear}-${String(record.targetMonth).padStart(2, "0")}`
     },
     {
@@ -224,7 +230,7 @@ export const BudgetApprovalQueue: React.FC = () => {
         { text: "Approved", value: "approved" },
         { text: "Rejected", value: "rejected" }
       ],
-      onFilter: (value: any, record: AdjustmentRequest) => record.status === value
+      onFilter: (value: string | number | boolean, record: AdjustmentRequest) => record.status === value
     },
     {
       title: "Reviewed By",

@@ -1,0 +1,208 @@
+diff --git a/backend/services/budget-scheduler.js b/backend/services/budget-scheduler.js
+index 6bf4da0..6bed810 100644
+--- a/backend/services/budget-scheduler.js
++++ b/backend/services/budget-scheduler.js
+@@ -1,11 +1,12 @@
+ import cron from 'node-cron';
++import Decimal from 'decimal.js';
+ import prisma from '../config/prisma.js';
+ import { generateDepartmentPrediction } from './budget-prediction-service.js';
+ 
+ async function sendNotification(payload) {
+   await prisma.notification.create({
+     data: {
+       userId: payload.userId,
+       title: payload.title,
+       message: payload.message,
+       type: payload.type || 'INFO',
+@@ -34,36 +35,46 @@ async function runMonthlyPredictions() {
+ 
+   for (const dept of departments) {
+     try {
+       const prediction = await generateDepartmentPrediction(
+         dept.code,
+         targetYear,
+         targetMonth,
+         null
+       );
+ 
++      // Notify department heads
++      // NOTE: This query assumes User.department field contains either the department code or name.
++      // This is fragile and may miss executives if the field values don't match exactly.
++      // TODO: Consider adding a departmentId foreign key to User table for reliable matching.
+       const deptHeads = await prisma.user.findMany({
+         where: {
+           department: { in: [dept.code, dept.name], mode: 'insensitive' },
+           role: 'Department Executive'
+         }
+       });
+ 
++      // Separate error handling for notifications - don't fail the department if notifications fail
+       for (const head of deptHeads) {
+-        await sendNotification({
+-          userId: head.id,
+-          type: 'BUDGET_PREDICTION_READY',
+-          title: 'New Budget Prediction Available',
+-          message: `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${prediction.predictedAmount.toFixed(2)}`,
+-          refType: 'budget_prediction',
+-          refId: String(prediction.id)
+-        });
++        try {
++          const amount = new Decimal(prediction.predictedAmount).toFixed(2);
++          await sendNotification({
++            userId: head.id,
++            type: 'BUDGET_PREDICTION_READY',
++            title: 'New Budget Prediction Available',
++            message: `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${amount}`,
++            refType: 'budget_prediction',
++            refId: String(prediction.id)
++          });
++        } catch (notifError) {
++          console.error(`[Budget Scheduler] Failed to notify user ${head.id}:`, notifError);
++        }
+       }
+ 
+       success++;
+     } catch (error) {
+       console.error(`[Budget Scheduler] Failed for ${dept.code}:`, error);
+       failed++;
+     }
+   }
+ 
+   console.log(`[Budget Scheduler] Completed: ${success} success, ${failed} failed`);
+diff --git a/backend/tests/budget-scheduler.test.js b/backend/tests/budget-scheduler.test.js
+index 57a1384..f2f7e29 100644
+--- a/backend/tests/budget-scheduler.test.js
++++ b/backend/tests/budget-scheduler.test.js
+@@ -1,38 +1,126 @@
+-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
++import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+ import prisma from '../config/prisma.js';
+ import { runMonthlyPredictions } from '../services/budget-scheduler.js';
++import * as predictionService from '../services/budget-prediction-service.js';
+ 
+ describe('Budget Scheduler', () => {
+   let testDept;
++  let inactiveDept;
+ 
+   beforeAll(async () => {
+     testDept = await prisma.department.create({
+       data: { code: 'SCHD', name: 'Scheduler Test', isActive: true }
+     });
+ 
+-    // Clean up any existing predictions for this department
++    inactiveDept = await prisma.department.create({
++      data: { code: 'INAC', name: 'Inactive Dept', isActive: false }
++    });
++
++    // Clean up any existing predictions for these departments
+     await prisma.budgetPrediction.deleteMany({
+-      where: { departmentId: testDept.id }
++      where: { departmentId: { in: [testDept.id, inactiveDept.id] } }
+     });
+   });
+ 
+   afterAll(async () => {
+-    await prisma.budgetPrediction.deleteMany({ where: { departmentId: testDept.id } });
+-    await prisma.department.delete({ where: { id: testDept.id } });
++    await prisma.budgetPrediction.deleteMany({
++      where: { departmentId: { in: [testDept.id, inactiveDept.id] } }
++    });
++    await prisma.department.deleteMany({
++      where: { id: { in: [testDept.id, inactiveDept.id] } }
++    });
+     await prisma.$disconnect();
+   });
+ 
+   test('should run predictions for all active departments', async () => {
+     const result = await runMonthlyPredictions();
+ 
+     expect(result.success).toBeGreaterThanOrEqual(1);
+     expect(result.failed).toBe(0);
+ 
+     const predictions = await prisma.budgetPrediction.findMany({
+       where: { departmentId: testDept.id }
+     });
+ 
+     expect(predictions.length).toBeGreaterThan(0);
+     expect(predictions[0].triggerType).toBe('auto');
+   });
++
++  test('should skip inactive departments', async () => {
++    await runMonthlyPredictions();
++
++    const predictions = await prisma.budgetPrediction.findMany({
++      where: { departmentId: inactiveDept.id }
++    });
++
++    expect(predictions.length).toBe(0);
++  });
++
++  test('should handle prediction failures gracefully', async () => {
++    const spy = vi.spyOn(predictionService, 'generateDepartmentPrediction');
++    spy.mockImplementation((code) => {
++      if (code === 'SCHD') {
++        throw new Error('Mock prediction failure');
++      }
++      return predictionService.generateDepartmentPrediction(code);
++    });
++
++    const result = await runMonthlyPredictions();
++
++    expect(result.failed).toBeGreaterThanOrEqual(1);
++
++    spy.mockRestore();
++  });
++
++  test('should calculate correct target month and year', async () => {
++    const now = new Date();
++    const expectedYear = now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear();
++    const expectedMonth = now.getMonth() === 11 ? 1 : now.getMonth() + 2;
++
++    await runMonthlyPredictions();
++
++    const prediction = await prisma.budgetPrediction.findFirst({
++      where: { departmentId: testDept.id },
++      orderBy: { createdAt: 'desc' }
++    });
++
++    expect(prediction.targetYear).toBe(expectedYear);
++    expect(prediction.targetMonth).toBe(expectedMonth);
++  });
++
++  test('should create notifications for department heads', async () => {
++    // Create a test user who is a department head
++    const testUser = await prisma.user.create({
++      data: {
++        email: 'dept.head@test.com',
++        password: 'hashedpassword',
++        name: 'Test Dept Head',
++        role: 'Department Executive',
++        department: 'SCHD'
++      }
++    });
++
++    // Clean up old notifications
++    await prisma.notification.deleteMany({
++      where: { userId: testUser.id }
++    });
++
++    await runMonthlyPredictions();
++
++    const notifications = await prisma.notification.findMany({
++      where: {
++        userId: testUser.id,
++        type: 'BUDGET_PREDICTION_READY'
++      }
++    });
++
++    expect(notifications.length).toBeGreaterThan(0);
++    expect(notifications[0].title).toBe('New Budget Prediction Available');
++    expect(notifications[0].refType).toBe('budget_prediction');
++
++    // Cleanup
++    await prisma.notification.deleteMany({ where: { userId: testUser.id } });
++    await prisma.user.delete({ where: { id: testUser.id } });
++  });
+ });
++

@@ -1,0 +1,81 @@
+diff --git a/backend/services/budget-prediction-service.js b/backend/services/budget-prediction-service.js
+index 10fd0cc..86c09b6 100644
+--- a/backend/services/budget-prediction-service.js
++++ b/backend/services/budget-prediction-service.js
+@@ -143,28 +143,27 @@ async function findSimilarDepartments(departmentId) {
+ 
+   for (const dept of allDepts) {
+     const history = await getHistoricalSpending(dept.id);
+     if (history.length === 0) continue;
+ 
+     const nameSimilarity = calculateNameSimilarity(targetDept.name, dept.name);
+ 
+     if (nameSimilarity > 0.3) {
+       const avgSpending = history
+         .reduce((sum, h) => sum.plus(new Decimal(h.amount)), new Decimal(0))
+-        .dividedBy(history.length)
+-        .toNumber();
++        .dividedBy(history.length);
+ 
+       similarDepts.push({
+         id: dept.id,
+         name: dept.name,
+         similarity: nameSimilarity,
+-        avgSpending,
++        avgSpending: avgSpending.toNumber(),
+         historicalMonths: history.length
+       });
+     }
+   }
+ 
+   return similarDepts.sort((a, b) => b.similarity - a.similarity);
+ }
+ 
+ /**
+  * Handle prediction for new department with no history
+@@ -234,21 +233,21 @@ function parseAIResponse(response) {
+ }
+ 
+ /**
+  * Fallback prediction using moving average
+  * @param {Array} historicalData - Historical spending data
+  * @returns {Object} Fallback prediction result
+  */
+ function fallbackPrediction(historicalData) {
+   const recent = historicalData.slice(-3);
+   const avgAmount = recent
+-    .reduce((sum, p) => sum.plus(p.amount), new Decimal(0))
++    .reduce((sum, p) => sum.plus(new Decimal(p.amount)), new Decimal(0))
+     .dividedBy(recent.length)
+     .toDecimalPlaces(2);
+ 
+   return {
+     amount: avgAmount.toNumber(),
+     confidence: 'low',
+     insights: 'Fallback prediction using 3-month moving average due to AI error.',
+     categoryBreakdown: {},
+     comparisonData: {
+       lastMonthAmount: historicalData[historicalData.length - 1].amount,
+@@ -263,21 +262,21 @@ function fallbackPrediction(historicalData) {
+  * Call analytics agent to generate prediction
+  * @param {Object} department - Department object
+  * @param {Array} historicalData - Historical spending data
+  * @param {number} targetYear - Target year
+  * @param {number} targetMonth - Target month
+  * @returns {Promise<Object>} AI prediction response
+  */
+ async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
+   const lastPeriod = historicalData[historicalData.length - 1];
+   const avgAmount = historicalData
+-    .reduce((sum, p) => sum.plus(p.amount), new Decimal(0))
++    .reduce((sum, p) => sum.plus(new Decimal(p.amount)), new Decimal(0))
+     .dividedBy(historicalData.length)
+     .toDecimalPlaces(2);
+ 
+   const prompt = `You are a budget forecasting AI using Holt-Winters Triple Exponential Smoothing.
+ 
+ Department: ${department.name}
+ Target Period: ${targetYear}-${String(targetMonth).padStart(2, '0')}
+ 
+ Historical Spending (Last ${historicalData.length} months):
+ ${historicalData.map(h => `- ${h.period}: $${h.amount.toFixed(2)} (${h.requestCount} requests)`).join('\n')}

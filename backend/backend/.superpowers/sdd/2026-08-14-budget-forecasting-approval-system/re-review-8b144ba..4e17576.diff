@@ -1,0 +1,125 @@
+diff --git a/backend/services/budget-prediction-service.js b/backend/services/budget-prediction-service.js
+index e3b01c5..ba59fff 100644
+--- a/backend/services/budget-prediction-service.js
++++ b/backend/services/budget-prediction-service.js
+@@ -1,12 +1,13 @@
+ import prisma from '../config/prisma.js';
+ import analyticsAgent from '../agents/analytics/analytics-agent.js';
++import Decimal from 'decimal.js';
+ 
+ // Constants for budget prediction thresholds
+ // Default budget for new departments with no historical data (MYR)
+ const DEFAULT_NEW_DEPARTMENT_BUDGET = 50000;
+ 
+ // Confidence thresholds based on historical data points
+ // High confidence: 12+ months of data (full year for seasonal patterns)
+ // Medium confidence: 6-11 months of data (half year minimum)
+ // Low confidence: <6 months of data (insufficient for reliable trends)
+ const CONFIDENCE_THRESHOLD_HIGH = 12;
+@@ -34,21 +35,30 @@ async function getHistoricalSpending(departmentId) {
+       OR: [
+         { department: { equals: department.code, mode: 'insensitive' } },
+         { department: { equals: department.name, mode: 'insensitive' } }
+       ]
+     },
+     select: { id: true }
+   });
+ 
+   const userIds = users.map(u => u.id);
+ 
++  // Performance fix: Add date range filter (last 24 months)
++  const cutoffDate = new Date();
++  cutoffDate.setMonth(cutoffDate.getMonth() - 24);
++
+   const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
++    where: {
++      createdAt: {
++        gte: cutoffDate
++      }
++    },
+     orderBy: { createdAt: 'desc' }
+   });
+ 
+   const approvedRequests = purchaseRequests.filter(pr => {
+     const status = String(pr.payload?.status ?? '').trim().toUpperCase();
+     const requestorId = pr.payload?.requestorId;
+     return status === 'APPROVED' && userIds.includes(requestorId);
+   });
+ 
+   const aggregated = {};
+@@ -59,35 +69,37 @@ async function getHistoricalSpending(departmentId) {
+ 
+     if (!aggregated[period]) {
+       aggregated[period] = {
+         period,
+         amount: 0,
+         requestCount: 0,
+         categoryTotals: {}
+       };
+     }
+ 
+-    const items = request.payload.lineItems || request.payload.items || [];
+-    let periodTotal = 0;
++    // Schema fix: Use lineItems and unitPrice as specified in brief
++    const items = request.payload.lineItems || [];
++    let periodTotal = new Decimal(0);
+ 
+     items.forEach(item => {
+-      const qty = parseFloat(item.quantity) || 0;
+-      const price = parseFloat(item.unitPrice) || parseFloat(item.price) || 0;
+-      const itemTotal = qty * price;
+-      periodTotal += itemTotal;
++      // Precision fix: Use Decimal.js for monetary calculations
++      const qty = new Decimal(item.quantity || 0);
++      const price = new Decimal(item.unitPrice || 0);
++      const itemTotal = qty.times(price);
++      periodTotal = periodTotal.plus(itemTotal);
+ 
+       const category = item.itemCategory || 'Uncategorized';
+-      aggregated[period].categoryTotals[category] =
+-        (aggregated[period].categoryTotals[category] || 0) + itemTotal;
++      const currentCategoryTotal = new Decimal(aggregated[period].categoryTotals[category] || 0);
++      aggregated[period].categoryTotals[category] = currentCategoryTotal.plus(itemTotal).toNumber();
+     });
+ 
+-    aggregated[period].amount += periodTotal;
++    aggregated[period].amount += periodTotal.toNumber();
+     aggregated[period].requestCount += 1;
+   });
+ 
+   return Object.values(aggregated).sort((a, b) => a.period.localeCompare(b.period));
+ }
+ 
+ /**
+  * Handle prediction for new department with no history
+  * @param {number} departmentId - Department ID
+  * @param {number} targetYear - Target year
+diff --git a/backend/tests/historical-spending.test.js b/backend/tests/historical-spending.test.js
+index 3e50c07..5f35ad3 100644
+--- a/backend/tests/historical-spending.test.js
++++ b/backend/tests/historical-spending.test.js
+@@ -37,21 +37,23 @@ describe('Historical Spending Aggregation', () => {
+           lineItems: [
+             { itemName: 'Item A', quantity: 5, unitPrice: 100, itemCategory: 'Materials' },
+             { itemName: 'Item B', quantity: 2, unitPrice: 250, itemCategory: 'Services' }
+           ]
+         }
+       }
+     });
+   });
+ 
+   afterAll(async () => {
+-    await prisma.purchaseRequestRecord.deleteMany({});
++    await prisma.purchaseRequestRecord.deleteMany({
++      where: { localId: { startsWith: 'PR-HIST-' } }
++    });
+     await prisma.user.delete({ where: { id: testUser.id } });
+     await prisma.department.delete({ where: { id: testDept.id } });
+     await prisma.$disconnect();
+     await pool.end();
+   });
+ 
+   test('should aggregate approved PRs by month', async () => {
+     const history = await getHistoricalSpending(testDept.id);
+ 
+     expect(history.length).toBeGreaterThan(0);

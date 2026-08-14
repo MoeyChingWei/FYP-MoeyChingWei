@@ -1,0 +1,229 @@
+diff --git a/client/src/FrontEnd/pages/purchasing/ApprovalDetailSubmodule.tsx b/client/src/FrontEnd/pages/purchasing/ApprovalDetailSubmodule.tsx
+index 0e41dec..6468803 100644
+--- a/client/src/FrontEnd/pages/purchasing/ApprovalDetailSubmodule.tsx
++++ b/client/src/FrontEnd/pages/purchasing/ApprovalDetailSubmodule.tsx
+@@ -26,20 +26,21 @@ import {
+   appendPurchaseOrderDraft,
+   createPurchaseOrderFromRequest,
+ } from "../../modules/purchasing/purchaseOrder/storage";
+ import type {
+   DraftLineItem,
+   PurchaseRequestDraft,
+ } from "../../modules/purchasing/requestCreation/types";
+ import { getSessionUser } from "../../shared/auth/session";
+ import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
+ import RejectReasonModal from "../../shared/components/RejectReasonModal";
++import { deductBudgetForPR } from "../../shared/api/departmentBudget";
+ 
+ import styles from "./ApprovalDetailSubmodule.module.css";
+ 
+ const { Paragraph, Title } = Typography;
+ 
+ function currencyLabel(currency: string, amount: number): string {
+   return `${currency} ${amount.toFixed(2)}`;
+ }
+ 
+ function ItemDetailCard({
+@@ -169,28 +170,59 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
+     if (nextStatus === "APPROVED") {
+       appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
+     }
+ 
+     const isSelfApproved =
+       nextStatus === "APPROVED" &&
+       sessionUser?.role === "Manager" &&
+       request.requesterRole === "Manager" &&
+       request.createdByUserId === sessionUser.id;
+ 
++    const updatedRequest = {
++      ...request,
++      status: nextStatus,
++      rejectionReason:
++        nextStatus === "REJECTED" ? rejectionReason : request.rejectionReason,
++      isSelfApproved: isSelfApproved || request.isSelfApproved,
++    };
++
+     updatePurchaseRequestDraft(request.localId, (draft) => ({
+       ...draft,
+       status: nextStatus,
+       rejectionReason:
+         nextStatus === "REJECTED" ? rejectionReason : draft.rejectionReason,
+       isSelfApproved: isSelfApproved || draft.isSelfApproved,
+     }));
+ 
++    // Deduct budget when PR is approved
++    if (nextStatus === "APPROVED") {
++      console.log("🔵 [BUDGET] Triggering budget deduction for approved PR");
++
++      deductBudgetForPR(updatedRequest)
++        .then(result => {
++          if (result.success) {
++            console.log(`✅ [BUDGET] Deducted $${result.deductedAmount?.toFixed(2)} from department budget`);
++
++            if (result.warnings && result.warnings.length > 0) {
++              result.warnings.forEach(w => {
++                console.warn(`⚠️ [BUDGET] Warning: ${w.threshold}% budget threshold reached (${w.percentage.toFixed(1)}%)`);
++              });
++            }
++          } else {
++            console.warn(`⚠️ [BUDGET] Budget deduction failed: ${result.reason}`);
++          }
++        })
++        .catch(error => {
++          console.error("❌ [BUDGET] Budget deduction error:", error);
++        });
++    }
++
+     message.success(
+       nextStatus === "APPROVED"
+         ? t('purchaseRequest.approval.messages.approved', { prNumber: request.prNumber })
+         : t('purchaseRequest.approval.messages.rejected', { prNumber: request.prNumber })
+     );
+     navigate(
+       nextStatus === "APPROVED"
+         ? "/purchasing/po-review"
+         : "/purchasing/approval",
+     );
+diff --git a/client/src/FrontEnd/pages/purchasing/ApprovalSubmodule.tsx b/client/src/FrontEnd/pages/purchasing/ApprovalSubmodule.tsx
+index 929225c..b69ca0e 100644
+--- a/client/src/FrontEnd/pages/purchasing/ApprovalSubmodule.tsx
++++ b/client/src/FrontEnd/pages/purchasing/ApprovalSubmodule.tsx
+@@ -29,20 +29,21 @@ import {
+ import {
+   appendPurchaseOrderDraft,
+   createPurchaseOrderFromRequest,
+ } from "../../modules/purchasing/purchaseOrder/storage";
+ import type { PurchaseRequestDraft } from "../../modules/purchasing/requestCreation/types";
+ import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
+ import { getSessionUser } from "../../shared/auth/session";
+ import RejectReasonModal from "../../shared/components/RejectReasonModal";
+ import { UserRole } from "../../shared/types/roles";
+ import { reserveSupplierInventory } from "../../modules/supplierFulfillment/inventory";
++import { deductBudgetForPR } from "../../shared/api/departmentBudget";
+ 
+ import styles from "./ApprovalSubmodule.module.css";
+ 
+ const { Text, Title } = Typography;
+ 
+ function sortRequestsByDate(requests: PurchaseRequestDraft[]): PurchaseRequestDraft[] {
+   return requests
+     .map((request, index) => ({ request, index }))
+     .sort((left, right) => {
+       const leftTime = Date.parse(left.request.requestDate);
+@@ -206,27 +207,56 @@ export default function ApprovalSubmodule(): React.ReactElement {
+       message.error(error instanceof Error ? error.message : "Could not reserve inventory");
+       setApprovingRequestIds((current) => {
+         const next = new Set(current);
+         next.delete(request.localId);
+         return next;
+       });
+       return;
+     }
+ 
+     appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
++    const updatedRequest = {
++      ...request,
++      status: "APPROVED" as const,
++      inventoryReservedItemIds: inventoryReservations.map(
++        (item) => item.inventoryItemId,
++      ),
++    };
+     updatePurchaseRequestDraft(request.localId, (draft) => ({
+       ...draft,
+       status: "APPROVED",
+       inventoryReservedItemIds: inventoryReservations.map(
+         (item) => item.inventoryItemId,
+       ),
+     }));
++
++    // Deduct budget when PR is approved
++    console.log("🔵 [BUDGET] Triggering budget deduction for approved PR");
++
++    deductBudgetForPR(updatedRequest)
++      .then(result => {
++        if (result.success) {
++          console.log(`✅ [BUDGET] Deducted $${result.deductedAmount?.toFixed(2)} from department budget`);
++
++          if (result.warnings && result.warnings.length > 0) {
++            result.warnings.forEach(w => {
++              console.warn(`⚠️ [BUDGET] Warning: ${w.threshold}% budget threshold reached (${w.percentage.toFixed(1)}%)`);
++            });
++          }
++        } else {
++          console.warn(`⚠️ [BUDGET] Budget deduction failed: ${result.reason}`);
++        }
++      })
++      .catch(error => {
++        console.error("❌ [BUDGET] Budget deduction error:", error);
++      });
++
+     message.success(t('purchaseRequest.approval.messages.approved', { prNumber: request.prNumber }));
+     navigate("/purchasing/po-review");
+   };
+ 
+   const onRejectConfirm = (reason: string): void => {
+     if (!rejectTarget) return;
+ 
+     updatePurchaseRequestDraft(rejectTarget.localId, (draft) => ({
+       ...draft,
+       status: "REJECTED",
+diff --git a/client/src/FrontEnd/shared/api/departmentBudget.ts b/client/src/FrontEnd/shared/api/departmentBudget.ts
+new file mode 100644
+index 0000000..80bfd3c
+--- /dev/null
++++ b/client/src/FrontEnd/shared/api/departmentBudget.ts
+@@ -0,0 +1,54 @@
++import axios from "axios";
++import { API_ROOT } from "./base";
++
++const API = `${API_ROOT}/department-budget`;
++
++export interface BudgetDeductionResult {
++  success: boolean;
++  deductedAmount?: number;
++  budgetId?: number;
++  warnings?: Array<{ threshold: number; percentage: number }>;
++  reason?: string;
++}
++
++export async function deductBudgetForPR(prPayload: any): Promise<BudgetDeductionResult> {
++  try {
++    const res = await axios.post(`${API}/usage/deduct`, { prPayload });
++    return res.data.success ? res.data.data : { success: false, reason: res.data.message };
++  } catch (error: any) {
++    console.error("Budget deduction error:", error);
++    return {
++      success: false,
++      reason: error.response?.data?.message || error.message || "Failed to deduct budget"
++    };
++  }
++}
++
++export interface BudgetUsageSummary {
++  budgetId: number;
++  department: { id: number; code: string; name: string };
++  year: number;
++  month: number;
++  allocatedAmount: number;
++  spentAmount: number;
++  reservedAmount: number;
++  remainingAmount: number;
++  usagePercentage: number;
++  status: "normal" | "warning" | "exceeded";
++}
++
++export async function getBudgetUsage(
++  departmentId: number,
++  year: number,
++  month: number
++): Promise<BudgetUsageSummary | null> {
++  try {
++    const res = await axios.get(`${API}/usage/${departmentId}`, {
++      params: { year, month }
++    });
++    return res.data.success ? res.data.data : null;
++  } catch (error) {
++    console.error("Get budget usage error:", error);
++    return null;
++  }
++}

@@ -41,7 +41,8 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
   const handleApprove = async () => {
     try {
       const values = await form.validateFields();
-      await onApprove(request.id, values.reviewComment || "");
+      const comment = values.reviewComment?.trim() || "Approved";
+      await onApprove(request.id, comment);
       form.resetFields();
     } catch (error) {
       console.error("Validation error:", error);
@@ -51,11 +52,12 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
   const handleReject = async () => {
     try {
       const values = await form.validateFields();
-      if (!values.reviewComment || values.reviewComment.trim().length < 10) {
+      const comment = values.reviewComment?.trim();
+      if (!comment || comment.length < 10) {
         message.error("Rejection reason must be at least 10 characters");
         return;
       }
-      await onReject(request.id, values.reviewComment);
+      await onReject(request.id, comment);
       form.resetFields();
     } catch (error) {
       console.error("Validation error:", error);
@@ -102,17 +104,10 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
         <Form.Item
           name="reviewComment"
           label="Review Comment"
-          rules={[
-            {
-              validator: (_, value) => {
-                return Promise.resolve();
-              }
-            }
-          ]}
         >
           <Input.TextArea
             rows={4}
-            placeholder="Add your review comment (required for rejection)..."
+            placeholder="Add your review comment (optional for approval, required for rejection with minimum 10 characters)..."
             maxLength={500}
             showCount
           />
@@ -143,3 +138,5 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
     </Modal>
   );
 };
+
+export default AdjustmentApprovalModal;

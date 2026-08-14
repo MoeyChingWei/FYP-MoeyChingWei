@@ -1,0 +1,367 @@
+diff --git a/backend/package-lock.json b/backend/package-lock.json
+index d316240..56f1876 100644
+--- a/backend/package-lock.json
++++ b/backend/package-lock.json
+@@ -8,28 +8,30 @@
+       "name": "backend",
+       "version": "1.0.0",
+       "license": "ISC",
+       "dependencies": {
+         "@anthropic-ai/sdk": "^0.102.0",
+         "@google-cloud/vision": "^5.3.7",
+         "@prisma/adapter-pg": "7.0.0",
+         "@prisma/client": "7.0.0",
+         "bcrypt": "^6.0.0",
+         "cors": "^2.8.6",
++        "decimal.js": "^10.6.0",
+         "dotenv": "^17.3.1",
+         "exceljs": "^4.4.0",
+         "express": "^5.2.1",
+         "handlebars": "^4.7.9",
+         "handlebars-helpers": "^0.10.0",
+         "json2csv": "^6.0.0-alpha.2",
+         "mime-types": "^3.0.2",
+         "multer": "^2.1.1",
++        "node-cron": "^4.6.0",
+         "nodemailer": "^8.0.5",
+         "openai": "^6.42.0",
+         "pg": "^8.16.3",
+         "puppeteer": "^21.11.0",
+         "sharp": "^0.35.2",
+         "uuid": "^14.0.0"
+       },
+       "devDependencies": {
+         "nodemon": "^3.1.14",
+         "prisma": "7.0.0",
+@@ -3541,20 +3543,26 @@
+       },
+       "engines": {
+         "node": ">=6.0"
+       },
+       "peerDependenciesMeta": {
+         "supports-color": {
+           "optional": true
+         }
+       }
+     },
++    "node_modules/decimal.js": {
++      "version": "10.6.0",
++      "resolved": "https://registry.npmjs.org/decimal.js/-/decimal.js-10.6.0.tgz",
++      "integrity": "sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==",
++      "license": "MIT"
++    },
+     "node_modules/decode-uri-component": {
+       "version": "0.2.2",
+       "resolved": "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.2.tgz",
+       "integrity": "sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==",
+       "license": "MIT",
+       "engines": {
+         "node": ">=0.10"
+       }
+     },
+     "node_modules/deepmerge-ts": {
+@@ -6860,20 +6868,29 @@
+     },
+     "node_modules/node-addon-api": {
+       "version": "8.7.0",
+       "resolved": "https://registry.npmjs.org/node-addon-api/-/node-addon-api-8.7.0.tgz",
+       "integrity": "sha512-9MdFxmkKaOYVTV+XVRG8ArDwwQ77XIgIPyKASB1k3JPq3M8fGQQQE3YpMOrKm6g//Ktx8ivZr8xo1Qmtqub+GA==",
+       "license": "MIT",
+       "engines": {
+         "node": "^18 || ^20 || >= 21"
+       }
+     },
++    "node_modules/node-cron": {
++      "version": "4.6.0",
++      "resolved": "https://registry.npmjs.org/node-cron/-/node-cron-4.6.0.tgz",
++      "integrity": "sha512-Si/bzYiKRHOB8/a99T2+SDGN582ONDMSTlJr5oCkT6GtnqPjZ2s10eoQRYkW9ZHwjVxONL+W8Fb+qR0AHMQsdg==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=20"
++      }
++    },
+     "node_modules/node-domexception": {
+       "version": "1.0.0",
+       "resolved": "https://registry.npmjs.org/node-domexception/-/node-domexception-1.0.0.tgz",
+       "integrity": "sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==",
+       "deprecated": "Use your platform's native DOMException instead",
+       "funding": [
+         {
+           "type": "github",
+           "url": "https://github.com/sponsors/jimmywarting"
+         },
+diff --git a/backend/package.json b/backend/package.json
+index c065442..13d215e 100644
+--- a/backend/package.json
++++ b/backend/package.json
+@@ -17,28 +17,30 @@
+   "author": "",
+   "license": "ISC",
+   "type": "module",
+   "dependencies": {
+     "@anthropic-ai/sdk": "^0.102.0",
+     "@google-cloud/vision": "^5.3.7",
+     "@prisma/adapter-pg": "7.0.0",
+     "@prisma/client": "7.0.0",
+     "bcrypt": "^6.0.0",
+     "cors": "^2.8.6",
++    "decimal.js": "^10.6.0",
+     "dotenv": "^17.3.1",
+     "exceljs": "^4.4.0",
+     "express": "^5.2.1",
+     "handlebars": "^4.7.9",
+     "handlebars-helpers": "^0.10.0",
+     "json2csv": "^6.0.0-alpha.2",
+     "mime-types": "^3.0.2",
+     "multer": "^2.1.1",
++    "node-cron": "^4.6.0",
+     "nodemailer": "^8.0.5",
+     "openai": "^6.42.0",
+     "pg": "^8.16.3",
+     "puppeteer": "^21.11.0",
+     "sharp": "^0.35.2",
+     "uuid": "^14.0.0"
+   },
+   "devDependencies": {
+     "nodemon": "^3.1.14",
+     "prisma": "7.0.0",
+diff --git a/backend/services/budget-prediction-service.js b/backend/services/budget-prediction-service.js
+index 86c09b6..acfaffd 100644
+--- a/backend/services/budget-prediction-service.js
++++ b/backend/services/budget-prediction-service.js
+@@ -163,36 +163,37 @@ async function findSimilarDepartments(departmentId) {
+   }
+ 
+   return similarDepts.sort((a, b) => b.similarity - a.similarity);
+ }
+ 
+ /**
+  * Handle prediction for new department with no history
+  * @param {number} departmentId - Department ID
+  * @param {number} targetYear - Target year
+  * @param {number} targetMonth - Target month
++ * @param {number|null} userId - User ID if manually triggered, null for auto
+  * @returns {Promise<Object>} Budget prediction record
+  */
+-async function handleNewDepartment(departmentId, targetYear, targetMonth) {
++async function handleNewDepartment(departmentId, targetYear, targetMonth, userId) {
+   const similarDepts = await findSimilarDepartments(departmentId);
+ 
+   if (similarDepts.length === 0) {
+     return await prisma.budgetPrediction.create({
+       data: {
+         departmentId,
+         targetYear,
+         targetMonth,
+         predictedAmount: DEFAULT_NEW_DEPARTMENT_BUDGET,
+         confidence: 'low',
+         algorithm: 'default',
+         aiInsights: 'No historical data available and no similar departments found. Using system default.',
+-        triggerType: 'manual'
++        triggerType: userId ? 'manual' : 'auto'
+       }
+     });
+   }
+ 
+   const topSimilar = similarDepts[0];
+   const avgAmount = Math.round(topSimilar.avgSpending * 100) / 100;
+ 
+   const insight = `New department with no historical data. Prediction based on similar department "${topSimilar.name}" (${Math.round(topSimilar.similarity * 100)}% similarity, ${topSimilar.historicalMonths} months of data). Consider adjusting based on department size and objectives.`;
+ 
+   return await prisma.budgetPrediction.create({
+@@ -202,21 +203,21 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
+       targetMonth,
+       predictedAmount: avgAmount,
+       confidence: 'low',
+       algorithm: 'similar_department',
+       aiInsights: insight,
+       comparisonData: {
+         similarDepartment: topSimilar.name,
+         similarity: topSimilar.similarity,
+         referenceMonths: topSimilar.historicalMonths
+       },
+-      triggerType: 'manual'
++      triggerType: userId ? 'manual' : 'auto'
+     }
+   });
+ }
+ 
+ /**
+  * Parse AI response to extract JSON
+  * @param {string} response - AI response text
+  * @returns {Object} Parsed prediction data
+  */
+ function parseAIResponse(response) {
+@@ -350,21 +351,21 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
+ 
+   if (!department) {
+     throw new Error(`Department not found: ${deptCode}`);
+   }
+ 
+   // Get historical spending data
+   const historicalData = await getHistoricalSpending(department.id);
+ 
+   // Handle new department with no history
+   if (historicalData.length === 0) {
+-    return handleNewDepartment(department.id, targetYear, targetMonth);
++    return handleNewDepartment(department.id, targetYear, targetMonth, userId);
+   }
+ 
+   // Call analytics agent for prediction
+   const aiResponse = await callAnalyticsAgent(department, historicalData, targetYear, targetMonth);
+ 
+   // Create prediction record
+   const prediction = await prisma.budgetPrediction.create({
+     data: {
+       departmentId: department.id,
+       targetYear,
+diff --git a/backend/services/budget-scheduler.js b/backend/services/budget-scheduler.js
+new file mode 100644
+index 0000000..6bf4da0
+--- /dev/null
++++ b/backend/services/budget-scheduler.js
+@@ -0,0 +1,100 @@
++import cron from 'node-cron';
++import prisma from '../config/prisma.js';
++import { generateDepartmentPrediction } from './budget-prediction-service.js';
++
++async function sendNotification(payload) {
++  await prisma.notification.create({
++    data: {
++      userId: payload.userId,
++      title: payload.title,
++      message: payload.message,
++      type: payload.type || 'INFO',
++      refType: payload.refType,
++      refId: payload.refId,
++    }
++  });
++}
++
++let schedulerTask = null;
++const CRON_SCHEDULE = process.env.BUDGET_PREDICTION_CRON || '0 0 28 * *';
++
++async function runMonthlyPredictions() {
++  console.log('[Budget Scheduler] Starting monthly predictions...');
++
++  const departments = await prisma.department.findMany({
++    where: { isActive: true }
++  });
++
++  const now = new Date();
++  const targetYear = now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear();
++  const targetMonth = now.getMonth() === 11 ? 1 : now.getMonth() + 2;
++
++  let success = 0;
++  let failed = 0;
++
++  for (const dept of departments) {
++    try {
++      const prediction = await generateDepartmentPrediction(
++        dept.code,
++        targetYear,
++        targetMonth,
++        null
++      );
++
++      const deptHeads = await prisma.user.findMany({
++        where: {
++          department: { in: [dept.code, dept.name], mode: 'insensitive' },
++          role: 'Department Executive'
++        }
++      });
++
++      for (const head of deptHeads) {
++        await sendNotification({
++          userId: head.id,
++          type: 'BUDGET_PREDICTION_READY',
++          title: 'New Budget Prediction Available',
++          message: `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${prediction.predictedAmount.toFixed(2)}`,
++          refType: 'budget_prediction',
++          refId: String(prediction.id)
++        });
++      }
++
++      success++;
++    } catch (error) {
++      console.error(`[Budget Scheduler] Failed for ${dept.code}:`, error);
++      failed++;
++    }
++  }
++
++  console.log(`[Budget Scheduler] Completed: ${success} success, ${failed} failed`);
++
++  return { success, failed };
++}
++
++function startScheduler() {
++  if (schedulerTask) {
++    console.log('[Budget Scheduler] Already running');
++    return;
++  }
++
++  schedulerTask = cron.schedule(CRON_SCHEDULE, async () => {
++    console.log('[Budget Scheduler] Triggered by cron');
++    await runMonthlyPredictions();
++  });
++
++  console.log(`[Budget Scheduler] Started with schedule: ${CRON_SCHEDULE}`);
++}
++
++function stopScheduler() {
++  if (schedulerTask) {
++    schedulerTask.stop();
++    schedulerTask = null;
++    console.log('[Budget Scheduler] Stopped');
++  }
++}
++
++export {
++  startScheduler,
++  stopScheduler,
++  runMonthlyPredictions
++};
+diff --git a/backend/tests/budget-scheduler.test.js b/backend/tests/budget-scheduler.test.js
+new file mode 100644
+index 0000000..57a1384
+--- /dev/null
++++ b/backend/tests/budget-scheduler.test.js
+@@ -0,0 +1,38 @@
++import { describe, test, expect, beforeAll, afterAll } from 'vitest';
++import prisma from '../config/prisma.js';
++import { runMonthlyPredictions } from '../services/budget-scheduler.js';
++
++describe('Budget Scheduler', () => {
++  let testDept;
++
++  beforeAll(async () => {
++    testDept = await prisma.department.create({
++      data: { code: 'SCHD', name: 'Scheduler Test', isActive: true }
++    });
++
++    // Clean up any existing predictions for this department
++    await prisma.budgetPrediction.deleteMany({
++      where: { departmentId: testDept.id }
++    });
++  });
++
++  afterAll(async () => {
++    await prisma.budgetPrediction.deleteMany({ where: { departmentId: testDept.id } });
++    await prisma.department.delete({ where: { id: testDept.id } });
++    await prisma.$disconnect();
++  });
++
++  test('should run predictions for all active departments', async () => {
++    const result = await runMonthlyPredictions();
++
++    expect(result.success).toBeGreaterThanOrEqual(1);
++    expect(result.failed).toBe(0);
++
++    const predictions = await prisma.budgetPrediction.findMany({
++      where: { departmentId: testDept.id }
++    });
++
++    expect(predictions.length).toBeGreaterThan(0);
++    expect(predictions[0].triggerType).toBe('auto');
++  });
++});
