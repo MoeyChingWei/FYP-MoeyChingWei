@@ -1,4 +1,5 @@
 import cron from 'node-cron';
+import Decimal from 'decimal.js';
 import prisma from '../config/prisma.js';
 import { generateDepartmentPrediction } from './budget-prediction-service.js';
 
@@ -41,6 +42,10 @@ async function runMonthlyPredictions() {
         null
       );
 
+      // Notify department heads
+      // NOTE: This query assumes User.department field contains either the department code or name.
+      // This is fragile and may miss executives if the field values don't match exactly.
+      // TODO: Consider adding a departmentId foreign key to User table for reliable matching.
       const deptHeads = await prisma.user.findMany({
         where: {
           department: { in: [dept.code, dept.name], mode: 'insensitive' },
@@ -48,15 +53,21 @@ async function runMonthlyPredictions() {
         }
       });
 
+      // Separate error handling for notifications - don't fail the department if notifications fail
       for (const head of deptHeads) {
-        await sendNotification({
-          userId: head.id,
-          type: 'BUDGET_PREDICTION_READY',
-          title: 'New Budget Prediction Available',
-          message: `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${prediction.predictedAmount.toFixed(2)}`,
-          refType: 'budget_prediction',
-          refId: String(prediction.id)
-        });
+        try {
+          const amount = new Decimal(prediction.predictedAmount).toFixed(2);
+          await sendNotification({
+            userId: head.id,
+            type: 'BUDGET_PREDICTION_READY',
+            title: 'New Budget Prediction Available',
+            message: `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${amount}`,
+            refType: 'budget_prediction',
+            refId: String(prediction.id)
+          });
+        } catch (notifError) {
+          console.error(`[Budget Scheduler] Failed to notify user ${head.id}:`, notifError);
+        }
       }
 
       success++;
