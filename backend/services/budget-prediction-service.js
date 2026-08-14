@@ -150,14 +150,13 @@ async function findSimilarDepartments(departmentId) {
     if (nameSimilarity > 0.3) {
       const avgSpending = history
         .reduce((sum, h) => sum.plus(new Decimal(h.amount)), new Decimal(0))
-        .dividedBy(history.length)
-        .toNumber();
+        .dividedBy(history.length);
 
       similarDepts.push({
         id: dept.id,
         name: dept.name,
         similarity: nameSimilarity,
-        avgSpending,
+        avgSpending: avgSpending.toNumber(),
         historicalMonths: history.length
       });
     }
@@ -241,7 +240,7 @@ function parseAIResponse(response) {
 function fallbackPrediction(historicalData) {
   const recent = historicalData.slice(-3);
   const avgAmount = recent
-    .reduce((sum, p) => sum.plus(p.amount), new Decimal(0))
+    .reduce((sum, p) => sum.plus(new Decimal(p.amount)), new Decimal(0))
     .dividedBy(recent.length)
     .toDecimalPlaces(2);
 
@@ -270,7 +269,7 @@ function fallbackPrediction(historicalData) {
 async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
   const lastPeriod = historicalData[historicalData.length - 1];
   const avgAmount = historicalData
-    .reduce((sum, p) => sum.plus(p.amount), new Decimal(0))
+    .reduce((sum, p) => sum.plus(new Decimal(p.amount)), new Decimal(0))
     .dividedBy(historicalData.length)
     .toDecimalPlaces(2);
 
