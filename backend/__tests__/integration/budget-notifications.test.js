@@ -1,0 +1,589 @@
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import request from 'supertest';
+import express from 'express';
+import prisma from '../../config/prisma.js';
+import notificationsRoutes from '../../routes/notifications.js';
+import * as notificationService from '../../services/notification-service.js';
+
+// Create test app
+const app = express();
+app.use(express.json());
+app.use('/api/notifications', notificationsRoutes);
+
+describe("Budget Notification Delivery Integration", () => {
+  let testDepartment;
+  let testUser;
+  let financeUser;
+  let testBudget;
+
+  beforeAll(async () => {
+    const timestamp = Date.now();
+    testDepartment = await prisma.department.create({
+      data: {
+        code: `TEST_NOTIF_${timestamp}`,
+        name: "Test Notification Department",
+        isActive: true
+      }
+    });
+
+    testUser = await prisma.user.create({
+      data: {
+        email: `dept-user-${Date.now()}@example.com`,
+        password: "hashedpass",
+        name: "Department User",
+        role: "Department Executive",
+        department: testDepartment.code,
+        isActive: true
+      }
+    });
+
+    financeUser = await prisma.user.create({
+      data: {
+        email: `finance-user-${Date.now()}@example.com`,
+        password: "hashedpass",
+        name: "Finance User",
+        role: "Treasury/Finance Officer",
+        isActive: true
+      }
+    });
+
+    const now = new Date();
+    testBudget = await prisma.monthlyBudget.create({
+      data: {
+        departmentId: testDepartment.id,
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+        allocatedAmount: 100000,
+        spentAmount: 75000,
+        reservedAmount: 50000,
+        lastNotifiedThreshold: 0
+      }
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.notification.deleteMany({
+      where: { userId: { in: [testUser.id, financeUser.id] } }
+    });
+    await prisma.budgetAdjustmentRequest.deleteMany({
+      where: { departmentId: testDepartment.id }
+    });
+    await prisma.budgetPrediction.deleteMany({
+      where: { departmentId: testDepartment.id }
+    });
+    await prisma.monthlyBudget.deleteMany({
+      where: { departmentId: testDepartment.id }
+    });
+    await prisma.user.deleteMany({
+      where: { id: { in: [testUser.id, financeUser.id] } }
+    });
+    await prisma.department.delete({
+      where: { id: testDepartment.id }
+    });
+    await prisma.$disconnect();
+  });
+
+  describe("BUDGET_THRESHOLD_WARNING Notification", () => {
+    it("should create and deliver warning notification at 80% threshold", async () => {
+      await notificationService.notifyBudgetThreshold(
+        testUser.id,
+        testDepartment.name,
+        testBudget.year,
+        testBudget.month,
+        80,
+        80000,
+        testBudget.allocatedAmount,
+        testBudget.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_THRESHOLD_WARNING",
+          refType: "monthly_budget",
+          refId: String(testBudget.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toContain("Budget");
+      expect(notification.title).toContain("80%");
+      expect(notification.message).toContain(testDepartment.name);
+      expect(notification.message).toContain("80%");
+      expect(notification.isRead).toBe(false);
+      expect(notification.channel).toBe("IN_APP");
+    });
+  });
+
+  describe("BUDGET_EXCEEDED Notification", () => {
+    it("should create and deliver exceeded notification at 100% threshold", async () => {
+      await notificationService.notifyBudgetExceeded(
+        testUser.id,
+        testDepartment.name,
+        testBudget.year,
+        testBudget.month,
+        105,
+        105000,
+        testBudget.allocatedAmount,
+        testBudget.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_EXCEEDED",
+          refType: "monthly_budget",
+          refId: String(testBudget.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toBe("Budget Exceeded");
+      expect(notification.message).toContain("exceeded");
+      expect(notification.message).toContain("105%");
+      expect(notification.isRead).toBe(false);
+    });
+  });
+
+  describe("BUDGET_PREDICTION_READY Notification", () => {
+    it("should create and deliver prediction ready notification", async () => {
+      const prediction = await prisma.budgetPrediction.create({
+        data: {
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month + 1,
+          predictedAmount: 95000,
+          confidence: "high",
+          algorithm: "holt-winters",
+          aiInsights: "Based on historical spending patterns and seasonal trends.",
+          triggerType: "manual",
+          categoryBreakdown: {},
+          comparisonData: {}
+        }
+      });
+
+      await notificationService.notifyBudgetPredictionReady(
+        testUser.id,
+        testDepartment.name,
+        prediction.targetYear,
+        prediction.targetMonth,
+        prediction.predictedAmount,
+        prediction.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_PREDICTION_READY",
+          refType: "budget_prediction",
+          refId: String(prediction.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toBe("New Budget Prediction Available");
+      expect(notification.message).toContain("95000");
+      expect(notification.message).toContain(testDepartment.name);
+      expect(notification.isRead).toBe(false);
+
+      await prisma.budgetPrediction.delete({ where: { id: prediction.id } });
+    });
+  });
+
+  describe("BUDGET_ADJUSTMENT_REQUESTED Notification", () => {
+    it("should create and deliver adjustment requested notification to finance", async () => {
+      const adjustmentRequest = await prisma.budgetAdjustmentRequest.create({
+        data: {
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "increase",
+          requestedAmount: 20000,
+          reason: "Critical equipment purchase needed",
+          status: "pending",
+          requestedBy: testUser.id
+        }
+      });
+
+      await notificationService.notifyBudgetAdjustmentRequested(
+        financeUser.id,
+        financeUser.role,
+        testDepartment.name,
+        adjustmentRequest.targetYear,
+        adjustmentRequest.targetMonth,
+        adjustmentRequest.requestedAmount,
+        adjustmentRequest.reason,
+        adjustmentRequest.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: financeUser.id,
+          type: "BUDGET_ADJUSTMENT_REQUESTED",
+          refType: "budget_adjustment_request",
+          refId: String(adjustmentRequest.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toBe("Budget Adjustment Request Pending");
+      expect(notification.message).toContain(testDepartment.name);
+      expect(notification.message).toContain("20000");
+      expect(notification.message).toContain("Critical equipment purchase needed");
+      expect(notification.isRead).toBe(false);
+
+      await prisma.budgetAdjustmentRequest.delete({ where: { id: adjustmentRequest.id } });
+    });
+  });
+
+  describe("BUDGET_ADJUSTMENT_APPROVED Notification", () => {
+    it("should create and deliver adjustment approved notification to requester", async () => {
+      const adjustmentRequest = await prisma.budgetAdjustmentRequest.create({
+        data: {
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "additional",
+          requestedAmount: 15000,
+          reason: "Additional consulting services required",
+          status: "approved",
+          requestedBy: testUser.id,
+          reviewedBy: financeUser.id,
+          reviewNotes: "Approved for Q2 consulting needs",
+          reviewedAt: new Date()
+        }
+      });
+
+      await notificationService.notifyBudgetAdjustmentApproved(
+        testUser.id,
+        testDepartment.name,
+        adjustmentRequest.targetYear,
+        adjustmentRequest.targetMonth,
+        adjustmentRequest.requestedAmount,
+        115000,
+        adjustmentRequest.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_ADJUSTMENT_APPROVED",
+          refType: "budget_adjustment_request",
+          refId: String(adjustmentRequest.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toBe("Budget Adjustment Approved");
+      expect(notification.message).toContain("approved");
+      expect(notification.message).toContain("15000");
+      expect(notification.message).toContain("115000");
+      expect(notification.isRead).toBe(false);
+
+      await prisma.budgetAdjustmentRequest.delete({ where: { id: adjustmentRequest.id } });
+    });
+  });
+
+  describe("BUDGET_ADJUSTMENT_REJECTED Notification", () => {
+    it("should create and deliver adjustment rejected notification to requester", async () => {
+      const adjustmentRequest = await prisma.budgetAdjustmentRequest.create({
+        data: {
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "increase",
+          requestedAmount: 25000,
+          reason: "Office renovation costs",
+          status: "rejected",
+          requestedBy: testUser.id,
+          reviewedBy: financeUser.id,
+          reviewNotes: "Non-essential expense, defer to next fiscal period",
+          reviewedAt: new Date()
+        }
+      });
+
+      await notificationService.notifyBudgetAdjustmentRejected(
+        testUser.id,
+        testDepartment.name,
+        adjustmentRequest.targetYear,
+        adjustmentRequest.targetMonth,
+        adjustmentRequest.requestedAmount,
+        adjustmentRequest.reviewNotes,
+        adjustmentRequest.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_ADJUSTMENT_REJECTED",
+          refType: "budget_adjustment_request",
+          refId: String(adjustmentRequest.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toBe("Budget Adjustment Rejected");
+      expect(notification.message).toContain("rejected");
+      expect(notification.message).toContain("Non-essential expense");
+      expect(notification.isRead).toBe(false);
+
+      await prisma.budgetAdjustmentRequest.delete({ where: { id: adjustmentRequest.id } });
+    });
+  });
+
+  describe("NEW_DEPARTMENT_SUGGESTION Notification", () => {
+    it("should create and deliver new department suggestion notification", async () => {
+      await notificationService.notifyNewDepartmentSuggestion(
+        financeUser.id,
+        "Marketing Department",
+        85000,
+        "Sales Department",
+        0.78
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: financeUser.id,
+          type: "NEW_DEPARTMENT_SUGGESTION",
+          refType: "department",
+          refId: "Marketing Department"
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.title).toBe("New Department Budget Suggestion");
+      expect(notification.message).toContain("Marketing Department");
+      expect(notification.message).toContain("85000");
+      expect(notification.message).toContain("78%");
+      expect(notification.message).toContain("Sales Department");
+      expect(notification.isRead).toBe(false);
+    });
+  });
+
+  describe("Notification Delivery to Correct Users", () => {
+    it("should deliver threshold warnings to specific users", async () => {
+      await notificationService.notifyBudgetThreshold(
+        testUser.id,
+        testDepartment.name,
+        testBudget.year,
+        testBudget.month,
+        82,
+        82000,
+        testBudget.allocatedAmount,
+        testBudget.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_THRESHOLD_WARNING",
+          refType: "monthly_budget",
+          refId: String(testBudget.id)
+        },
+        orderBy: { createdAt: "desc" }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.userId).toBe(testUser.id);
+    });
+
+    it("should deliver adjustment requests to finance users", async () => {
+      const adjustmentRequest = await prisma.budgetAdjustmentRequest.create({
+        data: {
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "additional",
+          requestedAmount: 8000,
+          reason: "Test submission",
+          status: "pending",
+          requestedBy: testUser.id
+        }
+      });
+
+      await notificationService.notifyBudgetAdjustmentRequested(
+        financeUser.id,
+        financeUser.role,
+        testDepartment.name,
+        adjustmentRequest.targetYear,
+        adjustmentRequest.targetMonth,
+        adjustmentRequest.requestedAmount,
+        adjustmentRequest.reason,
+        adjustmentRequest.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: financeUser.id,
+          type: "BUDGET_ADJUSTMENT_REQUESTED",
+          refType: "budget_adjustment_request",
+          refId: String(adjustmentRequest.id)
+        }
+      });
+
+      expect(notification).toBeTruthy();
+      expect(notification.userId).toBe(financeUser.id);
+
+      await prisma.budgetAdjustmentRequest.delete({ where: { id: adjustmentRequest.id } });
+    });
+  });
+
+  describe("Notification Mark as Read", () => {
+    it("should mark notification as read when user acknowledges it", async () => {
+      const notification = await prisma.notification.create({
+        data: {
+          userId: testUser.id,
+          title: "Test Budget Notification",
+          message: "This is a test notification",
+          type: "BUDGET_THRESHOLD_WARNING",
+          channel: "IN_APP",
+          isRead: false
+        }
+      });
+
+      const response = await request(app)
+        .patch(`/api/notifications/${notification.id}/read`)
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+
+      const updatedNotification = await prisma.notification.findUnique({
+        where: { id: notification.id }
+      });
+
+      expect(updatedNotification.isRead).toBe(true);
+      expect(updatedNotification.readAt).toBeTruthy();
+
+      await prisma.notification.delete({ where: { id: notification.id } });
+    });
+  });
+
+  describe("Notification Filtering and Querying", () => {
+    it("should retrieve notifications for a specific user", async () => {
+      await prisma.notification.createMany({
+        data: [
+          {
+            userId: testUser.id,
+            title: "Unread Budget Warning",
+            message: "Budget at 85%",
+            type: "BUDGET_THRESHOLD_WARNING",
+            channel: "IN_APP",
+            isRead: false
+          },
+          {
+            userId: testUser.id,
+            title: "Read Budget Alert",
+            message: "Budget exceeded",
+            type: "BUDGET_EXCEEDED",
+            channel: "IN_APP",
+            isRead: true,
+            readAt: new Date()
+          }
+        ]
+      });
+
+      const response = await request(app)
+        .get("/api/notifications")
+        .query({ userId: testUser.id });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.notifications.length).toBeGreaterThanOrEqual(2);
+
+      const userNotifications = response.body.notifications.filter(
+        (n) => n.userId === testUser.id
+      );
+      expect(userNotifications.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it("should filter notifications by read status", async () => {
+      const response = await request(app)
+        .get("/api/notifications")
+        .query({ userId: testUser.id });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+
+      const unreadNotifications = response.body.notifications.filter(
+        (n) => n.isRead === false
+      );
+      expect(unreadNotifications.length).toBeGreaterThanOrEqual(1);
+
+      const readNotifications = response.body.notifications.filter(
+        (n) => n.isRead === true
+      );
+      expect(readNotifications.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe("Notification Data Integrity", () => {
+    it("should store correct reference data for budget notifications", async () => {
+      await notificationService.notifyBudgetThreshold(
+        testUser.id,
+        testDepartment.name,
+        testBudget.year,
+        testBudget.month,
+        85,
+        85000,
+        testBudget.allocatedAmount,
+        testBudget.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: testUser.id,
+          type: "BUDGET_THRESHOLD_WARNING",
+          refType: "monthly_budget",
+          refId: String(testBudget.id)
+        },
+        orderBy: { createdAt: "desc" }
+      });
+
+      expect(notification.refType).toBe("monthly_budget");
+      expect(notification.refId).toBe(String(testBudget.id));
+      expect(notification.channel).toBe("IN_APP");
+      expect(notification.createdAt).toBeTruthy();
+    });
+
+    it("should store correct reference data for adjustment notifications", async () => {
+      const adjustmentRequest = await prisma.budgetAdjustmentRequest.create({
+        data: {
+          departmentId: testDepartment.id,
+          targetYear: testBudget.year,
+          targetMonth: testBudget.month,
+          requestType: "increase",
+          requestedAmount: 10000,
+          reason: "Test integrity check",
+          status: "pending",
+          requestedBy: testUser.id
+        }
+      });
+
+      await notificationService.notifyBudgetAdjustmentRequested(
+        financeUser.id,
+        financeUser.role,
+        testDepartment.name,
+        adjustmentRequest.targetYear,
+        adjustmentRequest.targetMonth,
+        adjustmentRequest.requestedAmount,
+        adjustmentRequest.reason,
+        adjustmentRequest.id
+      );
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: financeUser.id,
+          type: "BUDGET_ADJUSTMENT_REQUESTED",
+          refId: String(adjustmentRequest.id)
+        }
+      });
+
+      expect(notification.refType).toBe("budget_adjustment_request");
+      expect(notification.refId).toBe(String(adjustmentRequest.id));
+
+      await prisma.budgetAdjustmentRequest.delete({ where: { id: adjustmentRequest.id } });
+    });
+  });
+});
+
