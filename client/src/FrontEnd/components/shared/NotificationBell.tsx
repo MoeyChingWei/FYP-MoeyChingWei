@@ -6,6 +6,10 @@ import {
   FileTextOutlined,
   MessageOutlined,
   TruckOutlined,
+  WarningOutlined,
+  ExclamationCircleOutlined,
+  RobotOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getSessionUser } from "../../shared/auth/session";
@@ -19,6 +23,43 @@ import { UserRole } from "../../shared/types/roles";
 import styles from "./NotificationBell.module.css";
 
 const { Text } = Typography;
+
+const BUDGET_NOTIFICATION_TYPES = [
+  "BUDGET_THRESHOLD_WARNING",
+  "BUDGET_THRESHOLD_EXCEEDED",
+  "BUDGET_PREDICTION_READY",
+  "BUDGET_PREDICTION_FAILED",
+  "BUDGET_ADJUSTMENT_SUBMITTED",
+  "BUDGET_ADJUSTMENT_APPROVED",
+  "BUDGET_ADJUSTMENT_REJECTED"
+] as const;
+
+type BudgetNotificationType = typeof BUDGET_NOTIFICATION_TYPES[number];
+
+function isBudgetNotification(type: string): type is BudgetNotificationType {
+  return BUDGET_NOTIFICATION_TYPES.includes(type as BudgetNotificationType);
+}
+
+function getBudgetNotificationIcon(type: BudgetNotificationType): React.ReactNode {
+  switch (type) {
+    case "BUDGET_THRESHOLD_WARNING":
+      return <WarningOutlined style={{ color: "#faad14" }} />;
+    case "BUDGET_THRESHOLD_EXCEEDED":
+      return <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />;
+    case "BUDGET_PREDICTION_READY":
+      return <RobotOutlined style={{ color: "#1890ff" }} />;
+    case "BUDGET_PREDICTION_FAILED":
+      return <CloseCircleOutlined style={{ color: "#ff4d4f" }} />;
+    case "BUDGET_ADJUSTMENT_SUBMITTED":
+      return <FileTextOutlined style={{ color: "#1890ff" }} />;
+    case "BUDGET_ADJUSTMENT_APPROVED":
+      return <CheckCircleOutlined style={{ color: "#52c41a" }} />;
+    case "BUDGET_ADJUSTMENT_REJECTED":
+      return <CloseCircleOutlined style={{ color: "#ff4d4f" }} />;
+    default:
+      return <BellOutlined />;
+  }
+}
 
 function formatNotificationTime(createdAt: string): string {
   const date = new Date(createdAt);
@@ -42,6 +83,26 @@ function getNotificationPresentation(notification: NotificationRow): {
   tone: "success" | "info" | "warning" | "feedback";
   label: string;
 } {
+  // Handle budget notifications first
+  if (isBudgetNotification(notification.type)) {
+    const type = notification.type as BudgetNotificationType;
+    let tone: "success" | "info" | "warning" | "feedback" = "info";
+    let label = "Budget";
+
+    if (type === "BUDGET_THRESHOLD_WARNING") {
+      tone = "warning";
+      label = "Budget Alert";
+    } else if (type === "BUDGET_THRESHOLD_EXCEEDED" || type === "BUDGET_PREDICTION_FAILED" || type === "BUDGET_ADJUSTMENT_REJECTED") {
+      tone = "warning";
+      label = "Budget";
+    } else if (type === "BUDGET_ADJUSTMENT_APPROVED") {
+      tone = "success";
+      label = "Budget";
+    }
+
+    return { icon: getBudgetNotificationIcon(type), tone, label };
+  }
+
   if (notification.refType === "feedback" || notification.type === "FEEDBACK") {
     return { icon: <MessageOutlined />, tone: "feedback", label: "Feedback" };
   }
@@ -100,6 +161,27 @@ export default function NotificationBell(): React.ReactElement {
   const unreadCount = unreadNotifications.length;
 
   const resolveNotificationRoute = (n: NotificationRow): string => {
+    // Handle budget notifications
+    if (isBudgetNotification(n.type)) {
+      const type = n.type as BudgetNotificationType;
+
+      switch (type) {
+        case "BUDGET_THRESHOLD_WARNING":
+        case "BUDGET_THRESHOLD_EXCEEDED":
+        case "BUDGET_PREDICTION_READY":
+        case "BUDGET_PREDICTION_FAILED":
+          return "/budget/department-overview";
+
+        case "BUDGET_ADJUSTMENT_SUBMITTED":
+        case "BUDGET_ADJUSTMENT_APPROVED":
+        case "BUDGET_ADJUSTMENT_REJECTED":
+          return "/budget/adjustment-request";
+
+        default:
+          return "/budget/department-overview";
+      }
+    }
+
     if (n.type === "PURCHASE_REQUEST_APPROVAL" && n.refId) return `/purchasing/approval/${n.refId}`;
     if (n.type === "PURCHASE_ORDER_APPROVAL" && n.refId) return `/purchasing/po-approval/${n.refId}`;
     if (n.refType === "purchase-request" && n.refId) return `/purchasing/review/${n.refId}`;
