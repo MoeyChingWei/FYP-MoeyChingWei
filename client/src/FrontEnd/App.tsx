@@ -141,6 +141,7 @@ const BudgetForecasting = lazy(
 const DepartmentBudgetOverview = lazy(() => import("./pages/DepartmentBudgetOverview"));
 const BudgetAdjustmentRequest = lazy(() => import("./pages/BudgetAdjustmentRequest"));
 const FinanceBudgetDashboard = lazy(() => import("./pages/FinanceBudgetDashboard"));
+const BudgetApprovalQueue = lazy(() => import("./pages/BudgetApprovalQueue"));
 
 type MenuKey =
   | "overview"
@@ -570,6 +571,7 @@ function MainLayout(): React.ReactElement {
           <Route path="/budget/department-overview" element={<DepartmentBudgetOverview />} />
           <Route path="/budget/adjustment-request" element={<BudgetAdjustmentRequest />} />
           <Route path="/budget/finance-dashboard" element={<FinanceBudgetDashboard />} />
+          <Route path="/budget/approval-queue" element={<BudgetApprovalQueue />} />
           <Route
             path="/budget-management/*"
             element={<Navigate to="/budget-management" replace />}
