@@ -12,6 +12,9 @@ describe('Department Budget Routes', () => {
   let testDept;
 
   beforeAll(async () => {
+    // Clean up any existing test department first
+    await prisma.department.deleteMany({ where: { code: 'TEST-DEPT' } });
+
     testDept = await prisma.department.create({
       data: { code: 'TEST-DEPT', name: 'Test Department' }
     });
@@ -124,6 +127,64 @@ describe('Department Budget Routes', () => {
         expect(res.status).toBe(400);
         expect(res.body.success).toBe(false);
       });
+
+      test('should reject missing required fields', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/monthly')
+          .send({
+            departmentId: testDept.id,
+            year: 2026
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('Missing required fields');
+      });
+
+      test('should reject invalid month', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/monthly')
+          .send({
+            departmentId: testDept.id,
+            year: 2026,
+            month: 13,
+            allocatedAmount: 100000
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('Month must be between 1 and 12');
+      });
+
+      test('should reject negative allocatedAmount', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/monthly')
+          .send({
+            departmentId: testDept.id,
+            year: 2026,
+            month: 10,
+            allocatedAmount: -1000
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('must be a positive number');
+      });
+
+      test('should reject zero allocatedAmount', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/monthly')
+          .send({
+            departmentId: testDept.id,
+            year: 2026,
+            month: 11,
+            allocatedAmount: 0
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('must be a positive number');
+      });
     });
 
     describe('PATCH /api/department-budget/monthly/:id', () => {
@@ -139,6 +200,40 @@ describe('Department Budget Routes', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.data.allocatedAmount).toBe('110000');
         expect(res.body.data.notes).toBe('Updated budget');
+      });
+
+      test('should return 404 for non-existent budget', async () => {
+        const res = await request(app)
+          .patch('/api/department-budget/monthly/999999')
+          .send({
+            allocatedAmount: 50000
+          });
+
+        expect(res.status).toBe(404);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Monthly budget not found');
+      });
+
+      test('should reject negative allocatedAmount', async () => {
+        const res = await request(app)
+          .patch(`/api/department-budget/monthly/${testBudget.id}`)
+          .send({
+            allocatedAmount: -5000
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('must be a positive number');
+      });
+
+      test('should reject update with no fields', async () => {
+        const res = await request(app)
+          .patch(`/api/department-budget/monthly/${testBudget.id}`)
+          .send({});
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('No fields to update');
       });
     });
   });

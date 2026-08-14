@@ -1,5 +1,6 @@
 import express from 'express';
 import prisma from '../config/prisma.js';
+import Decimal from 'decimal.js';
 
 const router = express.Router();
 
@@ -59,12 +60,61 @@ router.post('/monthly', async (req, res) => {
   try {
     const { departmentId, year, month, allocatedAmount, notes } = req.body;
 
+    // Validate required fields
+    if (!departmentId || !year || !month || allocatedAmount === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: departmentId, year, month, allocatedAmount'
+      });
+    }
+
+    // Validate numeric fields
+    const deptId = parseInt(departmentId);
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+
+    if (isNaN(deptId) || isNaN(yearNum) || isNaN(monthNum)) {
+      return res.status(400).json({
+        success: false,
+        message: 'departmentId, year, and month must be valid numbers'
+      });
+    }
+
+    // Validate business rules
+    if (monthNum < 1 || monthNum > 12) {
+      return res.status(400).json({
+        success: false,
+        message: 'Month must be between 1 and 12'
+      });
+    }
+
+    if (yearNum < 2000 || yearNum > 2100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Year must be between 2000 and 2100'
+      });
+    }
+
+    // Validate and convert allocatedAmount using Decimal.js
+    let amount;
+    try {
+      amount = new Decimal(allocatedAmount);
+      if (amount.isNaN() || amount.isNegative() || amount.isZero()) {
+        throw new Error('Invalid amount');
+      }
+    } catch (e) {
+      return res.status(400).json({
+        success: false,
+        message: 'allocatedAmount must be a positive number'
+      });
+    }
+
     const existing = await prisma.monthlyBudget.findUnique({
       where: {
         departmentId_year_month: {
-          departmentId: parseInt(departmentId),
-          year: parseInt(year),
-          month: parseInt(month)
+          departmentId: deptId,
+          year: yearNum,
+          month: monthNum
         }
       }
     });
@@ -78,10 +128,10 @@ router.post('/monthly', async (req, res) => {
 
     const budget = await prisma.monthlyBudget.create({
       data: {
-        departmentId: parseInt(departmentId),
-        year: parseInt(year),
-        month: parseInt(month),
-        allocatedAmount: parseFloat(allocatedAmount),
+        departmentId: deptId,
+        year: yearNum,
+        month: monthNum,
+        allocatedAmount: amount.toNumber(),
         spentAmount: 0,
         reservedAmount: 0,
         notes
@@ -109,12 +159,45 @@ router.patch('/monthly/:id', async (req, res) => {
     const { id } = req.params;
     const { allocatedAmount, notes } = req.body;
 
+    // Validate ID
+    const budgetId = parseInt(id);
+    if (isNaN(budgetId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid budget ID'
+      });
+    }
+
     const updateData = {};
-    if (allocatedAmount !== undefined) updateData.allocatedAmount = parseFloat(allocatedAmount);
+
+    // Validate and convert allocatedAmount if provided
+    if (allocatedAmount !== undefined) {
+      try {
+        const amount = new Decimal(allocatedAmount);
+        if (amount.isNaN() || amount.isNegative() || amount.isZero()) {
+          throw new Error('Invalid amount');
+        }
+        updateData.allocatedAmount = amount.toNumber();
+      } catch (e) {
+        return res.status(400).json({
+          success: false,
+          message: 'allocatedAmount must be a positive number'
+        });
+      }
+    }
+
     if (notes !== undefined) updateData.notes = notes;
 
+    // Check if no fields to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No fields to update'
+      });
+    }
+
     const budget = await prisma.monthlyBudget.update({
-      where: { id: parseInt(id) },
+      where: { id: budgetId },
       data: updateData,
       include: { department: true }
     });
@@ -125,6 +208,15 @@ router.patch('/monthly/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Update monthly budget error:', error);
+
+    // Handle Prisma NotFoundError
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        success: false,
+        message: 'Monthly budget not found'
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Failed to update monthly budget',
