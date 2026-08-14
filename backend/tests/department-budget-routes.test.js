@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import prisma from '../config/prisma.js';
@@ -240,6 +240,10 @@ describe('Department Budget Routes', () => {
   });
 
   describe('Budget Prediction Trigger Endpoints', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     describe('POST /api/department-budget/predict/manual', () => {
       test('should trigger manual prediction for department', async () => {
         const mockPrediction = {
@@ -272,8 +276,6 @@ describe('Department Budget Routes', () => {
           9,
           1
         );
-
-        vi.restoreAllMocks();
       });
 
       test('should return 400 for missing parameters', async () => {
@@ -309,8 +311,6 @@ describe('Department Budget Routes', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.data.successCount).toBe(1);
         expect(res.body.data.failedCount).toBe(0);
-
-        vi.restoreAllMocks();
       });
     });
   });

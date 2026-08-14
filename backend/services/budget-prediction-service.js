@@ -395,29 +395,33 @@ export async function generatePredictionsForAllDepartments(targetYear, targetMon
     where: { isActive: true }
   });
 
-  const results = {
-    success: [],
-    failed: []
+  const results = await Promise.allSettled(
+    departments.map(dept =>
+      generateDepartmentPrediction(dept.code, targetYear, targetMonth, userId)
+        .then(prediction => ({ dept, prediction }))
+        .catch(error => {
+          error.dept = dept;
+          throw error;
+        })
+    )
+  );
+
+  return {
+    success: results
+      .filter(r => r.status === 'fulfilled')
+      .map(r => ({
+        departmentId: r.value.dept.id,
+        departmentCode: r.value.dept.code,
+        predictionId: r.value.prediction.id
+      })),
+    failed: results
+      .filter(r => r.status === 'rejected')
+      .map(r => ({
+        departmentId: r.reason.dept?.id,
+        departmentCode: r.reason.dept?.code,
+        error: r.reason.message
+      }))
   };
-
-  for (const dept of departments) {
-    try {
-      const prediction = await generateDepartmentPrediction(dept.code, targetYear, targetMonth, userId);
-      results.success.push({
-        departmentId: dept.id,
-        departmentCode: dept.code,
-        predictionId: prediction.id
-      });
-    } catch (error) {
-      results.failed.push({
-        departmentId: dept.id,
-        departmentCode: dept.code,
-        error: error.message
-      });
-    }
-  }
-
-  return results;
 }
 
 export { getHistoricalSpending, callAnalyticsAgent, handleNewDepartment, findSimilarDepartments };
