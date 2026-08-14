@@ -47,6 +47,7 @@ describe('BudgetPrediction Model', () => {
     expect(prediction.id).toBeDefined();
     expect(prediction.confidence).toBe('high');
     expect(prediction.categoryBreakdown).toHaveProperty('Raw Materials');
+    expect(prediction.createdAt).toBeInstanceOf(Date);
   });
 
   test('should allow null departmentId for new departments', async () => {
@@ -65,5 +66,6 @@ describe('BudgetPrediction Model', () => {
 
     expect(pred.departmentId).toBeNull();
     expect(pred.algorithm).toBe('similar_dept');
+    expect(pred.createdAt).toBeInstanceOf(Date);
   });
 });
