@@ -146,16 +146,19 @@ function parseAIResponse(response) {
  */
 function fallbackPrediction(historicalData) {
   const recent = historicalData.slice(-3);
-  const avgAmount = recent.reduce((sum, p) => sum + p.amount, 0) / recent.length;
+  const avgAmount = recent
+    .reduce((sum, p) => sum.plus(p.amount), new Decimal(0))
+    .dividedBy(recent.length)
+    .toDecimalPlaces(2);
 
   return {
-    amount: Math.round(avgAmount * 100) / 100,
+    amount: avgAmount.toNumber(),
     confidence: 'low',
     insights: 'Fallback prediction using 3-month moving average due to AI error.',
     categoryBreakdown: {},
     comparisonData: {
       lastMonthAmount: historicalData[historicalData.length - 1].amount,
-      avgAmount: avgAmount,
+      avgAmount: avgAmount.toNumber(),
       trend: 'stable',
       historicalPeriods: historicalData.length
     }
@@ -172,7 +175,10 @@ function fallbackPrediction(historicalData) {
  */
 async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
   const lastPeriod = historicalData[historicalData.length - 1];
-  const avgAmount = historicalData.reduce((sum, p) => sum + p.amount, 0) / historicalData.length;
+  const avgAmount = historicalData
+    .reduce((sum, p) => sum.plus(p.amount), new Decimal(0))
+    .dividedBy(historicalData.length)
+    .toDecimalPlaces(2);
 
   const prompt = `You are a budget forecasting AI using Holt-Winters Triple Exponential Smoothing.
 
@@ -219,8 +225,8 @@ Format your response as JSON:
       categoryBreakdown: parsed.categoryBreakdown,
       comparisonData: {
         lastMonthAmount: lastPeriod.amount,
-        avgAmount: Math.round(avgAmount * 100) / 100,
-        trend: lastPeriod.amount > avgAmount ? 'increasing' : 'decreasing',
+        avgAmount: avgAmount.toNumber(),
+        trend: new Decimal(lastPeriod.amount).greaterThan(avgAmount) ? 'increasing' : 'decreasing',
         historicalPeriods: historicalData.length
       }
     };
