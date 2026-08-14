@@ -705,6 +705,30 @@ describe('Department Budget Routes', () => {
         expect(res.body.data.summary.totalSpent).toBeGreaterThan(0);
         expect(res.body.data.summary.avgUtilization).toBeGreaterThan(0);
       });
+
+      test('should return 400 for invalid (non-numeric) departmentId', async () => {
+        const res = await request(app).get('/api/department-budget/historical/invalid-id?preset=last-3-months');
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Invalid department ID');
+      });
+
+      test('should return 404 for non-existent departmentId', async () => {
+        const res = await request(app).get('/api/department-budget/historical/99999?preset=last-3-months');
+
+        expect(res.status).toBe(404);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Department not found');
+      });
+
+      test('should return 400 for malformed date format', async () => {
+        const res = await request(app).get(`/api/department-budget/historical/${testDept.id}?startDate=2026/03&endDate=2026-05`);
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Invalid date format. Use YYYY-MM');
+      });
     });
 
     describe('GET /api/department-budget/spending-trends/:departmentId', () => {
@@ -797,6 +821,30 @@ describe('Department Budget Routes', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.data.totalSpent).toBeGreaterThanOrEqual(0);
+      });
+
+      test('should return 400 for invalid (non-numeric) departmentId', async () => {
+        const res = await request(app).get('/api/department-budget/spending-trends/invalid-id');
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Invalid department ID');
+      });
+
+      test('should return 404 for non-existent departmentId', async () => {
+        const res = await request(app).get('/api/department-budget/spending-trends/99999');
+
+        expect(res.status).toBe(404);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Department not found');
+      });
+
+      test('should return 400 for malformed date format', async () => {
+        const res = await request(app).get(`/api/department-budget/spending-trends/${testDept.id}?startDate=2026/03&endDate=2026-05`);
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Invalid date format. Use YYYY-MM');
       });
     });
   });

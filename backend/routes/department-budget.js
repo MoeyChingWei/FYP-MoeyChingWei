@@ -810,6 +810,38 @@ router.get('/historical/:departmentId', async (req, res) => {
     const { departmentId } = req.params;
     const { preset, startDate, endDate } = req.query;
 
+    // Validate departmentId
+    const deptId = parseInt(departmentId);
+    if (isNaN(deptId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid department ID'
+      });
+    }
+
+    // Check department exists
+    const department = await prisma.department.findUnique({
+      where: { id: deptId }
+    });
+
+    if (!department) {
+      return res.status(404).json({
+        success: false,
+        message: 'Department not found'
+      });
+    }
+
+    // Validate date format if custom range provided
+    if (startDate && endDate) {
+      const dateRegex = /^\d{4}-\d{2}$/;
+      if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid date format. Use YYYY-MM'
+        });
+      }
+    }
+
     let dateFilter = {};
     const now = new Date();
     const currentYear = now.getFullYear();
@@ -868,7 +900,7 @@ router.get('/historical/:departmentId', async (req, res) => {
 
     const historicalBudgets = await prisma.monthlyBudget.findMany({
       where: {
-        departmentId: parseInt(departmentId),
+        departmentId: deptId,
         ...dateFilter
       },
       include: {
@@ -936,9 +968,18 @@ router.get('/spending-trends/:departmentId', async (req, res) => {
     const { departmentId } = req.params;
     const { startDate, endDate } = req.query;
 
+    // Validate departmentId
+    const deptId = parseInt(departmentId);
+    if (isNaN(deptId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid department ID'
+      });
+    }
+
     // Get department to match against payload.departmentId
     const department = await prisma.department.findUnique({
-      where: { id: parseInt(departmentId) }
+      where: { id: deptId }
     });
 
     if (!department) {
@@ -946,6 +987,17 @@ router.get('/spending-trends/:departmentId', async (req, res) => {
         success: false,
         message: 'Department not found'
       });
+    }
+
+    // Validate date format if provided
+    if (startDate && endDate) {
+      const dateRegex = /^\d{4}-\d{2}$/;
+      if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid date format. Use YYYY-MM'
+        });
+      }
     }
 
     // Date filter for createdAt
