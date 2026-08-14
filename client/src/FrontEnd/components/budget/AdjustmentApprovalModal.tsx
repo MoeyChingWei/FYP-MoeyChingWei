@@ -35,22 +35,35 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
   loading
 }) => {
   const [form] = Form.useForm();
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   if (!request) return null;
 
   const handleApprove = async () => {
     try {
+      setIsProcessing(true);
       const values = await form.validateFields();
       const comment = values.reviewComment?.trim() || "Approved";
       await onApprove(request.id, comment);
-      form.resetFields();
-    } catch (error) {
-      console.error("Validation error:", error);
+      // Only reset if modal is still open (component still mounted)
+      if (visible) {
+        form.resetFields();
+      }
+    } catch (error: unknown) {
+      // Surface validation errors to users
+      if (error && typeof error === 'object' && 'errorFields' in error) {
+        message.error("Please check the form for errors");
+      } else {
+        console.error("Approval error:", error);
+      }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const handleReject = async () => {
     try {
+      setIsProcessing(true);
       const values = await form.validateFields();
       const comment = values.reviewComment?.trim();
       if (!comment || comment.length < 10) {
@@ -58,9 +71,19 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
         return;
       }
       await onReject(request.id, comment);
-      form.resetFields();
-    } catch (error) {
-      console.error("Validation error:", error);
+      // Only reset if modal is still open (component still mounted)
+      if (visible) {
+        form.resetFields();
+      }
+    } catch (error: unknown) {
+      // Surface validation errors to users
+      if (error && typeof error === 'object' && 'errorFields' in error) {
+        message.error("Please check the form for errors");
+      } else {
+        console.error("Rejection error:", error);
+      }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -119,7 +142,7 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
               type="primary"
               icon={<CheckOutlined />}
               onClick={handleApprove}
-              loading={loading}
+              loading={loading || isProcessing}
             >
               Approve
             </Button>
@@ -127,7 +150,7 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
               danger
               icon={<CloseOutlined />}
               onClick={handleReject}
-              loading={loading}
+              loading={loading || isProcessing}
             >
               Reject
             </Button>

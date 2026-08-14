@@ -8,6 +8,14 @@ import { API_ROOT } from "../shared/api/base";
 const { Title } = Typography;
 const MAX_REVIEWED_REQUESTS = 50;
 
+// Helper function to get current user ID
+// TODO: Replace with actual auth context when available
+const getCurrentUserId = (): number => {
+  // Placeholder: In production, this should come from auth context/session
+  // Example: return useAuth().user?.id || 1;
+  return 1;
+};
+
 interface AdjustmentRequest {
   id: number;
   departmentId: number;
@@ -91,9 +99,8 @@ export const BudgetApprovalQueue: React.FC = () => {
   const handleApprove = async (id: number, comment: string) => {
     setActionLoading(true);
     try {
-      // TODO: Replace hardcoded reviewedBy with actual user ID from auth context
       const res = await axios.patch(`${API_ROOT}/department-budget/adjustments/${id}/approve`, {
-        reviewedBy: 1,
+        reviewedBy: getCurrentUserId(),
         reviewComment: comment
       });
 
@@ -116,9 +123,8 @@ export const BudgetApprovalQueue: React.FC = () => {
   const handleReject = async (id: number, comment: string) => {
     setActionLoading(true);
     try {
-      // TODO: Replace hardcoded reviewedBy with actual user ID from auth context
       const res = await axios.patch(`${API_ROOT}/department-budget/adjustments/${id}/reject`, {
-        reviewedBy: 1,
+        reviewedBy: getCurrentUserId(),
         reviewComment: comment
       });
 
