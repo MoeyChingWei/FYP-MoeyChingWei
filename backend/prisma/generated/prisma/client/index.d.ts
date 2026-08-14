@@ -113,6 +113,26 @@ export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
  * 
  */
 export type BackupHistory = $Result.DefaultSelection<Prisma.$BackupHistoryPayload>
+/**
+ * Model Department
+ * 
+ */
+export type Department = $Result.DefaultSelection<Prisma.$DepartmentPayload>
+/**
+ * Model MonthlyBudget
+ * 
+ */
+export type MonthlyBudget = $Result.DefaultSelection<Prisma.$MonthlyBudgetPayload>
+/**
+ * Model BudgetAdjustmentRequest
+ * 
+ */
+export type BudgetAdjustmentRequest = $Result.DefaultSelection<Prisma.$BudgetAdjustmentRequestPayload>
+/**
+ * Model BudgetPrediction
+ * 
+ */
+export type BudgetPrediction = $Result.DefaultSelection<Prisma.$BudgetPredictionPayload>
 
 /**
  * Enums
@@ -448,6 +468,46 @@ export class PrismaClient<
     * ```
     */
   get backupHistory(): Prisma.BackupHistoryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.department`: Exposes CRUD operations for the **Department** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Departments
+    * const departments = await prisma.department.findMany()
+    * ```
+    */
+  get department(): Prisma.DepartmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.monthlyBudget`: Exposes CRUD operations for the **MonthlyBudget** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MonthlyBudgets
+    * const monthlyBudgets = await prisma.monthlyBudget.findMany()
+    * ```
+    */
+  get monthlyBudget(): Prisma.MonthlyBudgetDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.budgetAdjustmentRequest`: Exposes CRUD operations for the **BudgetAdjustmentRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BudgetAdjustmentRequests
+    * const budgetAdjustmentRequests = await prisma.budgetAdjustmentRequest.findMany()
+    * ```
+    */
+  get budgetAdjustmentRequest(): Prisma.BudgetAdjustmentRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.budgetPrediction`: Exposes CRUD operations for the **BudgetPrediction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BudgetPredictions
+    * const budgetPredictions = await prisma.budgetPrediction.findMany()
+    * ```
+    */
+  get budgetPrediction(): Prisma.BudgetPredictionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -901,7 +961,11 @@ export namespace Prisma {
     Source: 'Source',
     SourceChunk: 'SourceChunk',
     AuditLog: 'AuditLog',
-    BackupHistory: 'BackupHistory'
+    BackupHistory: 'BackupHistory',
+    Department: 'Department',
+    MonthlyBudget: 'MonthlyBudget',
+    BudgetAdjustmentRequest: 'BudgetAdjustmentRequest',
+    BudgetPrediction: 'BudgetPrediction'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -917,7 +981,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "notification" | "feedback" | "roleChangeAudit" | "passwordResetCode" | "purchasingLookup" | "supplierTypeAssignment" | "supplierInventoryItem" | "purchaseRequestRecord" | "purchaseOrderRecord" | "supplierOrderAcknowledgementRecord" | "supplierDeliveryRecordStore" | "supplierGrnRecordStore" | "chatSession" | "chatMessage" | "messageAttachment" | "source" | "sourceChunk" | "auditLog" | "backupHistory"
+      modelProps: "user" | "notification" | "feedback" | "roleChangeAudit" | "passwordResetCode" | "purchasingLookup" | "supplierTypeAssignment" | "supplierInventoryItem" | "purchaseRequestRecord" | "purchaseOrderRecord" | "supplierOrderAcknowledgementRecord" | "supplierDeliveryRecordStore" | "supplierGrnRecordStore" | "chatSession" | "chatMessage" | "messageAttachment" | "source" | "sourceChunk" | "auditLog" | "backupHistory" | "department" | "monthlyBudget" | "budgetAdjustmentRequest" | "budgetPrediction"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2401,6 +2465,302 @@ export namespace Prisma {
           }
         }
       }
+      Department: {
+        payload: Prisma.$DepartmentPayload<ExtArgs>
+        fields: Prisma.DepartmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DepartmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DepartmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          findFirst: {
+            args: Prisma.DepartmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DepartmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          findMany: {
+            args: Prisma.DepartmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>[]
+          }
+          create: {
+            args: Prisma.DepartmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          createMany: {
+            args: Prisma.DepartmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DepartmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>[]
+          }
+          delete: {
+            args: Prisma.DepartmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          update: {
+            args: Prisma.DepartmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.DepartmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DepartmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DepartmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>[]
+          }
+          upsert: {
+            args: Prisma.DepartmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          aggregate: {
+            args: Prisma.DepartmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDepartment>
+          }
+          groupBy: {
+            args: Prisma.DepartmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DepartmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DepartmentCountArgs<ExtArgs>
+            result: $Utils.Optional<DepartmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      MonthlyBudget: {
+        payload: Prisma.$MonthlyBudgetPayload<ExtArgs>
+        fields: Prisma.MonthlyBudgetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MonthlyBudgetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MonthlyBudgetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>
+          }
+          findFirst: {
+            args: Prisma.MonthlyBudgetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MonthlyBudgetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>
+          }
+          findMany: {
+            args: Prisma.MonthlyBudgetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>[]
+          }
+          create: {
+            args: Prisma.MonthlyBudgetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>
+          }
+          createMany: {
+            args: Prisma.MonthlyBudgetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MonthlyBudgetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>[]
+          }
+          delete: {
+            args: Prisma.MonthlyBudgetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>
+          }
+          update: {
+            args: Prisma.MonthlyBudgetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>
+          }
+          deleteMany: {
+            args: Prisma.MonthlyBudgetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MonthlyBudgetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MonthlyBudgetUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>[]
+          }
+          upsert: {
+            args: Prisma.MonthlyBudgetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonthlyBudgetPayload>
+          }
+          aggregate: {
+            args: Prisma.MonthlyBudgetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMonthlyBudget>
+          }
+          groupBy: {
+            args: Prisma.MonthlyBudgetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MonthlyBudgetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MonthlyBudgetCountArgs<ExtArgs>
+            result: $Utils.Optional<MonthlyBudgetCountAggregateOutputType> | number
+          }
+        }
+      }
+      BudgetAdjustmentRequest: {
+        payload: Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>
+        fields: Prisma.BudgetAdjustmentRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BudgetAdjustmentRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BudgetAdjustmentRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.BudgetAdjustmentRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BudgetAdjustmentRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>
+          }
+          findMany: {
+            args: Prisma.BudgetAdjustmentRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>[]
+          }
+          create: {
+            args: Prisma.BudgetAdjustmentRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>
+          }
+          createMany: {
+            args: Prisma.BudgetAdjustmentRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BudgetAdjustmentRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.BudgetAdjustmentRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>
+          }
+          update: {
+            args: Prisma.BudgetAdjustmentRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.BudgetAdjustmentRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BudgetAdjustmentRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BudgetAdjustmentRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.BudgetAdjustmentRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetAdjustmentRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.BudgetAdjustmentRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBudgetAdjustmentRequest>
+          }
+          groupBy: {
+            args: Prisma.BudgetAdjustmentRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BudgetAdjustmentRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BudgetAdjustmentRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<BudgetAdjustmentRequestCountAggregateOutputType> | number
+          }
+        }
+      }
+      BudgetPrediction: {
+        payload: Prisma.$BudgetPredictionPayload<ExtArgs>
+        fields: Prisma.BudgetPredictionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BudgetPredictionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BudgetPredictionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>
+          }
+          findFirst: {
+            args: Prisma.BudgetPredictionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BudgetPredictionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>
+          }
+          findMany: {
+            args: Prisma.BudgetPredictionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>[]
+          }
+          create: {
+            args: Prisma.BudgetPredictionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>
+          }
+          createMany: {
+            args: Prisma.BudgetPredictionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BudgetPredictionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>[]
+          }
+          delete: {
+            args: Prisma.BudgetPredictionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>
+          }
+          update: {
+            args: Prisma.BudgetPredictionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>
+          }
+          deleteMany: {
+            args: Prisma.BudgetPredictionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BudgetPredictionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BudgetPredictionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>[]
+          }
+          upsert: {
+            args: Prisma.BudgetPredictionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPredictionPayload>
+          }
+          aggregate: {
+            args: Prisma.BudgetPredictionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBudgetPrediction>
+          }
+          groupBy: {
+            args: Prisma.BudgetPredictionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BudgetPredictionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BudgetPredictionCountArgs<ExtArgs>
+            result: $Utils.Optional<BudgetPredictionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2513,6 +2873,10 @@ export namespace Prisma {
     sourceChunk?: SourceChunkOmit
     auditLog?: AuditLogOmit
     backupHistory?: BackupHistoryOmit
+    department?: DepartmentOmit
+    monthlyBudget?: MonthlyBudgetOmit
+    budgetAdjustmentRequest?: BudgetAdjustmentRequestOmit
+    budgetPrediction?: BudgetPredictionOmit
   }
 
   /* Types for Logging */
@@ -2781,6 +3145,55 @@ export namespace Prisma {
    */
   export type SourceCountOutputTypeCountChunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SourceChunkWhereInput
+  }
+
+
+  /**
+   * Count Type DepartmentCountOutputType
+   */
+
+  export type DepartmentCountOutputType = {
+    monthlyBudgets: number
+    budgetAdjustmentRequests: number
+    budgetPredictions: number
+  }
+
+  export type DepartmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    monthlyBudgets?: boolean | DepartmentCountOutputTypeCountMonthlyBudgetsArgs
+    budgetAdjustmentRequests?: boolean | DepartmentCountOutputTypeCountBudgetAdjustmentRequestsArgs
+    budgetPredictions?: boolean | DepartmentCountOutputTypeCountBudgetPredictionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DepartmentCountOutputType without action
+   */
+  export type DepartmentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DepartmentCountOutputType
+     */
+    select?: DepartmentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DepartmentCountOutputType without action
+   */
+  export type DepartmentCountOutputTypeCountMonthlyBudgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MonthlyBudgetWhereInput
+  }
+
+  /**
+   * DepartmentCountOutputType without action
+   */
+  export type DepartmentCountOutputTypeCountBudgetAdjustmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetAdjustmentRequestWhereInput
+  }
+
+  /**
+   * DepartmentCountOutputType without action
+   */
+  export type DepartmentCountOutputTypeCountBudgetPredictionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetPredictionWhereInput
   }
 
 
@@ -24896,6 +25309,4363 @@ export namespace Prisma {
 
 
   /**
+   * Model Department
+   */
+
+  export type AggregateDepartment = {
+    _count: DepartmentCountAggregateOutputType | null
+    _avg: DepartmentAvgAggregateOutputType | null
+    _sum: DepartmentSumAggregateOutputType | null
+    _min: DepartmentMinAggregateOutputType | null
+    _max: DepartmentMaxAggregateOutputType | null
+  }
+
+  export type DepartmentAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type DepartmentSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type DepartmentMinAggregateOutputType = {
+    id: number | null
+    code: string | null
+    name: string | null
+    description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DepartmentMaxAggregateOutputType = {
+    id: number | null
+    code: string | null
+    name: string | null
+    description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DepartmentCountAggregateOutputType = {
+    id: number
+    code: number
+    name: number
+    description: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DepartmentAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type DepartmentSumAggregateInputType = {
+    id?: true
+  }
+
+  export type DepartmentMinAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DepartmentMaxAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DepartmentCountAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DepartmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Department to aggregate.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Departments
+    **/
+    _count?: true | DepartmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DepartmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DepartmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DepartmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DepartmentMaxAggregateInputType
+  }
+
+  export type GetDepartmentAggregateType<T extends DepartmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateDepartment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDepartment[P]>
+      : GetScalarType<T[P], AggregateDepartment[P]>
+  }
+
+
+
+
+  export type DepartmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DepartmentWhereInput
+    orderBy?: DepartmentOrderByWithAggregationInput | DepartmentOrderByWithAggregationInput[]
+    by: DepartmentScalarFieldEnum[] | DepartmentScalarFieldEnum
+    having?: DepartmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DepartmentCountAggregateInputType | true
+    _avg?: DepartmentAvgAggregateInputType
+    _sum?: DepartmentSumAggregateInputType
+    _min?: DepartmentMinAggregateInputType
+    _max?: DepartmentMaxAggregateInputType
+  }
+
+  export type DepartmentGroupByOutputType = {
+    id: number
+    code: string
+    name: string
+    description: string | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: DepartmentCountAggregateOutputType | null
+    _avg: DepartmentAvgAggregateOutputType | null
+    _sum: DepartmentSumAggregateOutputType | null
+    _min: DepartmentMinAggregateOutputType | null
+    _max: DepartmentMaxAggregateOutputType | null
+  }
+
+  type GetDepartmentGroupByPayload<T extends DepartmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DepartmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DepartmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DepartmentGroupByOutputType[P]>
+            : GetScalarType<T[P], DepartmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DepartmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    monthlyBudgets?: boolean | Department$monthlyBudgetsArgs<ExtArgs>
+    budgetAdjustmentRequests?: boolean | Department$budgetAdjustmentRequestsArgs<ExtArgs>
+    budgetPredictions?: boolean | Department$budgetPredictionsArgs<ExtArgs>
+    _count?: boolean | DepartmentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["department"]>
+
+  export type DepartmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["department"]>
+
+  export type DepartmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["department"]>
+
+  export type DepartmentSelectScalar = {
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DepartmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "description" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["department"]>
+  export type DepartmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    monthlyBudgets?: boolean | Department$monthlyBudgetsArgs<ExtArgs>
+    budgetAdjustmentRequests?: boolean | Department$budgetAdjustmentRequestsArgs<ExtArgs>
+    budgetPredictions?: boolean | Department$budgetPredictionsArgs<ExtArgs>
+    _count?: boolean | DepartmentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DepartmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type DepartmentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $DepartmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Department"
+    objects: {
+      monthlyBudgets: Prisma.$MonthlyBudgetPayload<ExtArgs>[]
+      budgetAdjustmentRequests: Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>[]
+      budgetPredictions: Prisma.$BudgetPredictionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      code: string
+      name: string
+      description: string | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["department"]>
+    composites: {}
+  }
+
+  type DepartmentGetPayload<S extends boolean | null | undefined | DepartmentDefaultArgs> = $Result.GetResult<Prisma.$DepartmentPayload, S>
+
+  type DepartmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DepartmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DepartmentCountAggregateInputType | true
+    }
+
+  export interface DepartmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Department'], meta: { name: 'Department' } }
+    /**
+     * Find zero or one Department that matches the filter.
+     * @param {DepartmentFindUniqueArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DepartmentFindUniqueArgs>(args: SelectSubset<T, DepartmentFindUniqueArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Department that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DepartmentFindUniqueOrThrowArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DepartmentFindUniqueOrThrowArgs>(args: SelectSubset<T, DepartmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Department that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentFindFirstArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DepartmentFindFirstArgs>(args?: SelectSubset<T, DepartmentFindFirstArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Department that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentFindFirstOrThrowArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DepartmentFindFirstOrThrowArgs>(args?: SelectSubset<T, DepartmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Departments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Departments
+     * const departments = await prisma.department.findMany()
+     * 
+     * // Get first 10 Departments
+     * const departments = await prisma.department.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const departmentWithIdOnly = await prisma.department.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DepartmentFindManyArgs>(args?: SelectSubset<T, DepartmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Department.
+     * @param {DepartmentCreateArgs} args - Arguments to create a Department.
+     * @example
+     * // Create one Department
+     * const Department = await prisma.department.create({
+     *   data: {
+     *     // ... data to create a Department
+     *   }
+     * })
+     * 
+     */
+    create<T extends DepartmentCreateArgs>(args: SelectSubset<T, DepartmentCreateArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Departments.
+     * @param {DepartmentCreateManyArgs} args - Arguments to create many Departments.
+     * @example
+     * // Create many Departments
+     * const department = await prisma.department.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DepartmentCreateManyArgs>(args?: SelectSubset<T, DepartmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Departments and returns the data saved in the database.
+     * @param {DepartmentCreateManyAndReturnArgs} args - Arguments to create many Departments.
+     * @example
+     * // Create many Departments
+     * const department = await prisma.department.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Departments and only return the `id`
+     * const departmentWithIdOnly = await prisma.department.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DepartmentCreateManyAndReturnArgs>(args?: SelectSubset<T, DepartmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Department.
+     * @param {DepartmentDeleteArgs} args - Arguments to delete one Department.
+     * @example
+     * // Delete one Department
+     * const Department = await prisma.department.delete({
+     *   where: {
+     *     // ... filter to delete one Department
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DepartmentDeleteArgs>(args: SelectSubset<T, DepartmentDeleteArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Department.
+     * @param {DepartmentUpdateArgs} args - Arguments to update one Department.
+     * @example
+     * // Update one Department
+     * const department = await prisma.department.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DepartmentUpdateArgs>(args: SelectSubset<T, DepartmentUpdateArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Departments.
+     * @param {DepartmentDeleteManyArgs} args - Arguments to filter Departments to delete.
+     * @example
+     * // Delete a few Departments
+     * const { count } = await prisma.department.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DepartmentDeleteManyArgs>(args?: SelectSubset<T, DepartmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Departments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Departments
+     * const department = await prisma.department.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DepartmentUpdateManyArgs>(args: SelectSubset<T, DepartmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Departments and returns the data updated in the database.
+     * @param {DepartmentUpdateManyAndReturnArgs} args - Arguments to update many Departments.
+     * @example
+     * // Update many Departments
+     * const department = await prisma.department.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Departments and only return the `id`
+     * const departmentWithIdOnly = await prisma.department.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DepartmentUpdateManyAndReturnArgs>(args: SelectSubset<T, DepartmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Department.
+     * @param {DepartmentUpsertArgs} args - Arguments to update or create a Department.
+     * @example
+     * // Update or create a Department
+     * const department = await prisma.department.upsert({
+     *   create: {
+     *     // ... data to create a Department
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Department we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DepartmentUpsertArgs>(args: SelectSubset<T, DepartmentUpsertArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Departments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentCountArgs} args - Arguments to filter Departments to count.
+     * @example
+     * // Count the number of Departments
+     * const count = await prisma.department.count({
+     *   where: {
+     *     // ... the filter for the Departments we want to count
+     *   }
+     * })
+    **/
+    count<T extends DepartmentCountArgs>(
+      args?: Subset<T, DepartmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DepartmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Department.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DepartmentAggregateArgs>(args: Subset<T, DepartmentAggregateArgs>): Prisma.PrismaPromise<GetDepartmentAggregateType<T>>
+
+    /**
+     * Group by Department.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DepartmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DepartmentGroupByArgs['orderBy'] }
+        : { orderBy?: DepartmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DepartmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDepartmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Department model
+   */
+  readonly fields: DepartmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Department.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DepartmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    monthlyBudgets<T extends Department$monthlyBudgetsArgs<ExtArgs> = {}>(args?: Subset<T, Department$monthlyBudgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    budgetAdjustmentRequests<T extends Department$budgetAdjustmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Department$budgetAdjustmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    budgetPredictions<T extends Department$budgetPredictionsArgs<ExtArgs> = {}>(args?: Subset<T, Department$budgetPredictionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Department model
+   */
+  interface DepartmentFieldRefs {
+    readonly id: FieldRef<"Department", 'Int'>
+    readonly code: FieldRef<"Department", 'String'>
+    readonly name: FieldRef<"Department", 'String'>
+    readonly description: FieldRef<"Department", 'String'>
+    readonly isActive: FieldRef<"Department", 'Boolean'>
+    readonly createdAt: FieldRef<"Department", 'DateTime'>
+    readonly updatedAt: FieldRef<"Department", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Department findUnique
+   */
+  export type DepartmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department findUniqueOrThrow
+   */
+  export type DepartmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department findFirst
+   */
+  export type DepartmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Departments.
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Departments.
+     */
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Department findFirstOrThrow
+   */
+  export type DepartmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Departments.
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Departments.
+     */
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Department findMany
+   */
+  export type DepartmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Departments to fetch.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Departments.
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Department create
+   */
+  export type DepartmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Department.
+     */
+    data: XOR<DepartmentCreateInput, DepartmentUncheckedCreateInput>
+  }
+
+  /**
+   * Department createMany
+   */
+  export type DepartmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Departments.
+     */
+    data: DepartmentCreateManyInput | DepartmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Department createManyAndReturn
+   */
+  export type DepartmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * The data used to create many Departments.
+     */
+    data: DepartmentCreateManyInput | DepartmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Department update
+   */
+  export type DepartmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Department.
+     */
+    data: XOR<DepartmentUpdateInput, DepartmentUncheckedUpdateInput>
+    /**
+     * Choose, which Department to update.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department updateMany
+   */
+  export type DepartmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Departments.
+     */
+    data: XOR<DepartmentUpdateManyMutationInput, DepartmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Departments to update
+     */
+    where?: DepartmentWhereInput
+    /**
+     * Limit how many Departments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Department updateManyAndReturn
+   */
+  export type DepartmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * The data used to update Departments.
+     */
+    data: XOR<DepartmentUpdateManyMutationInput, DepartmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Departments to update
+     */
+    where?: DepartmentWhereInput
+    /**
+     * Limit how many Departments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Department upsert
+   */
+  export type DepartmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Department to update in case it exists.
+     */
+    where: DepartmentWhereUniqueInput
+    /**
+     * In case the Department found by the `where` argument doesn't exist, create a new Department with this data.
+     */
+    create: XOR<DepartmentCreateInput, DepartmentUncheckedCreateInput>
+    /**
+     * In case the Department was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DepartmentUpdateInput, DepartmentUncheckedUpdateInput>
+  }
+
+  /**
+   * Department delete
+   */
+  export type DepartmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter which Department to delete.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department deleteMany
+   */
+  export type DepartmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Departments to delete
+     */
+    where?: DepartmentWhereInput
+    /**
+     * Limit how many Departments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Department.monthlyBudgets
+   */
+  export type Department$monthlyBudgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    where?: MonthlyBudgetWhereInput
+    orderBy?: MonthlyBudgetOrderByWithRelationInput | MonthlyBudgetOrderByWithRelationInput[]
+    cursor?: MonthlyBudgetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MonthlyBudgetScalarFieldEnum | MonthlyBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * Department.budgetAdjustmentRequests
+   */
+  export type Department$budgetAdjustmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    where?: BudgetAdjustmentRequestWhereInput
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * Department.budgetPredictions
+   */
+  export type Department$budgetPredictionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    where?: BudgetPredictionWhereInput
+    orderBy?: BudgetPredictionOrderByWithRelationInput | BudgetPredictionOrderByWithRelationInput[]
+    cursor?: BudgetPredictionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BudgetPredictionScalarFieldEnum | BudgetPredictionScalarFieldEnum[]
+  }
+
+  /**
+   * Department without action
+   */
+  export type DepartmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MonthlyBudget
+   */
+
+  export type AggregateMonthlyBudget = {
+    _count: MonthlyBudgetCountAggregateOutputType | null
+    _avg: MonthlyBudgetAvgAggregateOutputType | null
+    _sum: MonthlyBudgetSumAggregateOutputType | null
+    _min: MonthlyBudgetMinAggregateOutputType | null
+    _max: MonthlyBudgetMaxAggregateOutputType | null
+  }
+
+  export type MonthlyBudgetAvgAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type MonthlyBudgetSumAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type MonthlyBudgetMinAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type MonthlyBudgetMaxAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type MonthlyBudgetCountAggregateOutputType = {
+    id: number
+    departmentId: number
+    _all: number
+  }
+
+
+  export type MonthlyBudgetAvgAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type MonthlyBudgetSumAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type MonthlyBudgetMinAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type MonthlyBudgetMaxAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type MonthlyBudgetCountAggregateInputType = {
+    id?: true
+    departmentId?: true
+    _all?: true
+  }
+
+  export type MonthlyBudgetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MonthlyBudget to aggregate.
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonthlyBudgets to fetch.
+     */
+    orderBy?: MonthlyBudgetOrderByWithRelationInput | MonthlyBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MonthlyBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonthlyBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonthlyBudgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MonthlyBudgets
+    **/
+    _count?: true | MonthlyBudgetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MonthlyBudgetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MonthlyBudgetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MonthlyBudgetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MonthlyBudgetMaxAggregateInputType
+  }
+
+  export type GetMonthlyBudgetAggregateType<T extends MonthlyBudgetAggregateArgs> = {
+        [P in keyof T & keyof AggregateMonthlyBudget]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMonthlyBudget[P]>
+      : GetScalarType<T[P], AggregateMonthlyBudget[P]>
+  }
+
+
+
+
+  export type MonthlyBudgetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MonthlyBudgetWhereInput
+    orderBy?: MonthlyBudgetOrderByWithAggregationInput | MonthlyBudgetOrderByWithAggregationInput[]
+    by: MonthlyBudgetScalarFieldEnum[] | MonthlyBudgetScalarFieldEnum
+    having?: MonthlyBudgetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MonthlyBudgetCountAggregateInputType | true
+    _avg?: MonthlyBudgetAvgAggregateInputType
+    _sum?: MonthlyBudgetSumAggregateInputType
+    _min?: MonthlyBudgetMinAggregateInputType
+    _max?: MonthlyBudgetMaxAggregateInputType
+  }
+
+  export type MonthlyBudgetGroupByOutputType = {
+    id: number
+    departmentId: number
+    _count: MonthlyBudgetCountAggregateOutputType | null
+    _avg: MonthlyBudgetAvgAggregateOutputType | null
+    _sum: MonthlyBudgetSumAggregateOutputType | null
+    _min: MonthlyBudgetMinAggregateOutputType | null
+    _max: MonthlyBudgetMaxAggregateOutputType | null
+  }
+
+  type GetMonthlyBudgetGroupByPayload<T extends MonthlyBudgetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MonthlyBudgetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MonthlyBudgetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MonthlyBudgetGroupByOutputType[P]>
+            : GetScalarType<T[P], MonthlyBudgetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MonthlyBudgetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["monthlyBudget"]>
+
+  export type MonthlyBudgetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["monthlyBudget"]>
+
+  export type MonthlyBudgetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["monthlyBudget"]>
+
+  export type MonthlyBudgetSelectScalar = {
+    id?: boolean
+    departmentId?: boolean
+  }
+
+  export type MonthlyBudgetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId", ExtArgs["result"]["monthlyBudget"]>
+  export type MonthlyBudgetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+  export type MonthlyBudgetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+  export type MonthlyBudgetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+
+  export type $MonthlyBudgetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MonthlyBudget"
+    objects: {
+      department: Prisma.$DepartmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      departmentId: number
+    }, ExtArgs["result"]["monthlyBudget"]>
+    composites: {}
+  }
+
+  type MonthlyBudgetGetPayload<S extends boolean | null | undefined | MonthlyBudgetDefaultArgs> = $Result.GetResult<Prisma.$MonthlyBudgetPayload, S>
+
+  type MonthlyBudgetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MonthlyBudgetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MonthlyBudgetCountAggregateInputType | true
+    }
+
+  export interface MonthlyBudgetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MonthlyBudget'], meta: { name: 'MonthlyBudget' } }
+    /**
+     * Find zero or one MonthlyBudget that matches the filter.
+     * @param {MonthlyBudgetFindUniqueArgs} args - Arguments to find a MonthlyBudget
+     * @example
+     * // Get one MonthlyBudget
+     * const monthlyBudget = await prisma.monthlyBudget.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MonthlyBudgetFindUniqueArgs>(args: SelectSubset<T, MonthlyBudgetFindUniqueArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MonthlyBudget that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MonthlyBudgetFindUniqueOrThrowArgs} args - Arguments to find a MonthlyBudget
+     * @example
+     * // Get one MonthlyBudget
+     * const monthlyBudget = await prisma.monthlyBudget.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MonthlyBudgetFindUniqueOrThrowArgs>(args: SelectSubset<T, MonthlyBudgetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MonthlyBudget that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetFindFirstArgs} args - Arguments to find a MonthlyBudget
+     * @example
+     * // Get one MonthlyBudget
+     * const monthlyBudget = await prisma.monthlyBudget.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MonthlyBudgetFindFirstArgs>(args?: SelectSubset<T, MonthlyBudgetFindFirstArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MonthlyBudget that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetFindFirstOrThrowArgs} args - Arguments to find a MonthlyBudget
+     * @example
+     * // Get one MonthlyBudget
+     * const monthlyBudget = await prisma.monthlyBudget.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MonthlyBudgetFindFirstOrThrowArgs>(args?: SelectSubset<T, MonthlyBudgetFindFirstOrThrowArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MonthlyBudgets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MonthlyBudgets
+     * const monthlyBudgets = await prisma.monthlyBudget.findMany()
+     * 
+     * // Get first 10 MonthlyBudgets
+     * const monthlyBudgets = await prisma.monthlyBudget.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const monthlyBudgetWithIdOnly = await prisma.monthlyBudget.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MonthlyBudgetFindManyArgs>(args?: SelectSubset<T, MonthlyBudgetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MonthlyBudget.
+     * @param {MonthlyBudgetCreateArgs} args - Arguments to create a MonthlyBudget.
+     * @example
+     * // Create one MonthlyBudget
+     * const MonthlyBudget = await prisma.monthlyBudget.create({
+     *   data: {
+     *     // ... data to create a MonthlyBudget
+     *   }
+     * })
+     * 
+     */
+    create<T extends MonthlyBudgetCreateArgs>(args: SelectSubset<T, MonthlyBudgetCreateArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MonthlyBudgets.
+     * @param {MonthlyBudgetCreateManyArgs} args - Arguments to create many MonthlyBudgets.
+     * @example
+     * // Create many MonthlyBudgets
+     * const monthlyBudget = await prisma.monthlyBudget.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MonthlyBudgetCreateManyArgs>(args?: SelectSubset<T, MonthlyBudgetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MonthlyBudgets and returns the data saved in the database.
+     * @param {MonthlyBudgetCreateManyAndReturnArgs} args - Arguments to create many MonthlyBudgets.
+     * @example
+     * // Create many MonthlyBudgets
+     * const monthlyBudget = await prisma.monthlyBudget.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MonthlyBudgets and only return the `id`
+     * const monthlyBudgetWithIdOnly = await prisma.monthlyBudget.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MonthlyBudgetCreateManyAndReturnArgs>(args?: SelectSubset<T, MonthlyBudgetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MonthlyBudget.
+     * @param {MonthlyBudgetDeleteArgs} args - Arguments to delete one MonthlyBudget.
+     * @example
+     * // Delete one MonthlyBudget
+     * const MonthlyBudget = await prisma.monthlyBudget.delete({
+     *   where: {
+     *     // ... filter to delete one MonthlyBudget
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MonthlyBudgetDeleteArgs>(args: SelectSubset<T, MonthlyBudgetDeleteArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MonthlyBudget.
+     * @param {MonthlyBudgetUpdateArgs} args - Arguments to update one MonthlyBudget.
+     * @example
+     * // Update one MonthlyBudget
+     * const monthlyBudget = await prisma.monthlyBudget.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MonthlyBudgetUpdateArgs>(args: SelectSubset<T, MonthlyBudgetUpdateArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MonthlyBudgets.
+     * @param {MonthlyBudgetDeleteManyArgs} args - Arguments to filter MonthlyBudgets to delete.
+     * @example
+     * // Delete a few MonthlyBudgets
+     * const { count } = await prisma.monthlyBudget.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MonthlyBudgetDeleteManyArgs>(args?: SelectSubset<T, MonthlyBudgetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MonthlyBudgets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MonthlyBudgets
+     * const monthlyBudget = await prisma.monthlyBudget.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MonthlyBudgetUpdateManyArgs>(args: SelectSubset<T, MonthlyBudgetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MonthlyBudgets and returns the data updated in the database.
+     * @param {MonthlyBudgetUpdateManyAndReturnArgs} args - Arguments to update many MonthlyBudgets.
+     * @example
+     * // Update many MonthlyBudgets
+     * const monthlyBudget = await prisma.monthlyBudget.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MonthlyBudgets and only return the `id`
+     * const monthlyBudgetWithIdOnly = await prisma.monthlyBudget.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MonthlyBudgetUpdateManyAndReturnArgs>(args: SelectSubset<T, MonthlyBudgetUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MonthlyBudget.
+     * @param {MonthlyBudgetUpsertArgs} args - Arguments to update or create a MonthlyBudget.
+     * @example
+     * // Update or create a MonthlyBudget
+     * const monthlyBudget = await prisma.monthlyBudget.upsert({
+     *   create: {
+     *     // ... data to create a MonthlyBudget
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MonthlyBudget we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MonthlyBudgetUpsertArgs>(args: SelectSubset<T, MonthlyBudgetUpsertArgs<ExtArgs>>): Prisma__MonthlyBudgetClient<$Result.GetResult<Prisma.$MonthlyBudgetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MonthlyBudgets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetCountArgs} args - Arguments to filter MonthlyBudgets to count.
+     * @example
+     * // Count the number of MonthlyBudgets
+     * const count = await prisma.monthlyBudget.count({
+     *   where: {
+     *     // ... the filter for the MonthlyBudgets we want to count
+     *   }
+     * })
+    **/
+    count<T extends MonthlyBudgetCountArgs>(
+      args?: Subset<T, MonthlyBudgetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MonthlyBudgetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MonthlyBudget.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MonthlyBudgetAggregateArgs>(args: Subset<T, MonthlyBudgetAggregateArgs>): Prisma.PrismaPromise<GetMonthlyBudgetAggregateType<T>>
+
+    /**
+     * Group by MonthlyBudget.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonthlyBudgetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MonthlyBudgetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MonthlyBudgetGroupByArgs['orderBy'] }
+        : { orderBy?: MonthlyBudgetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MonthlyBudgetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMonthlyBudgetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MonthlyBudget model
+   */
+  readonly fields: MonthlyBudgetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MonthlyBudget.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MonthlyBudgetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MonthlyBudget model
+   */
+  interface MonthlyBudgetFieldRefs {
+    readonly id: FieldRef<"MonthlyBudget", 'Int'>
+    readonly departmentId: FieldRef<"MonthlyBudget", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MonthlyBudget findUnique
+   */
+  export type MonthlyBudgetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which MonthlyBudget to fetch.
+     */
+    where: MonthlyBudgetWhereUniqueInput
+  }
+
+  /**
+   * MonthlyBudget findUniqueOrThrow
+   */
+  export type MonthlyBudgetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which MonthlyBudget to fetch.
+     */
+    where: MonthlyBudgetWhereUniqueInput
+  }
+
+  /**
+   * MonthlyBudget findFirst
+   */
+  export type MonthlyBudgetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which MonthlyBudget to fetch.
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonthlyBudgets to fetch.
+     */
+    orderBy?: MonthlyBudgetOrderByWithRelationInput | MonthlyBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MonthlyBudgets.
+     */
+    cursor?: MonthlyBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonthlyBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonthlyBudgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MonthlyBudgets.
+     */
+    distinct?: MonthlyBudgetScalarFieldEnum | MonthlyBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * MonthlyBudget findFirstOrThrow
+   */
+  export type MonthlyBudgetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which MonthlyBudget to fetch.
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonthlyBudgets to fetch.
+     */
+    orderBy?: MonthlyBudgetOrderByWithRelationInput | MonthlyBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MonthlyBudgets.
+     */
+    cursor?: MonthlyBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonthlyBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonthlyBudgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MonthlyBudgets.
+     */
+    distinct?: MonthlyBudgetScalarFieldEnum | MonthlyBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * MonthlyBudget findMany
+   */
+  export type MonthlyBudgetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which MonthlyBudgets to fetch.
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonthlyBudgets to fetch.
+     */
+    orderBy?: MonthlyBudgetOrderByWithRelationInput | MonthlyBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MonthlyBudgets.
+     */
+    cursor?: MonthlyBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonthlyBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonthlyBudgets.
+     */
+    skip?: number
+    distinct?: MonthlyBudgetScalarFieldEnum | MonthlyBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * MonthlyBudget create
+   */
+  export type MonthlyBudgetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MonthlyBudget.
+     */
+    data: XOR<MonthlyBudgetCreateInput, MonthlyBudgetUncheckedCreateInput>
+  }
+
+  /**
+   * MonthlyBudget createMany
+   */
+  export type MonthlyBudgetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MonthlyBudgets.
+     */
+    data: MonthlyBudgetCreateManyInput | MonthlyBudgetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MonthlyBudget createManyAndReturn
+   */
+  export type MonthlyBudgetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * The data used to create many MonthlyBudgets.
+     */
+    data: MonthlyBudgetCreateManyInput | MonthlyBudgetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MonthlyBudget update
+   */
+  export type MonthlyBudgetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MonthlyBudget.
+     */
+    data: XOR<MonthlyBudgetUpdateInput, MonthlyBudgetUncheckedUpdateInput>
+    /**
+     * Choose, which MonthlyBudget to update.
+     */
+    where: MonthlyBudgetWhereUniqueInput
+  }
+
+  /**
+   * MonthlyBudget updateMany
+   */
+  export type MonthlyBudgetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MonthlyBudgets.
+     */
+    data: XOR<MonthlyBudgetUpdateManyMutationInput, MonthlyBudgetUncheckedUpdateManyInput>
+    /**
+     * Filter which MonthlyBudgets to update
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * Limit how many MonthlyBudgets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MonthlyBudget updateManyAndReturn
+   */
+  export type MonthlyBudgetUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * The data used to update MonthlyBudgets.
+     */
+    data: XOR<MonthlyBudgetUpdateManyMutationInput, MonthlyBudgetUncheckedUpdateManyInput>
+    /**
+     * Filter which MonthlyBudgets to update
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * Limit how many MonthlyBudgets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MonthlyBudget upsert
+   */
+  export type MonthlyBudgetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MonthlyBudget to update in case it exists.
+     */
+    where: MonthlyBudgetWhereUniqueInput
+    /**
+     * In case the MonthlyBudget found by the `where` argument doesn't exist, create a new MonthlyBudget with this data.
+     */
+    create: XOR<MonthlyBudgetCreateInput, MonthlyBudgetUncheckedCreateInput>
+    /**
+     * In case the MonthlyBudget was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MonthlyBudgetUpdateInput, MonthlyBudgetUncheckedUpdateInput>
+  }
+
+  /**
+   * MonthlyBudget delete
+   */
+  export type MonthlyBudgetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+    /**
+     * Filter which MonthlyBudget to delete.
+     */
+    where: MonthlyBudgetWhereUniqueInput
+  }
+
+  /**
+   * MonthlyBudget deleteMany
+   */
+  export type MonthlyBudgetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MonthlyBudgets to delete
+     */
+    where?: MonthlyBudgetWhereInput
+    /**
+     * Limit how many MonthlyBudgets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MonthlyBudget without action
+   */
+  export type MonthlyBudgetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonthlyBudget
+     */
+    select?: MonthlyBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonthlyBudget
+     */
+    omit?: MonthlyBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MonthlyBudgetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BudgetAdjustmentRequest
+   */
+
+  export type AggregateBudgetAdjustmentRequest = {
+    _count: BudgetAdjustmentRequestCountAggregateOutputType | null
+    _avg: BudgetAdjustmentRequestAvgAggregateOutputType | null
+    _sum: BudgetAdjustmentRequestSumAggregateOutputType | null
+    _min: BudgetAdjustmentRequestMinAggregateOutputType | null
+    _max: BudgetAdjustmentRequestMaxAggregateOutputType | null
+  }
+
+  export type BudgetAdjustmentRequestAvgAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetAdjustmentRequestSumAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetAdjustmentRequestMinAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetAdjustmentRequestMaxAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetAdjustmentRequestCountAggregateOutputType = {
+    id: number
+    departmentId: number
+    _all: number
+  }
+
+
+  export type BudgetAdjustmentRequestAvgAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetAdjustmentRequestSumAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetAdjustmentRequestMinAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetAdjustmentRequestMaxAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetAdjustmentRequestCountAggregateInputType = {
+    id?: true
+    departmentId?: true
+    _all?: true
+  }
+
+  export type BudgetAdjustmentRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BudgetAdjustmentRequest to aggregate.
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetAdjustmentRequests to fetch.
+     */
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetAdjustmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetAdjustmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BudgetAdjustmentRequests
+    **/
+    _count?: true | BudgetAdjustmentRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BudgetAdjustmentRequestAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BudgetAdjustmentRequestSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BudgetAdjustmentRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BudgetAdjustmentRequestMaxAggregateInputType
+  }
+
+  export type GetBudgetAdjustmentRequestAggregateType<T extends BudgetAdjustmentRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateBudgetAdjustmentRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBudgetAdjustmentRequest[P]>
+      : GetScalarType<T[P], AggregateBudgetAdjustmentRequest[P]>
+  }
+
+
+
+
+  export type BudgetAdjustmentRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetAdjustmentRequestWhereInput
+    orderBy?: BudgetAdjustmentRequestOrderByWithAggregationInput | BudgetAdjustmentRequestOrderByWithAggregationInput[]
+    by: BudgetAdjustmentRequestScalarFieldEnum[] | BudgetAdjustmentRequestScalarFieldEnum
+    having?: BudgetAdjustmentRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BudgetAdjustmentRequestCountAggregateInputType | true
+    _avg?: BudgetAdjustmentRequestAvgAggregateInputType
+    _sum?: BudgetAdjustmentRequestSumAggregateInputType
+    _min?: BudgetAdjustmentRequestMinAggregateInputType
+    _max?: BudgetAdjustmentRequestMaxAggregateInputType
+  }
+
+  export type BudgetAdjustmentRequestGroupByOutputType = {
+    id: number
+    departmentId: number
+    _count: BudgetAdjustmentRequestCountAggregateOutputType | null
+    _avg: BudgetAdjustmentRequestAvgAggregateOutputType | null
+    _sum: BudgetAdjustmentRequestSumAggregateOutputType | null
+    _min: BudgetAdjustmentRequestMinAggregateOutputType | null
+    _max: BudgetAdjustmentRequestMaxAggregateOutputType | null
+  }
+
+  type GetBudgetAdjustmentRequestGroupByPayload<T extends BudgetAdjustmentRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BudgetAdjustmentRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BudgetAdjustmentRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BudgetAdjustmentRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], BudgetAdjustmentRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BudgetAdjustmentRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budgetAdjustmentRequest"]>
+
+  export type BudgetAdjustmentRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budgetAdjustmentRequest"]>
+
+  export type BudgetAdjustmentRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budgetAdjustmentRequest"]>
+
+  export type BudgetAdjustmentRequestSelectScalar = {
+    id?: boolean
+    departmentId?: boolean
+  }
+
+  export type BudgetAdjustmentRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId", ExtArgs["result"]["budgetAdjustmentRequest"]>
+  export type BudgetAdjustmentRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+  export type BudgetAdjustmentRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+  export type BudgetAdjustmentRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+
+  export type $BudgetAdjustmentRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BudgetAdjustmentRequest"
+    objects: {
+      department: Prisma.$DepartmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      departmentId: number
+    }, ExtArgs["result"]["budgetAdjustmentRequest"]>
+    composites: {}
+  }
+
+  type BudgetAdjustmentRequestGetPayload<S extends boolean | null | undefined | BudgetAdjustmentRequestDefaultArgs> = $Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload, S>
+
+  type BudgetAdjustmentRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BudgetAdjustmentRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BudgetAdjustmentRequestCountAggregateInputType | true
+    }
+
+  export interface BudgetAdjustmentRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BudgetAdjustmentRequest'], meta: { name: 'BudgetAdjustmentRequest' } }
+    /**
+     * Find zero or one BudgetAdjustmentRequest that matches the filter.
+     * @param {BudgetAdjustmentRequestFindUniqueArgs} args - Arguments to find a BudgetAdjustmentRequest
+     * @example
+     * // Get one BudgetAdjustmentRequest
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BudgetAdjustmentRequestFindUniqueArgs>(args: SelectSubset<T, BudgetAdjustmentRequestFindUniqueArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BudgetAdjustmentRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BudgetAdjustmentRequestFindUniqueOrThrowArgs} args - Arguments to find a BudgetAdjustmentRequest
+     * @example
+     * // Get one BudgetAdjustmentRequest
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BudgetAdjustmentRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, BudgetAdjustmentRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BudgetAdjustmentRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestFindFirstArgs} args - Arguments to find a BudgetAdjustmentRequest
+     * @example
+     * // Get one BudgetAdjustmentRequest
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BudgetAdjustmentRequestFindFirstArgs>(args?: SelectSubset<T, BudgetAdjustmentRequestFindFirstArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BudgetAdjustmentRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestFindFirstOrThrowArgs} args - Arguments to find a BudgetAdjustmentRequest
+     * @example
+     * // Get one BudgetAdjustmentRequest
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BudgetAdjustmentRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, BudgetAdjustmentRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BudgetAdjustmentRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BudgetAdjustmentRequests
+     * const budgetAdjustmentRequests = await prisma.budgetAdjustmentRequest.findMany()
+     * 
+     * // Get first 10 BudgetAdjustmentRequests
+     * const budgetAdjustmentRequests = await prisma.budgetAdjustmentRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const budgetAdjustmentRequestWithIdOnly = await prisma.budgetAdjustmentRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BudgetAdjustmentRequestFindManyArgs>(args?: SelectSubset<T, BudgetAdjustmentRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BudgetAdjustmentRequest.
+     * @param {BudgetAdjustmentRequestCreateArgs} args - Arguments to create a BudgetAdjustmentRequest.
+     * @example
+     * // Create one BudgetAdjustmentRequest
+     * const BudgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.create({
+     *   data: {
+     *     // ... data to create a BudgetAdjustmentRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends BudgetAdjustmentRequestCreateArgs>(args: SelectSubset<T, BudgetAdjustmentRequestCreateArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BudgetAdjustmentRequests.
+     * @param {BudgetAdjustmentRequestCreateManyArgs} args - Arguments to create many BudgetAdjustmentRequests.
+     * @example
+     * // Create many BudgetAdjustmentRequests
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BudgetAdjustmentRequestCreateManyArgs>(args?: SelectSubset<T, BudgetAdjustmentRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BudgetAdjustmentRequests and returns the data saved in the database.
+     * @param {BudgetAdjustmentRequestCreateManyAndReturnArgs} args - Arguments to create many BudgetAdjustmentRequests.
+     * @example
+     * // Create many BudgetAdjustmentRequests
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BudgetAdjustmentRequests and only return the `id`
+     * const budgetAdjustmentRequestWithIdOnly = await prisma.budgetAdjustmentRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BudgetAdjustmentRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, BudgetAdjustmentRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BudgetAdjustmentRequest.
+     * @param {BudgetAdjustmentRequestDeleteArgs} args - Arguments to delete one BudgetAdjustmentRequest.
+     * @example
+     * // Delete one BudgetAdjustmentRequest
+     * const BudgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.delete({
+     *   where: {
+     *     // ... filter to delete one BudgetAdjustmentRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BudgetAdjustmentRequestDeleteArgs>(args: SelectSubset<T, BudgetAdjustmentRequestDeleteArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BudgetAdjustmentRequest.
+     * @param {BudgetAdjustmentRequestUpdateArgs} args - Arguments to update one BudgetAdjustmentRequest.
+     * @example
+     * // Update one BudgetAdjustmentRequest
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BudgetAdjustmentRequestUpdateArgs>(args: SelectSubset<T, BudgetAdjustmentRequestUpdateArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BudgetAdjustmentRequests.
+     * @param {BudgetAdjustmentRequestDeleteManyArgs} args - Arguments to filter BudgetAdjustmentRequests to delete.
+     * @example
+     * // Delete a few BudgetAdjustmentRequests
+     * const { count } = await prisma.budgetAdjustmentRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BudgetAdjustmentRequestDeleteManyArgs>(args?: SelectSubset<T, BudgetAdjustmentRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BudgetAdjustmentRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BudgetAdjustmentRequests
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BudgetAdjustmentRequestUpdateManyArgs>(args: SelectSubset<T, BudgetAdjustmentRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BudgetAdjustmentRequests and returns the data updated in the database.
+     * @param {BudgetAdjustmentRequestUpdateManyAndReturnArgs} args - Arguments to update many BudgetAdjustmentRequests.
+     * @example
+     * // Update many BudgetAdjustmentRequests
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BudgetAdjustmentRequests and only return the `id`
+     * const budgetAdjustmentRequestWithIdOnly = await prisma.budgetAdjustmentRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BudgetAdjustmentRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, BudgetAdjustmentRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BudgetAdjustmentRequest.
+     * @param {BudgetAdjustmentRequestUpsertArgs} args - Arguments to update or create a BudgetAdjustmentRequest.
+     * @example
+     * // Update or create a BudgetAdjustmentRequest
+     * const budgetAdjustmentRequest = await prisma.budgetAdjustmentRequest.upsert({
+     *   create: {
+     *     // ... data to create a BudgetAdjustmentRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BudgetAdjustmentRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BudgetAdjustmentRequestUpsertArgs>(args: SelectSubset<T, BudgetAdjustmentRequestUpsertArgs<ExtArgs>>): Prisma__BudgetAdjustmentRequestClient<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BudgetAdjustmentRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestCountArgs} args - Arguments to filter BudgetAdjustmentRequests to count.
+     * @example
+     * // Count the number of BudgetAdjustmentRequests
+     * const count = await prisma.budgetAdjustmentRequest.count({
+     *   where: {
+     *     // ... the filter for the BudgetAdjustmentRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends BudgetAdjustmentRequestCountArgs>(
+      args?: Subset<T, BudgetAdjustmentRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BudgetAdjustmentRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BudgetAdjustmentRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BudgetAdjustmentRequestAggregateArgs>(args: Subset<T, BudgetAdjustmentRequestAggregateArgs>): Prisma.PrismaPromise<GetBudgetAdjustmentRequestAggregateType<T>>
+
+    /**
+     * Group by BudgetAdjustmentRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAdjustmentRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BudgetAdjustmentRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BudgetAdjustmentRequestGroupByArgs['orderBy'] }
+        : { orderBy?: BudgetAdjustmentRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BudgetAdjustmentRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBudgetAdjustmentRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BudgetAdjustmentRequest model
+   */
+  readonly fields: BudgetAdjustmentRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BudgetAdjustmentRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BudgetAdjustmentRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BudgetAdjustmentRequest model
+   */
+  interface BudgetAdjustmentRequestFieldRefs {
+    readonly id: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+    readonly departmentId: FieldRef<"BudgetAdjustmentRequest", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BudgetAdjustmentRequest findUnique
+   */
+  export type BudgetAdjustmentRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetAdjustmentRequest to fetch.
+     */
+    where: BudgetAdjustmentRequestWhereUniqueInput
+  }
+
+  /**
+   * BudgetAdjustmentRequest findUniqueOrThrow
+   */
+  export type BudgetAdjustmentRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetAdjustmentRequest to fetch.
+     */
+    where: BudgetAdjustmentRequestWhereUniqueInput
+  }
+
+  /**
+   * BudgetAdjustmentRequest findFirst
+   */
+  export type BudgetAdjustmentRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetAdjustmentRequest to fetch.
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetAdjustmentRequests to fetch.
+     */
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BudgetAdjustmentRequests.
+     */
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetAdjustmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetAdjustmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BudgetAdjustmentRequests.
+     */
+    distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * BudgetAdjustmentRequest findFirstOrThrow
+   */
+  export type BudgetAdjustmentRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetAdjustmentRequest to fetch.
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetAdjustmentRequests to fetch.
+     */
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BudgetAdjustmentRequests.
+     */
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetAdjustmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetAdjustmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BudgetAdjustmentRequests.
+     */
+    distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * BudgetAdjustmentRequest findMany
+   */
+  export type BudgetAdjustmentRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetAdjustmentRequests to fetch.
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetAdjustmentRequests to fetch.
+     */
+    orderBy?: BudgetAdjustmentRequestOrderByWithRelationInput | BudgetAdjustmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BudgetAdjustmentRequests.
+     */
+    cursor?: BudgetAdjustmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetAdjustmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetAdjustmentRequests.
+     */
+    skip?: number
+    distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * BudgetAdjustmentRequest create
+   */
+  export type BudgetAdjustmentRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BudgetAdjustmentRequest.
+     */
+    data: XOR<BudgetAdjustmentRequestCreateInput, BudgetAdjustmentRequestUncheckedCreateInput>
+  }
+
+  /**
+   * BudgetAdjustmentRequest createMany
+   */
+  export type BudgetAdjustmentRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BudgetAdjustmentRequests.
+     */
+    data: BudgetAdjustmentRequestCreateManyInput | BudgetAdjustmentRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BudgetAdjustmentRequest createManyAndReturn
+   */
+  export type BudgetAdjustmentRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many BudgetAdjustmentRequests.
+     */
+    data: BudgetAdjustmentRequestCreateManyInput | BudgetAdjustmentRequestCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BudgetAdjustmentRequest update
+   */
+  export type BudgetAdjustmentRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BudgetAdjustmentRequest.
+     */
+    data: XOR<BudgetAdjustmentRequestUpdateInput, BudgetAdjustmentRequestUncheckedUpdateInput>
+    /**
+     * Choose, which BudgetAdjustmentRequest to update.
+     */
+    where: BudgetAdjustmentRequestWhereUniqueInput
+  }
+
+  /**
+   * BudgetAdjustmentRequest updateMany
+   */
+  export type BudgetAdjustmentRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BudgetAdjustmentRequests.
+     */
+    data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which BudgetAdjustmentRequests to update
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * Limit how many BudgetAdjustmentRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BudgetAdjustmentRequest updateManyAndReturn
+   */
+  export type BudgetAdjustmentRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update BudgetAdjustmentRequests.
+     */
+    data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which BudgetAdjustmentRequests to update
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * Limit how many BudgetAdjustmentRequests to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BudgetAdjustmentRequest upsert
+   */
+  export type BudgetAdjustmentRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BudgetAdjustmentRequest to update in case it exists.
+     */
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    /**
+     * In case the BudgetAdjustmentRequest found by the `where` argument doesn't exist, create a new BudgetAdjustmentRequest with this data.
+     */
+    create: XOR<BudgetAdjustmentRequestCreateInput, BudgetAdjustmentRequestUncheckedCreateInput>
+    /**
+     * In case the BudgetAdjustmentRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BudgetAdjustmentRequestUpdateInput, BudgetAdjustmentRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * BudgetAdjustmentRequest delete
+   */
+  export type BudgetAdjustmentRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter which BudgetAdjustmentRequest to delete.
+     */
+    where: BudgetAdjustmentRequestWhereUniqueInput
+  }
+
+  /**
+   * BudgetAdjustmentRequest deleteMany
+   */
+  export type BudgetAdjustmentRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BudgetAdjustmentRequests to delete
+     */
+    where?: BudgetAdjustmentRequestWhereInput
+    /**
+     * Limit how many BudgetAdjustmentRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BudgetAdjustmentRequest without action
+   */
+  export type BudgetAdjustmentRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetAdjustmentRequest
+     */
+    select?: BudgetAdjustmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetAdjustmentRequest
+     */
+    omit?: BudgetAdjustmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetAdjustmentRequestInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BudgetPrediction
+   */
+
+  export type AggregateBudgetPrediction = {
+    _count: BudgetPredictionCountAggregateOutputType | null
+    _avg: BudgetPredictionAvgAggregateOutputType | null
+    _sum: BudgetPredictionSumAggregateOutputType | null
+    _min: BudgetPredictionMinAggregateOutputType | null
+    _max: BudgetPredictionMaxAggregateOutputType | null
+  }
+
+  export type BudgetPredictionAvgAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetPredictionSumAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetPredictionMinAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetPredictionMaxAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+  }
+
+  export type BudgetPredictionCountAggregateOutputType = {
+    id: number
+    departmentId: number
+    _all: number
+  }
+
+
+  export type BudgetPredictionAvgAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetPredictionSumAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetPredictionMinAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetPredictionMaxAggregateInputType = {
+    id?: true
+    departmentId?: true
+  }
+
+  export type BudgetPredictionCountAggregateInputType = {
+    id?: true
+    departmentId?: true
+    _all?: true
+  }
+
+  export type BudgetPredictionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BudgetPrediction to aggregate.
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetPredictions to fetch.
+     */
+    orderBy?: BudgetPredictionOrderByWithRelationInput | BudgetPredictionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BudgetPredictionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetPredictions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetPredictions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BudgetPredictions
+    **/
+    _count?: true | BudgetPredictionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BudgetPredictionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BudgetPredictionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BudgetPredictionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BudgetPredictionMaxAggregateInputType
+  }
+
+  export type GetBudgetPredictionAggregateType<T extends BudgetPredictionAggregateArgs> = {
+        [P in keyof T & keyof AggregateBudgetPrediction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBudgetPrediction[P]>
+      : GetScalarType<T[P], AggregateBudgetPrediction[P]>
+  }
+
+
+
+
+  export type BudgetPredictionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetPredictionWhereInput
+    orderBy?: BudgetPredictionOrderByWithAggregationInput | BudgetPredictionOrderByWithAggregationInput[]
+    by: BudgetPredictionScalarFieldEnum[] | BudgetPredictionScalarFieldEnum
+    having?: BudgetPredictionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BudgetPredictionCountAggregateInputType | true
+    _avg?: BudgetPredictionAvgAggregateInputType
+    _sum?: BudgetPredictionSumAggregateInputType
+    _min?: BudgetPredictionMinAggregateInputType
+    _max?: BudgetPredictionMaxAggregateInputType
+  }
+
+  export type BudgetPredictionGroupByOutputType = {
+    id: number
+    departmentId: number
+    _count: BudgetPredictionCountAggregateOutputType | null
+    _avg: BudgetPredictionAvgAggregateOutputType | null
+    _sum: BudgetPredictionSumAggregateOutputType | null
+    _min: BudgetPredictionMinAggregateOutputType | null
+    _max: BudgetPredictionMaxAggregateOutputType | null
+  }
+
+  type GetBudgetPredictionGroupByPayload<T extends BudgetPredictionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BudgetPredictionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BudgetPredictionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BudgetPredictionGroupByOutputType[P]>
+            : GetScalarType<T[P], BudgetPredictionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BudgetPredictionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budgetPrediction"]>
+
+  export type BudgetPredictionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budgetPrediction"]>
+
+  export type BudgetPredictionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budgetPrediction"]>
+
+  export type BudgetPredictionSelectScalar = {
+    id?: boolean
+    departmentId?: boolean
+  }
+
+  export type BudgetPredictionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId", ExtArgs["result"]["budgetPrediction"]>
+  export type BudgetPredictionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+  export type BudgetPredictionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+  export type BudgetPredictionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | DepartmentDefaultArgs<ExtArgs>
+  }
+
+  export type $BudgetPredictionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BudgetPrediction"
+    objects: {
+      department: Prisma.$DepartmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      departmentId: number
+    }, ExtArgs["result"]["budgetPrediction"]>
+    composites: {}
+  }
+
+  type BudgetPredictionGetPayload<S extends boolean | null | undefined | BudgetPredictionDefaultArgs> = $Result.GetResult<Prisma.$BudgetPredictionPayload, S>
+
+  type BudgetPredictionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BudgetPredictionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BudgetPredictionCountAggregateInputType | true
+    }
+
+  export interface BudgetPredictionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BudgetPrediction'], meta: { name: 'BudgetPrediction' } }
+    /**
+     * Find zero or one BudgetPrediction that matches the filter.
+     * @param {BudgetPredictionFindUniqueArgs} args - Arguments to find a BudgetPrediction
+     * @example
+     * // Get one BudgetPrediction
+     * const budgetPrediction = await prisma.budgetPrediction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BudgetPredictionFindUniqueArgs>(args: SelectSubset<T, BudgetPredictionFindUniqueArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BudgetPrediction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BudgetPredictionFindUniqueOrThrowArgs} args - Arguments to find a BudgetPrediction
+     * @example
+     * // Get one BudgetPrediction
+     * const budgetPrediction = await prisma.budgetPrediction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BudgetPredictionFindUniqueOrThrowArgs>(args: SelectSubset<T, BudgetPredictionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BudgetPrediction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionFindFirstArgs} args - Arguments to find a BudgetPrediction
+     * @example
+     * // Get one BudgetPrediction
+     * const budgetPrediction = await prisma.budgetPrediction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BudgetPredictionFindFirstArgs>(args?: SelectSubset<T, BudgetPredictionFindFirstArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BudgetPrediction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionFindFirstOrThrowArgs} args - Arguments to find a BudgetPrediction
+     * @example
+     * // Get one BudgetPrediction
+     * const budgetPrediction = await prisma.budgetPrediction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BudgetPredictionFindFirstOrThrowArgs>(args?: SelectSubset<T, BudgetPredictionFindFirstOrThrowArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BudgetPredictions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BudgetPredictions
+     * const budgetPredictions = await prisma.budgetPrediction.findMany()
+     * 
+     * // Get first 10 BudgetPredictions
+     * const budgetPredictions = await prisma.budgetPrediction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const budgetPredictionWithIdOnly = await prisma.budgetPrediction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BudgetPredictionFindManyArgs>(args?: SelectSubset<T, BudgetPredictionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BudgetPrediction.
+     * @param {BudgetPredictionCreateArgs} args - Arguments to create a BudgetPrediction.
+     * @example
+     * // Create one BudgetPrediction
+     * const BudgetPrediction = await prisma.budgetPrediction.create({
+     *   data: {
+     *     // ... data to create a BudgetPrediction
+     *   }
+     * })
+     * 
+     */
+    create<T extends BudgetPredictionCreateArgs>(args: SelectSubset<T, BudgetPredictionCreateArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BudgetPredictions.
+     * @param {BudgetPredictionCreateManyArgs} args - Arguments to create many BudgetPredictions.
+     * @example
+     * // Create many BudgetPredictions
+     * const budgetPrediction = await prisma.budgetPrediction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BudgetPredictionCreateManyArgs>(args?: SelectSubset<T, BudgetPredictionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BudgetPredictions and returns the data saved in the database.
+     * @param {BudgetPredictionCreateManyAndReturnArgs} args - Arguments to create many BudgetPredictions.
+     * @example
+     * // Create many BudgetPredictions
+     * const budgetPrediction = await prisma.budgetPrediction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BudgetPredictions and only return the `id`
+     * const budgetPredictionWithIdOnly = await prisma.budgetPrediction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BudgetPredictionCreateManyAndReturnArgs>(args?: SelectSubset<T, BudgetPredictionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BudgetPrediction.
+     * @param {BudgetPredictionDeleteArgs} args - Arguments to delete one BudgetPrediction.
+     * @example
+     * // Delete one BudgetPrediction
+     * const BudgetPrediction = await prisma.budgetPrediction.delete({
+     *   where: {
+     *     // ... filter to delete one BudgetPrediction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BudgetPredictionDeleteArgs>(args: SelectSubset<T, BudgetPredictionDeleteArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BudgetPrediction.
+     * @param {BudgetPredictionUpdateArgs} args - Arguments to update one BudgetPrediction.
+     * @example
+     * // Update one BudgetPrediction
+     * const budgetPrediction = await prisma.budgetPrediction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BudgetPredictionUpdateArgs>(args: SelectSubset<T, BudgetPredictionUpdateArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BudgetPredictions.
+     * @param {BudgetPredictionDeleteManyArgs} args - Arguments to filter BudgetPredictions to delete.
+     * @example
+     * // Delete a few BudgetPredictions
+     * const { count } = await prisma.budgetPrediction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BudgetPredictionDeleteManyArgs>(args?: SelectSubset<T, BudgetPredictionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BudgetPredictions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BudgetPredictions
+     * const budgetPrediction = await prisma.budgetPrediction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BudgetPredictionUpdateManyArgs>(args: SelectSubset<T, BudgetPredictionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BudgetPredictions and returns the data updated in the database.
+     * @param {BudgetPredictionUpdateManyAndReturnArgs} args - Arguments to update many BudgetPredictions.
+     * @example
+     * // Update many BudgetPredictions
+     * const budgetPrediction = await prisma.budgetPrediction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BudgetPredictions and only return the `id`
+     * const budgetPredictionWithIdOnly = await prisma.budgetPrediction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BudgetPredictionUpdateManyAndReturnArgs>(args: SelectSubset<T, BudgetPredictionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BudgetPrediction.
+     * @param {BudgetPredictionUpsertArgs} args - Arguments to update or create a BudgetPrediction.
+     * @example
+     * // Update or create a BudgetPrediction
+     * const budgetPrediction = await prisma.budgetPrediction.upsert({
+     *   create: {
+     *     // ... data to create a BudgetPrediction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BudgetPrediction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BudgetPredictionUpsertArgs>(args: SelectSubset<T, BudgetPredictionUpsertArgs<ExtArgs>>): Prisma__BudgetPredictionClient<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BudgetPredictions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionCountArgs} args - Arguments to filter BudgetPredictions to count.
+     * @example
+     * // Count the number of BudgetPredictions
+     * const count = await prisma.budgetPrediction.count({
+     *   where: {
+     *     // ... the filter for the BudgetPredictions we want to count
+     *   }
+     * })
+    **/
+    count<T extends BudgetPredictionCountArgs>(
+      args?: Subset<T, BudgetPredictionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BudgetPredictionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BudgetPrediction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BudgetPredictionAggregateArgs>(args: Subset<T, BudgetPredictionAggregateArgs>): Prisma.PrismaPromise<GetBudgetPredictionAggregateType<T>>
+
+    /**
+     * Group by BudgetPrediction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetPredictionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BudgetPredictionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BudgetPredictionGroupByArgs['orderBy'] }
+        : { orderBy?: BudgetPredictionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BudgetPredictionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBudgetPredictionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BudgetPrediction model
+   */
+  readonly fields: BudgetPredictionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BudgetPrediction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BudgetPredictionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BudgetPrediction model
+   */
+  interface BudgetPredictionFieldRefs {
+    readonly id: FieldRef<"BudgetPrediction", 'Int'>
+    readonly departmentId: FieldRef<"BudgetPrediction", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BudgetPrediction findUnique
+   */
+  export type BudgetPredictionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetPrediction to fetch.
+     */
+    where: BudgetPredictionWhereUniqueInput
+  }
+
+  /**
+   * BudgetPrediction findUniqueOrThrow
+   */
+  export type BudgetPredictionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetPrediction to fetch.
+     */
+    where: BudgetPredictionWhereUniqueInput
+  }
+
+  /**
+   * BudgetPrediction findFirst
+   */
+  export type BudgetPredictionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetPrediction to fetch.
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetPredictions to fetch.
+     */
+    orderBy?: BudgetPredictionOrderByWithRelationInput | BudgetPredictionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BudgetPredictions.
+     */
+    cursor?: BudgetPredictionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetPredictions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetPredictions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BudgetPredictions.
+     */
+    distinct?: BudgetPredictionScalarFieldEnum | BudgetPredictionScalarFieldEnum[]
+  }
+
+  /**
+   * BudgetPrediction findFirstOrThrow
+   */
+  export type BudgetPredictionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetPrediction to fetch.
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetPredictions to fetch.
+     */
+    orderBy?: BudgetPredictionOrderByWithRelationInput | BudgetPredictionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BudgetPredictions.
+     */
+    cursor?: BudgetPredictionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetPredictions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetPredictions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BudgetPredictions.
+     */
+    distinct?: BudgetPredictionScalarFieldEnum | BudgetPredictionScalarFieldEnum[]
+  }
+
+  /**
+   * BudgetPrediction findMany
+   */
+  export type BudgetPredictionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * Filter, which BudgetPredictions to fetch.
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BudgetPredictions to fetch.
+     */
+    orderBy?: BudgetPredictionOrderByWithRelationInput | BudgetPredictionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BudgetPredictions.
+     */
+    cursor?: BudgetPredictionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BudgetPredictions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BudgetPredictions.
+     */
+    skip?: number
+    distinct?: BudgetPredictionScalarFieldEnum | BudgetPredictionScalarFieldEnum[]
+  }
+
+  /**
+   * BudgetPrediction create
+   */
+  export type BudgetPredictionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BudgetPrediction.
+     */
+    data: XOR<BudgetPredictionCreateInput, BudgetPredictionUncheckedCreateInput>
+  }
+
+  /**
+   * BudgetPrediction createMany
+   */
+  export type BudgetPredictionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BudgetPredictions.
+     */
+    data: BudgetPredictionCreateManyInput | BudgetPredictionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BudgetPrediction createManyAndReturn
+   */
+  export type BudgetPredictionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * The data used to create many BudgetPredictions.
+     */
+    data: BudgetPredictionCreateManyInput | BudgetPredictionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BudgetPrediction update
+   */
+  export type BudgetPredictionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BudgetPrediction.
+     */
+    data: XOR<BudgetPredictionUpdateInput, BudgetPredictionUncheckedUpdateInput>
+    /**
+     * Choose, which BudgetPrediction to update.
+     */
+    where: BudgetPredictionWhereUniqueInput
+  }
+
+  /**
+   * BudgetPrediction updateMany
+   */
+  export type BudgetPredictionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BudgetPredictions.
+     */
+    data: XOR<BudgetPredictionUpdateManyMutationInput, BudgetPredictionUncheckedUpdateManyInput>
+    /**
+     * Filter which BudgetPredictions to update
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * Limit how many BudgetPredictions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BudgetPrediction updateManyAndReturn
+   */
+  export type BudgetPredictionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * The data used to update BudgetPredictions.
+     */
+    data: XOR<BudgetPredictionUpdateManyMutationInput, BudgetPredictionUncheckedUpdateManyInput>
+    /**
+     * Filter which BudgetPredictions to update
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * Limit how many BudgetPredictions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BudgetPrediction upsert
+   */
+  export type BudgetPredictionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BudgetPrediction to update in case it exists.
+     */
+    where: BudgetPredictionWhereUniqueInput
+    /**
+     * In case the BudgetPrediction found by the `where` argument doesn't exist, create a new BudgetPrediction with this data.
+     */
+    create: XOR<BudgetPredictionCreateInput, BudgetPredictionUncheckedCreateInput>
+    /**
+     * In case the BudgetPrediction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BudgetPredictionUpdateInput, BudgetPredictionUncheckedUpdateInput>
+  }
+
+  /**
+   * BudgetPrediction delete
+   */
+  export type BudgetPredictionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    /**
+     * Filter which BudgetPrediction to delete.
+     */
+    where: BudgetPredictionWhereUniqueInput
+  }
+
+  /**
+   * BudgetPrediction deleteMany
+   */
+  export type BudgetPredictionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BudgetPredictions to delete
+     */
+    where?: BudgetPredictionWhereInput
+    /**
+     * Limit how many BudgetPredictions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BudgetPrediction without action
+   */
+  export type BudgetPredictionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -25171,6 +29941,43 @@ export namespace Prisma {
   };
 
   export type BackupHistoryScalarFieldEnum = (typeof BackupHistoryScalarFieldEnum)[keyof typeof BackupHistoryScalarFieldEnum]
+
+
+  export const DepartmentScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    name: 'name',
+    description: 'description',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
+
+
+  export const MonthlyBudgetScalarFieldEnum: {
+    id: 'id',
+    departmentId: 'departmentId'
+  };
+
+  export type MonthlyBudgetScalarFieldEnum = (typeof MonthlyBudgetScalarFieldEnum)[keyof typeof MonthlyBudgetScalarFieldEnum]
+
+
+  export const BudgetAdjustmentRequestScalarFieldEnum: {
+    id: 'id',
+    departmentId: 'departmentId'
+  };
+
+  export type BudgetAdjustmentRequestScalarFieldEnum = (typeof BudgetAdjustmentRequestScalarFieldEnum)[keyof typeof BudgetAdjustmentRequestScalarFieldEnum]
+
+
+  export const BudgetPredictionScalarFieldEnum: {
+    id: 'id',
+    departmentId: 'departmentId'
+  };
+
+  export type BudgetPredictionScalarFieldEnum = (typeof BudgetPredictionScalarFieldEnum)[keyof typeof BudgetPredictionScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -26698,6 +31505,205 @@ export namespace Prisma {
     metadata?: JsonNullableWithAggregatesFilter<"BackupHistory">
   }
 
+  export type DepartmentWhereInput = {
+    AND?: DepartmentWhereInput | DepartmentWhereInput[]
+    OR?: DepartmentWhereInput[]
+    NOT?: DepartmentWhereInput | DepartmentWhereInput[]
+    id?: IntFilter<"Department"> | number
+    code?: StringFilter<"Department"> | string
+    name?: StringFilter<"Department"> | string
+    description?: StringNullableFilter<"Department"> | string | null
+    isActive?: BoolFilter<"Department"> | boolean
+    createdAt?: DateTimeFilter<"Department"> | Date | string
+    updatedAt?: DateTimeFilter<"Department"> | Date | string
+    monthlyBudgets?: MonthlyBudgetListRelationFilter
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestListRelationFilter
+    budgetPredictions?: BudgetPredictionListRelationFilter
+  }
+
+  export type DepartmentOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    monthlyBudgets?: MonthlyBudgetOrderByRelationAggregateInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestOrderByRelationAggregateInput
+    budgetPredictions?: BudgetPredictionOrderByRelationAggregateInput
+  }
+
+  export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    code?: string
+    AND?: DepartmentWhereInput | DepartmentWhereInput[]
+    OR?: DepartmentWhereInput[]
+    NOT?: DepartmentWhereInput | DepartmentWhereInput[]
+    name?: StringFilter<"Department"> | string
+    description?: StringNullableFilter<"Department"> | string | null
+    isActive?: BoolFilter<"Department"> | boolean
+    createdAt?: DateTimeFilter<"Department"> | Date | string
+    updatedAt?: DateTimeFilter<"Department"> | Date | string
+    monthlyBudgets?: MonthlyBudgetListRelationFilter
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestListRelationFilter
+    budgetPredictions?: BudgetPredictionListRelationFilter
+  }, "id" | "code">
+
+  export type DepartmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DepartmentCountOrderByAggregateInput
+    _avg?: DepartmentAvgOrderByAggregateInput
+    _max?: DepartmentMaxOrderByAggregateInput
+    _min?: DepartmentMinOrderByAggregateInput
+    _sum?: DepartmentSumOrderByAggregateInput
+  }
+
+  export type DepartmentScalarWhereWithAggregatesInput = {
+    AND?: DepartmentScalarWhereWithAggregatesInput | DepartmentScalarWhereWithAggregatesInput[]
+    OR?: DepartmentScalarWhereWithAggregatesInput[]
+    NOT?: DepartmentScalarWhereWithAggregatesInput | DepartmentScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Department"> | number
+    code?: StringWithAggregatesFilter<"Department"> | string
+    name?: StringWithAggregatesFilter<"Department"> | string
+    description?: StringNullableWithAggregatesFilter<"Department"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Department"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Department"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Department"> | Date | string
+  }
+
+  export type MonthlyBudgetWhereInput = {
+    AND?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
+    OR?: MonthlyBudgetWhereInput[]
+    NOT?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
+    id?: IntFilter<"MonthlyBudget"> | number
+    departmentId?: IntFilter<"MonthlyBudget"> | number
+    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+  }
+
+  export type MonthlyBudgetOrderByWithRelationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    department?: DepartmentOrderByWithRelationInput
+  }
+
+  export type MonthlyBudgetWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
+    OR?: MonthlyBudgetWhereInput[]
+    NOT?: MonthlyBudgetWhereInput | MonthlyBudgetWhereInput[]
+    departmentId?: IntFilter<"MonthlyBudget"> | number
+    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+  }, "id">
+
+  export type MonthlyBudgetOrderByWithAggregationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    _count?: MonthlyBudgetCountOrderByAggregateInput
+    _avg?: MonthlyBudgetAvgOrderByAggregateInput
+    _max?: MonthlyBudgetMaxOrderByAggregateInput
+    _min?: MonthlyBudgetMinOrderByAggregateInput
+    _sum?: MonthlyBudgetSumOrderByAggregateInput
+  }
+
+  export type MonthlyBudgetScalarWhereWithAggregatesInput = {
+    AND?: MonthlyBudgetScalarWhereWithAggregatesInput | MonthlyBudgetScalarWhereWithAggregatesInput[]
+    OR?: MonthlyBudgetScalarWhereWithAggregatesInput[]
+    NOT?: MonthlyBudgetScalarWhereWithAggregatesInput | MonthlyBudgetScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"MonthlyBudget"> | number
+    departmentId?: IntWithAggregatesFilter<"MonthlyBudget"> | number
+  }
+
+  export type BudgetAdjustmentRequestWhereInput = {
+    AND?: BudgetAdjustmentRequestWhereInput | BudgetAdjustmentRequestWhereInput[]
+    OR?: BudgetAdjustmentRequestWhereInput[]
+    NOT?: BudgetAdjustmentRequestWhereInput | BudgetAdjustmentRequestWhereInput[]
+    id?: IntFilter<"BudgetAdjustmentRequest"> | number
+    departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
+    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+  }
+
+  export type BudgetAdjustmentRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    department?: DepartmentOrderByWithRelationInput
+  }
+
+  export type BudgetAdjustmentRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: BudgetAdjustmentRequestWhereInput | BudgetAdjustmentRequestWhereInput[]
+    OR?: BudgetAdjustmentRequestWhereInput[]
+    NOT?: BudgetAdjustmentRequestWhereInput | BudgetAdjustmentRequestWhereInput[]
+    departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
+    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+  }, "id">
+
+  export type BudgetAdjustmentRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    _count?: BudgetAdjustmentRequestCountOrderByAggregateInput
+    _avg?: BudgetAdjustmentRequestAvgOrderByAggregateInput
+    _max?: BudgetAdjustmentRequestMaxOrderByAggregateInput
+    _min?: BudgetAdjustmentRequestMinOrderByAggregateInput
+    _sum?: BudgetAdjustmentRequestSumOrderByAggregateInput
+  }
+
+  export type BudgetAdjustmentRequestScalarWhereWithAggregatesInput = {
+    AND?: BudgetAdjustmentRequestScalarWhereWithAggregatesInput | BudgetAdjustmentRequestScalarWhereWithAggregatesInput[]
+    OR?: BudgetAdjustmentRequestScalarWhereWithAggregatesInput[]
+    NOT?: BudgetAdjustmentRequestScalarWhereWithAggregatesInput | BudgetAdjustmentRequestScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
+    departmentId?: IntWithAggregatesFilter<"BudgetAdjustmentRequest"> | number
+  }
+
+  export type BudgetPredictionWhereInput = {
+    AND?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
+    OR?: BudgetPredictionWhereInput[]
+    NOT?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
+    id?: IntFilter<"BudgetPrediction"> | number
+    departmentId?: IntFilter<"BudgetPrediction"> | number
+    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+  }
+
+  export type BudgetPredictionOrderByWithRelationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    department?: DepartmentOrderByWithRelationInput
+  }
+
+  export type BudgetPredictionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
+    OR?: BudgetPredictionWhereInput[]
+    NOT?: BudgetPredictionWhereInput | BudgetPredictionWhereInput[]
+    departmentId?: IntFilter<"BudgetPrediction"> | number
+    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
+  }, "id">
+
+  export type BudgetPredictionOrderByWithAggregationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    _count?: BudgetPredictionCountOrderByAggregateInput
+    _avg?: BudgetPredictionAvgOrderByAggregateInput
+    _max?: BudgetPredictionMaxOrderByAggregateInput
+    _min?: BudgetPredictionMinOrderByAggregateInput
+    _sum?: BudgetPredictionSumOrderByAggregateInput
+  }
+
+  export type BudgetPredictionScalarWhereWithAggregatesInput = {
+    AND?: BudgetPredictionScalarWhereWithAggregatesInput | BudgetPredictionScalarWhereWithAggregatesInput[]
+    OR?: BudgetPredictionScalarWhereWithAggregatesInput[]
+    NOT?: BudgetPredictionScalarWhereWithAggregatesInput | BudgetPredictionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"BudgetPrediction"> | number
+    departmentId?: IntWithAggregatesFilter<"BudgetPrediction"> | number
+  }
+
   export type UserCreateInput = {
     name?: string | null
     email: string
@@ -28132,6 +33138,181 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type DepartmentCreateInput = {
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    monthlyBudgets?: MonthlyBudgetCreateNestedManyWithoutDepartmentInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestCreateNestedManyWithoutDepartmentInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentUncheckedCreateInput = {
+    id?: number
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    monthlyBudgets?: MonthlyBudgetUncheckedCreateNestedManyWithoutDepartmentInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutDepartmentInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentUpdateInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    monthlyBudgets?: MonthlyBudgetUpdateManyWithoutDepartmentNestedInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUpdateManyWithoutDepartmentNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    monthlyBudgets?: MonthlyBudgetUncheckedUpdateManyWithoutDepartmentNestedInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentCreateManyInput = {
+    id?: number
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DepartmentUpdateManyMutationInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DepartmentUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MonthlyBudgetCreateInput = {
+    department: DepartmentCreateNestedOneWithoutMonthlyBudgetsInput
+  }
+
+  export type MonthlyBudgetUncheckedCreateInput = {
+    id?: number
+    departmentId: number
+  }
+
+  export type MonthlyBudgetUpdateInput = {
+    department?: DepartmentUpdateOneRequiredWithoutMonthlyBudgetsNestedInput
+  }
+
+  export type MonthlyBudgetUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MonthlyBudgetCreateManyInput = {
+    id?: number
+    departmentId: number
+  }
+
+  export type MonthlyBudgetUpdateManyMutationInput = {
+
+  }
+
+  export type MonthlyBudgetUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetAdjustmentRequestCreateInput = {
+    department: DepartmentCreateNestedOneWithoutBudgetAdjustmentRequestsInput
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateInput = {
+    id?: number
+    departmentId: number
+  }
+
+  export type BudgetAdjustmentRequestUpdateInput = {
+    department?: DepartmentUpdateOneRequiredWithoutBudgetAdjustmentRequestsNestedInput
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetAdjustmentRequestCreateManyInput = {
+    id?: number
+    departmentId: number
+  }
+
+  export type BudgetAdjustmentRequestUpdateManyMutationInput = {
+
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetPredictionCreateInput = {
+    department: DepartmentCreateNestedOneWithoutBudgetPredictionsInput
+  }
+
+  export type BudgetPredictionUncheckedCreateInput = {
+    id?: number
+    departmentId: number
+  }
+
+  export type BudgetPredictionUpdateInput = {
+    department?: DepartmentUpdateOneRequiredWithoutBudgetPredictionsNestedInput
+  }
+
+  export type BudgetPredictionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetPredictionCreateManyInput = {
+    id?: number
+    departmentId: number
+  }
+
+  export type BudgetPredictionUpdateManyMutationInput = {
+
+  }
+
+  export type BudgetPredictionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -29374,6 +34555,154 @@ export namespace Prisma {
     _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
+  export type MonthlyBudgetListRelationFilter = {
+    every?: MonthlyBudgetWhereInput
+    some?: MonthlyBudgetWhereInput
+    none?: MonthlyBudgetWhereInput
+  }
+
+  export type BudgetAdjustmentRequestListRelationFilter = {
+    every?: BudgetAdjustmentRequestWhereInput
+    some?: BudgetAdjustmentRequestWhereInput
+    none?: BudgetAdjustmentRequestWhereInput
+  }
+
+  export type BudgetPredictionListRelationFilter = {
+    every?: BudgetPredictionWhereInput
+    some?: BudgetPredictionWhereInput
+    none?: BudgetPredictionWhereInput
+  }
+
+  export type MonthlyBudgetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BudgetPredictionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DepartmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DepartmentAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type DepartmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DepartmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DepartmentSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type DepartmentScalarRelationFilter = {
+    is?: DepartmentWhereInput
+    isNot?: DepartmentWhereInput
+  }
+
+  export type MonthlyBudgetCountOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type MonthlyBudgetAvgOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type MonthlyBudgetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type MonthlyBudgetMinOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type MonthlyBudgetSumOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestAvgOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetAdjustmentRequestSumOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetPredictionCountOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetPredictionAvgOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetPredictionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetPredictionMinOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
+  export type BudgetPredictionSumOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+  }
+
   export type RoleChangeAuditCreateNestedManyWithoutTargetInput = {
     create?: XOR<RoleChangeAuditCreateWithoutTargetInput, RoleChangeAuditUncheckedCreateWithoutTargetInput> | RoleChangeAuditCreateWithoutTargetInput[] | RoleChangeAuditUncheckedCreateWithoutTargetInput[]
     connectOrCreate?: RoleChangeAuditCreateOrConnectWithoutTargetInput | RoleChangeAuditCreateOrConnectWithoutTargetInput[]
@@ -30102,6 +35431,174 @@ export namespace Prisma {
     decrement?: bigint | number
     multiply?: bigint | number
     divide?: bigint | number
+  }
+
+  export type MonthlyBudgetCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<MonthlyBudgetCreateWithoutDepartmentInput, MonthlyBudgetUncheckedCreateWithoutDepartmentInput> | MonthlyBudgetCreateWithoutDepartmentInput[] | MonthlyBudgetUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: MonthlyBudgetCreateOrConnectWithoutDepartmentInput | MonthlyBudgetCreateOrConnectWithoutDepartmentInput[]
+    createMany?: MonthlyBudgetCreateManyDepartmentInputEnvelope
+    connect?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+  }
+
+  export type BudgetAdjustmentRequestCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput> | BudgetAdjustmentRequestCreateWithoutDepartmentInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput | BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyDepartmentInputEnvelope
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+  }
+
+  export type BudgetPredictionCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<BudgetPredictionCreateWithoutDepartmentInput, BudgetPredictionUncheckedCreateWithoutDepartmentInput> | BudgetPredictionCreateWithoutDepartmentInput[] | BudgetPredictionUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutDepartmentInput | BudgetPredictionCreateOrConnectWithoutDepartmentInput[]
+    createMany?: BudgetPredictionCreateManyDepartmentInputEnvelope
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+  }
+
+  export type MonthlyBudgetUncheckedCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<MonthlyBudgetCreateWithoutDepartmentInput, MonthlyBudgetUncheckedCreateWithoutDepartmentInput> | MonthlyBudgetCreateWithoutDepartmentInput[] | MonthlyBudgetUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: MonthlyBudgetCreateOrConnectWithoutDepartmentInput | MonthlyBudgetCreateOrConnectWithoutDepartmentInput[]
+    createMany?: MonthlyBudgetCreateManyDepartmentInputEnvelope
+    connect?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput> | BudgetAdjustmentRequestCreateWithoutDepartmentInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput | BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyDepartmentInputEnvelope
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+  }
+
+  export type BudgetPredictionUncheckedCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<BudgetPredictionCreateWithoutDepartmentInput, BudgetPredictionUncheckedCreateWithoutDepartmentInput> | BudgetPredictionCreateWithoutDepartmentInput[] | BudgetPredictionUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutDepartmentInput | BudgetPredictionCreateOrConnectWithoutDepartmentInput[]
+    createMany?: BudgetPredictionCreateManyDepartmentInputEnvelope
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+  }
+
+  export type MonthlyBudgetUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<MonthlyBudgetCreateWithoutDepartmentInput, MonthlyBudgetUncheckedCreateWithoutDepartmentInput> | MonthlyBudgetCreateWithoutDepartmentInput[] | MonthlyBudgetUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: MonthlyBudgetCreateOrConnectWithoutDepartmentInput | MonthlyBudgetCreateOrConnectWithoutDepartmentInput[]
+    upsert?: MonthlyBudgetUpsertWithWhereUniqueWithoutDepartmentInput | MonthlyBudgetUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: MonthlyBudgetCreateManyDepartmentInputEnvelope
+    set?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    disconnect?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    delete?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    connect?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    update?: MonthlyBudgetUpdateWithWhereUniqueWithoutDepartmentInput | MonthlyBudgetUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: MonthlyBudgetUpdateManyWithWhereWithoutDepartmentInput | MonthlyBudgetUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: MonthlyBudgetScalarWhereInput | MonthlyBudgetScalarWhereInput[]
+  }
+
+  export type BudgetAdjustmentRequestUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput> | BudgetAdjustmentRequestCreateWithoutDepartmentInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput | BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput[]
+    upsert?: BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutDepartmentInput | BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyDepartmentInputEnvelope
+    set?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    disconnect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    delete?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutDepartmentInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutDepartmentInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+  }
+
+  export type BudgetPredictionUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<BudgetPredictionCreateWithoutDepartmentInput, BudgetPredictionUncheckedCreateWithoutDepartmentInput> | BudgetPredictionCreateWithoutDepartmentInput[] | BudgetPredictionUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutDepartmentInput | BudgetPredictionCreateOrConnectWithoutDepartmentInput[]
+    upsert?: BudgetPredictionUpsertWithWhereUniqueWithoutDepartmentInput | BudgetPredictionUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: BudgetPredictionCreateManyDepartmentInputEnvelope
+    set?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    disconnect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    delete?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    update?: BudgetPredictionUpdateWithWhereUniqueWithoutDepartmentInput | BudgetPredictionUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: BudgetPredictionUpdateManyWithWhereWithoutDepartmentInput | BudgetPredictionUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+  }
+
+  export type MonthlyBudgetUncheckedUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<MonthlyBudgetCreateWithoutDepartmentInput, MonthlyBudgetUncheckedCreateWithoutDepartmentInput> | MonthlyBudgetCreateWithoutDepartmentInput[] | MonthlyBudgetUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: MonthlyBudgetCreateOrConnectWithoutDepartmentInput | MonthlyBudgetCreateOrConnectWithoutDepartmentInput[]
+    upsert?: MonthlyBudgetUpsertWithWhereUniqueWithoutDepartmentInput | MonthlyBudgetUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: MonthlyBudgetCreateManyDepartmentInputEnvelope
+    set?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    disconnect?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    delete?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    connect?: MonthlyBudgetWhereUniqueInput | MonthlyBudgetWhereUniqueInput[]
+    update?: MonthlyBudgetUpdateWithWhereUniqueWithoutDepartmentInput | MonthlyBudgetUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: MonthlyBudgetUpdateManyWithWhereWithoutDepartmentInput | MonthlyBudgetUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: MonthlyBudgetScalarWhereInput | MonthlyBudgetScalarWhereInput[]
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<BudgetAdjustmentRequestCreateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput> | BudgetAdjustmentRequestCreateWithoutDepartmentInput[] | BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput | BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput[]
+    upsert?: BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutDepartmentInput | BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: BudgetAdjustmentRequestCreateManyDepartmentInputEnvelope
+    set?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    disconnect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    delete?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+    update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutDepartmentInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutDepartmentInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+  }
+
+  export type BudgetPredictionUncheckedUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<BudgetPredictionCreateWithoutDepartmentInput, BudgetPredictionUncheckedCreateWithoutDepartmentInput> | BudgetPredictionCreateWithoutDepartmentInput[] | BudgetPredictionUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutDepartmentInput | BudgetPredictionCreateOrConnectWithoutDepartmentInput[]
+    upsert?: BudgetPredictionUpsertWithWhereUniqueWithoutDepartmentInput | BudgetPredictionUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: BudgetPredictionCreateManyDepartmentInputEnvelope
+    set?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    disconnect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    delete?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    update?: BudgetPredictionUpdateWithWhereUniqueWithoutDepartmentInput | BudgetPredictionUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: BudgetPredictionUpdateManyWithWhereWithoutDepartmentInput | BudgetPredictionUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+  }
+
+  export type DepartmentCreateNestedOneWithoutMonthlyBudgetsInput = {
+    create?: XOR<DepartmentCreateWithoutMonthlyBudgetsInput, DepartmentUncheckedCreateWithoutMonthlyBudgetsInput>
+    connectOrCreate?: DepartmentCreateOrConnectWithoutMonthlyBudgetsInput
+    connect?: DepartmentWhereUniqueInput
+  }
+
+  export type DepartmentUpdateOneRequiredWithoutMonthlyBudgetsNestedInput = {
+    create?: XOR<DepartmentCreateWithoutMonthlyBudgetsInput, DepartmentUncheckedCreateWithoutMonthlyBudgetsInput>
+    connectOrCreate?: DepartmentCreateOrConnectWithoutMonthlyBudgetsInput
+    upsert?: DepartmentUpsertWithoutMonthlyBudgetsInput
+    connect?: DepartmentWhereUniqueInput
+    update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutMonthlyBudgetsInput, DepartmentUpdateWithoutMonthlyBudgetsInput>, DepartmentUncheckedUpdateWithoutMonthlyBudgetsInput>
+  }
+
+  export type DepartmentCreateNestedOneWithoutBudgetAdjustmentRequestsInput = {
+    create?: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetAdjustmentRequestsInput
+    connect?: DepartmentWhereUniqueInput
+  }
+
+  export type DepartmentUpdateOneRequiredWithoutBudgetAdjustmentRequestsNestedInput = {
+    create?: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetAdjustmentRequestsInput
+    upsert?: DepartmentUpsertWithoutBudgetAdjustmentRequestsInput
+    connect?: DepartmentWhereUniqueInput
+    update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutBudgetAdjustmentRequestsInput, DepartmentUpdateWithoutBudgetAdjustmentRequestsInput>, DepartmentUncheckedUpdateWithoutBudgetAdjustmentRequestsInput>
+  }
+
+  export type DepartmentCreateNestedOneWithoutBudgetPredictionsInput = {
+    create?: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetPredictionsInput
+    connect?: DepartmentWhereUniqueInput
+  }
+
+  export type DepartmentUpdateOneRequiredWithoutBudgetPredictionsNestedInput = {
+    create?: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetPredictionsInput
+    upsert?: DepartmentUpsertWithoutBudgetPredictionsInput
+    connect?: DepartmentWhereUniqueInput
+    update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutBudgetPredictionsInput, DepartmentUpdateWithoutBudgetPredictionsInput>, DepartmentUncheckedUpdateWithoutBudgetPredictionsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -32052,6 +37549,318 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MonthlyBudgetCreateWithoutDepartmentInput = {
+
+  }
+
+  export type MonthlyBudgetUncheckedCreateWithoutDepartmentInput = {
+    id?: number
+  }
+
+  export type MonthlyBudgetCreateOrConnectWithoutDepartmentInput = {
+    where: MonthlyBudgetWhereUniqueInput
+    create: XOR<MonthlyBudgetCreateWithoutDepartmentInput, MonthlyBudgetUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type MonthlyBudgetCreateManyDepartmentInputEnvelope = {
+    data: MonthlyBudgetCreateManyDepartmentInput | MonthlyBudgetCreateManyDepartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BudgetAdjustmentRequestCreateWithoutDepartmentInput = {
+
+  }
+
+  export type BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput = {
+    id?: number
+  }
+
+  export type BudgetAdjustmentRequestCreateOrConnectWithoutDepartmentInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    create: XOR<BudgetAdjustmentRequestCreateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type BudgetAdjustmentRequestCreateManyDepartmentInputEnvelope = {
+    data: BudgetAdjustmentRequestCreateManyDepartmentInput | BudgetAdjustmentRequestCreateManyDepartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BudgetPredictionCreateWithoutDepartmentInput = {
+
+  }
+
+  export type BudgetPredictionUncheckedCreateWithoutDepartmentInput = {
+    id?: number
+  }
+
+  export type BudgetPredictionCreateOrConnectWithoutDepartmentInput = {
+    where: BudgetPredictionWhereUniqueInput
+    create: XOR<BudgetPredictionCreateWithoutDepartmentInput, BudgetPredictionUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type BudgetPredictionCreateManyDepartmentInputEnvelope = {
+    data: BudgetPredictionCreateManyDepartmentInput | BudgetPredictionCreateManyDepartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MonthlyBudgetUpsertWithWhereUniqueWithoutDepartmentInput = {
+    where: MonthlyBudgetWhereUniqueInput
+    update: XOR<MonthlyBudgetUpdateWithoutDepartmentInput, MonthlyBudgetUncheckedUpdateWithoutDepartmentInput>
+    create: XOR<MonthlyBudgetCreateWithoutDepartmentInput, MonthlyBudgetUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type MonthlyBudgetUpdateWithWhereUniqueWithoutDepartmentInput = {
+    where: MonthlyBudgetWhereUniqueInput
+    data: XOR<MonthlyBudgetUpdateWithoutDepartmentInput, MonthlyBudgetUncheckedUpdateWithoutDepartmentInput>
+  }
+
+  export type MonthlyBudgetUpdateManyWithWhereWithoutDepartmentInput = {
+    where: MonthlyBudgetScalarWhereInput
+    data: XOR<MonthlyBudgetUpdateManyMutationInput, MonthlyBudgetUncheckedUpdateManyWithoutDepartmentInput>
+  }
+
+  export type MonthlyBudgetScalarWhereInput = {
+    AND?: MonthlyBudgetScalarWhereInput | MonthlyBudgetScalarWhereInput[]
+    OR?: MonthlyBudgetScalarWhereInput[]
+    NOT?: MonthlyBudgetScalarWhereInput | MonthlyBudgetScalarWhereInput[]
+    id?: IntFilter<"MonthlyBudget"> | number
+    departmentId?: IntFilter<"MonthlyBudget"> | number
+  }
+
+  export type BudgetAdjustmentRequestUpsertWithWhereUniqueWithoutDepartmentInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    update: XOR<BudgetAdjustmentRequestUpdateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedUpdateWithoutDepartmentInput>
+    create: XOR<BudgetAdjustmentRequestCreateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutDepartmentInput = {
+    where: BudgetAdjustmentRequestWhereUniqueInput
+    data: XOR<BudgetAdjustmentRequestUpdateWithoutDepartmentInput, BudgetAdjustmentRequestUncheckedUpdateWithoutDepartmentInput>
+  }
+
+  export type BudgetAdjustmentRequestUpdateManyWithWhereWithoutDepartmentInput = {
+    where: BudgetAdjustmentRequestScalarWhereInput
+    data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentInput>
+  }
+
+  export type BudgetAdjustmentRequestScalarWhereInput = {
+    AND?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+    OR?: BudgetAdjustmentRequestScalarWhereInput[]
+    NOT?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+    id?: IntFilter<"BudgetAdjustmentRequest"> | number
+    departmentId?: IntFilter<"BudgetAdjustmentRequest"> | number
+  }
+
+  export type BudgetPredictionUpsertWithWhereUniqueWithoutDepartmentInput = {
+    where: BudgetPredictionWhereUniqueInput
+    update: XOR<BudgetPredictionUpdateWithoutDepartmentInput, BudgetPredictionUncheckedUpdateWithoutDepartmentInput>
+    create: XOR<BudgetPredictionCreateWithoutDepartmentInput, BudgetPredictionUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type BudgetPredictionUpdateWithWhereUniqueWithoutDepartmentInput = {
+    where: BudgetPredictionWhereUniqueInput
+    data: XOR<BudgetPredictionUpdateWithoutDepartmentInput, BudgetPredictionUncheckedUpdateWithoutDepartmentInput>
+  }
+
+  export type BudgetPredictionUpdateManyWithWhereWithoutDepartmentInput = {
+    where: BudgetPredictionScalarWhereInput
+    data: XOR<BudgetPredictionUpdateManyMutationInput, BudgetPredictionUncheckedUpdateManyWithoutDepartmentInput>
+  }
+
+  export type BudgetPredictionScalarWhereInput = {
+    AND?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+    OR?: BudgetPredictionScalarWhereInput[]
+    NOT?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+    id?: IntFilter<"BudgetPrediction"> | number
+    departmentId?: IntFilter<"BudgetPrediction"> | number
+  }
+
+  export type DepartmentCreateWithoutMonthlyBudgetsInput = {
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestCreateNestedManyWithoutDepartmentInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentUncheckedCreateWithoutMonthlyBudgetsInput = {
+    id?: number
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutDepartmentInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentCreateOrConnectWithoutMonthlyBudgetsInput = {
+    where: DepartmentWhereUniqueInput
+    create: XOR<DepartmentCreateWithoutMonthlyBudgetsInput, DepartmentUncheckedCreateWithoutMonthlyBudgetsInput>
+  }
+
+  export type DepartmentUpsertWithoutMonthlyBudgetsInput = {
+    update: XOR<DepartmentUpdateWithoutMonthlyBudgetsInput, DepartmentUncheckedUpdateWithoutMonthlyBudgetsInput>
+    create: XOR<DepartmentCreateWithoutMonthlyBudgetsInput, DepartmentUncheckedCreateWithoutMonthlyBudgetsInput>
+    where?: DepartmentWhereInput
+  }
+
+  export type DepartmentUpdateToOneWithWhereWithoutMonthlyBudgetsInput = {
+    where?: DepartmentWhereInput
+    data: XOR<DepartmentUpdateWithoutMonthlyBudgetsInput, DepartmentUncheckedUpdateWithoutMonthlyBudgetsInput>
+  }
+
+  export type DepartmentUpdateWithoutMonthlyBudgetsInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUpdateManyWithoutDepartmentNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentUncheckedUpdateWithoutMonthlyBudgetsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentCreateWithoutBudgetAdjustmentRequestsInput = {
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    monthlyBudgets?: MonthlyBudgetCreateNestedManyWithoutDepartmentInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput = {
+    id?: number
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    monthlyBudgets?: MonthlyBudgetUncheckedCreateNestedManyWithoutDepartmentInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentCreateOrConnectWithoutBudgetAdjustmentRequestsInput = {
+    where: DepartmentWhereUniqueInput
+    create: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
+  }
+
+  export type DepartmentUpsertWithoutBudgetAdjustmentRequestsInput = {
+    update: XOR<DepartmentUpdateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedUpdateWithoutBudgetAdjustmentRequestsInput>
+    create: XOR<DepartmentCreateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedCreateWithoutBudgetAdjustmentRequestsInput>
+    where?: DepartmentWhereInput
+  }
+
+  export type DepartmentUpdateToOneWithWhereWithoutBudgetAdjustmentRequestsInput = {
+    where?: DepartmentWhereInput
+    data: XOR<DepartmentUpdateWithoutBudgetAdjustmentRequestsInput, DepartmentUncheckedUpdateWithoutBudgetAdjustmentRequestsInput>
+  }
+
+  export type DepartmentUpdateWithoutBudgetAdjustmentRequestsInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    monthlyBudgets?: MonthlyBudgetUpdateManyWithoutDepartmentNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentUncheckedUpdateWithoutBudgetAdjustmentRequestsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    monthlyBudgets?: MonthlyBudgetUncheckedUpdateManyWithoutDepartmentNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentCreateWithoutBudgetPredictionsInput = {
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    monthlyBudgets?: MonthlyBudgetCreateNestedManyWithoutDepartmentInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentUncheckedCreateWithoutBudgetPredictionsInput = {
+    id?: number
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    monthlyBudgets?: MonthlyBudgetUncheckedCreateNestedManyWithoutDepartmentInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type DepartmentCreateOrConnectWithoutBudgetPredictionsInput = {
+    where: DepartmentWhereUniqueInput
+    create: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
+  }
+
+  export type DepartmentUpsertWithoutBudgetPredictionsInput = {
+    update: XOR<DepartmentUpdateWithoutBudgetPredictionsInput, DepartmentUncheckedUpdateWithoutBudgetPredictionsInput>
+    create: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
+    where?: DepartmentWhereInput
+  }
+
+  export type DepartmentUpdateToOneWithWhereWithoutBudgetPredictionsInput = {
+    where?: DepartmentWhereInput
+    data: XOR<DepartmentUpdateWithoutBudgetPredictionsInput, DepartmentUncheckedUpdateWithoutBudgetPredictionsInput>
+  }
+
+  export type DepartmentUpdateWithoutBudgetPredictionsInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    monthlyBudgets?: MonthlyBudgetUpdateManyWithoutDepartmentNestedInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type DepartmentUncheckedUpdateWithoutBudgetPredictionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    monthlyBudgets?: MonthlyBudgetUncheckedUpdateManyWithoutDepartmentNestedInput
+    budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
   export type RoleChangeAuditCreateManyTargetInput = {
     id?: number
     fromRole: string
@@ -32530,6 +38339,54 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     chunkIndex?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MonthlyBudgetCreateManyDepartmentInput = {
+    id?: number
+  }
+
+  export type BudgetAdjustmentRequestCreateManyDepartmentInput = {
+    id?: number
+  }
+
+  export type BudgetPredictionCreateManyDepartmentInput = {
+    id?: number
+  }
+
+  export type MonthlyBudgetUpdateWithoutDepartmentInput = {
+
+  }
+
+  export type MonthlyBudgetUncheckedUpdateWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MonthlyBudgetUncheckedUpdateManyWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetAdjustmentRequestUpdateWithoutDepartmentInput = {
+
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetPredictionUpdateWithoutDepartmentInput = {
+
+  }
+
+  export type BudgetPredictionUncheckedUpdateWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BudgetPredictionUncheckedUpdateManyWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
   }
 
 

@@ -142,8 +142,8 @@ model SupplierInventoryItem {
   reorderLevel Int      @default(0)
   unit         String
   unitPrice    Float
-  taxType      String   @default("NO_TAX")
-  taxRate      Float    @default(0)
+  taxType      String   @default("TAX")
+  taxRate      Float    @default(10)
   imageDataUrl String?  @db.Text
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -333,6 +333,49 @@ model BackupHistory {
   @@index([backupType, status])
   @@index([startedAt])
   @@map("backup_history")
+}
+
+model Department {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  monthlyBudgets           MonthlyBudget[]
+  budgetAdjustmentRequests BudgetAdjustmentRequest[]
+  budgetPredictions        BudgetPrediction[]
+
+  @@index([code])
+  @@index([isActive])
+  @@map("departments")
+}
+
+// Stub models for forward references - will be fully implemented in later tasks
+model MonthlyBudget {
+  id           Int        @id @default(autoincrement())
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  @@map("monthly_budgets")
+}
+
+model BudgetAdjustmentRequest {
+  id           Int        @id @default(autoincrement())
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  @@map("budget_adjustment_requests")
+}
+
+model BudgetPrediction {
+  id           Int        @id @default(autoincrement())
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  @@map("budget_predictions")
 }
 
 generator client {

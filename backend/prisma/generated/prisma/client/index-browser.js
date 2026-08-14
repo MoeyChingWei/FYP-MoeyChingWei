@@ -324,6 +324,31 @@ exports.Prisma.BackupHistoryScalarFieldEnum = {
   metadata: 'metadata'
 };
 
+exports.Prisma.DepartmentScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MonthlyBudgetScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId'
+};
+
+exports.Prisma.BudgetAdjustmentRequestScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId'
+};
+
+exports.Prisma.BudgetPredictionScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -379,7 +404,11 @@ exports.Prisma.ModelName = {
   Source: 'Source',
   SourceChunk: 'SourceChunk',
   AuditLog: 'AuditLog',
-  BackupHistory: 'BackupHistory'
+  BackupHistory: 'BackupHistory',
+  Department: 'Department',
+  MonthlyBudget: 'MonthlyBudget',
+  BudgetAdjustmentRequest: 'BudgetAdjustmentRequest',
+  BudgetPrediction: 'BudgetPrediction'
 };
 
 /**
