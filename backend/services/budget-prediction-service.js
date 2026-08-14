@@ -16,64 +16,75 @@ const CONFIDENCE_THRESHOLD_MEDIUM = 6;
 const DEFAULT_FALLBACK_BUDGET = 100000;
 
 /**
- * Get historical spending data for a department
+ * Get historical spending data aggregated by month for a department
  * @param {number} departmentId - Department ID
- * @returns {Promise<Array>} Historical spending data
+ * @returns {Promise<Array<{period: string, amount: number, requestCount: number, categoryTotals: Object}>>} Historical spending data
  */
 async function getHistoricalSpending(departmentId) {
-  // First, fetch the target department to get its name and code
-  const targetDept = await prisma.department.findUnique({
+  const department = await prisma.department.findUnique({
     where: { id: departmentId }
   });
 
-  if (!targetDept) {
+  if (!department) {
     return [];
   }
 
-  // Build department name/code matchers (case-insensitive)
-  const deptMatchers = [
-    targetDept.name.toLowerCase(),
-    targetDept.code.toLowerCase()
-  ];
-
-  // Query PurchaseRequestRecord for historical spending
-  // Filter for requests that have department field populated
-  const requests = await prisma.purchaseRequestRecord.findMany({
+  const users = await prisma.user.findMany({
     where: {
-      payload: {
-        path: ['department'],
-        not: null
-      }
+      OR: [
+        { department: { equals: department.code, mode: 'insensitive' } },
+        { department: { equals: department.name, mode: 'insensitive' } }
+      ]
     },
-    orderBy: { createdAt: 'asc' }
+    select: { id: true }
   });
 
-  // Filter and aggregate in-memory (Prisma JSON filtering is limited)
-  const historicalData = [];
+  const userIds = users.map(u => u.id);
 
-  for (const request of requests) {
-    if (!request.payload || !request.payload.department) continue;
+  const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
 
-    // Match department by name or code (case-insensitive)
-    const requestDept = request.payload.department.toLowerCase();
-    if (!deptMatchers.includes(requestDept)) continue;
+  const approvedRequests = purchaseRequests.filter(pr => {
+    const status = String(pr.payload?.status ?? '').trim().toUpperCase();
+    const requestorId = pr.payload?.requestorId;
+    return status === 'APPROVED' && userIds.includes(requestorId);
+  });
 
-    // Calculate total amount from items
-    let totalAmount = 0;
-    if (request.payload.items && Array.isArray(request.payload.items)) {
-      totalAmount = request.payload.items.reduce((sum, item) => {
-        return sum + (parseFloat(item.totalPrice) || 0);
-      }, 0);
+  const aggregated = {};
+
+  approvedRequests.forEach(request => {
+    const date = new Date(request.createdAt);
+    const period = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+    if (!aggregated[period]) {
+      aggregated[period] = {
+        period,
+        amount: 0,
+        requestCount: 0,
+        categoryTotals: {}
+      };
     }
 
-    historicalData.push({
-      date: request.createdAt,
-      amount: totalAmount,
-      payload: request.payload
-    });
-  }
+    const items = request.payload.lineItems || request.payload.items || [];
+    let periodTotal = 0;
 
-  return historicalData;
+    items.forEach(item => {
+      const qty = parseFloat(item.quantity) || 0;
+      const price = parseFloat(item.unitPrice) || parseFloat(item.price) || 0;
+      const itemTotal = qty * price;
+      periodTotal += itemTotal;
+
+      const category = item.itemCategory || 'Uncategorized';
+      aggregated[period].categoryTotals[category] =
+        (aggregated[period].categoryTotals[category] || 0) + itemTotal;
+    });
+
+    aggregated[period].amount += periodTotal;
+    aggregated[period].requestCount += 1;
+  });
+
+  return Object.values(aggregated).sort((a, b) => a.period.localeCompare(b.period));
 }
 
 /**
@@ -199,3 +210,5 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
 
   return prediction;
 }
+
+export { getHistoricalSpending };
