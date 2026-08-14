@@ -54,4 +54,92 @@ describe('Department Budget Routes', () => {
       });
     });
   });
+
+  describe('Monthly Budget Endpoints', () => {
+    let testBudget;
+
+    beforeAll(async () => {
+      testBudget = await prisma.monthlyBudget.create({
+        data: {
+          departmentId: testDept.id,
+          year: 2026,
+          month: 8,
+          allocatedAmount: 100000,
+          spentAmount: 0,
+          reservedAmount: 0
+        }
+      });
+    });
+
+    afterAll(async () => {
+      await prisma.monthlyBudget.deleteMany({ where: { departmentId: testDept.id } });
+    });
+
+    describe('GET /api/department-budget/monthly/:departmentId', () => {
+      test('should return monthly budgets for department', async () => {
+        const res = await request(app).get(`/api/department-budget/monthly/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(Array.isArray(res.body.data)).toBe(true);
+        expect(res.body.data.length).toBeGreaterThan(0);
+      });
+
+      test('should filter by year and month', async () => {
+        const res = await request(app).get(`/api/department-budget/monthly/${testDept.id}?year=2026&month=8`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data[0].year).toBe(2026);
+        expect(res.body.data[0].month).toBe(8);
+      });
+    });
+
+    describe('POST /api/department-budget/monthly', () => {
+      test('should create new monthly budget', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/monthly')
+          .send({
+            departmentId: testDept.id,
+            year: 2026,
+            month: 9,
+            allocatedAmount: 120000,
+            notes: 'Test budget'
+          });
+
+        expect(res.status).toBe(201);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.allocatedAmount).toBe('120000');
+      });
+
+      test('should reject duplicate month budget', async () => {
+        const res = await request(app)
+          .post('/api/department-budget/monthly')
+          .send({
+            departmentId: testDept.id,
+            year: 2026,
+            month: 8,
+            allocatedAmount: 50000
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+      });
+    });
+
+    describe('PATCH /api/department-budget/monthly/:id', () => {
+      test('should update monthly budget', async () => {
+        const res = await request(app)
+          .patch(`/api/department-budget/monthly/${testBudget.id}`)
+          .send({
+            allocatedAmount: 110000,
+            notes: 'Updated budget'
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.allocatedAmount).toBe('110000');
+        expect(res.body.data.notes).toBe('Updated budget');
+      });
+    });
+  });
 });
