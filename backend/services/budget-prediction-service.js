@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.js';
 import analyticsAgent from '../agents/analytics/analytics-agent.js';
 import Decimal from 'decimal.js';
+import { notifyBudgetPredictionReady } from './notification-service.js';
 
 // Constants for budget prediction thresholds
 // Default budget for new departments with no historical data (MYR)
@@ -176,8 +177,9 @@ async function findSimilarDepartments(departmentId) {
 async function handleNewDepartment(departmentId, targetYear, targetMonth, userId) {
   const similarDepts = await findSimilarDepartments(departmentId);
 
+  let prediction;
   if (similarDepts.length === 0) {
-    return await prisma.budgetPrediction.create({
+    prediction = await prisma.budgetPrediction.create({
       data: {
         departmentId,
         targetYear,
@@ -189,30 +191,47 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
         triggerType: userId ? 'manual' : 'auto'
       }
     });
+  } else {
+    const topSimilar = similarDepts[0];
+    const avgAmount = Math.round(topSimilar.avgSpending * 100) / 100;
+
+    const insight = `New department with no historical data. Prediction based on similar department "${topSimilar.name}" (${Math.round(topSimilar.similarity * 100)}% similarity, ${topSimilar.historicalMonths} months of data). Consider adjusting based on department size and objectives.`;
+
+    prediction = await prisma.budgetPrediction.create({
+      data: {
+        departmentId,
+        targetYear,
+        targetMonth,
+        predictedAmount: avgAmount,
+        confidence: 'low',
+        algorithm: 'similar_department',
+        aiInsights: insight,
+        comparisonData: {
+          similarDepartment: topSimilar.name,
+          similarity: topSimilar.similarity,
+          referenceMonths: topSimilar.historicalMonths
+        },
+        triggerType: userId ? 'manual' : 'auto'
+      }
+    });
   }
 
-  const topSimilar = similarDepts[0];
-  const avgAmount = Math.round(topSimilar.avgSpending * 100) / 100;
-
-  const insight = `New department with no historical data. Prediction based on similar department "${topSimilar.name}" (${Math.round(topSimilar.similarity * 100)}% similarity, ${topSimilar.historicalMonths} months of data). Consider adjusting based on department size and objectives.`;
-
-  return await prisma.budgetPrediction.create({
-    data: {
-      departmentId,
+  // Send notification if manually triggered
+  if (userId) {
+    const department = await prisma.department.findUnique({
+      where: { id: departmentId }
+    });
+    await notifyBudgetPredictionReady(
+      userId,
+      department.name,
       targetYear,
       targetMonth,
-      predictedAmount: avgAmount,
-      confidence: 'low',
-      algorithm: 'similar_department',
-      aiInsights: insight,
-      comparisonData: {
-        similarDepartment: topSimilar.name,
-        similarity: topSimilar.similarity,
-        referenceMonths: topSimilar.historicalMonths
-      },
-      triggerType: userId ? 'manual' : 'auto'
-    }
-  });
+      prediction.predictedAmount,
+      prediction.id
+    );
+  }
+
+  return prediction;
 }
 
 /**
@@ -379,6 +398,18 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
       triggerType: userId ? 'manual' : 'auto'
     }
   });
+
+  // Send notification if manually triggered
+  if (userId) {
+    await notifyBudgetPredictionReady(
+      userId,
+      department.name,
+      targetYear,
+      targetMonth,
+      prediction.predictedAmount,
+      prediction.id
+    );
+  }
 
   return prediction;
 }
