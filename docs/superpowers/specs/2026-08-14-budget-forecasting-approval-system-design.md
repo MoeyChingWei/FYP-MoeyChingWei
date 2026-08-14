@@ -174,15 +174,16 @@ model BudgetPrediction {
 **New Department Handling:**
 ```javascript
 async function handleNewDepartment(newDeptCode, targetYear, targetMonth) {
-  // 1. Find similar departments based on size, industry, function
-  const similarDepts = await findSimilarDepartments(newDeptCode);
+  // 1. Find similar departments based on spending patterns only
+  // (Department schema has no size/industry/function fields - match via historical spending)
+  const similarDepts = await findSimilarDepartmentsBySpending(newDeptCode);
   
   // 2. Calculate average spending from similar departments
   const avgSpending = await calculateAverageSpending(similarDepts, targetYear, targetMonth);
   
   // 3. Call Analytics Agent with benchmark data for AI-suggested adjustment
   const aiSuggestion = await analyticsAgent.chat({
-    message: `New department "${newDeptCode}" has no history. Similar departments average ${avgSpending}. Suggest appropriate budget considering: [context about department type, company growth, market conditions]`
+    message: `New department "${newDeptCode}" has no history. Similar departments (by spending pattern) average ${avgSpending}. Suggest appropriate budget considering: [context about department type, company growth, market conditions]`
   });
   
   // 4. Save prediction with algorithm="similar_dept"
@@ -804,9 +805,10 @@ await notificationService.notifyBudgetRequestRejected(requestId, reviewNotes);
 ```
 
 **Trigger 5 & 6: Low/Over Budget Warnings**
-- File: `backend/services/purchase-request-service.js` (new file or existing PR approval logic)
-- Function: `approvePurchaseRequest(prId, approverId)`
-- Location: After updating MonthlyBudget.spentAmount
+- **Integration Point:** Budget deduction happens when PR status changes to "APPROVED"
+- **File:** `backend/routes/workflow.js` - POST /api/workflow/:store endpoint
+- **Location:** After saving purchase-request records, check for newly approved PRs
+- **Flow:** PR saved with status="APPROVED" → detect in workflow save handler → deduct from MonthlyBudget → check thresholds → trigger notifications
 - Code:
 ```javascript
 async function approvePurchaseRequest(prId, approverId) {
@@ -824,9 +826,12 @@ async function approvePurchaseRequest(prId, approverId) {
   });
   
   // 2. Calculate total amount from lineItems
+  // NOTE: Verify actual field name in PurchaseRequestRecord.payload - may be "lineItems" or "items"
   const items = pr.payload.lineItems || pr.payload.items || [];
   const totalAmount = items.reduce((sum, item) => {
-    return sum + (parseFloat(item.quantity) * parseFloat(item.unitPrice));
+    const qty = parseFloat(item.quantity) || 0;
+    const price = parseFloat(item.unitPrice) || parseFloat(item.price) || 0;
+    return sum + (qty * price);
   }, 0);
   
   // 3. Find department and current month's budget
@@ -837,8 +842,8 @@ async function approvePurchaseRequest(prId, approverId) {
   const department = await prisma.department.findFirst({
     where: {
       OR: [
-        { code: requesterUser.department },
-        { name: requesterUser.department }
+        { code: { equals: requesterUser.department, mode: 'insensitive' } },
+        { name: { equals: requesterUser.department, mode: 'insensitive' } }
       ]
     }
   });
@@ -872,17 +877,22 @@ async function approvePurchaseRequest(prId, approverId) {
   });
   
   // 5. Check usage rate and trigger notifications
+  // Notification semantics: Trigger ONCE when crossing threshold from below
+  // Use previousUsageRate to detect threshold crossing (not on every transaction)
   const usageRate = (newSpentAmount / parseFloat(budget.allocatedAmount)) * 100;
+  const previousUsageRate = (parseFloat(budget.spentAmount) / parseFloat(budget.allocatedAmount)) * 100;
   
-  if (usageRate >= 100) {
+  if (usageRate >= 100 && previousUsageRate < 100) {
+    // Crossed 100% threshold upward → notify over budget
     await notificationService.notifyOverBudget(department.id, budget.id, usageRate);
-  } else if (usageRate >= 80) {
-    // Only notify if crossing 80% threshold (not on every PR)
-    const previousUsageRate = (parseFloat(budget.spentAmount) / parseFloat(budget.allocatedAmount)) * 100;
-    if (previousUsageRate < 80) {
-      await notificationService.notifyLowBudget(department.id, budget.id, usageRate);
-    }
+  } else if (usageRate >= 80 && usageRate < 100 && previousUsageRate < 80) {
+    // Crossed 80% threshold upward (but not yet at 100%) → notify low budget
+    await notificationService.notifyLowBudget(department.id, budget.id, usageRate);
   }
+  // Note: If budget adjusted down then PR brings it back up, this logic will trigger again
+  // Example: Budget 10k, spent 7k (70%), adjust to 8k (87.5%), no notification yet.
+  //          Next PR brings spent to 8.5k (106%) → triggers over budget notification.
+}
 }
 ```
 
