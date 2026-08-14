@@ -85,11 +85,16 @@ export const DepartmentBudgetOverview: React.FC = () => {
     setTriggeringPrediction(true);
     try {
       const dept = departments.find(d => d.id === selectedDeptId);
+      if (!dept) {
+        message.error("Department not found");
+        return;
+      }
+
       const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
       const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
 
       const res = await axios.post(`${API_ROOT}/department-budget/predict/manual`, {
-        departmentCode: dept?.code,
+        departmentCode: dept.code,
         targetYear: nextYear,
         targetMonth: nextMonth,
         userId: 1
