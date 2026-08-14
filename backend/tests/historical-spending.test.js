@@ -44,7 +44,9 @@ describe('Historical Spending Aggregation', () => {
   });
 
   afterAll(async () => {
-    await prisma.purchaseRequestRecord.deleteMany({});
+    await prisma.purchaseRequestRecord.deleteMany({
+      where: { localId: { startsWith: 'PR-HIST-' } }
+    });
     await prisma.user.delete({ where: { id: testUser.id } });
     await prisma.department.delete({ where: { id: testDept.id } });
     await prisma.$disconnect();

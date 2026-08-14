@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import analyticsAgent from '../agents/analytics/analytics-agent.js';
+import Decimal from 'decimal.js';
 
 // Constants for budget prediction thresholds
 // Default budget for new departments with no historical data (MYR)
@@ -41,7 +42,16 @@ async function getHistoricalSpending(departmentId) {
 
   const userIds = users.map(u => u.id);
 
+  // Performance fix: Add date range filter (last 24 months)
+  const cutoffDate = new Date();
+  cutoffDate.setMonth(cutoffDate.getMonth() - 24);
+
   const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
+    where: {
+      createdAt: {
+        gte: cutoffDate
+      }
+    },
     orderBy: { createdAt: 'desc' }
   });
 
@@ -66,21 +76,23 @@ async function getHistoricalSpending(departmentId) {
       };
     }
 
-    const items = request.payload.lineItems || request.payload.items || [];
-    let periodTotal = 0;
+    // Schema fix: Use lineItems and unitPrice as specified in brief
+    const items = request.payload.lineItems || [];
+    let periodTotal = new Decimal(0);
 
     items.forEach(item => {
-      const qty = parseFloat(item.quantity) || 0;
-      const price = parseFloat(item.unitPrice) || parseFloat(item.price) || 0;
-      const itemTotal = qty * price;
-      periodTotal += itemTotal;
+      // Precision fix: Use Decimal.js for monetary calculations
+      const qty = new Decimal(item.quantity || 0);
+      const price = new Decimal(item.unitPrice || 0);
+      const itemTotal = qty.times(price);
+      periodTotal = periodTotal.plus(itemTotal);
 
       const category = item.itemCategory || 'Uncategorized';
-      aggregated[period].categoryTotals[category] =
-        (aggregated[period].categoryTotals[category] || 0) + itemTotal;
+      const currentCategoryTotal = new Decimal(aggregated[period].categoryTotals[category] || 0);
+      aggregated[period].categoryTotals[category] = currentCategoryTotal.plus(itemTotal).toNumber();
     });
 
-    aggregated[period].amount += periodTotal;
+    aggregated[period].amount += periodTotal.toNumber();
     aggregated[period].requestCount += 1;
   });
 
