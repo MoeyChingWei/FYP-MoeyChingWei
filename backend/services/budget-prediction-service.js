@@ -1,13 +1,43 @@
 import prisma from '../config/prisma.js';
 import analyticsAgent from '../agents/analytics/analytics-agent.js';
 
+// Constants for budget prediction thresholds
+// Default budget for new departments with no historical data (MYR)
+const DEFAULT_NEW_DEPARTMENT_BUDGET = 50000;
+
+// Confidence thresholds based on historical data points
+// High confidence: 12+ months of data (full year for seasonal patterns)
+// Medium confidence: 6-11 months of data (half year minimum)
+// Low confidence: <6 months of data (insufficient for reliable trends)
+const CONFIDENCE_THRESHOLD_HIGH = 12;
+const CONFIDENCE_THRESHOLD_MEDIUM = 6;
+
+// Default fallback budget when no data exists (MYR)
+const DEFAULT_FALLBACK_BUDGET = 100000;
+
 /**
  * Get historical spending data for a department
  * @param {number} departmentId - Department ID
  * @returns {Promise<Array>} Historical spending data
  */
 async function getHistoricalSpending(departmentId) {
+  // First, fetch the target department to get its name and code
+  const targetDept = await prisma.department.findUnique({
+    where: { id: departmentId }
+  });
+
+  if (!targetDept) {
+    return [];
+  }
+
+  // Build department name/code matchers (case-insensitive)
+  const deptMatchers = [
+    targetDept.name.toLowerCase(),
+    targetDept.code.toLowerCase()
+  ];
+
   // Query PurchaseRequestRecord for historical spending
+  // Filter for requests that have department field populated
   const requests = await prisma.purchaseRequestRecord.findMany({
     where: {
       payload: {
@@ -18,37 +48,29 @@ async function getHistoricalSpending(departmentId) {
     orderBy: { createdAt: 'asc' }
   });
 
-  // Filter by department and aggregate
+  // Filter and aggregate in-memory (Prisma JSON filtering is limited)
   const historicalData = [];
 
   for (const request of requests) {
     if (!request.payload || !request.payload.department) continue;
 
-    // Match department by ID lookup
-    const dept = await prisma.department.findFirst({
-      where: {
-        OR: [
-          { name: { equals: request.payload.department, mode: 'insensitive' } },
-          { code: { equals: request.payload.department, mode: 'insensitive' } }
-        ]
-      }
-    });
+    // Match department by name or code (case-insensitive)
+    const requestDept = request.payload.department.toLowerCase();
+    if (!deptMatchers.includes(requestDept)) continue;
 
-    if (dept && dept.id === departmentId) {
-      // Calculate total amount from items
-      let totalAmount = 0;
-      if (request.payload.items && Array.isArray(request.payload.items)) {
-        totalAmount = request.payload.items.reduce((sum, item) => {
-          return sum + (parseFloat(item.totalPrice) || 0);
-        }, 0);
-      }
-
-      historicalData.push({
-        date: request.createdAt,
-        amount: totalAmount,
-        payload: request.payload
-      });
+    // Calculate total amount from items
+    let totalAmount = 0;
+    if (request.payload.items && Array.isArray(request.payload.items)) {
+      totalAmount = request.payload.items.reduce((sum, item) => {
+        return sum + (parseFloat(item.totalPrice) || 0);
+      }, 0);
     }
+
+    historicalData.push({
+      date: request.createdAt,
+      amount: totalAmount,
+      payload: request.payload
+    });
   }
 
   return historicalData;
@@ -67,7 +89,7 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
       departmentId,
       targetYear,
       targetMonth,
-      predictedAmount: 50000,
+      predictedAmount: DEFAULT_NEW_DEPARTMENT_BUDGET,
       confidence: 'low',
       algorithm: 'default',
       aiInsights: 'No historical data available',
@@ -87,34 +109,38 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth) {
 async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
   const message = `Predict budget for ${department.name} (${department.code}) for ${targetYear}-${String(targetMonth).padStart(2, '0')}. Historical data points: ${historicalData.length}`;
 
+  // Calculate baseline statistics
+  const amounts = historicalData.map(d => d.amount);
+  const avgAmount = amounts.length > 0
+    ? amounts.reduce((a, b) => a + b, 0) / amounts.length
+    : DEFAULT_FALLBACK_BUDGET;
+
+  // Determine confidence based on data quantity
+  const confidence =
+    amounts.length >= CONFIDENCE_THRESHOLD_HIGH ? 'high' :
+    amounts.length >= CONFIDENCE_THRESHOLD_MEDIUM ? 'medium' :
+    'low';
+
   try {
     const response = await analyticsAgent.chat(message);
 
-    // Parse AI response to extract prediction details
-    // For now, use a simple calculation based on historical data
-    const amounts = historicalData.map(d => d.amount);
-    const avgAmount = amounts.length > 0
-      ? amounts.reduce((a, b) => a + b, 0) / amounts.length
-      : 100000;
-
+    // TODO: Parse AI response to extract structured prediction details
+    // For now, use statistical baseline with AI insights text
     return {
       amount: avgAmount,
-      confidence: amounts.length >= 12 ? 'high' : amounts.length >= 6 ? 'medium' : 'low',
+      confidence,
       insights: response.response || 'Prediction based on historical spending patterns',
+      // TODO: Implement category breakdown parsing from AI response
       categoryBreakdown: {},
+      // TODO: Implement comparison data parsing from AI response
       comparisonData: {}
     };
   } catch (error) {
-    // Fallback if AI agent fails
-    const amounts = historicalData.map(d => d.amount);
-    const avgAmount = amounts.length > 0
-      ? amounts.reduce((a, b) => a + b, 0) / amounts.length
-      : 100000;
-
+    // Fallback if AI agent fails - use statistical baseline
     return {
       amount: avgAmount,
-      confidence: amounts.length >= 12 ? 'high' : amounts.length >= 6 ? 'medium' : 'low',
-      insights: 'Prediction based on historical average',
+      confidence,
+      insights: 'Prediction based on historical average (AI agent unavailable)',
       categoryBreakdown: {},
       comparisonData: {}
     };
