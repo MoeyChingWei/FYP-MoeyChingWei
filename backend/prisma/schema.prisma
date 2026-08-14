@@ -353,10 +353,22 @@ model Department {
 
 // Stub models for forward references - will be fully implemented in later tasks
 model MonthlyBudget {
-  id           Int        @id @default(autoincrement())
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
+  id               Int      @id @default(autoincrement())
+  departmentId     Int
+  year             Int
+  month            Int
+  allocatedAmount  Decimal  @db.Decimal(15, 2)
+  spentAmount      Decimal  @db.Decimal(15, 2) @default(0)
+  reservedAmount   Decimal  @db.Decimal(15, 2) @default(0)
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
+  department       Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, year, month])
+  @@index([year, month])
+  @@index([departmentId])
   @@map("monthly_budgets")
 }
 
