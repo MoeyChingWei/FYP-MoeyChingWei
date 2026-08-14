@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Row, Col, Card, Statistic, Select, Space, Button, Modal } from "antd";
+import { Typography, Row, Col, Card, Statistic, Select, Space, Button, Modal, message } from "antd";
 import { ReloadOutlined, DollarOutlined, WarningOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { DepartmentBudgetTable } from "../components/budget/DepartmentBudgetTable";
 import { BudgetUsageChart } from "../components/budget/BudgetUsageChart";
@@ -7,14 +7,13 @@ import {
   getDepartments,
   getMonthlyBudgets,
   getHistoricalComparison,
-  type Department,
-  type MonthlyBudget
+  type MonthlyBudget,
+  type HistoricalComparison
 } from "../shared/api/departmentBudget";
 
 const { Title } = Typography;
 
 const FinanceBudgetDashboard: React.FC = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
   const [budgets, setBudgets] = useState<MonthlyBudget[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +22,7 @@ const FinanceBudgetDashboard: React.FC = () => {
 
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<MonthlyBudget | null>(null);
-  const [historicalData, setHistoricalData] = useState<any>(null);
+  const [historicalData, setHistoricalData] = useState<HistoricalComparison | null>(null);
 
   useEffect(() => {
     loadData();
@@ -33,7 +32,6 @@ const FinanceBudgetDashboard: React.FC = () => {
     setLoading(true);
     try {
       const depts = await getDepartments(true);
-      setDepartments(depts);
 
       const budgetPromises = depts.map(d =>
         getMonthlyBudgets(d.id, selectedYear, selectedMonth)
@@ -43,6 +41,7 @@ const FinanceBudgetDashboard: React.FC = () => {
       setBudgets(allBudgets);
     } catch (error) {
       console.error("Load data error:", error);
+      message.error("Failed to load budget data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -52,22 +51,33 @@ const FinanceBudgetDashboard: React.FC = () => {
     setSelectedBudget(budget);
     setDetailModalVisible(true);
 
-    const historical = await getHistoricalComparison(budget.departmentId, {
-      preset: "last-6-months"
-    });
-    setHistoricalData(historical);
+    try {
+      const historical = await getHistoricalComparison(budget.departmentId, {
+        preset: "last-6-months"
+      });
+      setHistoricalData(historical);
+    } catch (error) {
+      console.error("Load historical data error:", error);
+      message.error("Failed to load historical data.");
+    }
   };
 
   const totalAllocated = budgets.reduce((sum, b) => sum + b.allocatedAmount, 0);
   const totalSpent = budgets.reduce((sum, b) => sum + b.spentAmount, 0);
   const totalRemaining = totalAllocated - totalSpent;
 
-  const onTrackCount = budgets.filter(b => (b.spentAmount / b.allocatedAmount) < 0.8).length;
+  const onTrackCount = budgets.filter(b => {
+    const percentage = b.allocatedAmount === 0 ? 0 : (b.spentAmount / b.allocatedAmount);
+    return percentage < 0.8;
+  }).length;
   const warningCount = budgets.filter(b => {
-    const p = b.spentAmount / b.allocatedAmount;
+    const p = b.allocatedAmount === 0 ? 0 : (b.spentAmount / b.allocatedAmount);
     return p >= 0.8 && p < 1.0;
   }).length;
-  const exceededCount = budgets.filter(b => (b.spentAmount / b.allocatedAmount) >= 1.0).length;
+  const exceededCount = budgets.filter(b => {
+    const percentage = b.allocatedAmount === 0 ? 0 : (b.spentAmount / b.allocatedAmount);
+    return percentage >= 1.0;
+  }).length;
 
   return (
     <div style={{ padding: 24 }}>

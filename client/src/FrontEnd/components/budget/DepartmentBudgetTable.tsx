@@ -68,7 +68,7 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
       title: "Usage",
       key: "usage",
       render: (_: any, record: MonthlyBudget) => {
-        const percentage = (record.spentAmount / record.allocatedAmount) * 100;
+        const percentage = record.allocatedAmount === 0 ? 0 : (record.spentAmount / record.allocatedAmount) * 100;
         const status = percentage >= 100 ? "exception" : percentage >= 80 ? "normal" : "success";
         return (
           <Space direction="vertical" size={0} style={{ width: "100%" }}>
@@ -83,8 +83,8 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
         );
       },
       sorter: (a: MonthlyBudget, b: MonthlyBudget) => {
-        const aPerc = (a.spentAmount / a.allocatedAmount) * 100;
-        const bPerc = (b.spentAmount / b.allocatedAmount) * 100;
+        const aPerc = a.allocatedAmount === 0 ? 0 : (a.spentAmount / a.allocatedAmount) * 100;
+        const bPerc = b.allocatedAmount === 0 ? 0 : (b.spentAmount / b.allocatedAmount) * 100;
         return aPerc - bPerc;
       }
     },
@@ -92,7 +92,7 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
       title: "Status",
       key: "status",
       render: (_: any, record: MonthlyBudget) => {
-        const percentage = (record.spentAmount / record.allocatedAmount) * 100;
+        const percentage = record.allocatedAmount === 0 ? 0 : (record.spentAmount / record.allocatedAmount) * 100;
         if (percentage >= 100) {
           return <Tag color="red">EXCEEDED</Tag>;
         } else if (percentage >= 80) {
@@ -106,7 +106,7 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
         { text: "Exceeded", value: "exceeded" }
       ],
       onFilter: (value: any, record: MonthlyBudget) => {
-        const percentage = (record.spentAmount / record.allocatedAmount) * 100;
+        const percentage = record.allocatedAmount === 0 ? 0 : (record.spentAmount / record.allocatedAmount) * 100;
         if (value === "exceeded") return percentage >= 100;
         if (value === "warning") return percentage >= 80 && percentage < 100;
         return percentage < 80;
