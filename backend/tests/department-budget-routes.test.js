@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll, afterEach, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import prisma from '../config/prisma.js';
@@ -10,6 +10,18 @@ vi.mock('../services/notification-service.js');
 
 const app = express();
 app.use(express.json());
+
+// Mock authentication middleware for tests - uses currentMockUser
+let currentMockUser = null;
+app.use((req, res, next) => {
+  req.user = currentMockUser || {
+    id: 1,
+    email: 'test@example.com',
+    role: 'Department Executive'
+  };
+  next();
+});
+
 app.use('/api/department-budget', departmentRouter);
 
 describe('Department Budget Routes', () => {
@@ -327,7 +339,7 @@ describe('Department Budget Routes', () => {
       });
 
       financeUser = await prisma.user.create({
-        data: { email: 'finance@test.com', password: 'hash', name: 'Finance Mgr', role: 'Treasury/Finance Officer' }
+        data: { email: 'finance@test.com', password: 'hash', name: 'Finance Mgr', role: 'Treasury / Finance Officer' }
       });
 
       testBudget = await prisma.monthlyBudget.create({
@@ -346,6 +358,11 @@ describe('Department Budget Routes', () => {
       await prisma.budgetAdjustmentRequest.deleteMany({ where: { departmentId: testDept.id } });
       await prisma.monthlyBudget.delete({ where: { id: testBudget.id } });
       await prisma.user.deleteMany({ where: { id: { in: [testUser.id, financeUser.id] } } });
+    });
+
+    beforeEach(() => {
+      // Reset to testUser by default (Department Executive)
+      currentMockUser = testUser;
     });
 
     describe('POST /api/department-budget/adjustments', () => {
@@ -412,6 +429,9 @@ describe('Department Budget Routes', () => {
       test('should approve adjustment request and update budget', async () => {
         notificationService.notifyBudgetAdjustmentApproved.mockResolvedValue({});
 
+        // Switch to finance user for approval
+        currentMockUser = financeUser;
+
         const res = await request(app)
           .patch(`/api/department-budget/adjustments/${testAdjustment.id}/approve`)
           .send({
@@ -443,6 +463,9 @@ describe('Department Budget Routes', () => {
             status: 'pending'
           }
         });
+
+        // Switch to finance user for rejection
+        currentMockUser = financeUser;
 
         const res = await request(app)
           .patch(`/api/department-budget/adjustments/${newRequest.id}/reject`)

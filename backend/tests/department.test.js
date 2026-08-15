@@ -12,23 +12,30 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 describe('Department Model', () => {
+  let createdDeptId;
+
   afterAll(async () => {
+    if (createdDeptId) {
+      await prisma.department.delete({ where: { id: createdDeptId } }).catch(() => {});
+    }
     await prisma.$disconnect();
     await pool.end();
   });
 
   test('should create department with required fields', async () => {
+    const timestamp = Date.now();
     const dept = await prisma.department.create({
       data: {
-        code: 'ENG',
+        code: `ENG${timestamp}`.substring(0, 10),
         name: 'Engineering',
         description: 'Software development department',
         isActive: true
       }
     });
 
+    createdDeptId = dept.id;
     expect(dept.id).toBeDefined();
-    expect(dept.code).toBe('ENG');
+    expect(dept.code).toContain('ENG');
     expect(dept.name).toBe('Engineering');
     expect(dept.isActive).toBe(true);
   });

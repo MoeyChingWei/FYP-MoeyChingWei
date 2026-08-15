@@ -15,7 +15,7 @@ describe('Budget Deduction Service', () => {
     await prisma.department.deleteMany({ where: { code: 'DEDUCT' } });
 
     testDept = await prisma.department.create({
-      data: { code: 'DEDUCT', name: 'Deduction Test' }
+      data: { code: 'DEDUCT', name: 'Deduction Test', isActive: true }
     });
 
     testUser = await prisma.user.create({
@@ -23,8 +23,9 @@ describe('Budget Deduction Service', () => {
         email: 'deduct@test.com',
         password: 'hash',
         name: 'Test User',
-        department: 'Deduction Test',
-        role: 'Department Executive'
+        department: 'DEDUCT',
+        role: 'Department Executive',
+        isActive: true
       }
     });
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import prisma from '../../config/prisma.js';
 import { deductBudgetForPR } from '../../services/budget-deduction-service.js';
 
@@ -8,9 +8,12 @@ describe("Budget Deduction on PR Approval Integration", () => {
   let testBudget;
 
   beforeAll(async () => {
+    // Use unique code per test run to avoid conflicts
+    const uniqueCode = `TEST_DED_${Date.now()}`;
+
     testDepartment = await prisma.department.create({
       data: {
-        code: "TEST_DEDUCT",
+        code: uniqueCode,
         name: "Test Deduction Department",
         isActive: true
       }
@@ -26,8 +29,75 @@ describe("Budget Deduction on PR Approval Integration", () => {
         isActive: true
       }
     });
+  });
+
+  afterAll(async () => {
+    try {
+      await prisma.purchaseRequestRecord.deleteMany({
+        where: {
+          payload: {
+            path: ["department"],
+            equals: testDepartment.code
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Cleanup purchaseRequestRecord error:', e.message);
+    }
+
+    try {
+      await prisma.notification.deleteMany({
+        where: { userId: testUser.id }
+      });
+    } catch (e) {
+      console.error('Cleanup notification error:', e.message);
+    }
+
+    try {
+      await prisma.monthlyBudget.deleteMany({
+        where: { departmentId: testDepartment.id }
+      });
+    } catch (e) {
+      console.error('Cleanup monthlyBudget error:', e.message);
+    }
+
+    try {
+      await prisma.user.delete({
+        where: { id: testUser.id }
+      });
+    } catch (e) {
+      console.error('Cleanup user error:', e.message);
+    }
+
+    try {
+      await prisma.department.delete({
+        where: { id: testDepartment.id }
+      });
+    } catch (e) {
+      console.error('Cleanup department error:', e.message);
+    }
+
+    await prisma.$disconnect();
+  });
+
+  // Create fresh budget before each test
+  beforeEach(async () => {
+    // Ensure testDepartment exists
+    if (!testDepartment || !testDepartment.id) {
+      throw new Error('testDepartment not initialized in beforeAll');
+    }
 
     const now = new Date();
+
+    // Delete any existing budget for this period first
+    await prisma.monthlyBudget.deleteMany({
+      where: {
+        departmentId: testDepartment.id,
+        year: now.getFullYear(),
+        month: now.getMonth() + 1
+      }
+    });
+
     testBudget = await prisma.monthlyBudget.create({
       data: {
         departmentId: testDepartment.id,
@@ -41,28 +111,20 @@ describe("Budget Deduction on PR Approval Integration", () => {
     });
   });
 
-  afterAll(async () => {
-    await prisma.purchaseRequestRecord.deleteMany({
-      where: {
-        payload: {
-          path: ["department"],
-          equals: testDepartment.code
+  // Clean up budget after each test
+  afterEach(async () => {
+    if (testBudget?.id) {
+      await prisma.notification.deleteMany({
+        where: {
+          refType: "monthly_budget",
+          refId: String(testBudget.id)
         }
-      }
-    });
-    await prisma.notification.deleteMany({
-      where: { userId: testUser.id }
-    });
-    await prisma.monthlyBudget.deleteMany({
-      where: { departmentId: testDepartment.id }
-    });
-    await prisma.user.delete({
-      where: { id: testUser.id }
-    });
-    await prisma.department.delete({
-      where: { id: testDepartment.id }
-    });
-    await prisma.$disconnect();
+      });
+      await prisma.monthlyBudget.deleteMany({
+        where: { id: testBudget.id }
+      });
+      testBudget = null;
+    }
   });
 
   describe("Budget Deduction", () => {

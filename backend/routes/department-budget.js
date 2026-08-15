@@ -8,8 +8,13 @@ import {
   notifyBudgetAdjustmentRejected
 } from '../services/notification-service.js';
 import { deductBudgetForPR } from '../services/budget-deduction-service.js';
+import { authenticateRequest, requireRoles } from '../middleware/auth.js';
+import { ROLES } from '../constants/roles.js';
 
 const router = express.Router();
+
+// Apply authentication to all budget routes
+router.use(authenticateRequest);
 
 // GET /api/department-budget/departments - List all departments
 router.get('/departments', async (req, res) => {
@@ -38,9 +43,38 @@ router.get('/monthly/:departmentId', async (req, res) => {
     const { departmentId } = req.params;
     const { year, month } = req.query;
 
-    const where = { departmentId: parseInt(departmentId) };
-    if (year) where.year = parseInt(year);
-    if (month) where.month = parseInt(month);
+    // Validate departmentId
+    const deptId = parseInt(departmentId);
+    if (isNaN(deptId) || deptId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'departmentId must be a positive integer'
+      });
+    }
+
+    const where = { departmentId: deptId };
+
+    if (year) {
+      const yearNum = parseInt(year);
+      if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
+        return res.status(400).json({
+          success: false,
+          message: 'year must be between 2000 and 2100'
+        });
+      }
+      where.year = yearNum;
+    }
+
+    if (month) {
+      const monthNum = parseInt(month);
+      if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+        return res.status(400).json({
+          success: false,
+          message: 'month must be between 1 and 12'
+        });
+      }
+      where.month = monthNum;
+    }
 
     const budgets = await prisma.monthlyBudget.findMany({
       where,
@@ -302,7 +336,7 @@ router.post('/predict/batch', async (req, res) => {
 });
 
 // POST /api/department-budget/adjustments - Create budget adjustment request
-router.post('/adjustments', async (req, res) => {
+router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (req, res) => {
   try {
     const { departmentId, targetYear, targetMonth, requestType, requestedAmount, reason, requestedBy } = req.body;
 
@@ -385,23 +419,30 @@ router.post('/adjustments', async (req, res) => {
 
     // Notify finance managers in parallel
     const financeManagers = await prisma.user.findMany({
-      where: { role: 'Treasury/Finance Officer', isActive: true }
+      where: { role: ROLES.TREASURY_FINANCE_OFFICER, isActive: true }
     });
 
-    await Promise.all(
-      financeManagers.map(fm =>
-        notifyBudgetAdjustmentRequested(
-          fm.id,
-          fm.role,
-          department.name,
-          parseInt(targetYear),
-          parseInt(targetMonth),
-          amount.toNumber(),
-          reason,
-          adjustment.id
+    if (financeManagers.length > 0) {
+      await Promise.all(
+        financeManagers.map(fm =>
+          notifyBudgetAdjustmentRequested(
+            fm.id,
+            fm.role,
+            department.name,
+            parseInt(targetYear),
+            parseInt(targetMonth),
+            amount.toNumber(),
+            reason,
+            adjustment.id
+          ).catch(err => {
+            console.error(`Failed to notify finance manager ${fm.id}:`, err);
+            // Don't fail the request if notification fails
+          })
         )
-      )
-    );
+      );
+    } else {
+      console.warn('No active finance managers found to notify for adjustment request');
+    }
 
     res.status(201).json({
       success: true,
@@ -453,7 +494,7 @@ router.get('/adjustments', async (req, res) => {
 });
 
 // PATCH /api/department-budget/adjustments/:id/approve - Approve adjustment request
-router.patch('/adjustments/:id/approve', async (req, res) => {
+router.patch('/adjustments/:id/approve', requireRoles([ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
@@ -576,7 +617,7 @@ router.patch('/adjustments/:id/approve', async (req, res) => {
 });
 
 // PATCH /api/department-budget/adjustments/:id/reject - Reject adjustment request
-router.patch('/adjustments/:id/reject', async (req, res) => {
+router.patch('/adjustments/:id/reject', requireRoles([ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
@@ -669,12 +710,38 @@ router.get('/usage/:departmentId', async (req, res) => {
       });
     }
 
+    // Validate all numeric inputs
+    const deptId = parseInt(departmentId);
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+
+    if (isNaN(deptId) || deptId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'departmentId must be a positive integer'
+      });
+    }
+
+    if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
+      return res.status(400).json({
+        success: false,
+        message: 'year must be between 2000 and 2100'
+      });
+    }
+
+    if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      return res.status(400).json({
+        success: false,
+        message: 'month must be between 1 and 12'
+      });
+    }
+
     const budget = await prisma.monthlyBudget.findUnique({
       where: {
         departmentId_year_month: {
-          departmentId: parseInt(departmentId),
-          year: parseInt(year),
-          month: parseInt(month)
+          departmentId: deptId,
+          year: yearNum,
+          month: monthNum
         }
       },
       include: { department: true }

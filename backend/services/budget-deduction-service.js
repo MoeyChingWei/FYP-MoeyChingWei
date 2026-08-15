@@ -137,7 +137,10 @@ export async function checkBudgetThresholds(budgetId, tx = prisma) {
           spent.toNumber(),
           allocated.toNumber(),
           budgetId
-        )
+        ).catch(err => {
+          console.error(`Failed to notify user ${user.id} of budget exceeded:`, err);
+          // Don't fail the transaction if notification fails
+        })
       )
     );
 
@@ -161,7 +164,10 @@ export async function checkBudgetThresholds(budgetId, tx = prisma) {
           spent.toNumber(),
           allocated.toNumber(),
           budgetId
-        )
+        ).catch(err => {
+          console.error(`Failed to notify user ${user.id} of budget threshold:`, err);
+          // Don't fail the transaction if notification fails
+        })
       )
     );
 

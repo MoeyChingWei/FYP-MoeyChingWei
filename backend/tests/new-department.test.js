@@ -6,19 +6,29 @@ describe('New Department Handling', () => {
   let newDept, existingDept, testUser;
 
   beforeAll(async () => {
+    const timestamp = Date.now();
+    const uniqueSuffix = Math.random().toString(36).substring(2, 9);
+
     existingDept = await prisma.department.create({
-      data: { code: 'OLDM', name: 'Old Marketing' }
+      data: { code: `O${uniqueSuffix}`.substring(0, 10), name: `Old Marketing ${timestamp}`, isActive: true }
     });
     newDept = await prisma.department.create({
-      data: { code: 'NEWM', name: 'New Marketing' }
+      data: { code: `N${uniqueSuffix}`.substring(0, 10), name: `New Marketing ${timestamp}`, isActive: true }
     });
     testUser = await prisma.user.create({
-      data: { email: 'oldm@test.com', password: 'hash', department: 'OLDM' }
+      data: {
+        email: `oldm-${timestamp}-${uniqueSuffix}@test.com`,
+        password: 'hash',
+        name: 'Old Marketing User',
+        role: 'Department Executive',
+        department: existingDept.code,
+        isActive: true
+      }
     });
 
     await prisma.purchaseRequestRecord.create({
       data: {
-        localId: 'PR-OLDM-001',
+        localId: `PR-OLDM-${timestamp}-${uniqueSuffix}`,
         payload: {
           status: 'APPROVED',
           requestorId: testUser.id,
@@ -29,9 +39,10 @@ describe('New Department Handling', () => {
   });
 
   afterAll(async () => {
-    await prisma.purchaseRequestRecord.deleteMany({});
-    await prisma.user.delete({ where: { id: testUser.id } });
-    await prisma.department.deleteMany({});
+    await prisma.purchaseRequestRecord.deleteMany({ where: { localId: { contains: 'PR-OLDM-' } } });
+    if (testUser) await prisma.user.delete({ where: { id: testUser.id } });
+    if (existingDept) await prisma.department.delete({ where: { id: existingDept.id } });
+    if (newDept) await prisma.department.delete({ where: { id: newDept.id } });
     await prisma.$disconnect();
   });
 
@@ -39,7 +50,7 @@ describe('New Department Handling', () => {
     const similar = await findSimilarDepartments(newDept.id);
 
     expect(similar.length).toBeGreaterThan(0);
-    expect(similar[0].name).toBe('Old Marketing');
+    expect(similar[0].name).toContain('Old Marketing');
   });
 
   test('should create prediction based on similar department', async () => {

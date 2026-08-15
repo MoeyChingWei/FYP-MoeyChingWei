@@ -43,13 +43,15 @@ async function runMonthlyPredictions() {
       );
 
       // Notify department heads
-      // NOTE: This query assumes User.department field contains either the department code or name.
-      // This is fragile and may miss executives if the field values don't match exactly.
-      // TODO: Consider adding a departmentId foreign key to User table for reliable matching.
+      // NOTE: User.department field contains the department code as a string reference
       const deptHeads = await prisma.user.findMany({
         where: {
-          department: { in: [dept.code, dept.name], mode: 'insensitive' },
-          role: 'Department Executive'
+          OR: [
+            { department: { equals: dept.code, mode: 'insensitive' } },
+            { department: { equals: dept.name, mode: 'insensitive' } }
+          ],
+          role: 'Department Executive',
+          isActive: true
         }
       });
 

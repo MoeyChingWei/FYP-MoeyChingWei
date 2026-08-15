@@ -325,6 +325,23 @@ export async function processWorkflowNotifications(
             refType: "tracking-item",
             refId: requesterContext.requestLocalId || localId,
           });
+
+          // CRITICAL: Integrate budget deduction on PR approval (Task 16)
+          const { deductBudgetForPR } = await import('../services/budget-deduction-service.js');
+          try {
+            const deductionResult = await deductBudgetForPR(row);
+            if (deductionResult.success) {
+              console.log(`✅ Budget deducted for PR ${row.prNumber}: $${deductionResult.deductedAmount}`, {
+                budgetId: deductionResult.budgetId,
+                warnings: deductionResult.warnings
+              });
+            } else {
+              console.warn(`⚠️ Budget deduction skipped for PR ${row.prNumber}:`, deductionResult.reason);
+            }
+          } catch (deductionError) {
+            console.error(`❌ Budget deduction failed for PR ${row.prNumber}:`, deductionError);
+            // Don't fail the notification - budget deduction failure is logged but not critical
+          }
         } else if (nowStatus === "REJECTED") {
           await createInAppNotifications([requesterContext.user], {
             title: "Purchase Request Rejected",

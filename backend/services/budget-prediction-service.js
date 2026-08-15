@@ -65,7 +65,9 @@ async function getHistoricalSpending(departmentId) {
   const aggregated = {};
 
   approvedRequests.forEach(request => {
-    const date = new Date(request.createdAt);
+    // Use the PR's actual creation date from payload if available, otherwise use record timestamp
+    const dateStr = request.payload?.createdAt || request.createdAt;
+    const date = new Date(dateStr);
     const period = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
     if (!aggregated[period]) {

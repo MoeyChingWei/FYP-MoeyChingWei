@@ -7,17 +7,36 @@ import * as predictionService from '../../services/budget-prediction-service.js'
 
 const app = express();
 app.use(express.json());
+
+// Mock authentication middleware for tests
+app.use((req, res, next) => {
+  req.user = {
+    id: 1,
+    email: 'test@example.com',
+    role: 'Department Executive',
+    department: null, // Will be set dynamically in tests
+    isActive: true
+  };
+  req.auth = {
+    userId: 1,
+    email: 'test@example.com'
+  };
+  next();
+});
+
 app.use('/api/department-budget', departmentRouter);
 
 describe('Budget Prediction Flow Integration', () => {
   let testDepartment;
   let testUser;
+  const timestamp = Date.now();
+  const deptCode = `TD${timestamp}`.substring(0, 10);
 
   beforeAll(async () => {
     // Create test department
     testDepartment = await prisma.department.create({
       data: {
-        code: 'TEST_DEPT',
+        code: deptCode,
         name: 'Test Department',
         isActive: true
       }
@@ -26,10 +45,12 @@ describe('Budget Prediction Flow Integration', () => {
     // Create test user
     testUser = await prisma.user.create({
       data: {
-        email: `test-${Date.now()}@example.com`,
+        email: `test-${timestamp}@example.com`,
         password: 'hashedpass',
         name: 'Test User',
-        role: 'Department Executive'
+        role: 'Department Executive',
+        department: testDepartment.code,
+        isActive: true
       }
     });
 
@@ -164,10 +185,10 @@ describe('Budget Prediction Flow Integration', () => {
 
   describe('Automatic Prediction Trigger', () => {
     test('should generate predictions for all active departments', async () => {
-      // Create another test department
+      // Create another test department with unique code
       const dept2 = await prisma.department.create({
         data: {
-          code: 'TEST_DEPT_2',
+          code: `TEST_DEPT_2_${Date.now()}`,
           name: 'Test Department 2',
           isActive: true
         }

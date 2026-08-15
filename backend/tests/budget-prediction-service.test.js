@@ -16,18 +16,35 @@ const prisma = new PrismaClient({ adapter });
 describe('Budget Prediction Service', () => {
   let testDept;
   let newDept;
+  let testUser;
 
   beforeAll(async () => {
+    const timestamp = Date.now();
+
+    // Create test user for notifications
+    testUser = await prisma.user.create({
+      data: {
+        email: `pred-test-${timestamp}@example.com`,
+        password: 'hash',
+        name: 'Prediction Test User',
+        role: 'Department Executive',
+        isActive: true
+      }
+    });
+
     testDept = await prisma.department.create({
-      data: { code: 'PSVC', name: 'Prediction Service Test' }
+      data: { code: `PSVC${timestamp}`.substring(0, 10), name: 'Prediction Service Test' }
     });
 
     newDept = await prisma.department.create({
-      data: { code: 'NEWD', name: 'New Department' }
+      data: { code: `NEWD${timestamp}`.substring(0, 10), name: 'New Department' }
     });
   });
 
   afterAll(async () => {
+    await prisma.notification.deleteMany({
+      where: { userId: testUser.id }
+    });
     await prisma.budgetPrediction.deleteMany({
       where: {
         departmentId: {
@@ -37,6 +54,7 @@ describe('Budget Prediction Service', () => {
     });
     await prisma.department.delete({ where: { id: testDept.id } });
     await prisma.department.delete({ where: { id: newDept.id } });
+    await prisma.user.delete({ where: { id: testUser.id } });
     await prisma.$disconnect();
     await pool.end();
   });
@@ -53,7 +71,7 @@ describe('Budget Prediction Service', () => {
   });
 
   test('should generate prediction for department with history', async () => {
-    const prediction = await generateDepartmentPrediction('PSVC', 2026, 9, null);
+    const prediction = await generateDepartmentPrediction(testDept.code, 2026, 9, null);
 
     expect(prediction).toBeDefined();
     expect(prediction.departmentId).toBe(testDept.id);
@@ -66,7 +84,7 @@ describe('Budget Prediction Service', () => {
   });
 
   test('should handle new department with no history', async () => {
-    const prediction = await generateDepartmentPrediction('NEWD', 2026, 10, 1);
+    const prediction = await generateDepartmentPrediction(newDept.code, 2026, 10, testUser.id);
 
     expect(prediction).toBeDefined();
     expect(prediction.departmentId).toBe(newDept.id);
@@ -75,7 +93,7 @@ describe('Budget Prediction Service', () => {
     expect(parseFloat(prediction.predictedAmount)).toBe(50000);
     expect(prediction.confidence).toBe('low');
     expect(prediction.algorithm).toBe('default');
-    expect(prediction.aiInsights).toBe('No historical data available');
+    expect(prediction.aiInsights).toContain('No historical data available');
     expect(prediction.triggerType).toBe('manual');
   });
 

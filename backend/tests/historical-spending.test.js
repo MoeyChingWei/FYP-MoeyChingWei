@@ -13,23 +13,40 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 describe('Historical Spending Aggregation', () => {
-  let testDept, testUser;
+  let testDept, testUser, prRecord;
 
   beforeAll(async () => {
+    const timestamp = Date.now();
+    const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+
+    // Clean up any existing test data first
+    await prisma.purchaseRequestRecord.deleteMany({
+      where: { localId: { startsWith: 'PR-HIST-' } }
+    });
+    await prisma.user.deleteMany({
+      where: { email: { contains: 'hist-' } }
+    });
+    await prisma.department.deleteMany({
+      where: { code: { startsWith: 'H' } }
+    });
+
     testDept = await prisma.department.create({
-      data: { code: 'HIST', name: 'Historical Test' }
+      data: { code: `H${timestamp}${uniqueSuffix}`.substring(0, 10), name: `Historical Test ${timestamp}`, isActive: true }
     });
     testUser = await prisma.user.create({
       data: {
-        email: 'hist@test.com',
+        email: `hist-${timestamp}-${uniqueSuffix}@test.com`,
         password: 'hash',
-        department: 'HIST'
+        name: 'Historical Test User',
+        role: 'Department Executive',
+        department: testDept.code,
+        isActive: true
       }
     });
 
-    await prisma.purchaseRequestRecord.create({
+    prRecord = await prisma.purchaseRequestRecord.create({
       data: {
-        localId: 'PR-HIST-001',
+        localId: `PR-HIST-${timestamp}-${uniqueSuffix}`,
         payload: {
           status: 'APPROVED',
           requestorId: testUser.id,
@@ -44,9 +61,7 @@ describe('Historical Spending Aggregation', () => {
   });
 
   afterAll(async () => {
-    await prisma.purchaseRequestRecord.deleteMany({
-      where: { localId: { startsWith: 'PR-HIST-' } }
-    });
+    await prisma.purchaseRequestRecord.delete({ where: { localId: prRecord.localId } });
     await prisma.user.delete({ where: { id: testUser.id } });
     await prisma.department.delete({ where: { id: testDept.id } });
     await prisma.$disconnect();

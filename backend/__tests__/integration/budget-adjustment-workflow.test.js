@@ -5,6 +5,34 @@ import departmentBudgetRouter from '../../routes/department-budget.js';
 
 const app = express();
 app.use(express.json());
+
+let currentMockUser = null;
+
+// Mock authentication middleware for tests - uses currentMockUser
+app.use((req, res, next) => {
+  if (currentMockUser) {
+    req.user = currentMockUser;
+    // Also set req.auth for requireRoles middleware
+    req.auth = {
+      userId: currentMockUser.id,
+      email: currentMockUser.email
+    };
+  } else {
+    // Default fallback
+    req.user = {
+      id: 1,
+      email: 'test@example.com',
+      role: 'Department Executive',
+      isActive: true
+    };
+    req.auth = {
+      userId: 1,
+      email: 'test@example.com'
+    };
+  }
+  next();
+});
+
 app.use('/api/department-budget', departmentBudgetRouter);
 
 let prisma;
@@ -33,7 +61,9 @@ beforeAll(async () => {
       email: `dept-exec-${Date.now()}@example.com`,
       password: "hashedpass",
       name: "Department Executive",
-      role: "Department Executive"
+      role: "Department Executive",
+      department: testDepartment.code,
+      isActive: true
     }
   });
 
@@ -42,9 +72,19 @@ beforeAll(async () => {
       email: `finance-mgr-${Date.now()}@example.com`,
       password: "hashedpass",
       name: "Finance Manager",
-      role: "Treasury/Finance Officer"
+      role: "Treasury / Finance Officer",
+      isActive: true
     }
   });
+
+  // Set default mock user to testUser
+  currentMockUser = {
+    id: testUser.id,
+    email: testUser.email,
+    role: testUser.role,
+    department: testUser.department,
+    isActive: true
+  };
 
   // Create test budget
   const now = new Date();
@@ -150,6 +190,14 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
     let pendingRequest;
 
     beforeEach(async () => {
+      // Switch to finance user for approval operations
+      currentMockUser = {
+        id: financeUser.id,
+        email: financeUser.email,
+        role: financeUser.role,
+        isActive: true
+      };
+
       // Create pending request
       pendingRequest = await prisma.budgetAdjustmentRequest.create({
         data: {
@@ -166,6 +214,15 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
     });
 
     afterEach(async () => {
+      // Reset mock user back to testUser
+      currentMockUser = {
+        id: testUser.id,
+        email: testUser.email,
+        role: testUser.role,
+        department: testUser.department,
+        isActive: true
+      };
+
       await prisma.budgetAdjustmentRequest.deleteMany({
         where: { id: pendingRequest.id }
       });
@@ -262,6 +319,14 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
     let pendingRequest;
 
     beforeEach(async () => {
+      // Switch to finance user for rejection operations
+      currentMockUser = {
+        id: financeUser.id,
+        email: financeUser.email,
+        role: financeUser.role,
+        isActive: true
+      };
+
       pendingRequest = await prisma.budgetAdjustmentRequest.create({
         data: {
           departmentId: testDepartment.id,
@@ -277,6 +342,15 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
     });
 
     afterEach(async () => {
+      // Reset mock user back to testUser
+      currentMockUser = {
+        id: testUser.id,
+        email: testUser.email,
+        role: testUser.role,
+        department: testUser.department,
+        isActive: true
+      };
+
       await prisma.budgetAdjustmentRequest.deleteMany({
         where: { id: pendingRequest.id }
       });
@@ -342,6 +416,17 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
   });
 
   describe("Multiple Adjustment Requests", () => {
+    beforeEach(() => {
+      // Reset mock user to testUser before each test
+      currentMockUser = {
+        id: testUser.id,
+        email: testUser.email,
+        role: testUser.role,
+        department: testUser.department,
+        isActive: true
+      };
+    });
+
     it("should handle multiple additional requests for same period", async () => {
       const initialBudget = await prisma.monthlyBudget.findUnique({
         where: { id: testBudget.id }
@@ -364,6 +449,14 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
       expect(response1.status).toBe(201);
       const request1Id = response1.body.data.id;
 
+      // Switch to finance user for approval
+      currentMockUser = {
+        id: financeUser.id,
+        email: financeUser.email,
+        role: financeUser.role,
+        isActive: true
+      };
+
       // Approve first request
       await request(app)
         .patch(`/api/department-budget/adjustments/${request1Id}/approve`)
@@ -371,6 +464,15 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
           reviewedBy: financeUser.id,
           reviewComment: "Approved"
         });
+
+      // Reset mock user back to testUser for second request
+      currentMockUser = {
+        id: testUser.id,
+        email: testUser.email,
+        role: testUser.role,
+        department: testUser.department,
+        isActive: true
+      };
 
       // Submit second additional request
       const response2 = await request(app)
@@ -387,6 +489,14 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
 
       expect(response2.status).toBe(201);
       const request2Id = response2.body.data.id;
+
+      // Switch back to finance user for second approval
+      currentMockUser = {
+        id: financeUser.id,
+        email: financeUser.email,
+        role: financeUser.role,
+        isActive: true
+      };
 
       // Approve second request
       await request(app)
@@ -413,6 +523,15 @@ describe("Budget Adjustment Approval Workflow Integration", () => {
         where: { id: testBudget.id },
         data: { allocatedAmount: initialAllocated }
       });
+
+      // Reset mock user
+      currentMockUser = {
+        id: testUser.id,
+        email: testUser.email,
+        role: testUser.role,
+        department: testUser.department,
+        isActive: true
+      };
     });
 
     it("should reject second increase request for same period", async () => {
