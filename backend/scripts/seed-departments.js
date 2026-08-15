@@ -32,18 +32,37 @@ export async function seedDepartmentsFromUsers() {
   const created = [];
 
   for (const [lowerName, displayName] of uniqueDepts.entries()) {
+    // Check if department with this name already exists (case-insensitive)
+    const existingByName = await prisma.department.findFirst({
+      where: {
+        name: {
+          equals: displayName,
+          mode: 'insensitive'
+        }
+      }
+    });
+
+    if (existingByName) {
+      console.log(`Department "${displayName}" already exists, skipping`);
+      continue;
+    }
+
     let code;
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 20;
 
     // Generate unique code with retry logic
     do {
       if (attempts === 0) {
         // First attempt: use first 3 characters
         code = displayName.substring(0, 3).toUpperCase();
-      } else {
-        // Subsequent attempts: add numeric suffix
+      } else if (attempts < 10) {
+        // Attempts 1-9: add numeric suffix
         code = displayName.substring(0, 2).toUpperCase() + attempts;
+      } else {
+        // Attempts 10+: use random suffix for highly contested codes
+        const randomSuffix = Math.floor(Math.random() * 1000);
+        code = displayName.substring(0, 2).toUpperCase() + randomSuffix;
       }
 
       const existing = await prisma.department.findUnique({

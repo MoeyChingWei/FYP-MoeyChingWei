@@ -214,6 +214,7 @@ describe('Budget Deduction Service', () => {
 
   test('checkBudgetThresholds should notify all executives at 100% threshold', async () => {
     // Clear mocks and cleanup any leftover test data
+    notificationService.notifyBudgetThreshold.mockClear();
     notificationService.notifyBudgetExceeded.mockClear();
     await prisma.user.deleteMany({ where: { email: 'exec4@test.com' } });
 

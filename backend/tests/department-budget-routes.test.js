@@ -545,6 +545,14 @@ describe('Department Budget Routes', () => {
             }
           });
 
+        if (res.status !== 200) {
+          console.error('Deduct budget test failed:', {
+            status: res.status,
+            body: res.body,
+            userId: testUser.id
+          });
+        }
+
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
         expect(res.body.data.deductedAmount).toBe(500);

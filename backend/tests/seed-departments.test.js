@@ -61,10 +61,20 @@ describe('Department Seed Script', () => {
 
     // Verify the departments exist (whether newly created or pre-existing)
     const engDept = await prisma.department.findFirst({
-      where: { code: 'ENG' }
+      where: {
+        name: {
+          equals: 'Engineering',
+          mode: 'insensitive'
+        }
+      }
     });
     const mktDept = await prisma.department.findFirst({
-      where: { code: 'MAR' }
+      where: {
+        name: {
+          equals: 'Marketing',
+          mode: 'insensitive'
+        }
+      }
     });
 
     expect(engDept).toBeTruthy();
@@ -97,7 +107,12 @@ describe('Department Seed Script', () => {
 
     // Verify the department exists (case should be normalized to first occurrence)
     const createdDept = await prisma.department.findFirst({
-      where: { code: 'ENG' }
+      where: {
+        name: {
+          equals: 'Engineering',
+          mode: 'insensitive'
+        }
+      }
     });
     expect(createdDept).toBeTruthy();
 
