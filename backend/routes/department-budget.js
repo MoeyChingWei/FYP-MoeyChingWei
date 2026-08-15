@@ -347,9 +347,10 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
       });
     }
 
-    // Validate requestType enum
-    const validRequestTypes = ['INCREASE', 'DECREASE', 'TRANSFER'];
-    if (!validRequestTypes.includes(requestType)) {
+    // Normalize and validate requestType (accept both uppercase and lowercase)
+    const normalizedRequestType = requestType.toLowerCase();
+    const validRequestTypes = ['increase', 'decrease', 'transfer', 'additional'];
+    if (!validRequestTypes.includes(normalizedRequestType)) {
       return res.status(400).json({
         success: false,
         message: `Invalid requestType. Must be one of: ${validRequestTypes.join(', ')}`
@@ -408,13 +409,13 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
     }
 
     // Check for duplicate increase requests for same period
-    if (requestType === 'INCREASE') {
+    if (normalizedRequestType === 'increase') {
       const existingIncreaseRequest = await prisma.budgetAdjustmentRequest.findFirst({
         where: {
           departmentId: parseInt(departmentId),
           targetYear: year,
           targetMonth: month,
-          requestType: 'INCREASE',
+          requestType: { in: ['increase', 'INCREASE'] },
           status: { in: ['pending', 'approved'] }
         }
       });
@@ -432,17 +433,8 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
         departmentId: parseInt(departmentId),
         targetYear: year,
         targetMonth: month,
-        requestType,
+        requestType: normalizedRequestType,
         requestedAmount: amount.toNumber(),
-        reason,
-        requestedBy: parseInt(requestedBy),
-        status: 'pending'
-      },
-      include: {
-        department: true,
-        requester: true
-      }
-    });
         reason,
         requestedBy: parseInt(requestedBy),
         status: 'pending'

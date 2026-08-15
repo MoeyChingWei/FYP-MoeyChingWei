@@ -242,6 +242,7 @@ describe('Budget Deduction Service', () => {
 
     const expectedExecCount = existingExecs + 1;
 
+    notificationService.notifyBudgetThreshold.mockResolvedValue();
     notificationService.notifyBudgetExceeded.mockResolvedValue();
 
     await prisma.monthlyBudget.update({
@@ -251,16 +252,24 @@ describe('Budget Deduction Service', () => {
 
     const warnings = await checkBudgetThresholds(testBudget.id);
 
-    expect(warnings.length).toBe(1);
-    expect(warnings[0].threshold).toBe(100);
+    // Should send both 80% and 100% warnings when jumping from 0% to 110%
+    expect(warnings.length).toBe(2);
+    expect(warnings.find(w => w.threshold === 80)).toBeTruthy();
+    expect(warnings.find(w => w.threshold === 100)).toBeTruthy();
 
-    // Verify all executives were notified
+    // Verify all executives were notified for both thresholds (3 execs * 2 thresholds)
+    // 80% threshold: notifyBudgetThreshold called for each exec
+    // 100% threshold: notifyBudgetExceeded called for each exec
+    expect(notificationService.notifyBudgetThreshold).toHaveBeenCalledTimes(expectedExecCount);
     expect(notificationService.notifyBudgetExceeded).toHaveBeenCalledTimes(expectedExecCount);
 
-    // Verify the new executive was included
-    const calls = notificationService.notifyBudgetExceeded.mock.calls;
-    const notifiedUserIds = calls.map(call => call[0]);
-    expect(notifiedUserIds).toContain(exec4.id);
+    // Verify the new executive was included in both notifications
+    const thresholdCalls = notificationService.notifyBudgetThreshold.mock.calls;
+    const exceededCalls = notificationService.notifyBudgetExceeded.mock.calls;
+    const thresholdUserIds = thresholdCalls.map(call => call[0]);
+    const exceededUserIds = exceededCalls.map(call => call[0]);
+    expect(thresholdUserIds).toContain(exec4.id);
+    expect(exceededUserIds).toContain(exec4.id);
 
     // Cleanup
     await prisma.user.delete({ where: { id: exec4.id } });
