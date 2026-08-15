@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 app.use('/api/department-budget', departmentRouter);
 
 describe('Department Budget Routes', () => {
-  let testDept;
+  let testDept, testUser;
 
   beforeAll(async () => {
     // Clean up any existing test department first
@@ -34,11 +34,23 @@ describe('Department Budget Routes', () => {
     testDept = await prisma.department.create({
       data: { code: 'TEST-DEPT', name: 'Test Department' }
     });
+
+    // Clean up and create test user
+    await prisma.user.deleteMany({ where: { email: 'test-budget@example.com' } });
+    testUser = await prisma.user.create({
+      data: {
+        email: 'test-budget@example.com',
+        password: 'hashed_password',
+        name: 'Test Budget User',
+        role: 'Department Executive'
+      }
+    });
   });
 
   afterAll(async () => {
     await prisma.monthlyBudget.deleteMany({ where: { departmentId: testDept.id } });
     await prisma.department.delete({ where: { id: testDept.id } });
+    await prisma.user.delete({ where: { id: testUser.id } });
     await prisma.$disconnect();
   });
 
@@ -478,6 +490,150 @@ describe('Department Budget Routes', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.data.status).toBe('rejected');
         expect(notificationService.notifyBudgetAdjustmentRejected).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Budget Prediction Retrieval Endpoints', () => {
+    let testPrediction, testPrediction2;
+
+    beforeAll(async () => {
+      testPrediction = await prisma.budgetPrediction.create({
+        data: {
+          departmentId: testDept.id,
+          targetYear: 2026,
+          targetMonth: 9,
+          predictedAmount: 105000,
+          confidence: 'high',
+          algorithm: 'linear_regression',
+          aiInsights: 'Test insights for prediction 1',
+          triggerType: 'automatic',
+          triggeredBy: testUser.id
+        }
+      });
+
+      testPrediction2 = await prisma.budgetPrediction.create({
+        data: {
+          departmentId: testDept.id,
+          targetYear: 2026,
+          targetMonth: 10,
+          predictedAmount: 110000,
+          confidence: 'medium',
+          algorithm: 'exponential_smoothing',
+          aiInsights: 'Test insights for prediction 2',
+          triggerType: 'manual',
+          triggeredBy: testUser.id
+        }
+      });
+    });
+
+    afterAll(async () => {
+      await prisma.budgetPrediction.deleteMany({
+        where: { id: { in: [testPrediction.id, testPrediction2.id] } }
+      });
+    });
+
+    describe('GET /api/department-budget/predictions/:departmentId', () => {
+      test('should return all predictions for department', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(Array.isArray(res.body.data)).toBe(true);
+        expect(res.body.data.length).toBeGreaterThanOrEqual(2);
+      });
+
+      test('should filter predictions by year and month', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?year=2026&month=9`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.every(p => p.targetYear === 2026 && p.targetMonth === 9)).toBe(true);
+      });
+
+      test('should filter predictions by confidence', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?confidence=high`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.every(p => p.confidence === 'high')).toBe(true);
+      });
+
+      test('should filter predictions by triggerType', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?triggerType=manual`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.every(p => p.triggerType === 'manual')).toBe(true);
+      });
+
+      test('should limit number of predictions returned', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}?limit=1`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.length).toBe(1);
+      });
+
+      test('should include department and triggeredByUser information', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data[0]).toHaveProperty('department');
+        expect(res.body.data[0]).toHaveProperty('triggeredByUser');
+        expect(res.body.data[0].department).toHaveProperty('name');
+        expect(res.body.data[0].triggeredByUser).toHaveProperty('email');
+      });
+
+      test('should return predictions in correct order', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        const data = res.body.data;
+        for (let i = 1; i < data.length; i++) {
+          const prev = data[i - 1];
+          const curr = data[i];
+
+          if (prev.targetYear === curr.targetYear) {
+            expect(prev.targetMonth).toBeGreaterThanOrEqual(curr.targetMonth);
+          } else {
+            expect(prev.targetYear).toBeGreaterThan(curr.targetYear);
+          }
+        }
+      });
+
+      test('should parse predictedAmount as float', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/${testDept.id}`);
+
+        expect(res.status).toBe(200);
+        expect(typeof res.body.data[0].predictedAmount).toBe('number');
+      });
+    });
+
+    describe('GET /api/department-budget/predictions/single/:id', () => {
+      test('should return single prediction by ID', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/single/${testPrediction.id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.id).toBe(testPrediction.id);
+        expect(res.body.data).toHaveProperty('department');
+        expect(res.body.data).toHaveProperty('triggeredByUser');
+      });
+
+      test('should return 404 for non-existent prediction', async () => {
+        const res = await request(app).get('/api/department-budget/predictions/single/999999');
+
+        expect(res.status).toBe(404);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Prediction not found');
+      });
+
+      test('should parse predictedAmount as float', async () => {
+        const res = await request(app).get(`/api/department-budget/predictions/single/${testPrediction.id}`);
+
+        expect(res.status).toBe(200);
+        expect(typeof res.body.data.predictedAmount).toBe('number');
       });
     });
   });

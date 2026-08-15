@@ -29,6 +29,7 @@ model User {
   sources                    Source[]
   adjustmentRequestsCreated  BudgetAdjustmentRequest[] @relation("AdjustmentRequester")
   adjustmentRequestsReviewed BudgetAdjustmentRequest[] @relation("AdjustmentReviewer")
+  budgetPredictions          BudgetPrediction[]        @relation("BudgetPredictionTriggeredBy")
 
   @@map("users")
 }
@@ -413,12 +414,15 @@ model BudgetPrediction {
   categoryBreakdown Json?
   comparisonData    Json?
   triggerType       String
+  triggeredBy       Int?
   createdAt         DateTime @default(now())
 
-  department Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  department        Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  triggeredByUser   User?       @relation("BudgetPredictionTriggeredBy", fields: [triggeredBy], references: [id], onDelete: SetNull)
 
   @@index([departmentId])
   @@index([targetYear, targetMonth])
+  @@index([triggeredBy])
   @@index([createdAt])
   @@map("budget_predictions")
 }
