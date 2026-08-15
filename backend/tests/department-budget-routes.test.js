@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 app.use('/api/department-budget', departmentRouter);
 
 describe('Department Budget Routes', () => {
-  let testDept, testUser;
+  let testDept, testUser, testBudget;
 
   beforeAll(async () => {
     // Clean up any existing test department first
@@ -43,6 +43,25 @@ describe('Department Budget Routes', () => {
         password: 'hashed_password',
         name: 'Test Budget User',
         role: 'Department Executive'
+      }
+    });
+
+    // Create MonthlyBudget for August 2026 (required for deduction test)
+    await prisma.monthlyBudget.deleteMany({
+      where: {
+        departmentId: testDept.id,
+        year: 2026,
+        month: 8
+      }
+    });
+    testBudget = await prisma.monthlyBudget.create({
+      data: {
+        departmentId: testDept.id,
+        year: 2026,
+        month: 8,
+        allocatedAmount: 10000,
+        spentAmount: 0,
+        reservedAmount: 0
       }
     });
   });
@@ -90,6 +109,15 @@ describe('Department Budget Routes', () => {
     let testBudget;
 
     beforeAll(async () => {
+      // Delete any existing budget for this period first
+      await prisma.monthlyBudget.deleteMany({
+        where: {
+          departmentId: testDept.id,
+          year: 2026,
+          month: 8
+        }
+      });
+
       testBudget = await prisma.monthlyBudget.create({
         data: {
           departmentId: testDept.id,
