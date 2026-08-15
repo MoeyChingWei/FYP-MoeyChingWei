@@ -235,7 +235,7 @@ describe('Budget Prediction Flow Integration', () => {
       const predictions = await prisma.budgetPrediction.findMany({
         where: {
           departmentId: { in: [testDepartment.id, dept2.id] },
-          triggerType: 'auto'
+          triggerType: 'automatic'
         }
       });
 

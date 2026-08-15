@@ -43,7 +43,7 @@ describe('Budget Scheduler', () => {
     });
 
     expect(predictions.length).toBeGreaterThan(0);
-    expect(predictions[0].triggerType).toBe('auto');
+    expect(predictions[0].triggerType).toBe('automatic');
   });
 
   test('should skip inactive departments', async () => {

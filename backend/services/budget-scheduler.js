@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import Decimal from 'decimal.js';
 import prisma from '../config/prisma.js';
 import { generateDepartmentPrediction } from './budget-prediction-service.js';
+import crypto from 'crypto';
 
 async function sendNotification(payload) {
   await prisma.notification.create({
@@ -20,7 +21,8 @@ let schedulerTask = null;
 const CRON_SCHEDULE = process.env.BUDGET_PREDICTION_CRON || '0 0 28 * *';
 
 async function runMonthlyPredictions() {
-  console.log('[Budget Scheduler] Starting monthly predictions...');
+  const requestId = crypto.randomUUID();
+  console.log('[Budget Scheduler] Starting monthly predictions...', { requestId, timestamp: new Date().toISOString() });
 
   const departments = await prisma.department.findMany({
     where: { isActive: true }
@@ -68,18 +70,36 @@ async function runMonthlyPredictions() {
             refId: String(prediction.id)
           });
         } catch (notifError) {
-          console.error(`[Budget Scheduler] Failed to notify user ${head.id}:`, notifError);
+          console.error('[Budget Scheduler]', {
+            operation: 'sendNotification',
+            requestId,
+            userId: head.id,
+            departmentCode: dept.code,
+            timestamp: new Date().toISOString(),
+            error: notifError.message,
+            stack: notifError.stack
+          });
         }
       }
 
       success++;
     } catch (error) {
-      console.error(`[Budget Scheduler] Failed for ${dept.code}:`, error);
+      console.error('[Budget Scheduler]', {
+        operation: 'generateDepartmentPrediction',
+        requestId,
+        departmentCode: dept.code,
+        departmentName: dept.name,
+        targetYear,
+        targetMonth,
+        timestamp: new Date().toISOString(),
+        error: error.message,
+        stack: error.stack
+      });
       failed++;
     }
   }
 
-  console.log(`[Budget Scheduler] Completed: ${success} success, ${failed} failed`);
+  console.log('[Budget Scheduler] Completed', { requestId, success, failed, timestamp: new Date().toISOString() });
 
   return { success, failed };
 }

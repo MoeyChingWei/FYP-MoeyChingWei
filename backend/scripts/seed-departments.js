@@ -32,23 +32,43 @@ export async function seedDepartmentsFromUsers() {
   const created = [];
 
   for (const [lowerName, displayName] of uniqueDepts.entries()) {
-    const code = displayName.substring(0, 3).toUpperCase();
+    let code;
+    let attempts = 0;
+    const maxAttempts = 10;
 
-    const existing = await prisma.department.findUnique({
-      where: { code }
-    });
+    // Generate unique code with retry logic
+    do {
+      if (attempts === 0) {
+        // First attempt: use first 3 characters
+        code = displayName.substring(0, 3).toUpperCase();
+      } else {
+        // Subsequent attempts: add numeric suffix
+        code = displayName.substring(0, 2).toUpperCase() + attempts;
+      }
 
-    if (!existing) {
-      const dept = await prisma.department.create({
-        data: {
-          code,
-          name: displayName,
-          description: `Auto-generated from User.department field`,
-          isActive: true
-        }
+      const existing = await prisma.department.findUnique({
+        where: { code }
       });
-      created.push(dept.name);
+
+      if (!existing) break;
+
+      attempts++;
+    } while (attempts < maxAttempts);
+
+    if (attempts >= maxAttempts) {
+      console.error(`Failed to generate unique code for department: ${displayName}`);
+      throw new Error(`Could not generate unique code for department "${displayName}" after ${maxAttempts} attempts`);
     }
+
+    const dept = await prisma.department.create({
+      data: {
+        code,
+        name: displayName,
+        description: `Auto-generated from User.department field`,
+        isActive: true
+      }
+    });
+    created.push(dept.name);
   }
 
   return {

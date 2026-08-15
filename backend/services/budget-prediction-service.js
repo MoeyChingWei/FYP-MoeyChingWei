@@ -2,6 +2,7 @@ import prisma from '../config/prisma.js';
 import analyticsAgent from '../agents/analytics/analytics-agent.js';
 import Decimal from 'decimal.js';
 import { notifyBudgetPredictionReady } from './notification-service.js';
+import crypto from 'crypto';
 
 // Constants for budget prediction thresholds
 // Default budget for new departments with no historical data (MYR)
@@ -190,7 +191,7 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
         confidence: 'low',
         algorithm: 'default',
         aiInsights: 'No historical data available and no similar departments found. Using system default.',
-        triggerType: userId ? 'manual' : 'auto'
+        triggerType: userId ? 'manual' : 'automatic'
       }
     });
   } else {
@@ -213,7 +214,7 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
           similarity: topSimilar.similarity,
           referenceMonths: topSimilar.historicalMonths
         },
-        triggerType: userId ? 'manual' : 'auto'
+        triggerType: userId ? 'manual' : 'automatic'
       }
     });
   }
@@ -289,6 +290,7 @@ function fallbackPrediction(historicalData) {
  * @returns {Promise<Object>} AI prediction response
  */
 async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
+  const requestId = crypto.randomUUID();
   const lastPeriod = historicalData[historicalData.length - 1];
   const avgAmount = historicalData
     .reduce((sum, p) => sum.plus(new Decimal(p.amount)), new Decimal(0))
@@ -343,11 +345,30 @@ Format your response as JSON:
         avgAmount: avgAmount.toNumber(),
         trend: new Decimal(lastPeriod.amount).greaterThan(avgAmount) ? 'increasing' : 'decreasing',
         historicalPeriods: historicalData.length
-      }
+      },
+      usedFallback: false
     };
   } catch (error) {
-    console.error('AI prediction failed:', error);
-    return fallbackPrediction(historicalData);
+    console.error('[BudgetPrediction]', {
+      operation: 'callAnalyticsAgent',
+      requestId,
+      departmentId: department.id,
+      departmentName: department.name,
+      targetYear,
+      targetMonth,
+      timestamp: new Date().toISOString(),
+      model: 'analytics-agent',
+      promptLength: prompt.length,
+      error: error.message,
+      stack: error.stack,
+      fallbackMethod: 'moving_average'
+    });
+
+    const fallback = fallbackPrediction(historicalData);
+    return {
+      ...fallback,
+      usedFallback: true
+    };
   }
 }
 
@@ -385,7 +406,7 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
   // Call analytics agent for prediction
   const aiResponse = await callAnalyticsAgent(department, historicalData, targetYear, targetMonth);
 
-  // Create prediction record
+  // Create prediction record with fallback status
   const prediction = await prisma.budgetPrediction.create({
     data: {
       departmentId: department.id,
@@ -393,11 +414,14 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
       targetMonth,
       predictedAmount: aiResponse.amount,
       confidence: aiResponse.confidence,
-      algorithm: 'holt_winters',
+      algorithm: aiResponse.usedFallback ? 'moving_average_fallback' : 'holt_winters',
       aiInsights: aiResponse.insights,
       categoryBreakdown: aiResponse.categoryBreakdown,
-      comparisonData: aiResponse.comparisonData,
-      triggerType: userId ? 'manual' : 'auto'
+      comparisonData: {
+        ...aiResponse.comparisonData,
+        usedFallback: aiResponse.usedFallback || false
+      },
+      triggerType: userId ? 'manual' : 'automatic'
     }
   });
 

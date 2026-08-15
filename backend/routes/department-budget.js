@@ -347,6 +347,33 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
       });
     }
 
+    // Validate requestType enum
+    const validRequestTypes = ['INCREASE', 'DECREASE', 'TRANSFER'];
+    if (!validRequestTypes.includes(requestType)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid requestType. Must be one of: ${validRequestTypes.join(', ')}`
+      });
+    }
+
+    // Validate targetYear
+    const year = parseInt(targetYear);
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid targetYear. Must be a valid year between 2000 and 2100'
+      });
+    }
+
+    // Validate targetMonth
+    const month = parseInt(targetMonth);
+    if (isNaN(month) || month < 1 || month > 12) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid targetMonth. Must be between 1 and 12'
+      });
+    }
+
     const department = await prisma.department.findUnique({
       where: { id: parseInt(departmentId) }
     });
@@ -381,13 +408,13 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
     }
 
     // Check for duplicate increase requests for same period
-    if (requestType === 'increase') {
+    if (requestType === 'INCREASE') {
       const existingIncreaseRequest = await prisma.budgetAdjustmentRequest.findFirst({
         where: {
           departmentId: parseInt(departmentId),
-          targetYear: parseInt(targetYear),
-          targetMonth: parseInt(targetMonth),
-          requestType: 'increase',
+          targetYear: year,
+          targetMonth: month,
+          requestType: 'INCREASE',
           status: { in: ['pending', 'approved'] }
         }
       });
@@ -403,10 +430,19 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
     const adjustment = await prisma.budgetAdjustmentRequest.create({
       data: {
         departmentId: parseInt(departmentId),
-        targetYear: parseInt(targetYear),
-        targetMonth: parseInt(targetMonth),
+        targetYear: year,
+        targetMonth: month,
         requestType,
         requestedAmount: amount.toNumber(),
+        reason,
+        requestedBy: parseInt(requestedBy),
+        status: 'pending'
+      },
+      include: {
+        department: true,
+        requester: true
+      }
+    });
         reason,
         requestedBy: parseInt(requestedBy),
         status: 'pending'

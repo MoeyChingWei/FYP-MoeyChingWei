@@ -1,19 +1,34 @@
 import prisma from '../config/prisma.js';
 import Decimal from 'decimal.js';
+import crypto from 'crypto';
 
 export async function sendNotification({ userId, type, title, message, refType, refId, channel = 'IN_APP' }) {
-  return await prisma.notification.create({
-    data: {
+  const requestId = crypto.randomUUID();
+  try {
+    return await prisma.notification.create({
+      data: {
+        userId,
+        type,
+        title,
+        message,
+        channel,
+        refType,
+        refId,
+        isRead: false
+      }
+    });
+  } catch (error) {
+    console.error('[Notification]', {
+      operation: 'sendNotification',
+      requestId,
       userId,
       type,
-      title,
-      message,
-      channel,
-      refType,
-      refId,
-      isRead: false
-    }
-  });
+      timestamp: new Date().toISOString(),
+      error: error.message,
+      stack: error.stack
+    });
+    throw error;
+  }
 }
 
 export async function notifyBudgetPredictionReady(userId, deptName, year, month, predictedAmount, predictionId) {
