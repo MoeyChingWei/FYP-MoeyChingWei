@@ -676,7 +676,7 @@ describe('Department Budget Routes', () => {
           password: 'hash',
           name: 'Usage Test User',
           role: 'Department Executive',
-          department: 'Test Department'
+          department: testDept.code
         }
       });
 
