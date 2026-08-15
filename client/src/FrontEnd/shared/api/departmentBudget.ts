@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_ROOT } from "./base";
+import { getSessionUser } from "../auth/session";
 
 const API = `${API_ROOT}/department-budget`;
 
@@ -43,8 +44,13 @@ export async function getBudgetUsage(
   month: number
 ): Promise<BudgetUsageSummary | null> {
   try {
+    const user = getSessionUser();
+    if (!user) {
+      console.error("No session user found");
+      return null;
+    }
     const res = await axios.get(`${API}/usage/${departmentId}`, {
-      params: { year, month }
+      params: { userId: user.id, email: user.email, year, month }
     });
     return res.data.success ? res.data.data : null;
   } catch (error) {
@@ -89,7 +95,15 @@ export interface BudgetPrediction {
 
 export async function getDepartments(isActive?: boolean): Promise<Department[]> {
   try {
-    const params = isActive !== undefined ? { isActive: String(isActive) } : {};
+    const user = getSessionUser();
+    if (!user) {
+      console.error("No session user found");
+      return [];
+    }
+    const params: any = { userId: user.id, email: user.email };
+    if (isActive !== undefined) {
+      params.isActive = String(isActive);
+    }
     const res = await axios.get(`${API}/departments`, { params });
     return res.data.success ? res.data.data : [];
   } catch (error) {
@@ -104,7 +118,12 @@ export async function getMonthlyBudgets(
   month?: number
 ): Promise<MonthlyBudget[]> {
   try {
-    const params: any = {};
+    const user = getSessionUser();
+    if (!user) {
+      console.error("No session user found");
+      return [];
+    }
+    const params: any = { userId: user.id, email: user.email };
     if (year) params.year = year;
     if (month) params.month = month;
     const res = await axios.get(`${API}/monthly/${departmentId}`, { params });
@@ -126,7 +145,13 @@ export async function getPredictions(
   }
 ): Promise<BudgetPrediction[]> {
   try {
-    const res = await axios.get(`${API}/predictions/${departmentId}`, { params: filters || {} });
+    const user = getSessionUser();
+    if (!user) {
+      console.error("No session user found");
+      return [];
+    }
+    const params: any = { userId: user.id, email: user.email, ...(filters || {}) };
+    const res = await axios.get(`${API}/predictions/${departmentId}`, { params });
     return res.data.success ? res.data.data : [];
   } catch (error) {
     console.error("Get predictions error:", error);
@@ -161,7 +186,13 @@ export async function getHistoricalComparison(
   options: { preset?: string; startDate?: string; endDate?: string }
 ): Promise<HistoricalComparison | null> {
   try {
-    const res = await axios.get(`${API}/historical/${departmentId}`, { params: options });
+    const user = getSessionUser();
+    if (!user) {
+      console.error("No session user found");
+      return null;
+    }
+    const params = { userId: user.id, email: user.email, ...options };
+    const res = await axios.get(`${API}/historical/${departmentId}`, { params });
     return res.data.success ? res.data.data : null;
   } catch (error) {
     console.error("Get historical comparison error:", error);

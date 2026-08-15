@@ -2968,6 +2968,7 @@ export namespace Prisma {
     sources: number
     adjustmentRequestsCreated: number
     adjustmentRequestsReviewed: number
+    budgetPredictions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2981,6 +2982,7 @@ export namespace Prisma {
     sources?: boolean | UserCountOutputTypeCountSourcesArgs
     adjustmentRequestsCreated?: boolean | UserCountOutputTypeCountAdjustmentRequestsCreatedArgs
     adjustmentRequestsReviewed?: boolean | UserCountOutputTypeCountAdjustmentRequestsReviewedArgs
+    budgetPredictions?: boolean | UserCountOutputTypeCountBudgetPredictionsArgs
   }
 
   // Custom InputTypes
@@ -3062,6 +3064,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAdjustmentRequestsReviewedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BudgetAdjustmentRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBudgetPredictionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetPredictionWhereInput
   }
 
 
@@ -3460,6 +3469,7 @@ export namespace Prisma {
     sources?: boolean | User$sourcesArgs<ExtArgs>
     adjustmentRequestsCreated?: boolean | User$adjustmentRequestsCreatedArgs<ExtArgs>
     adjustmentRequestsReviewed?: boolean | User$adjustmentRequestsReviewedArgs<ExtArgs>
+    budgetPredictions?: boolean | User$budgetPredictionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3511,6 +3521,7 @@ export namespace Prisma {
     sources?: boolean | User$sourcesArgs<ExtArgs>
     adjustmentRequestsCreated?: boolean | User$adjustmentRequestsCreatedArgs<ExtArgs>
     adjustmentRequestsReviewed?: boolean | User$adjustmentRequestsReviewedArgs<ExtArgs>
+    budgetPredictions?: boolean | User$budgetPredictionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3529,6 +3540,7 @@ export namespace Prisma {
       sources: Prisma.$SourcePayload<ExtArgs>[]
       adjustmentRequestsCreated: Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>[]
       adjustmentRequestsReviewed: Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>[]
+      budgetPredictions: Prisma.$BudgetPredictionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3944,6 +3956,7 @@ export namespace Prisma {
     sources<T extends User$sourcesArgs<ExtArgs> = {}>(args?: Subset<T, User$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     adjustmentRequestsCreated<T extends User$adjustmentRequestsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$adjustmentRequestsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     adjustmentRequestsReviewed<T extends User$adjustmentRequestsReviewedArgs<ExtArgs> = {}>(args?: Subset<T, User$adjustmentRequestsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetAdjustmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    budgetPredictions<T extends User$budgetPredictionsArgs<ExtArgs> = {}>(args?: Subset<T, User$budgetPredictionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPredictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4607,6 +4620,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BudgetAdjustmentRequestScalarFieldEnum | BudgetAdjustmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.budgetPredictions
+   */
+  export type User$budgetPredictionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BudgetPrediction
+     */
+    select?: BudgetPredictionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BudgetPrediction
+     */
+    omit?: BudgetPredictionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetPredictionInclude<ExtArgs> | null
+    where?: BudgetPredictionWhereInput
+    orderBy?: BudgetPredictionOrderByWithRelationInput | BudgetPredictionOrderByWithRelationInput[]
+    cursor?: BudgetPredictionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BudgetPredictionScalarFieldEnum | BudgetPredictionScalarFieldEnum[]
   }
 
   /**
@@ -29040,6 +29077,7 @@ export namespace Prisma {
     targetYear: number | null
     targetMonth: number | null
     predictedAmount: Decimal | null
+    triggeredBy: number | null
   }
 
   export type BudgetPredictionSumAggregateOutputType = {
@@ -29048,6 +29086,7 @@ export namespace Prisma {
     targetYear: number | null
     targetMonth: number | null
     predictedAmount: Decimal | null
+    triggeredBy: number | null
   }
 
   export type BudgetPredictionMinAggregateOutputType = {
@@ -29060,6 +29099,7 @@ export namespace Prisma {
     algorithm: string | null
     aiInsights: string | null
     triggerType: string | null
+    triggeredBy: number | null
     createdAt: Date | null
   }
 
@@ -29073,6 +29113,7 @@ export namespace Prisma {
     algorithm: string | null
     aiInsights: string | null
     triggerType: string | null
+    triggeredBy: number | null
     createdAt: Date | null
   }
 
@@ -29088,6 +29129,7 @@ export namespace Prisma {
     categoryBreakdown: number
     comparisonData: number
     triggerType: number
+    triggeredBy: number
     createdAt: number
     _all: number
   }
@@ -29099,6 +29141,7 @@ export namespace Prisma {
     targetYear?: true
     targetMonth?: true
     predictedAmount?: true
+    triggeredBy?: true
   }
 
   export type BudgetPredictionSumAggregateInputType = {
@@ -29107,6 +29150,7 @@ export namespace Prisma {
     targetYear?: true
     targetMonth?: true
     predictedAmount?: true
+    triggeredBy?: true
   }
 
   export type BudgetPredictionMinAggregateInputType = {
@@ -29119,6 +29163,7 @@ export namespace Prisma {
     algorithm?: true
     aiInsights?: true
     triggerType?: true
+    triggeredBy?: true
     createdAt?: true
   }
 
@@ -29132,6 +29177,7 @@ export namespace Prisma {
     algorithm?: true
     aiInsights?: true
     triggerType?: true
+    triggeredBy?: true
     createdAt?: true
   }
 
@@ -29147,6 +29193,7 @@ export namespace Prisma {
     categoryBreakdown?: true
     comparisonData?: true
     triggerType?: true
+    triggeredBy?: true
     createdAt?: true
     _all?: true
   }
@@ -29249,6 +29296,7 @@ export namespace Prisma {
     categoryBreakdown: JsonValue | null
     comparisonData: JsonValue | null
     triggerType: string
+    triggeredBy: number | null
     createdAt: Date
     _count: BudgetPredictionCountAggregateOutputType | null
     _avg: BudgetPredictionAvgAggregateOutputType | null
@@ -29283,8 +29331,10 @@ export namespace Prisma {
     categoryBreakdown?: boolean
     comparisonData?: boolean
     triggerType?: boolean
+    triggeredBy?: boolean
     createdAt?: boolean
     department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
+    triggeredByUser?: boolean | BudgetPrediction$triggeredByUserArgs<ExtArgs>
   }, ExtArgs["result"]["budgetPrediction"]>
 
   export type BudgetPredictionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -29299,8 +29349,10 @@ export namespace Prisma {
     categoryBreakdown?: boolean
     comparisonData?: boolean
     triggerType?: boolean
+    triggeredBy?: boolean
     createdAt?: boolean
     department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
+    triggeredByUser?: boolean | BudgetPrediction$triggeredByUserArgs<ExtArgs>
   }, ExtArgs["result"]["budgetPrediction"]>
 
   export type BudgetPredictionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -29315,8 +29367,10 @@ export namespace Prisma {
     categoryBreakdown?: boolean
     comparisonData?: boolean
     triggerType?: boolean
+    triggeredBy?: boolean
     createdAt?: boolean
     department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
+    triggeredByUser?: boolean | BudgetPrediction$triggeredByUserArgs<ExtArgs>
   }, ExtArgs["result"]["budgetPrediction"]>
 
   export type BudgetPredictionSelectScalar = {
@@ -29331,24 +29385,29 @@ export namespace Prisma {
     categoryBreakdown?: boolean
     comparisonData?: boolean
     triggerType?: boolean
+    triggeredBy?: boolean
     createdAt?: boolean
   }
 
-  export type BudgetPredictionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId" | "targetYear" | "targetMonth" | "predictedAmount" | "confidence" | "algorithm" | "aiInsights" | "categoryBreakdown" | "comparisonData" | "triggerType" | "createdAt", ExtArgs["result"]["budgetPrediction"]>
+  export type BudgetPredictionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId" | "targetYear" | "targetMonth" | "predictedAmount" | "confidence" | "algorithm" | "aiInsights" | "categoryBreakdown" | "comparisonData" | "triggerType" | "triggeredBy" | "createdAt", ExtArgs["result"]["budgetPrediction"]>
   export type BudgetPredictionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
+    triggeredByUser?: boolean | BudgetPrediction$triggeredByUserArgs<ExtArgs>
   }
   export type BudgetPredictionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
+    triggeredByUser?: boolean | BudgetPrediction$triggeredByUserArgs<ExtArgs>
   }
   export type BudgetPredictionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | BudgetPrediction$departmentArgs<ExtArgs>
+    triggeredByUser?: boolean | BudgetPrediction$triggeredByUserArgs<ExtArgs>
   }
 
   export type $BudgetPredictionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BudgetPrediction"
     objects: {
       department: Prisma.$DepartmentPayload<ExtArgs> | null
+      triggeredByUser: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -29362,6 +29421,7 @@ export namespace Prisma {
       categoryBreakdown: Prisma.JsonValue | null
       comparisonData: Prisma.JsonValue | null
       triggerType: string
+      triggeredBy: number | null
       createdAt: Date
     }, ExtArgs["result"]["budgetPrediction"]>
     composites: {}
@@ -29758,6 +29818,7 @@ export namespace Prisma {
   export interface Prisma__BudgetPredictionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     department<T extends BudgetPrediction$departmentArgs<ExtArgs> = {}>(args?: Subset<T, BudgetPrediction$departmentArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    triggeredByUser<T extends BudgetPrediction$triggeredByUserArgs<ExtArgs> = {}>(args?: Subset<T, BudgetPrediction$triggeredByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29798,6 +29859,7 @@ export namespace Prisma {
     readonly categoryBreakdown: FieldRef<"BudgetPrediction", 'Json'>
     readonly comparisonData: FieldRef<"BudgetPrediction", 'Json'>
     readonly triggerType: FieldRef<"BudgetPrediction", 'String'>
+    readonly triggeredBy: FieldRef<"BudgetPrediction", 'Int'>
     readonly createdAt: FieldRef<"BudgetPrediction", 'DateTime'>
   }
     
@@ -30214,6 +30276,25 @@ export namespace Prisma {
   }
 
   /**
+   * BudgetPrediction.triggeredByUser
+   */
+  export type BudgetPrediction$triggeredByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * BudgetPrediction without action
    */
   export type BudgetPredictionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -30571,6 +30652,7 @@ export namespace Prisma {
     categoryBreakdown: 'categoryBreakdown',
     comparisonData: 'comparisonData',
     triggerType: 'triggerType',
+    triggeredBy: 'triggeredBy',
     createdAt: 'createdAt'
   };
 
@@ -30775,6 +30857,7 @@ export namespace Prisma {
     sources?: SourceListRelationFilter
     adjustmentRequestsCreated?: BudgetAdjustmentRequestListRelationFilter
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestListRelationFilter
+    budgetPredictions?: BudgetPredictionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -30797,6 +30880,7 @@ export namespace Prisma {
     sources?: SourceOrderByRelationAggregateInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestOrderByRelationAggregateInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestOrderByRelationAggregateInput
+    budgetPredictions?: BudgetPredictionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -30822,6 +30906,7 @@ export namespace Prisma {
     sources?: SourceListRelationFilter
     adjustmentRequestsCreated?: BudgetAdjustmentRequestListRelationFilter
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestListRelationFilter
+    budgetPredictions?: BudgetPredictionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -32401,8 +32486,10 @@ export namespace Prisma {
     categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
     comparisonData?: JsonNullableFilter<"BudgetPrediction">
     triggerType?: StringFilter<"BudgetPrediction"> | string
+    triggeredBy?: IntNullableFilter<"BudgetPrediction"> | number | null
     createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
     department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
+    triggeredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type BudgetPredictionOrderByWithRelationInput = {
@@ -32417,8 +32504,10 @@ export namespace Prisma {
     categoryBreakdown?: SortOrderInput | SortOrder
     comparisonData?: SortOrderInput | SortOrder
     triggerType?: SortOrder
+    triggeredBy?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     department?: DepartmentOrderByWithRelationInput
+    triggeredByUser?: UserOrderByWithRelationInput
   }
 
   export type BudgetPredictionWhereUniqueInput = Prisma.AtLeast<{
@@ -32436,8 +32525,10 @@ export namespace Prisma {
     categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
     comparisonData?: JsonNullableFilter<"BudgetPrediction">
     triggerType?: StringFilter<"BudgetPrediction"> | string
+    triggeredBy?: IntNullableFilter<"BudgetPrediction"> | number | null
     createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
     department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
+    triggeredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type BudgetPredictionOrderByWithAggregationInput = {
@@ -32452,6 +32543,7 @@ export namespace Prisma {
     categoryBreakdown?: SortOrderInput | SortOrder
     comparisonData?: SortOrderInput | SortOrder
     triggerType?: SortOrder
+    triggeredBy?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: BudgetPredictionCountOrderByAggregateInput
     _avg?: BudgetPredictionAvgOrderByAggregateInput
@@ -32475,6 +32567,7 @@ export namespace Prisma {
     categoryBreakdown?: JsonNullableWithAggregatesFilter<"BudgetPrediction">
     comparisonData?: JsonNullableWithAggregatesFilter<"BudgetPrediction">
     triggerType?: StringWithAggregatesFilter<"BudgetPrediction"> | string
+    triggeredBy?: IntNullableWithAggregatesFilter<"BudgetPrediction"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"BudgetPrediction"> | Date | string
   }
 
@@ -32497,6 +32590,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -32519,6 +32613,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUpdateInput = {
@@ -32540,6 +32635,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -32562,6 +32658,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -34211,6 +34308,7 @@ export namespace Prisma {
     triggerType: string
     createdAt?: Date | string
     department?: DepartmentCreateNestedOneWithoutBudgetPredictionsInput
+    triggeredByUser?: UserCreateNestedOneWithoutBudgetPredictionsInput
   }
 
   export type BudgetPredictionUncheckedCreateInput = {
@@ -34225,6 +34323,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType: string
+    triggeredBy?: number | null
     createdAt?: Date | string
   }
 
@@ -34240,6 +34339,7 @@ export namespace Prisma {
     triggerType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneWithoutBudgetPredictionsNestedInput
+    triggeredByUser?: UserUpdateOneWithoutBudgetPredictionsNestedInput
   }
 
   export type BudgetPredictionUncheckedUpdateInput = {
@@ -34254,6 +34354,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType?: StringFieldUpdateOperationsInput | string
+    triggeredBy?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -34269,6 +34370,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType: string
+    triggeredBy?: number | null
     createdAt?: Date | string
   }
 
@@ -34297,6 +34399,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType?: StringFieldUpdateOperationsInput | string
+    triggeredBy?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -34407,6 +34510,12 @@ export namespace Prisma {
     none?: BudgetAdjustmentRequestWhereInput
   }
 
+  export type BudgetPredictionListRelationFilter = {
+    every?: BudgetPredictionWhereInput
+    some?: BudgetPredictionWhereInput
+    none?: BudgetPredictionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -34445,6 +34554,10 @@ export namespace Prisma {
   }
 
   export type BudgetAdjustmentRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BudgetPredictionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -35558,17 +35671,7 @@ export namespace Prisma {
     none?: MonthlyBudgetWhereInput
   }
 
-  export type BudgetPredictionListRelationFilter = {
-    every?: BudgetPredictionWhereInput
-    some?: BudgetPredictionWhereInput
-    none?: BudgetPredictionWhereInput
-  }
-
   export type MonthlyBudgetOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type BudgetPredictionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -35802,6 +35905,7 @@ export namespace Prisma {
     categoryBreakdown?: SortOrder
     comparisonData?: SortOrder
     triggerType?: SortOrder
+    triggeredBy?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -35811,6 +35915,7 @@ export namespace Prisma {
     targetYear?: SortOrder
     targetMonth?: SortOrder
     predictedAmount?: SortOrder
+    triggeredBy?: SortOrder
   }
 
   export type BudgetPredictionMaxOrderByAggregateInput = {
@@ -35823,6 +35928,7 @@ export namespace Prisma {
     algorithm?: SortOrder
     aiInsights?: SortOrder
     triggerType?: SortOrder
+    triggeredBy?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -35836,6 +35942,7 @@ export namespace Prisma {
     algorithm?: SortOrder
     aiInsights?: SortOrder
     triggerType?: SortOrder
+    triggeredBy?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -35845,6 +35952,7 @@ export namespace Prisma {
     targetYear?: SortOrder
     targetMonth?: SortOrder
     predictedAmount?: SortOrder
+    triggeredBy?: SortOrder
   }
 
   export type RoleChangeAuditCreateNestedManyWithoutTargetInput = {
@@ -35917,6 +36025,13 @@ export namespace Prisma {
     connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
   }
 
+  export type BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput = {
+    create?: XOR<BudgetPredictionCreateWithoutTriggeredByUserInput, BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput> | BudgetPredictionCreateWithoutTriggeredByUserInput[] | BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput | BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput[]
+    createMany?: BudgetPredictionCreateManyTriggeredByUserInputEnvelope
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+  }
+
   export type RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput = {
     create?: XOR<RoleChangeAuditCreateWithoutTargetInput, RoleChangeAuditUncheckedCreateWithoutTargetInput> | RoleChangeAuditCreateWithoutTargetInput[] | RoleChangeAuditUncheckedCreateWithoutTargetInput[]
     connectOrCreate?: RoleChangeAuditCreateOrConnectWithoutTargetInput | RoleChangeAuditCreateOrConnectWithoutTargetInput[]
@@ -35985,6 +36100,13 @@ export namespace Prisma {
     connectOrCreate?: BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput | BudgetAdjustmentRequestCreateOrConnectWithoutReviewerInput[]
     createMany?: BudgetAdjustmentRequestCreateManyReviewerInputEnvelope
     connect?: BudgetAdjustmentRequestWhereUniqueInput | BudgetAdjustmentRequestWhereUniqueInput[]
+  }
+
+  export type BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput = {
+    create?: XOR<BudgetPredictionCreateWithoutTriggeredByUserInput, BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput> | BudgetPredictionCreateWithoutTriggeredByUserInput[] | BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput | BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput[]
+    createMany?: BudgetPredictionCreateManyTriggeredByUserInputEnvelope
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -36143,6 +36265,20 @@ export namespace Prisma {
     deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
   }
 
+  export type BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput = {
+    create?: XOR<BudgetPredictionCreateWithoutTriggeredByUserInput, BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput> | BudgetPredictionCreateWithoutTriggeredByUserInput[] | BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput | BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput[]
+    upsert?: BudgetPredictionUpsertWithWhereUniqueWithoutTriggeredByUserInput | BudgetPredictionUpsertWithWhereUniqueWithoutTriggeredByUserInput[]
+    createMany?: BudgetPredictionCreateManyTriggeredByUserInputEnvelope
+    set?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    disconnect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    delete?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    update?: BudgetPredictionUpdateWithWhereUniqueWithoutTriggeredByUserInput | BudgetPredictionUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
+    updateMany?: BudgetPredictionUpdateManyWithWhereWithoutTriggeredByUserInput | BudgetPredictionUpdateManyWithWhereWithoutTriggeredByUserInput[]
+    deleteMany?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -36289,6 +36425,20 @@ export namespace Prisma {
     update?: BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput | BudgetAdjustmentRequestUpdateWithWhereUniqueWithoutReviewerInput[]
     updateMany?: BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput | BudgetAdjustmentRequestUpdateManyWithWhereWithoutReviewerInput[]
     deleteMany?: BudgetAdjustmentRequestScalarWhereInput | BudgetAdjustmentRequestScalarWhereInput[]
+  }
+
+  export type BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput = {
+    create?: XOR<BudgetPredictionCreateWithoutTriggeredByUserInput, BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput> | BudgetPredictionCreateWithoutTriggeredByUserInput[] | BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput | BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput[]
+    upsert?: BudgetPredictionUpsertWithWhereUniqueWithoutTriggeredByUserInput | BudgetPredictionUpsertWithWhereUniqueWithoutTriggeredByUserInput[]
+    createMany?: BudgetPredictionCreateManyTriggeredByUserInputEnvelope
+    set?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    disconnect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    delete?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    connect?: BudgetPredictionWhereUniqueInput | BudgetPredictionWhereUniqueInput[]
+    update?: BudgetPredictionUpdateWithWhereUniqueWithoutTriggeredByUserInput | BudgetPredictionUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
+    updateMany?: BudgetPredictionUpdateManyWithWhereWithoutTriggeredByUserInput | BudgetPredictionUpdateManyWithWhereWithoutTriggeredByUserInput[]
+    deleteMany?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutNotificationsInput = {
@@ -36859,6 +37009,12 @@ export namespace Prisma {
     connect?: DepartmentWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutBudgetPredictionsInput = {
+    create?: XOR<UserCreateWithoutBudgetPredictionsInput, UserUncheckedCreateWithoutBudgetPredictionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBudgetPredictionsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type DepartmentUpdateOneWithoutBudgetPredictionsNestedInput = {
     create?: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutBudgetPredictionsInput
@@ -36867,6 +37023,16 @@ export namespace Prisma {
     delete?: DepartmentWhereInput | boolean
     connect?: DepartmentWhereUniqueInput
     update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutBudgetPredictionsInput, DepartmentUpdateWithoutBudgetPredictionsInput>, DepartmentUncheckedUpdateWithoutBudgetPredictionsInput>
+  }
+
+  export type UserUpdateOneWithoutBudgetPredictionsNestedInput = {
+    create?: XOR<UserCreateWithoutBudgetPredictionsInput, UserUncheckedCreateWithoutBudgetPredictionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBudgetPredictionsInput
+    upsert?: UserUpsertWithoutBudgetPredictionsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBudgetPredictionsInput, UserUpdateWithoutBudgetPredictionsInput>, UserUncheckedUpdateWithoutBudgetPredictionsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -37526,6 +37692,45 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BudgetPredictionCreateWithoutTriggeredByUserInput = {
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
+    department?: DepartmentCreateNestedOneWithoutBudgetPredictionsInput
+  }
+
+  export type BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput = {
+    id?: number
+    departmentId?: number | null
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
+  }
+
+  export type BudgetPredictionCreateOrConnectWithoutTriggeredByUserInput = {
+    where: BudgetPredictionWhereUniqueInput
+    create: XOR<BudgetPredictionCreateWithoutTriggeredByUserInput, BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput>
+  }
+
+  export type BudgetPredictionCreateManyTriggeredByUserInputEnvelope = {
+    data: BudgetPredictionCreateManyTriggeredByUserInput | BudgetPredictionCreateManyTriggeredByUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RoleChangeAuditUpsertWithWhereUniqueWithoutTargetInput = {
     where: RoleChangeAuditWhereUniqueInput
     update: XOR<RoleChangeAuditUpdateWithoutTargetInput, RoleChangeAuditUncheckedUpdateWithoutTargetInput>
@@ -37819,6 +38024,41 @@ export namespace Prisma {
     data: XOR<BudgetAdjustmentRequestUpdateManyMutationInput, BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerInput>
   }
 
+  export type BudgetPredictionUpsertWithWhereUniqueWithoutTriggeredByUserInput = {
+    where: BudgetPredictionWhereUniqueInput
+    update: XOR<BudgetPredictionUpdateWithoutTriggeredByUserInput, BudgetPredictionUncheckedUpdateWithoutTriggeredByUserInput>
+    create: XOR<BudgetPredictionCreateWithoutTriggeredByUserInput, BudgetPredictionUncheckedCreateWithoutTriggeredByUserInput>
+  }
+
+  export type BudgetPredictionUpdateWithWhereUniqueWithoutTriggeredByUserInput = {
+    where: BudgetPredictionWhereUniqueInput
+    data: XOR<BudgetPredictionUpdateWithoutTriggeredByUserInput, BudgetPredictionUncheckedUpdateWithoutTriggeredByUserInput>
+  }
+
+  export type BudgetPredictionUpdateManyWithWhereWithoutTriggeredByUserInput = {
+    where: BudgetPredictionScalarWhereInput
+    data: XOR<BudgetPredictionUpdateManyMutationInput, BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserInput>
+  }
+
+  export type BudgetPredictionScalarWhereInput = {
+    AND?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+    OR?: BudgetPredictionScalarWhereInput[]
+    NOT?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
+    id?: IntFilter<"BudgetPrediction"> | number
+    departmentId?: IntNullableFilter<"BudgetPrediction"> | number | null
+    targetYear?: IntFilter<"BudgetPrediction"> | number
+    targetMonth?: IntFilter<"BudgetPrediction"> | number
+    predictedAmount?: DecimalFilter<"BudgetPrediction"> | Decimal | DecimalJsLike | number | string
+    confidence?: StringFilter<"BudgetPrediction"> | string
+    algorithm?: StringFilter<"BudgetPrediction"> | string
+    aiInsights?: StringFilter<"BudgetPrediction"> | string
+    categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
+    comparisonData?: JsonNullableFilter<"BudgetPrediction">
+    triggerType?: StringFilter<"BudgetPrediction"> | string
+    triggeredBy?: IntNullableFilter<"BudgetPrediction"> | number | null
+    createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
+  }
+
   export type UserCreateWithoutNotificationsInput = {
     name?: string | null
     email: string
@@ -37837,6 +38077,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -37858,6 +38099,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -37894,6 +38136,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -37915,6 +38158,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutFeedbacksInput = {
@@ -37935,6 +38179,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutFeedbacksInput = {
@@ -37956,6 +38201,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutFeedbacksInput = {
@@ -37992,6 +38238,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbacksInput = {
@@ -38013,6 +38260,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutRoleChangeAuditsAsTargetInput = {
@@ -38033,6 +38281,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutRoleChangeAuditsAsTargetInput = {
@@ -38054,6 +38303,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutRoleChangeAuditsAsTargetInput = {
@@ -38090,6 +38340,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoleChangeAuditsAsTargetInput = {
@@ -38111,6 +38362,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutPasswordResetCodesInput = {
@@ -38131,6 +38383,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetCodesInput = {
@@ -38152,6 +38405,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetCodesInput = {
@@ -38188,6 +38442,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetCodesInput = {
@@ -38209,6 +38464,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutSupplierTypeAssignmentsInput = {
@@ -38229,6 +38485,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutSupplierTypeAssignmentsInput = {
@@ -38250,6 +38507,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutSupplierTypeAssignmentsInput = {
@@ -38286,6 +38544,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupplierTypeAssignmentsInput = {
@@ -38307,6 +38566,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutSupplierInventoryItemsInput = {
@@ -38327,6 +38587,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutSupplierInventoryItemsInput = {
@@ -38348,6 +38609,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutSupplierInventoryItemsInput = {
@@ -38384,6 +38646,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupplierInventoryItemsInput = {
@@ -38405,6 +38668,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutChatSessionsInput = {
@@ -38425,6 +38689,7 @@ export namespace Prisma {
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutChatSessionsInput = {
@@ -38446,6 +38711,7 @@ export namespace Prisma {
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutChatSessionsInput = {
@@ -38541,6 +38807,7 @@ export namespace Prisma {
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatSessionsInput = {
@@ -38562,6 +38829,7 @@ export namespace Prisma {
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type ChatMessageUpsertWithWhereUniqueWithoutSessionInput = {
@@ -38797,6 +39065,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutSourcesInput = {
@@ -38818,6 +39087,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutSourcesInput = {
@@ -38899,6 +39169,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSourcesInput = {
@@ -38920,6 +39191,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type ChatSessionUpsertWithoutSourcesInput = {
@@ -39122,6 +39394,7 @@ export namespace Prisma {
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType: string
     createdAt?: Date | string
+    triggeredByUser?: UserCreateNestedOneWithoutBudgetPredictionsInput
   }
 
   export type BudgetPredictionUncheckedCreateWithoutDepartmentInput = {
@@ -39135,6 +39408,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType: string
+    triggeredBy?: number | null
     createdAt?: Date | string
   }
 
@@ -39211,24 +39485,6 @@ export namespace Prisma {
   export type BudgetPredictionUpdateManyWithWhereWithoutDepartmentInput = {
     where: BudgetPredictionScalarWhereInput
     data: XOR<BudgetPredictionUpdateManyMutationInput, BudgetPredictionUncheckedUpdateManyWithoutDepartmentInput>
-  }
-
-  export type BudgetPredictionScalarWhereInput = {
-    AND?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
-    OR?: BudgetPredictionScalarWhereInput[]
-    NOT?: BudgetPredictionScalarWhereInput | BudgetPredictionScalarWhereInput[]
-    id?: IntFilter<"BudgetPrediction"> | number
-    departmentId?: IntNullableFilter<"BudgetPrediction"> | number | null
-    targetYear?: IntFilter<"BudgetPrediction"> | number
-    targetMonth?: IntFilter<"BudgetPrediction"> | number
-    predictedAmount?: DecimalFilter<"BudgetPrediction"> | Decimal | DecimalJsLike | number | string
-    confidence?: StringFilter<"BudgetPrediction"> | string
-    algorithm?: StringFilter<"BudgetPrediction"> | string
-    aiInsights?: StringFilter<"BudgetPrediction"> | string
-    categoryBreakdown?: JsonNullableFilter<"BudgetPrediction">
-    comparisonData?: JsonNullableFilter<"BudgetPrediction">
-    triggerType?: StringFilter<"BudgetPrediction"> | string
-    createdAt?: DateTimeFilter<"BudgetPrediction"> | Date | string
   }
 
   export type DepartmentCreateWithoutMonthlyBudgetsInput = {
@@ -39339,6 +39595,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutAdjustmentRequestsCreatedInput = {
@@ -39360,6 +39617,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutAdjustmentRequestsCreatedInput = {
@@ -39385,6 +39643,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
     sources?: SourceCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    budgetPredictions?: BudgetPredictionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutAdjustmentRequestsReviewedInput = {
@@ -39406,6 +39665,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
     sources?: SourceUncheckedCreateNestedManyWithoutUserInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    budgetPredictions?: BudgetPredictionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutAdjustmentRequestsReviewedInput = {
@@ -39476,6 +39736,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAdjustmentRequestsCreatedInput = {
@@ -39497,6 +39758,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUpsertWithoutAdjustmentRequestsReviewedInput = {
@@ -39528,6 +39790,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
     sources?: SourceUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    budgetPredictions?: BudgetPredictionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAdjustmentRequestsReviewedInput = {
@@ -39549,6 +39812,7 @@ export namespace Prisma {
     chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
     sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
     adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    budgetPredictions?: BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type DepartmentCreateWithoutBudgetPredictionsInput = {
@@ -39577,6 +39841,54 @@ export namespace Prisma {
   export type DepartmentCreateOrConnectWithoutBudgetPredictionsInput = {
     where: DepartmentWhereUniqueInput
     create: XOR<DepartmentCreateWithoutBudgetPredictionsInput, DepartmentUncheckedCreateWithoutBudgetPredictionsInput>
+  }
+
+  export type UserCreateWithoutBudgetPredictionsInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemCreateNestedManyWithoutSupplierInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
+    sources?: SourceCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestCreateNestedManyWithoutReviewerInput
+  }
+
+  export type UserUncheckedCreateWithoutBudgetPredictionsInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    department?: string | null
+    avatarUrl?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedCreateNestedManyWithoutTargetInput
+    passwordResetCodes?: PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedCreateNestedManyWithoutUserInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedCreateNestedManyWithoutSupplierInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    feedbacks?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
+    sources?: SourceUncheckedCreateNestedManyWithoutUserInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedCreateNestedManyWithoutReviewerInput
+  }
+
+  export type UserCreateOrConnectWithoutBudgetPredictionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBudgetPredictionsInput, UserUncheckedCreateWithoutBudgetPredictionsInput>
   }
 
   export type DepartmentUpsertWithoutBudgetPredictionsInput = {
@@ -39611,6 +39923,60 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     monthlyBudgets?: MonthlyBudgetUncheckedUpdateManyWithoutDepartmentNestedInput
     budgetAdjustmentRequests?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type UserUpsertWithoutBudgetPredictionsInput = {
+    update: XOR<UserUpdateWithoutBudgetPredictionsInput, UserUncheckedUpdateWithoutBudgetPredictionsInput>
+    create: XOR<UserCreateWithoutBudgetPredictionsInput, UserUncheckedCreateWithoutBudgetPredictionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBudgetPredictionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBudgetPredictionsInput, UserUncheckedUpdateWithoutBudgetPredictionsInput>
+  }
+
+  export type UserUpdateWithoutBudgetPredictionsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
+    sources?: SourceUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUpdateManyWithoutReviewerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBudgetPredictionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    roleChangeAuditsAsTarget?: RoleChangeAuditUncheckedUpdateManyWithoutTargetNestedInput
+    passwordResetCodes?: PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+    supplierTypeAssignments?: SupplierTypeAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    supplierInventoryItems?: SupplierInventoryItemUncheckedUpdateManyWithoutSupplierNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    feedbacks?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+    sources?: SourceUncheckedUpdateManyWithoutUserNestedInput
+    adjustmentRequestsCreated?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    adjustmentRequestsReviewed?: BudgetAdjustmentRequestUncheckedUpdateManyWithoutReviewerNestedInput
   }
 
   export type RoleChangeAuditCreateManyTargetInput = {
@@ -39723,6 +40089,21 @@ export namespace Prisma {
     requestedAt?: Date | string
     reviewedAt?: Date | string | null
     reviewNotes?: string | null
+  }
+
+  export type BudgetPredictionCreateManyTriggeredByUserInput = {
+    id?: number
+    departmentId?: number | null
+    targetYear: number
+    targetMonth: number
+    predictedAmount: Decimal | DecimalJsLike | number | string
+    confidence: string
+    algorithm: string
+    aiInsights: string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType: string
+    createdAt?: Date | string
   }
 
   export type RoleChangeAuditUpdateWithoutTargetInput = {
@@ -40060,6 +40441,50 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type BudgetPredictionUpdateWithoutTriggeredByUserInput = {
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    department?: DepartmentUpdateOneWithoutBudgetPredictionsNestedInput
+  }
+
+  export type BudgetPredictionUncheckedUpdateWithoutTriggeredByUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: NullableIntFieldUpdateOperationsInput | number | null
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetPredictionUncheckedUpdateManyWithoutTriggeredByUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: NullableIntFieldUpdateOperationsInput | number | null
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    predictedAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    confidence?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    aiInsights?: StringFieldUpdateOperationsInput | string
+    categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
+    comparisonData?: NullableJsonNullValueInput | InputJsonValue
+    triggerType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ChatMessageCreateManySessionInput = {
     id?: number
     role: string
@@ -40250,6 +40675,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType: string
+    triggeredBy?: number | null
     createdAt?: Date | string
   }
 
@@ -40346,6 +40772,7 @@ export namespace Prisma {
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    triggeredByUser?: UserUpdateOneWithoutBudgetPredictionsNestedInput
   }
 
   export type BudgetPredictionUncheckedUpdateWithoutDepartmentInput = {
@@ -40359,6 +40786,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType?: StringFieldUpdateOperationsInput | string
+    triggeredBy?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -40373,6 +40801,7 @@ export namespace Prisma {
     categoryBreakdown?: NullableJsonNullValueInput | InputJsonValue
     comparisonData?: NullableJsonNullValueInput | InputJsonValue
     triggerType?: StringFieldUpdateOperationsInput | string
+    triggeredBy?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

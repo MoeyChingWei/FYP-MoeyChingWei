@@ -376,6 +376,7 @@ exports.Prisma.BudgetPredictionScalarFieldEnum = {
   categoryBreakdown: 'categoryBreakdown',
   comparisonData: 'comparisonData',
   triggerType: 'triggerType',
+  triggeredBy: 'triggeredBy',
   createdAt: 'createdAt'
 };
 
