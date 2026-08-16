@@ -49,6 +49,23 @@ router.get("/", (req, res) => {
       ],
     },
     {
+      title: "Database",
+      items: [
+        {
+          name: "Database Explorer",
+          desc: "View database type, table schemas, column data types, and paginated records",
+          url: "/api/database/explorer",
+          type: "page",
+        },
+        {
+          name: "Database Overview (JSON)",
+          desc: "PostgreSQL connection details and available table types",
+          url: "/api/database/overview",
+          type: "json",
+        },
+      ],
+    },
+    {
       title: "🔍 Audit Trail",
       items: [
         {

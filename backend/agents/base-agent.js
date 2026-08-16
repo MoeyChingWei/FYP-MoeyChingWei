@@ -231,7 +231,7 @@ class BaseAgent {
       where: { sessionId },
       orderBy: { createdAt: 'desc' },
       take: maxMessages, // Take at most the 20 most recent
-      ...(includeAttachments ? { include: { attachments: true } } : {}),
+      ...(includeAttachments ? { include: { message_attachments: true } } : {}),
     });
 
     // Reverse order (oldest to newest)
@@ -259,8 +259,8 @@ class BaseAgent {
         content: msg.content,
       };
 
-      if (includeAttachments && msg.attachments?.length) {
-        historyMessage.attachments = msg.attachments;
+      if (includeAttachments && msg.message_attachments?.length) {
+        historyMessage.attachments = msg.message_attachments;
       }
 
       result.push(historyMessage);
@@ -314,20 +314,25 @@ class BaseAgent {
    * Get all sessions for a user
    */
   async getUserSessions(userId, limit = 100) {
-    return await prisma.chatSession.findMany({
+    const sessions = await prisma.chatSession.findMany({
       // Empty sessions are transient UI state and should never appear in history.
       where: {
         userId,
-        messages: { some: {} },
+        chat_messages: { some: {} },
       },
       orderBy: { updatedAt: 'desc' },
       take: limit,
       include: {
         _count: {
-          select: { messages: true },
+          select: { chat_messages: true },
         },
       },
     });
+
+    return sessions.map(({ _count, ...session }) => ({
+      ...session,
+      _count: { messages: _count.chat_messages },
+    }));
   }
 
   /**
@@ -346,7 +351,7 @@ class BaseAgent {
     // Delete messages first
     await prisma.chatMessage.deleteMany({
       where: {
-        session: { userId },
+        chat_sessions: { userId },
       },
     });
 

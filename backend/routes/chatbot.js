@@ -172,13 +172,16 @@ router.get('/history/:sessionId', async (req, res) => {
       orderBy: { createdAt: 'asc' },
       take: 100,
       include: {
-        attachments: true,
+        message_attachments: true,
       },
     });
 
     res.json({
       success: true,
-      messages,
+      messages: messages.map(({ message_attachments, ...message }) => ({
+        ...message,
+        attachments: message_attachments,
+      })),
     });
   } catch (error) {
     console.error('❌ Get History Error:', error);
@@ -256,7 +259,7 @@ router.patch('/session/:sessionId', async (req, res) => {
       where: { id: sessionId },
       include: {
         _count: {
-          select: { messages: true },
+          select: { chat_messages: true },
         },
       },
     });
@@ -264,7 +267,12 @@ router.patch('/session/:sessionId', async (req, res) => {
     res.json({
       success: true,
       message: 'Session renamed',
-      session,
+      session: session
+        ? {
+            ...session,
+            _count: { messages: session._count.chat_messages },
+          }
+        : null,
     });
   } catch (error) {
     console.error('âŒ Rename Session Error:', error);

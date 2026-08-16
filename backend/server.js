@@ -24,6 +24,7 @@ import debugLogsRoutes from "./routes/debug-logs.js";
 import { performanceMiddleware } from "./routes/debug-logs.js";
 import auditRoutes from "./routes/audit.js";
 import backupRoutes from "./routes/backup.js";
+import databaseRoutes from "./routes/database.js";
 import homeRoutes from "./routes/home.js";
 import budgetRoutes from "./routes/budget.js";
 import departmentBudgetRoutes from "./routes/department-budget.js";
@@ -38,6 +39,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/audit", auditRoutes);
 app.use("/api/backup", backupRoutes);
+app.use("/api/database", databaseRoutes);
 app.use("/api/debug", debugLogsRoutes);
 
 app.use(auditMiddleware);

@@ -1,10 +1,11 @@
 import prisma from "../config/prisma.js";
-import { exec } from "child_process";
+import { exec, execFile } from "child_process";
 import { promisify } from "util";
 import fs from "fs/promises";
 import path from "path";
 
 const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 /**
  * Backup Service
@@ -27,6 +28,37 @@ class BackupService {
     }
   }
 
+  async getPgDumpPath() {
+    const configuredPath = process.env.PG_DUMP_PATH;
+    const candidates = [
+      configuredPath,
+      ...[18, 17, 16, 15, 14, 13, 12].map(
+        (version) => `C:\\Program Files\\PostgreSQL\\${version}\\bin\\pg_dump.exe`,
+      ),
+    ].filter(Boolean);
+
+    for (const candidate of candidates) {
+      try {
+        await fs.access(candidate);
+        return candidate;
+      } catch {
+        // Try the next installed PostgreSQL version.
+      }
+    }
+
+    try {
+      const { stdout } = await execAsync("where.exe pg_dump");
+      const discoveredPath = stdout.split(/\r?\n/).find(Boolean)?.trim();
+      if (discoveredPath) return discoveredPath;
+    } catch {
+      // Fall through to a clear actionable error.
+    }
+
+    throw new Error(
+      "pg_dump.exe was not found. Install PostgreSQL client tools or set PG_DUMP_PATH.",
+    );
+  }
+
   /**
    * Backup PostgreSQL database
    */
@@ -39,6 +71,8 @@ class BackupService {
     let backupRecord = null;
 
     try {
+      await this.ensureBackupDir();
+
       // Create backup history record
       backupRecord = await prisma.backupHistory.create({
         data: {
@@ -61,17 +95,20 @@ class BackupService {
       const host = url.hostname;
       const port = url.port || "5432";
       const database = url.pathname.slice(1);
-      const username = url.username;
-      const password = url.password;
+      const username = decodeURIComponent(url.username);
+      const password = decodeURIComponent(url.password);
 
-      // Construct pg_dump command
-      const dumpCommand = `"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe" -h ${host} -p ${port} -U ${username} -d ${database} -F p -f "${filePath}"`;
+      const pgDumpPath = await this.getPgDumpPath();
 
       console.log(`🔄 [BACKUP] Starting database backup: ${fileName}`);
 
       // Execute backup
       const env = { ...process.env, PGPASSWORD: password };
-      await execAsync(dumpCommand, { env, maxBuffer: 1024 * 1024 * 100 });
+      await execFileAsync(
+        pgDumpPath,
+        ["-h", host, "-p", port, "-U", username, "-d", database, "-F", "p", "-f", filePath],
+        { env, maxBuffer: 1024 * 1024 * 100 },
+      );
 
       // Get file size
       const stats = await fs.stat(filePath);
