@@ -120,181 +120,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  password: 'password',
-  role: 'role',
-  department: 'department',
-  avatarUrl: 'avatarUrl',
-  isActive: 'isActive',
-  preferredLanguage: 'preferredLanguage'
-};
-
-exports.Prisma.NotificationScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  title: 'title',
-  message: 'message',
-  type: 'type',
-  channel: 'channel',
-  refType: 'refType',
-  refId: 'refId',
-  isRead: 'isRead',
-  createdAt: 'createdAt',
-  readAt: 'readAt'
-};
-
-exports.Prisma.FeedbackScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  type: 'type',
-  description: 'description',
-  status: 'status',
-  adminComment: 'adminComment',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.RoleChangeAuditScalarFieldEnum = {
-  id: 'id',
-  targetId: 'targetId',
-  fromRole: 'fromRole',
-  toRole: 'toRole',
-  actorEmail: 'actorEmail',
-  actorName: 'actorName',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.PasswordResetCodeScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  email: 'email',
-  codeHash: 'codeHash',
-  salt: 'salt',
-  attempts: 'attempts',
-  expiresAt: 'expiresAt',
-  usedAt: 'usedAt',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.PurchasingLookupScalarFieldEnum = {
-  id: 'id',
-  kind: 'kind',
-  value: 'value',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.SupplierTypeAssignmentScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  category: 'category',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierInventoryItemScalarFieldEnum = {
-  id: 'id',
-  supplierId: 'supplierId',
-  itemName: 'itemName',
-  category: 'category',
-  quantity: 'quantity',
-  reorderLevel: 'reorderLevel',
-  unit: 'unit',
-  unitPrice: 'unitPrice',
-  taxType: 'taxType',
-  taxRate: 'taxRate',
-  imageDataUrl: 'imageDataUrl',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PurchaseRequestRecordScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PurchaseOrderRecordScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierOrderAcknowledgementRecordScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierDeliveryRecordStoreScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierGrnRecordStoreScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ChatSessionScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  title: 'title',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ChatMessageScalarFieldEnum = {
-  id: 'id',
-  sessionId: 'sessionId',
-  role: 'role',
-  content: 'content',
-  metadata: 'metadata',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.MessageAttachmentScalarFieldEnum = {
-  id: 'id',
-  messageId: 'messageId',
-  fileName: 'fileName',
-  fileUrl: 'fileUrl',
-  fileType: 'fileType',
-  fileSize: 'fileSize',
-  mimeType: 'mimeType',
-  thumbnailUrl: 'thumbnailUrl',
-  aiAnalysis: 'aiAnalysis',
-  uploadedAt: 'uploadedAt',
-  metadata: 'metadata'
-};
-
-exports.Prisma.SourceScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  sessionId: 'sessionId',
-  fileName: 'fileName',
-  filePath: 'filePath',
-  fileType: 'fileType',
-  fileSize: 'fileSize',
-  uploadedAt: 'uploadedAt'
-};
-
-exports.Prisma.SourceChunkScalarFieldEnum = {
-  id: 'id',
-  sourceId: 'sourceId',
-  content: 'content',
-  chunkIndex: 'chunkIndex'
-};
-
-exports.Prisma.AuditLogScalarFieldEnum = {
+exports.Prisma.Audit_logsScalarFieldEnum = {
   id: 'id',
   action: 'action',
   entity: 'entity',
@@ -311,7 +137,7 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.BackupHistoryScalarFieldEnum = {
+exports.Prisma.Backup_historyScalarFieldEnum = {
   id: 'id',
   backupType: 'backupType',
   fileName: 'fileName',
@@ -324,7 +150,56 @@ exports.Prisma.BackupHistoryScalarFieldEnum = {
   metadata: 'metadata'
 };
 
-exports.Prisma.DepartmentScalarFieldEnum = {
+exports.Prisma.Budget_adjustment_requestsScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  reason: 'reason',
+  requestType: 'requestType',
+  requestedAmount: 'requestedAmount',
+  requestedAt: 'requestedAt',
+  requestedBy: 'requestedBy',
+  reviewNotes: 'reviewNotes',
+  reviewedAt: 'reviewedAt',
+  reviewedBy: 'reviewedBy',
+  status: 'status',
+  targetMonth: 'targetMonth',
+  targetYear: 'targetYear'
+};
+
+exports.Prisma.Budget_predictionsScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  aiInsights: 'aiInsights',
+  algorithm: 'algorithm',
+  categoryBreakdown: 'categoryBreakdown',
+  comparisonData: 'comparisonData',
+  confidence: 'confidence',
+  createdAt: 'createdAt',
+  predictedAmount: 'predictedAmount',
+  targetMonth: 'targetMonth',
+  targetYear: 'targetYear',
+  triggerType: 'triggerType',
+  triggeredBy: 'triggeredBy'
+};
+
+exports.Prisma.Chat_messagesScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  role: 'role',
+  content: 'content',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Chat_sessionsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DepartmentsScalarFieldEnum = {
   id: 'id',
   code: 'code',
   name: 'name',
@@ -334,50 +209,175 @@ exports.Prisma.DepartmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.MonthlyBudgetScalarFieldEnum = {
+exports.Prisma.FeedbacksScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId',
-  year: 'year',
-  month: 'month',
-  allocatedAmount: 'allocatedAmount',
-  spentAmount: 'spentAmount',
-  reservedAmount: 'reservedAmount',
-  lastNotifiedThreshold: 'lastNotifiedThreshold',
-  notes: 'notes',
+  userId: 'userId',
+  type: 'type',
+  description: 'description',
+  status: 'status',
+  adminComment: 'adminComment',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.BudgetAdjustmentRequestScalarFieldEnum = {
+exports.Prisma.Message_attachmentsScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId',
-  targetYear: 'targetYear',
-  targetMonth: 'targetMonth',
-  requestType: 'requestType',
-  requestedAmount: 'requestedAmount',
-  reason: 'reason',
-  status: 'status',
-  requestedBy: 'requestedBy',
-  requestedAt: 'requestedAt',
-  reviewedBy: 'reviewedBy',
-  reviewedAt: 'reviewedAt',
-  reviewNotes: 'reviewNotes'
+  messageId: 'messageId',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  thumbnailUrl: 'thumbnailUrl',
+  aiAnalysis: 'aiAnalysis',
+  uploadedAt: 'uploadedAt',
+  metadata: 'metadata'
 };
 
-exports.Prisma.BudgetPredictionScalarFieldEnum = {
+exports.Prisma.Monthly_budgetsScalarFieldEnum = {
   id: 'id',
   departmentId: 'departmentId',
-  targetYear: 'targetYear',
-  targetMonth: 'targetMonth',
-  predictedAmount: 'predictedAmount',
-  confidence: 'confidence',
-  algorithm: 'algorithm',
-  aiInsights: 'aiInsights',
-  categoryBreakdown: 'categoryBreakdown',
-  comparisonData: 'comparisonData',
-  triggerType: 'triggerType',
-  triggeredBy: 'triggeredBy',
+  allocatedAmount: 'allocatedAmount',
+  createdAt: 'createdAt',
+  month: 'month',
+  notes: 'notes',
+  reservedAmount: 'reservedAmount',
+  spentAmount: 'spentAmount',
+  updatedAt: 'updatedAt',
+  year: 'year',
+  lastNotifiedThreshold: 'lastNotifiedThreshold'
+};
+
+exports.Prisma.NotificationsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  channel: 'channel',
+  refType: 'refType',
+  refId: 'refId',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  readAt: 'readAt'
+};
+
+exports.Prisma.Password_reset_codesScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  email: 'email',
+  codeHash: 'codeHash',
+  salt: 'salt',
+  attempts: 'attempts',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.Purchase_order_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Purchase_request_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Purchasing_lookupsScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  value: 'value',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Role_change_auditsScalarFieldEnum = {
+  id: 'id',
+  targetId: 'targetId',
+  fromRole: 'fromRole',
+  toRole: 'toRole',
+  actorEmail: 'actorEmail',
+  actorName: 'actorName',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Source_chunksScalarFieldEnum = {
+  id: 'id',
+  sourceId: 'sourceId',
+  content: 'content',
+  chunkIndex: 'chunkIndex'
+};
+
+exports.Prisma.SourcesScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  sessionId: 'sessionId',
+  fileName: 'fileName',
+  filePath: 'filePath',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  uploadedAt: 'uploadedAt'
+};
+
+exports.Prisma.Supplier_delivery_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_grn_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_inventory_itemsScalarFieldEnum = {
+  id: 'id',
+  supplierId: 'supplierId',
+  itemName: 'itemName',
+  category: 'category',
+  quantity: 'quantity',
+  reorderLevel: 'reorderLevel',
+  unit: 'unit',
+  unitPrice: 'unitPrice',
+  imageDataUrl: 'imageDataUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  taxType: 'taxType',
+  taxRate: 'taxRate'
+};
+
+exports.Prisma.Supplier_order_acknowledgement_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_type_assignmentsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UsersScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  role: 'role',
+  avatarUrl: 'avatarUrl',
+  department: 'department',
+  isActive: 'isActive',
+  preferredLanguage: 'preferredLanguage'
 };
 
 exports.Prisma.SortOrder = {
@@ -385,12 +385,12 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -399,15 +399,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 exports.Language = exports.$Enums.Language = {
   en: 'en',
@@ -416,30 +416,30 @@ exports.Language = exports.$Enums.Language = {
 };
 
 exports.Prisma.ModelName = {
-  User: 'User',
-  Notification: 'Notification',
-  Feedback: 'Feedback',
-  RoleChangeAudit: 'RoleChangeAudit',
-  PasswordResetCode: 'PasswordResetCode',
-  PurchasingLookup: 'PurchasingLookup',
-  SupplierTypeAssignment: 'SupplierTypeAssignment',
-  SupplierInventoryItem: 'SupplierInventoryItem',
-  PurchaseRequestRecord: 'PurchaseRequestRecord',
-  PurchaseOrderRecord: 'PurchaseOrderRecord',
-  SupplierOrderAcknowledgementRecord: 'SupplierOrderAcknowledgementRecord',
-  SupplierDeliveryRecordStore: 'SupplierDeliveryRecordStore',
-  SupplierGrnRecordStore: 'SupplierGrnRecordStore',
-  ChatSession: 'ChatSession',
-  ChatMessage: 'ChatMessage',
-  MessageAttachment: 'MessageAttachment',
-  Source: 'Source',
-  SourceChunk: 'SourceChunk',
-  AuditLog: 'AuditLog',
-  BackupHistory: 'BackupHistory',
-  Department: 'Department',
-  MonthlyBudget: 'MonthlyBudget',
-  BudgetAdjustmentRequest: 'BudgetAdjustmentRequest',
-  BudgetPrediction: 'BudgetPrediction'
+  audit_logs: 'audit_logs',
+  backup_history: 'backup_history',
+  budget_adjustment_requests: 'budget_adjustment_requests',
+  budget_predictions: 'budget_predictions',
+  chat_messages: 'chat_messages',
+  chat_sessions: 'chat_sessions',
+  departments: 'departments',
+  feedbacks: 'feedbacks',
+  message_attachments: 'message_attachments',
+  monthly_budgets: 'monthly_budgets',
+  notifications: 'notifications',
+  password_reset_codes: 'password_reset_codes',
+  purchase_order_records: 'purchase_order_records',
+  purchase_request_records: 'purchase_request_records',
+  purchasing_lookups: 'purchasing_lookups',
+  role_change_audits: 'role_change_audits',
+  source_chunks: 'source_chunks',
+  sources: 'sources',
+  supplier_delivery_records: 'supplier_delivery_records',
+  supplier_grn_records: 'supplier_grn_records',
+  supplier_inventory_items: 'supplier_inventory_items',
+  supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
+  supplier_type_assignments: 'supplier_type_assignments',
+  users: 'users'
 };
 
 /**

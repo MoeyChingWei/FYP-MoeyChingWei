@@ -1,40 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma/client"
+}
+
 datasource db {
   provider = "postgresql"
 }
 
-enum Language {
-  en // English
-  zh // 简体中文 (Simplified Chinese)
-  ms // Bahasa Malaysia
+model audit_logs {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  String?
+  userId    Int?
+  userEmail String?
+  userName  String?
+  ipAddress String?
+  userAgent String?
+  changes   Json?
+  metadata  Json?
+  status    String   @default("SUCCESS")
+  errorMsg  String?
+  createdAt DateTime @default(now())
+
+  @@index([action])
+  @@index([createdAt])
+  @@index([entity, entityId])
+  @@index([userId])
 }
 
-model User {
-  id                Int      @id @default(autoincrement())
-  name              String?
-  email             String   @unique
-  password          String
-  role              String   @default("Employee")
-  department        String?
-  avatarUrl         String?
-  isActive          Boolean  @default(true)
-  preferredLanguage Language @default(en)
+model backup_history {
+  id          Int       @id @default(autoincrement())
+  backupType  String
+  fileName    String
+  filePath    String
+  fileSize    BigInt?
+  status      String
+  startedAt   DateTime
+  completedAt DateTime?
+  errorMsg    String?
+  metadata    Json?
 
-  roleChangeAuditsAsTarget   RoleChangeAudit[]         @relation("RoleChangeTarget")
-  passwordResetCodes         PasswordResetCode[]
-  supplierTypeAssignments    SupplierTypeAssignment[]
-  supplierInventoryItems     SupplierInventoryItem[]
-  notifications              Notification[]
-  feedbacks                  Feedback[]
-  chatSessions               ChatSession[]
-  sources                    Source[]
-  adjustmentRequestsCreated  BudgetAdjustmentRequest[] @relation("AdjustmentRequester")
-  adjustmentRequestsReviewed BudgetAdjustmentRequest[] @relation("AdjustmentReviewer")
-  budgetPredictions          BudgetPrediction[]        @relation("BudgetPredictionTriggeredBy")
-
-  @@map("users")
+  @@index([backupType, status])
+  @@index([startedAt])
 }
 
-model Notification {
+model budget_adjustment_requests {
+  id                                                  Int         @id @default(autoincrement())
+  departmentId                                        Int
+  reason                                              String
+  requestType                                         String
+  requestedAmount                                     Decimal     @db.Decimal(15, 2)
+  requestedAt                                         DateTime    @default(now())
+  requestedBy                                         Int
+  reviewNotes                                         String?
+  reviewedAt                                          DateTime?
+  reviewedBy                                          Int?
+  status                                              String      @default("pending")
+  targetMonth                                         Int
+  targetYear                                          Int
+  departments                                         departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  users_budget_adjustment_requests_requestedByTousers users       @relation("budget_adjustment_requests_requestedByTousers", fields: [requestedBy], references: [id], onDelete: Cascade)
+  users_budget_adjustment_requests_reviewedByTousers  users?      @relation("budget_adjustment_requests_reviewedByTousers", fields: [reviewedBy], references: [id])
+
+  @@index([departmentId, status])
+  @@index([status, requestedAt])
+}
+
+model budget_predictions {
+  id                Int          @id @default(autoincrement())
+  departmentId      Int?
+  aiInsights        String
+  algorithm         String
+  categoryBreakdown Json?
+  comparisonData    Json?
+  confidence        String
+  createdAt         DateTime     @default(now())
+  predictedAmount   Decimal      @db.Decimal(15, 2)
+  targetMonth       Int
+  targetYear        Int
+  triggerType       String
+  triggeredBy       Int?
+  departments       departments? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  users             users?       @relation(fields: [triggeredBy], references: [id])
+
+  @@index([createdAt])
+  @@index([departmentId])
+  @@index([targetYear, targetMonth])
+  @@index([triggeredBy])
+}
+
+model chat_messages {
+  id                  Int                   @id @default(autoincrement())
+  sessionId           String
+  role                String
+  content             String
+  metadata            Json?
+  createdAt           DateTime              @default(now())
+  chat_sessions       chat_sessions         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  message_attachments message_attachments[]
+
+  @@index([createdAt])
+  @@index([sessionId])
+}
+
+model chat_sessions {
+  id            String          @id
+  userId        Int
+  title         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  chat_messages chat_messages[]
+  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sources       sources[]
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model departments {
+  id                         Int                          @id @default(autoincrement())
+  code                       String                       @unique
+  name                       String
+  description                String?
+  isActive                   Boolean                      @default(true)
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime
+  budget_adjustment_requests budget_adjustment_requests[]
+  budget_predictions         budget_predictions[]
+  monthly_budgets            monthly_budgets[]
+
+  @@index([code])
+  @@index([isActive])
+}
+
+model feedbacks {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  type         String
+  description  String
+  status       String   @default("OPEN")
+  adminComment String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+}
+
+model message_attachments {
+  id            String        @id
+  messageId     Int
+  fileName      String
+  fileUrl       String
+  fileType      String
+  fileSize      Int
+  mimeType      String?
+  thumbnailUrl  String?
+  aiAnalysis    String?
+  uploadedAt    DateTime      @default(now())
+  metadata      Json?
+  chat_messages chat_messages @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([uploadedAt])
+}
+
+model monthly_budgets {
+  id                    Int         @id @default(autoincrement())
+  departmentId          Int
+  allocatedAmount       Decimal     @db.Decimal(15, 2)
+  createdAt             DateTime    @default(now())
+  month                 Int
+  notes                 String?
+  reservedAmount        Decimal     @default(0) @db.Decimal(15, 2)
+  spentAmount           Decimal     @default(0) @db.Decimal(15, 2)
+  updatedAt             DateTime
+  year                  Int
+  lastNotifiedThreshold Int         @default(0)
+  departments           departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, year, month])
+  @@index([departmentId])
+  @@index([year, month])
+}
+
+model notifications {
   id        Int       @id @default(autoincrement())
   userId    Int
   title     String
@@ -46,48 +198,13 @@ model Notification {
   isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())
   readAt    DateTime?
+  users     users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@index([createdAt])
   @@index([userId, isRead])
-  @@index([createdAt])
-  @@map("notifications")
 }
 
-model Feedback {
-  id           Int      @id @default(autoincrement())
-  userId       Int
-  type         String
-  description  String
-  status       String   @default("OPEN")
-  adminComment String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([status, createdAt])
-  @@map("feedbacks")
-}
-
-model RoleChangeAudit {
-  id         Int      @id @default(autoincrement())
-  targetId   Int
-  fromRole   String
-  toRole     String
-  actorEmail String
-  actorName  String?
-  createdAt  DateTime @default(now())
-
-  target User @relation("RoleChangeTarget", fields: [targetId], references: [id], onDelete: Cascade)
-
-  @@index([targetId])
-  @@index([createdAt])
-  @@map("role_change_audits")
-}
-
-model PasswordResetCode {
+model password_reset_codes {
   id        Int       @id @default(autoincrement())
   userId    Int
   email     String
@@ -97,20 +214,35 @@ model PasswordResetCode {
   expiresAt DateTime
   usedAt    DateTime?
   createdAt DateTime  @default(now())
+  users     users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([email])
-  @@index([userId])
-  @@index([expiresAt])
   @@index([createdAt])
-  @@map("password_reset_codes")
+  @@index([email])
+  @@index([expiresAt])
+  @@index([userId])
 }
 
-/**
- * User-added item categories and units of measure for purchasing forms.
- */
-model PurchasingLookup {
+model purchase_order_records {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model purchase_request_records {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model purchasing_lookups {
   id        Int      @id @default(autoincrement())
   kind      String
   value     String
@@ -118,26 +250,72 @@ model PurchasingLookup {
 
   @@unique([kind, value])
   @@index([kind])
-  @@map("purchasing_lookups")
 }
 
-model SupplierTypeAssignment {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  category  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model role_change_audits {
+  id         Int      @id @default(autoincrement())
+  targetId   Int
+  fromRole   String
+  toRole     String
+  actorEmail String
+  actorName  String?
+  createdAt  DateTime @default(now())
+  users      users    @relation(fields: [targetId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([createdAt])
+  @@index([targetId])
+}
 
-  @@unique([userId, category])
+model source_chunks {
+  id         String  @id
+  sourceId   String
+  content    String
+  chunkIndex Int
+  sources    sources @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([sourceId])
+}
+
+model sources {
+  id            String          @id
+  userId        Int
+  sessionId     String?
+  fileName      String
+  filePath      String
+  fileType      String
+  fileSize      Int
+  uploadedAt    DateTime        @default(now())
+  source_chunks source_chunks[]
+  chat_sessions chat_sessions?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([uploadedAt])
   @@index([userId])
-  @@index([category])
-  @@map("supplier_type_assignments")
 }
 
-model SupplierInventoryItem {
-  id           String   @id @default(uuid())
+model supplier_delivery_records {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model supplier_grn_records {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model supplier_inventory_items {
+  id           String   @id
   supplierId   Int
   itemName     String
   category     String
@@ -145,289 +323,66 @@ model SupplierInventoryItem {
   reorderLevel Int      @default(0)
   unit         String
   unitPrice    Float
+  imageDataUrl String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
   taxType      String   @default("TAX")
   taxRate      Float    @default(10)
-  imageDataUrl String?  @db.Text
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  users        users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
-  supplier User @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
-  @@index([supplierId])
   @@index([category])
+  @@index([supplierId])
   @@index([updatedAt])
-  @@map("supplier_inventory_items")
 }
 
-model PurchaseRequestRecord {
+model supplier_order_acknowledgement_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime
 
-  @@index([updatedAt])
   @@index([createdAt])
-  @@map("purchase_request_records")
+  @@index([updatedAt])
 }
 
-model PurchaseOrderRecord {
-  localId   String   @id
-  payload   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([updatedAt])
-  @@index([createdAt])
-  @@map("purchase_order_records")
-}
-
-model SupplierOrderAcknowledgementRecord {
-  localId   String   @id
-  payload   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([updatedAt])
-  @@index([createdAt])
-  @@map("supplier_order_acknowledgement_records")
-}
-
-model SupplierDeliveryRecordStore {
-  localId   String   @id
-  payload   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([updatedAt])
-  @@index([createdAt])
-  @@map("supplier_delivery_records")
-}
-
-model SupplierGrnRecordStore {
-  localId   String   @id
-  payload   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([updatedAt])
-  @@index([createdAt])
-  @@map("supplier_grn_records")
-}
-
-model ChatSession {
-  id        String   @id @default(uuid())
+model supplier_type_assignments {
+  id        Int      @id @default(autoincrement())
   userId    Int
-  title     String?
+  category  String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages ChatMessage[]
-  sources  Source[]
-
+  @@unique([userId, category])
+  @@index([category])
   @@index([userId])
-  @@index([createdAt])
-  @@map("chat_sessions")
 }
 
-model ChatMessage {
-  id        Int      @id @default(autoincrement())
-  sessionId String
-  role      String
-  content   String   @db.Text
-  metadata  Json?
-  createdAt DateTime @default(now())
-
-  session     ChatSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  attachments MessageAttachment[]
-
-  @@index([sessionId])
-  @@index([createdAt])
-  @@map("chat_messages")
+model users {
+  id                                                                       Int                          @id @default(autoincrement())
+  name                                                                     String?
+  email                                                                    String                       @unique
+  password                                                                 String
+  role                                                                     String                       @default("Employee")
+  avatarUrl                                                                String?
+  department                                                               String?
+  isActive                                                                 Boolean                      @default(true)
+  preferredLanguage                                                        Language                     @default(en)
+  budget_adjustment_requests_budget_adjustment_requests_requestedByTousers budget_adjustment_requests[] @relation("budget_adjustment_requests_requestedByTousers")
+  budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers  budget_adjustment_requests[] @relation("budget_adjustment_requests_reviewedByTousers")
+  budget_predictions                                                       budget_predictions[]
+  chat_sessions                                                            chat_sessions[]
+  feedbacks                                                                feedbacks[]
+  notifications                                                            notifications[]
+  password_reset_codes                                                     password_reset_codes[]
+  role_change_audits                                                       role_change_audits[]
+  sources                                                                  sources[]
+  supplier_inventory_items                                                 supplier_inventory_items[]
+  supplier_type_assignments                                                supplier_type_assignments[]
 }
 
-model MessageAttachment {
-  id           String   @id @default(uuid())
-  messageId    Int
-  fileName     String
-  fileUrl      String
-  fileType     String
-  fileSize     Int
-  mimeType     String?
-  thumbnailUrl String?
-  aiAnalysis   String?  @db.Text
-  uploadedAt   DateTime @default(now())
-  metadata     Json?
-
-  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-
-  @@index([messageId])
-  @@index([uploadedAt])
-  @@map("message_attachments")
-}
-
-model Source {
-  id         String   @id @default(uuid())
-  userId     Int
-  sessionId  String?
-  fileName   String
-  filePath   String
-  fileType   String
-  fileSize   Int
-  uploadedAt DateTime @default(now())
-
-  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  session ChatSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  chunks  SourceChunk[]
-
-  @@index([userId])
-  @@index([sessionId])
-  @@index([uploadedAt])
-  @@map("sources")
-}
-
-model SourceChunk {
-  id         String @id @default(uuid())
-  sourceId   String
-  content    String @db.Text
-  chunkIndex Int
-
-  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-
-  @@index([sourceId])
-  @@map("source_chunks")
-}
-
-model AuditLog {
-  id        Int      @id @default(autoincrement())
-  action    String // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, EXPORT, etc.
-  entity    String // User, PurchaseRequest, PurchaseOrder, File, etc.
-  entityId  String? // ID of the affected entity
-  userId    Int? // Who performed the action
-  userEmail String? // Email of the actor (for cases where user is deleted)
-  userName  String? // Name of the actor
-  ipAddress String? // IP address of the request
-  userAgent String? // Browser/client info
-  changes   Json? // What changed: {before: {...}, after: {...}}
-  metadata  Json? // Additional context
-  status    String   @default("SUCCESS") // SUCCESS, FAILED
-  errorMsg  String? // If failed, why?
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-  @@index([entity, entityId])
-  @@index([action])
-  @@index([createdAt])
-  @@map("audit_logs")
-}
-
-model BackupHistory {
-  id          Int       @id @default(autoincrement())
-  backupType  String // DATABASE, FILES
-  fileName    String
-  filePath    String
-  fileSize    BigInt? // bytes
-  status      String // SUCCESS, FAILED
-  startedAt   DateTime
-  completedAt DateTime?
-  errorMsg    String?   @db.Text
-  metadata    Json? // Additional info like row counts, compression ratio, etc.
-
-  @@index([backupType, status])
-  @@index([startedAt])
-  @@map("backup_history")
-}
-
-model Department {
-  id          Int      @id @default(autoincrement())
-  code        String   @unique
-  name        String
-  description String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  monthlyBudgets           MonthlyBudget[]
-  budgetAdjustmentRequests BudgetAdjustmentRequest[]
-  budgetPredictions        BudgetPrediction[]
-
-  @@index([code])
-  @@index([isActive])
-  @@map("departments")
-}
-
-// Stub models for forward references - will be fully implemented in later tasks
-model MonthlyBudget {
-  id                    Int      @id @default(autoincrement())
-  departmentId          Int
-  year                  Int
-  month                 Int
-  allocatedAmount       Decimal  @db.Decimal(15, 2)
-  spentAmount           Decimal  @default(0) @db.Decimal(15, 2)
-  reservedAmount        Decimal  @default(0) @db.Decimal(15, 2)
-  lastNotifiedThreshold Int      @default(0)
-  notes                 String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-
-  @@unique([departmentId, year, month])
-  @@index([year, month])
-  @@index([departmentId])
-  @@map("monthly_budgets")
-}
-
-model BudgetAdjustmentRequest {
-  id              Int       @id @default(autoincrement())
-  departmentId    Int
-  targetYear      Int
-  targetMonth     Int
-  requestType     String
-  requestedAmount Decimal   @db.Decimal(15, 2)
-  reason          String    @db.Text
-  status          String    @default("pending")
-  requestedBy     Int
-  requestedAt     DateTime  @default(now())
-  reviewedBy      Int?
-  reviewedAt      DateTime?
-  reviewNotes     String?   @db.Text
-
-  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  requester  User       @relation("AdjustmentRequester", fields: [requestedBy], references: [id], onDelete: Cascade)
-  reviewer   User?      @relation("AdjustmentReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
-
-  @@index([departmentId, status])
-  @@index([status, requestedAt])
-  @@map("budget_adjustment_requests")
-}
-
-model BudgetPrediction {
-  id                Int      @id @default(autoincrement())
-  departmentId      Int?
-  targetYear        Int
-  targetMonth       Int
-  predictedAmount   Decimal  @db.Decimal(15, 2)
-  confidence        String
-  algorithm         String
-  aiInsights        String   @db.Text
-  categoryBreakdown Json?
-  comparisonData    Json?
-  triggerType       String
-  triggeredBy       Int?
-  createdAt         DateTime @default(now())
-
-  department      Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  triggeredByUser User?       @relation("BudgetPredictionTriggeredBy", fields: [triggeredBy], references: [id], onDelete: SetNull)
-
-  @@index([departmentId])
-  @@index([targetYear, targetMonth])
-  @@index([triggeredBy])
-  @@index([createdAt])
-  @@map("budget_predictions")
-}
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/prisma/client"
+enum Language {
+  en
+  zh
+  ms
 }

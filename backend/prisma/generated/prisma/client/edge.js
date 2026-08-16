@@ -92,181 +92,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  password: 'password',
-  role: 'role',
-  department: 'department',
-  avatarUrl: 'avatarUrl',
-  isActive: 'isActive',
-  preferredLanguage: 'preferredLanguage'
-};
-
-exports.Prisma.NotificationScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  title: 'title',
-  message: 'message',
-  type: 'type',
-  channel: 'channel',
-  refType: 'refType',
-  refId: 'refId',
-  isRead: 'isRead',
-  createdAt: 'createdAt',
-  readAt: 'readAt'
-};
-
-exports.Prisma.FeedbackScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  type: 'type',
-  description: 'description',
-  status: 'status',
-  adminComment: 'adminComment',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.RoleChangeAuditScalarFieldEnum = {
-  id: 'id',
-  targetId: 'targetId',
-  fromRole: 'fromRole',
-  toRole: 'toRole',
-  actorEmail: 'actorEmail',
-  actorName: 'actorName',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.PasswordResetCodeScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  email: 'email',
-  codeHash: 'codeHash',
-  salt: 'salt',
-  attempts: 'attempts',
-  expiresAt: 'expiresAt',
-  usedAt: 'usedAt',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.PurchasingLookupScalarFieldEnum = {
-  id: 'id',
-  kind: 'kind',
-  value: 'value',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.SupplierTypeAssignmentScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  category: 'category',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierInventoryItemScalarFieldEnum = {
-  id: 'id',
-  supplierId: 'supplierId',
-  itemName: 'itemName',
-  category: 'category',
-  quantity: 'quantity',
-  reorderLevel: 'reorderLevel',
-  unit: 'unit',
-  unitPrice: 'unitPrice',
-  taxType: 'taxType',
-  taxRate: 'taxRate',
-  imageDataUrl: 'imageDataUrl',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PurchaseRequestRecordScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PurchaseOrderRecordScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierOrderAcknowledgementRecordScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierDeliveryRecordStoreScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SupplierGrnRecordStoreScalarFieldEnum = {
-  localId: 'localId',
-  payload: 'payload',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ChatSessionScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  title: 'title',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ChatMessageScalarFieldEnum = {
-  id: 'id',
-  sessionId: 'sessionId',
-  role: 'role',
-  content: 'content',
-  metadata: 'metadata',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.MessageAttachmentScalarFieldEnum = {
-  id: 'id',
-  messageId: 'messageId',
-  fileName: 'fileName',
-  fileUrl: 'fileUrl',
-  fileType: 'fileType',
-  fileSize: 'fileSize',
-  mimeType: 'mimeType',
-  thumbnailUrl: 'thumbnailUrl',
-  aiAnalysis: 'aiAnalysis',
-  uploadedAt: 'uploadedAt',
-  metadata: 'metadata'
-};
-
-exports.Prisma.SourceScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  sessionId: 'sessionId',
-  fileName: 'fileName',
-  filePath: 'filePath',
-  fileType: 'fileType',
-  fileSize: 'fileSize',
-  uploadedAt: 'uploadedAt'
-};
-
-exports.Prisma.SourceChunkScalarFieldEnum = {
-  id: 'id',
-  sourceId: 'sourceId',
-  content: 'content',
-  chunkIndex: 'chunkIndex'
-};
-
-exports.Prisma.AuditLogScalarFieldEnum = {
+exports.Prisma.Audit_logsScalarFieldEnum = {
   id: 'id',
   action: 'action',
   entity: 'entity',
@@ -283,7 +109,7 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.BackupHistoryScalarFieldEnum = {
+exports.Prisma.Backup_historyScalarFieldEnum = {
   id: 'id',
   backupType: 'backupType',
   fileName: 'fileName',
@@ -296,7 +122,56 @@ exports.Prisma.BackupHistoryScalarFieldEnum = {
   metadata: 'metadata'
 };
 
-exports.Prisma.DepartmentScalarFieldEnum = {
+exports.Prisma.Budget_adjustment_requestsScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  reason: 'reason',
+  requestType: 'requestType',
+  requestedAmount: 'requestedAmount',
+  requestedAt: 'requestedAt',
+  requestedBy: 'requestedBy',
+  reviewNotes: 'reviewNotes',
+  reviewedAt: 'reviewedAt',
+  reviewedBy: 'reviewedBy',
+  status: 'status',
+  targetMonth: 'targetMonth',
+  targetYear: 'targetYear'
+};
+
+exports.Prisma.Budget_predictionsScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  aiInsights: 'aiInsights',
+  algorithm: 'algorithm',
+  categoryBreakdown: 'categoryBreakdown',
+  comparisonData: 'comparisonData',
+  confidence: 'confidence',
+  createdAt: 'createdAt',
+  predictedAmount: 'predictedAmount',
+  targetMonth: 'targetMonth',
+  targetYear: 'targetYear',
+  triggerType: 'triggerType',
+  triggeredBy: 'triggeredBy'
+};
+
+exports.Prisma.Chat_messagesScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  role: 'role',
+  content: 'content',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Chat_sessionsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DepartmentsScalarFieldEnum = {
   id: 'id',
   code: 'code',
   name: 'name',
@@ -306,50 +181,175 @@ exports.Prisma.DepartmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.MonthlyBudgetScalarFieldEnum = {
+exports.Prisma.FeedbacksScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId',
-  year: 'year',
-  month: 'month',
-  allocatedAmount: 'allocatedAmount',
-  spentAmount: 'spentAmount',
-  reservedAmount: 'reservedAmount',
-  lastNotifiedThreshold: 'lastNotifiedThreshold',
-  notes: 'notes',
+  userId: 'userId',
+  type: 'type',
+  description: 'description',
+  status: 'status',
+  adminComment: 'adminComment',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.BudgetAdjustmentRequestScalarFieldEnum = {
+exports.Prisma.Message_attachmentsScalarFieldEnum = {
   id: 'id',
-  departmentId: 'departmentId',
-  targetYear: 'targetYear',
-  targetMonth: 'targetMonth',
-  requestType: 'requestType',
-  requestedAmount: 'requestedAmount',
-  reason: 'reason',
-  status: 'status',
-  requestedBy: 'requestedBy',
-  requestedAt: 'requestedAt',
-  reviewedBy: 'reviewedBy',
-  reviewedAt: 'reviewedAt',
-  reviewNotes: 'reviewNotes'
+  messageId: 'messageId',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  thumbnailUrl: 'thumbnailUrl',
+  aiAnalysis: 'aiAnalysis',
+  uploadedAt: 'uploadedAt',
+  metadata: 'metadata'
 };
 
-exports.Prisma.BudgetPredictionScalarFieldEnum = {
+exports.Prisma.Monthly_budgetsScalarFieldEnum = {
   id: 'id',
   departmentId: 'departmentId',
-  targetYear: 'targetYear',
-  targetMonth: 'targetMonth',
-  predictedAmount: 'predictedAmount',
-  confidence: 'confidence',
-  algorithm: 'algorithm',
-  aiInsights: 'aiInsights',
-  categoryBreakdown: 'categoryBreakdown',
-  comparisonData: 'comparisonData',
-  triggerType: 'triggerType',
-  triggeredBy: 'triggeredBy',
+  allocatedAmount: 'allocatedAmount',
+  createdAt: 'createdAt',
+  month: 'month',
+  notes: 'notes',
+  reservedAmount: 'reservedAmount',
+  spentAmount: 'spentAmount',
+  updatedAt: 'updatedAt',
+  year: 'year',
+  lastNotifiedThreshold: 'lastNotifiedThreshold'
+};
+
+exports.Prisma.NotificationsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  channel: 'channel',
+  refType: 'refType',
+  refId: 'refId',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  readAt: 'readAt'
+};
+
+exports.Prisma.Password_reset_codesScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  email: 'email',
+  codeHash: 'codeHash',
+  salt: 'salt',
+  attempts: 'attempts',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.Purchase_order_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Purchase_request_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Purchasing_lookupsScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  value: 'value',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Role_change_auditsScalarFieldEnum = {
+  id: 'id',
+  targetId: 'targetId',
+  fromRole: 'fromRole',
+  toRole: 'toRole',
+  actorEmail: 'actorEmail',
+  actorName: 'actorName',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.Source_chunksScalarFieldEnum = {
+  id: 'id',
+  sourceId: 'sourceId',
+  content: 'content',
+  chunkIndex: 'chunkIndex'
+};
+
+exports.Prisma.SourcesScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  sessionId: 'sessionId',
+  fileName: 'fileName',
+  filePath: 'filePath',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  uploadedAt: 'uploadedAt'
+};
+
+exports.Prisma.Supplier_delivery_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_grn_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_inventory_itemsScalarFieldEnum = {
+  id: 'id',
+  supplierId: 'supplierId',
+  itemName: 'itemName',
+  category: 'category',
+  quantity: 'quantity',
+  reorderLevel: 'reorderLevel',
+  unit: 'unit',
+  unitPrice: 'unitPrice',
+  imageDataUrl: 'imageDataUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  taxType: 'taxType',
+  taxRate: 'taxRate'
+};
+
+exports.Prisma.Supplier_order_acknowledgement_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_type_assignmentsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UsersScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  role: 'role',
+  avatarUrl: 'avatarUrl',
+  department: 'department',
+  isActive: 'isActive',
+  preferredLanguage: 'preferredLanguage'
 };
 
 exports.Prisma.SortOrder = {
@@ -357,12 +357,12 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -371,15 +371,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 exports.Language = exports.$Enums.Language = {
   en: 'en',
@@ -388,30 +388,30 @@ exports.Language = exports.$Enums.Language = {
 };
 
 exports.Prisma.ModelName = {
-  User: 'User',
-  Notification: 'Notification',
-  Feedback: 'Feedback',
-  RoleChangeAudit: 'RoleChangeAudit',
-  PasswordResetCode: 'PasswordResetCode',
-  PurchasingLookup: 'PurchasingLookup',
-  SupplierTypeAssignment: 'SupplierTypeAssignment',
-  SupplierInventoryItem: 'SupplierInventoryItem',
-  PurchaseRequestRecord: 'PurchaseRequestRecord',
-  PurchaseOrderRecord: 'PurchaseOrderRecord',
-  SupplierOrderAcknowledgementRecord: 'SupplierOrderAcknowledgementRecord',
-  SupplierDeliveryRecordStore: 'SupplierDeliveryRecordStore',
-  SupplierGrnRecordStore: 'SupplierGrnRecordStore',
-  ChatSession: 'ChatSession',
-  ChatMessage: 'ChatMessage',
-  MessageAttachment: 'MessageAttachment',
-  Source: 'Source',
-  SourceChunk: 'SourceChunk',
-  AuditLog: 'AuditLog',
-  BackupHistory: 'BackupHistory',
-  Department: 'Department',
-  MonthlyBudget: 'MonthlyBudget',
-  BudgetAdjustmentRequest: 'BudgetAdjustmentRequest',
-  BudgetPrediction: 'BudgetPrediction'
+  audit_logs: 'audit_logs',
+  backup_history: 'backup_history',
+  budget_adjustment_requests: 'budget_adjustment_requests',
+  budget_predictions: 'budget_predictions',
+  chat_messages: 'chat_messages',
+  chat_sessions: 'chat_sessions',
+  departments: 'departments',
+  feedbacks: 'feedbacks',
+  message_attachments: 'message_attachments',
+  monthly_budgets: 'monthly_budgets',
+  notifications: 'notifications',
+  password_reset_codes: 'password_reset_codes',
+  purchase_order_records: 'purchase_order_records',
+  purchase_request_records: 'purchase_request_records',
+  purchasing_lookups: 'purchasing_lookups',
+  role_change_audits: 'role_change_audits',
+  source_chunks: 'source_chunks',
+  sources: 'sources',
+  supplier_delivery_records: 'supplier_delivery_records',
+  supplier_grn_records: 'supplier_grn_records',
+  supplier_inventory_items: 'supplier_inventory_items',
+  supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
+  supplier_type_assignments: 'supplier_type_assignments',
+  users: 'users'
 };
 /**
  * Create the Client
@@ -421,10 +421,10 @@ const config = {
   "clientVersion": "7.0.0",
   "engineVersion": "0c19ccc313cf9911a90d99d2ac2eb0280c76c513",
   "activeProvider": "postgresql",
-  "inlineSchema": "datasource db {\n  provider = \"postgresql\"\n}\n\nenum Language {\n  en // English\n  zh // 简体中文 (Simplified Chinese)\n  ms // Bahasa Malaysia\n}\n\nmodel User {\n  id                Int      @id @default(autoincrement())\n  name              String?\n  email             String   @unique\n  password          String\n  role              String   @default(\"Employee\")\n  department        String?\n  avatarUrl         String?\n  isActive          Boolean  @default(true)\n  preferredLanguage Language @default(en)\n\n  roleChangeAuditsAsTarget   RoleChangeAudit[]         @relation(\"RoleChangeTarget\")\n  passwordResetCodes         PasswordResetCode[]\n  supplierTypeAssignments    SupplierTypeAssignment[]\n  supplierInventoryItems     SupplierInventoryItem[]\n  notifications              Notification[]\n  feedbacks                  Feedback[]\n  chatSessions               ChatSession[]\n  sources                    Source[]\n  adjustmentRequestsCreated  BudgetAdjustmentRequest[] @relation(\"AdjustmentRequester\")\n  adjustmentRequestsReviewed BudgetAdjustmentRequest[] @relation(\"AdjustmentReviewer\")\n  budgetPredictions          BudgetPrediction[]        @relation(\"BudgetPredictionTriggeredBy\")\n\n  @@map(\"users\")\n}\n\nmodel Notification {\n  id        Int       @id @default(autoincrement())\n  userId    Int\n  title     String\n  message   String\n  type      String    @default(\"INFO\")\n  channel   String    @default(\"IN_APP\")\n  refType   String?\n  refId     String?\n  isRead    Boolean   @default(false)\n  createdAt DateTime  @default(now())\n  readAt    DateTime?\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId, isRead])\n  @@index([createdAt])\n  @@map(\"notifications\")\n}\n\nmodel Feedback {\n  id           Int      @id @default(autoincrement())\n  userId       Int\n  type         String\n  description  String\n  status       String   @default(\"OPEN\")\n  adminComment String?\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId, createdAt])\n  @@index([status, createdAt])\n  @@map(\"feedbacks\")\n}\n\nmodel RoleChangeAudit {\n  id         Int      @id @default(autoincrement())\n  targetId   Int\n  fromRole   String\n  toRole     String\n  actorEmail String\n  actorName  String?\n  createdAt  DateTime @default(now())\n\n  target User @relation(\"RoleChangeTarget\", fields: [targetId], references: [id], onDelete: Cascade)\n\n  @@index([targetId])\n  @@index([createdAt])\n  @@map(\"role_change_audits\")\n}\n\nmodel PasswordResetCode {\n  id        Int       @id @default(autoincrement())\n  userId    Int\n  email     String\n  codeHash  String\n  salt      String\n  attempts  Int       @default(0)\n  expiresAt DateTime\n  usedAt    DateTime?\n  createdAt DateTime  @default(now())\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([email])\n  @@index([userId])\n  @@index([expiresAt])\n  @@index([createdAt])\n  @@map(\"password_reset_codes\")\n}\n\n/**\n * User-added item categories and units of measure for purchasing forms.\n */\nmodel PurchasingLookup {\n  id        Int      @id @default(autoincrement())\n  kind      String\n  value     String\n  createdAt DateTime @default(now())\n\n  @@unique([kind, value])\n  @@index([kind])\n  @@map(\"purchasing_lookups\")\n}\n\nmodel SupplierTypeAssignment {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  category  String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, category])\n  @@index([userId])\n  @@index([category])\n  @@map(\"supplier_type_assignments\")\n}\n\nmodel SupplierInventoryItem {\n  id           String   @id @default(uuid())\n  supplierId   Int\n  itemName     String\n  category     String\n  quantity     Int\n  reorderLevel Int      @default(0)\n  unit         String\n  unitPrice    Float\n  taxType      String   @default(\"TAX\")\n  taxRate      Float    @default(10)\n  imageDataUrl String?  @db.Text\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  supplier User @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n\n  @@index([supplierId])\n  @@index([category])\n  @@index([updatedAt])\n  @@map(\"supplier_inventory_items\")\n}\n\nmodel PurchaseRequestRecord {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([updatedAt])\n  @@index([createdAt])\n  @@map(\"purchase_request_records\")\n}\n\nmodel PurchaseOrderRecord {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([updatedAt])\n  @@index([createdAt])\n  @@map(\"purchase_order_records\")\n}\n\nmodel SupplierOrderAcknowledgementRecord {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([updatedAt])\n  @@index([createdAt])\n  @@map(\"supplier_order_acknowledgement_records\")\n}\n\nmodel SupplierDeliveryRecordStore {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([updatedAt])\n  @@index([createdAt])\n  @@map(\"supplier_delivery_records\")\n}\n\nmodel SupplierGrnRecordStore {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([updatedAt])\n  @@index([createdAt])\n  @@map(\"supplier_grn_records\")\n}\n\nmodel ChatSession {\n  id        String   @id @default(uuid())\n  userId    Int\n  title     String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  messages ChatMessage[]\n  sources  Source[]\n\n  @@index([userId])\n  @@index([createdAt])\n  @@map(\"chat_sessions\")\n}\n\nmodel ChatMessage {\n  id        Int      @id @default(autoincrement())\n  sessionId String\n  role      String\n  content   String   @db.Text\n  metadata  Json?\n  createdAt DateTime @default(now())\n\n  session     ChatSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n  attachments MessageAttachment[]\n\n  @@index([sessionId])\n  @@index([createdAt])\n  @@map(\"chat_messages\")\n}\n\nmodel MessageAttachment {\n  id           String   @id @default(uuid())\n  messageId    Int\n  fileName     String\n  fileUrl      String\n  fileType     String\n  fileSize     Int\n  mimeType     String?\n  thumbnailUrl String?\n  aiAnalysis   String?  @db.Text\n  uploadedAt   DateTime @default(now())\n  metadata     Json?\n\n  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)\n\n  @@index([messageId])\n  @@index([uploadedAt])\n  @@map(\"message_attachments\")\n}\n\nmodel Source {\n  id         String   @id @default(uuid())\n  userId     Int\n  sessionId  String?\n  fileName   String\n  filePath   String\n  fileType   String\n  fileSize   Int\n  uploadedAt DateTime @default(now())\n\n  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  session ChatSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n  chunks  SourceChunk[]\n\n  @@index([userId])\n  @@index([sessionId])\n  @@index([uploadedAt])\n  @@map(\"sources\")\n}\n\nmodel SourceChunk {\n  id         String @id @default(uuid())\n  sourceId   String\n  content    String @db.Text\n  chunkIndex Int\n\n  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)\n\n  @@index([sourceId])\n  @@map(\"source_chunks\")\n}\n\nmodel AuditLog {\n  id        Int      @id @default(autoincrement())\n  action    String // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, EXPORT, etc.\n  entity    String // User, PurchaseRequest, PurchaseOrder, File, etc.\n  entityId  String? // ID of the affected entity\n  userId    Int? // Who performed the action\n  userEmail String? // Email of the actor (for cases where user is deleted)\n  userName  String? // Name of the actor\n  ipAddress String? // IP address of the request\n  userAgent String? // Browser/client info\n  changes   Json? // What changed: {before: {...}, after: {...}}\n  metadata  Json? // Additional context\n  status    String   @default(\"SUCCESS\") // SUCCESS, FAILED\n  errorMsg  String? // If failed, why?\n  createdAt DateTime @default(now())\n\n  @@index([userId])\n  @@index([entity, entityId])\n  @@index([action])\n  @@index([createdAt])\n  @@map(\"audit_logs\")\n}\n\nmodel BackupHistory {\n  id          Int       @id @default(autoincrement())\n  backupType  String // DATABASE, FILES\n  fileName    String\n  filePath    String\n  fileSize    BigInt? // bytes\n  status      String // SUCCESS, FAILED\n  startedAt   DateTime\n  completedAt DateTime?\n  errorMsg    String?   @db.Text\n  metadata    Json? // Additional info like row counts, compression ratio, etc.\n\n  @@index([backupType, status])\n  @@index([startedAt])\n  @@map(\"backup_history\")\n}\n\nmodel Department {\n  id          Int      @id @default(autoincrement())\n  code        String   @unique\n  name        String\n  description String?\n  isActive    Boolean  @default(true)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  monthlyBudgets           MonthlyBudget[]\n  budgetAdjustmentRequests BudgetAdjustmentRequest[]\n  budgetPredictions        BudgetPrediction[]\n\n  @@index([code])\n  @@index([isActive])\n  @@map(\"departments\")\n}\n\n// Stub models for forward references - will be fully implemented in later tasks\nmodel MonthlyBudget {\n  id                    Int      @id @default(autoincrement())\n  departmentId          Int\n  year                  Int\n  month                 Int\n  allocatedAmount       Decimal  @db.Decimal(15, 2)\n  spentAmount           Decimal  @default(0) @db.Decimal(15, 2)\n  reservedAmount        Decimal  @default(0) @db.Decimal(15, 2)\n  lastNotifiedThreshold Int      @default(0)\n  notes                 String?\n  createdAt             DateTime @default(now())\n  updatedAt             DateTime @updatedAt\n\n  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n\n  @@unique([departmentId, year, month])\n  @@index([year, month])\n  @@index([departmentId])\n  @@map(\"monthly_budgets\")\n}\n\nmodel BudgetAdjustmentRequest {\n  id              Int       @id @default(autoincrement())\n  departmentId    Int\n  targetYear      Int\n  targetMonth     Int\n  requestType     String\n  requestedAmount Decimal   @db.Decimal(15, 2)\n  reason          String    @db.Text\n  status          String    @default(\"pending\")\n  requestedBy     Int\n  requestedAt     DateTime  @default(now())\n  reviewedBy      Int?\n  reviewedAt      DateTime?\n  reviewNotes     String?   @db.Text\n\n  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n  requester  User       @relation(\"AdjustmentRequester\", fields: [requestedBy], references: [id], onDelete: Cascade)\n  reviewer   User?      @relation(\"AdjustmentReviewer\", fields: [reviewedBy], references: [id], onDelete: SetNull)\n\n  @@index([departmentId, status])\n  @@index([status, requestedAt])\n  @@map(\"budget_adjustment_requests\")\n}\n\nmodel BudgetPrediction {\n  id                Int      @id @default(autoincrement())\n  departmentId      Int?\n  targetYear        Int\n  targetMonth       Int\n  predictedAmount   Decimal  @db.Decimal(15, 2)\n  confidence        String\n  algorithm         String\n  aiInsights        String   @db.Text\n  categoryBreakdown Json?\n  comparisonData    Json?\n  triggerType       String\n  triggeredBy       Int?\n  createdAt         DateTime @default(now())\n\n  department      Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n  triggeredByUser User?       @relation(\"BudgetPredictionTriggeredBy\", fields: [triggeredBy], references: [id], onDelete: SetNull)\n\n  @@index([departmentId])\n  @@index([targetYear, targetMonth])\n  @@index([triggeredBy])\n  @@index([createdAt])\n  @@map(\"budget_predictions\")\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/prisma/client\"\n}\n"
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel audit_logs {\n  id        Int      @id @default(autoincrement())\n  action    String\n  entity    String\n  entityId  String?\n  userId    Int?\n  userEmail String?\n  userName  String?\n  ipAddress String?\n  userAgent String?\n  changes   Json?\n  metadata  Json?\n  status    String   @default(\"SUCCESS\")\n  errorMsg  String?\n  createdAt DateTime @default(now())\n\n  @@index([action])\n  @@index([createdAt])\n  @@index([entity, entityId])\n  @@index([userId])\n}\n\nmodel backup_history {\n  id          Int       @id @default(autoincrement())\n  backupType  String\n  fileName    String\n  filePath    String\n  fileSize    BigInt?\n  status      String\n  startedAt   DateTime\n  completedAt DateTime?\n  errorMsg    String?\n  metadata    Json?\n\n  @@index([backupType, status])\n  @@index([startedAt])\n}\n\nmodel budget_adjustment_requests {\n  id                                                  Int         @id @default(autoincrement())\n  departmentId                                        Int\n  reason                                              String\n  requestType                                         String\n  requestedAmount                                     Decimal     @db.Decimal(15, 2)\n  requestedAt                                         DateTime    @default(now())\n  requestedBy                                         Int\n  reviewNotes                                         String?\n  reviewedAt                                          DateTime?\n  reviewedBy                                          Int?\n  status                                              String      @default(\"pending\")\n  targetMonth                                         Int\n  targetYear                                          Int\n  departments                                         departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n  users_budget_adjustment_requests_requestedByTousers users       @relation(\"budget_adjustment_requests_requestedByTousers\", fields: [requestedBy], references: [id], onDelete: Cascade)\n  users_budget_adjustment_requests_reviewedByTousers  users?      @relation(\"budget_adjustment_requests_reviewedByTousers\", fields: [reviewedBy], references: [id])\n\n  @@index([departmentId, status])\n  @@index([status, requestedAt])\n}\n\nmodel budget_predictions {\n  id                Int          @id @default(autoincrement())\n  departmentId      Int?\n  aiInsights        String\n  algorithm         String\n  categoryBreakdown Json?\n  comparisonData    Json?\n  confidence        String\n  createdAt         DateTime     @default(now())\n  predictedAmount   Decimal      @db.Decimal(15, 2)\n  targetMonth       Int\n  targetYear        Int\n  triggerType       String\n  triggeredBy       Int?\n  departments       departments? @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n  users             users?       @relation(fields: [triggeredBy], references: [id])\n\n  @@index([createdAt])\n  @@index([departmentId])\n  @@index([targetYear, targetMonth])\n  @@index([triggeredBy])\n}\n\nmodel chat_messages {\n  id                  Int                   @id @default(autoincrement())\n  sessionId           String\n  role                String\n  content             String\n  metadata            Json?\n  createdAt           DateTime              @default(now())\n  chat_sessions       chat_sessions         @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n  message_attachments message_attachments[]\n\n  @@index([createdAt])\n  @@index([sessionId])\n}\n\nmodel chat_sessions {\n  id            String          @id\n  userId        Int\n  title         String?\n  createdAt     DateTime        @default(now())\n  updatedAt     DateTime\n  chat_messages chat_messages[]\n  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)\n  sources       sources[]\n\n  @@index([createdAt])\n  @@index([userId])\n}\n\nmodel departments {\n  id                         Int                          @id @default(autoincrement())\n  code                       String                       @unique\n  name                       String\n  description                String?\n  isActive                   Boolean                      @default(true)\n  createdAt                  DateTime                     @default(now())\n  updatedAt                  DateTime\n  budget_adjustment_requests budget_adjustment_requests[]\n  budget_predictions         budget_predictions[]\n  monthly_budgets            monthly_budgets[]\n\n  @@index([code])\n  @@index([isActive])\n}\n\nmodel feedbacks {\n  id           Int      @id @default(autoincrement())\n  userId       Int\n  type         String\n  description  String\n  status       String   @default(\"OPEN\")\n  adminComment String?\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime\n  users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([status, createdAt])\n  @@index([userId, createdAt])\n}\n\nmodel message_attachments {\n  id            String        @id\n  messageId     Int\n  fileName      String\n  fileUrl       String\n  fileType      String\n  fileSize      Int\n  mimeType      String?\n  thumbnailUrl  String?\n  aiAnalysis    String?\n  uploadedAt    DateTime      @default(now())\n  metadata      Json?\n  chat_messages chat_messages @relation(fields: [messageId], references: [id], onDelete: Cascade)\n\n  @@index([messageId])\n  @@index([uploadedAt])\n}\n\nmodel monthly_budgets {\n  id                    Int         @id @default(autoincrement())\n  departmentId          Int\n  allocatedAmount       Decimal     @db.Decimal(15, 2)\n  createdAt             DateTime    @default(now())\n  month                 Int\n  notes                 String?\n  reservedAmount        Decimal     @default(0) @db.Decimal(15, 2)\n  spentAmount           Decimal     @default(0) @db.Decimal(15, 2)\n  updatedAt             DateTime\n  year                  Int\n  lastNotifiedThreshold Int         @default(0)\n  departments           departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n\n  @@unique([departmentId, year, month])\n  @@index([departmentId])\n  @@index([year, month])\n}\n\nmodel notifications {\n  id        Int       @id @default(autoincrement())\n  userId    Int\n  title     String\n  message   String\n  type      String    @default(\"INFO\")\n  channel   String    @default(\"IN_APP\")\n  refType   String?\n  refId     String?\n  isRead    Boolean   @default(false)\n  createdAt DateTime  @default(now())\n  readAt    DateTime?\n  users     users     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([createdAt])\n  @@index([userId, isRead])\n}\n\nmodel password_reset_codes {\n  id        Int       @id @default(autoincrement())\n  userId    Int\n  email     String\n  codeHash  String\n  salt      String\n  attempts  Int       @default(0)\n  expiresAt DateTime\n  usedAt    DateTime?\n  createdAt DateTime  @default(now())\n  users     users     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([createdAt])\n  @@index([email])\n  @@index([expiresAt])\n  @@index([userId])\n}\n\nmodel purchase_order_records {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime\n\n  @@index([createdAt])\n  @@index([updatedAt])\n}\n\nmodel purchase_request_records {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime\n\n  @@index([createdAt])\n  @@index([updatedAt])\n}\n\nmodel purchasing_lookups {\n  id        Int      @id @default(autoincrement())\n  kind      String\n  value     String\n  createdAt DateTime @default(now())\n\n  @@unique([kind, value])\n  @@index([kind])\n}\n\nmodel role_change_audits {\n  id         Int      @id @default(autoincrement())\n  targetId   Int\n  fromRole   String\n  toRole     String\n  actorEmail String\n  actorName  String?\n  createdAt  DateTime @default(now())\n  users      users    @relation(fields: [targetId], references: [id], onDelete: Cascade)\n\n  @@index([createdAt])\n  @@index([targetId])\n}\n\nmodel source_chunks {\n  id         String  @id\n  sourceId   String\n  content    String\n  chunkIndex Int\n  sources    sources @relation(fields: [sourceId], references: [id], onDelete: Cascade)\n\n  @@index([sourceId])\n}\n\nmodel sources {\n  id            String          @id\n  userId        Int\n  sessionId     String?\n  fileName      String\n  filePath      String\n  fileType      String\n  fileSize      Int\n  uploadedAt    DateTime        @default(now())\n  source_chunks source_chunks[]\n  chat_sessions chat_sessions?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([sessionId])\n  @@index([uploadedAt])\n  @@index([userId])\n}\n\nmodel supplier_delivery_records {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime\n\n  @@index([createdAt])\n  @@index([updatedAt])\n}\n\nmodel supplier_grn_records {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime\n\n  @@index([createdAt])\n  @@index([updatedAt])\n}\n\nmodel supplier_inventory_items {\n  id           String   @id\n  supplierId   Int\n  itemName     String\n  category     String\n  quantity     Int\n  reorderLevel Int      @default(0)\n  unit         String\n  unitPrice    Float\n  imageDataUrl String?\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime\n  taxType      String   @default(\"TAX\")\n  taxRate      Float    @default(10)\n  users        users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n\n  @@index([category])\n  @@index([supplierId])\n  @@index([updatedAt])\n}\n\nmodel supplier_order_acknowledgement_records {\n  localId   String   @id\n  payload   Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime\n\n  @@index([createdAt])\n  @@index([updatedAt])\n}\n\nmodel supplier_type_assignments {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  category  String\n  createdAt DateTime @default(now())\n  updatedAt DateTime\n  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, category])\n  @@index([category])\n  @@index([userId])\n}\n\nmodel users {\n  id                                                                       Int                          @id @default(autoincrement())\n  name                                                                     String?\n  email                                                                    String                       @unique\n  password                                                                 String\n  role                                                                     String                       @default(\"Employee\")\n  avatarUrl                                                                String?\n  department                                                               String?\n  isActive                                                                 Boolean                      @default(true)\n  preferredLanguage                                                        Language                     @default(en)\n  budget_adjustment_requests_budget_adjustment_requests_requestedByTousers budget_adjustment_requests[] @relation(\"budget_adjustment_requests_requestedByTousers\")\n  budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers  budget_adjustment_requests[] @relation(\"budget_adjustment_requests_reviewedByTousers\")\n  budget_predictions                                                       budget_predictions[]\n  chat_sessions                                                            chat_sessions[]\n  feedbacks                                                                feedbacks[]\n  notifications                                                            notifications[]\n  password_reset_codes                                                     password_reset_codes[]\n  role_change_audits                                                       role_change_audits[]\n  sources                                                                  sources[]\n  supplier_inventory_items                                                 supplier_inventory_items[]\n  supplier_type_assignments                                                supplier_type_assignments[]\n}\n\nenum Language {\n  en\n  zh\n  ms\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"department\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"preferredLanguage\",\"kind\":\"enum\",\"type\":\"Language\"},{\"name\":\"roleChangeAuditsAsTarget\",\"kind\":\"object\",\"type\":\"RoleChangeAudit\",\"relationName\":\"RoleChangeTarget\"},{\"name\":\"passwordResetCodes\",\"kind\":\"object\",\"type\":\"PasswordResetCode\",\"relationName\":\"PasswordResetCodeToUser\"},{\"name\":\"supplierTypeAssignments\",\"kind\":\"object\",\"type\":\"SupplierTypeAssignment\",\"relationName\":\"SupplierTypeAssignmentToUser\"},{\"name\":\"supplierInventoryItems\",\"kind\":\"object\",\"type\":\"SupplierInventoryItem\",\"relationName\":\"SupplierInventoryItemToUser\"},{\"name\":\"notifications\",\"kind\":\"object\",\"type\":\"Notification\",\"relationName\":\"NotificationToUser\"},{\"name\":\"feedbacks\",\"kind\":\"object\",\"type\":\"Feedback\",\"relationName\":\"FeedbackToUser\"},{\"name\":\"chatSessions\",\"kind\":\"object\",\"type\":\"ChatSession\",\"relationName\":\"ChatSessionToUser\"},{\"name\":\"sources\",\"kind\":\"object\",\"type\":\"Source\",\"relationName\":\"SourceToUser\"},{\"name\":\"adjustmentRequestsCreated\",\"kind\":\"object\",\"type\":\"BudgetAdjustmentRequest\",\"relationName\":\"AdjustmentRequester\"},{\"name\":\"adjustmentRequestsReviewed\",\"kind\":\"object\",\"type\":\"BudgetAdjustmentRequest\",\"relationName\":\"AdjustmentReviewer\"},{\"name\":\"budgetPredictions\",\"kind\":\"object\",\"type\":\"BudgetPrediction\",\"relationName\":\"BudgetPredictionTriggeredBy\"}],\"dbName\":\"users\"},\"Notification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channel\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"readAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"NotificationToUser\"}],\"dbName\":\"notifications\"},\"Feedback\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"adminComment\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"FeedbackToUser\"}],\"dbName\":\"feedbacks\"},\"RoleChangeAudit\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fromRole\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"toRole\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actorEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actorName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"target\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RoleChangeTarget\"}],\"dbName\":\"role_change_audits\"},\"PasswordResetCode\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"codeHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"salt\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"attempts\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"usedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PasswordResetCodeToUser\"}],\"dbName\":\"password_reset_codes\"},\"PurchasingLookup\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"kind\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"purchasing_lookups\"},\"SupplierTypeAssignment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SupplierTypeAssignmentToUser\"}],\"dbName\":\"supplier_type_assignments\"},\"SupplierInventoryItem\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"supplierId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"itemName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"reorderLevel\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"unit\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"unitPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"taxType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taxRate\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"imageDataUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"supplier\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SupplierInventoryItemToUser\"}],\"dbName\":\"supplier_inventory_items\"},\"PurchaseRequestRecord\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"purchase_request_records\"},\"PurchaseOrderRecord\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"purchase_order_records\"},\"SupplierOrderAcknowledgementRecord\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"supplier_order_acknowledgement_records\"},\"SupplierDeliveryRecordStore\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"supplier_delivery_records\"},\"SupplierGrnRecordStore\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"supplier_grn_records\"},\"ChatSession\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ChatSessionToUser\"},{\"name\":\"messages\",\"kind\":\"object\",\"type\":\"ChatMessage\",\"relationName\":\"ChatMessageToChatSession\"},{\"name\":\"sources\",\"kind\":\"object\",\"type\":\"Source\",\"relationName\":\"ChatSessionToSource\"}],\"dbName\":\"chat_sessions\"},\"ChatMessage\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"ChatSession\",\"relationName\":\"ChatMessageToChatSession\"},{\"name\":\"attachments\",\"kind\":\"object\",\"type\":\"MessageAttachment\",\"relationName\":\"ChatMessageToMessageAttachment\"}],\"dbName\":\"chat_messages\"},\"MessageAttachment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"messageId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileSize\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"mimeType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"thumbnailUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"aiAnalysis\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"uploadedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"message\",\"kind\":\"object\",\"type\":\"ChatMessage\",\"relationName\":\"ChatMessageToMessageAttachment\"}],\"dbName\":\"message_attachments\"},\"Source\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filePath\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileSize\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"uploadedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SourceToUser\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"ChatSession\",\"relationName\":\"ChatSessionToSource\"},{\"name\":\"chunks\",\"kind\":\"object\",\"type\":\"SourceChunk\",\"relationName\":\"SourceToSourceChunk\"}],\"dbName\":\"sources\"},\"SourceChunk\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sourceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"chunkIndex\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"source\",\"kind\":\"object\",\"type\":\"Source\",\"relationName\":\"SourceToSourceChunk\"}],\"dbName\":\"source_chunks\"},\"AuditLog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"action\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"entity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"entityId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"changes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorMsg\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"audit_logs\"},\"BackupHistory\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"backupType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filePath\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileSize\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"errorMsg\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"}],\"dbName\":\"backup_history\"},\"Department\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"monthlyBudgets\",\"kind\":\"object\",\"type\":\"MonthlyBudget\",\"relationName\":\"DepartmentToMonthlyBudget\"},{\"name\":\"budgetAdjustmentRequests\",\"kind\":\"object\",\"type\":\"BudgetAdjustmentRequest\",\"relationName\":\"BudgetAdjustmentRequestToDepartment\"},{\"name\":\"budgetPredictions\",\"kind\":\"object\",\"type\":\"BudgetPrediction\",\"relationName\":\"BudgetPredictionToDepartment\"}],\"dbName\":\"departments\"},\"MonthlyBudget\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departmentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"year\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"month\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"allocatedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"spentAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"reservedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"lastNotifiedThreshold\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"department\",\"kind\":\"object\",\"type\":\"Department\",\"relationName\":\"DepartmentToMonthlyBudget\"}],\"dbName\":\"monthly_budgets\"},\"BudgetAdjustmentRequest\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departmentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetYear\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetMonth\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"requestType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"requestedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"requestedBy\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"requestedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"reviewedBy\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"reviewedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"reviewNotes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"department\",\"kind\":\"object\",\"type\":\"Department\",\"relationName\":\"BudgetAdjustmentRequestToDepartment\"},{\"name\":\"requester\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AdjustmentRequester\"},{\"name\":\"reviewer\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AdjustmentReviewer\"}],\"dbName\":\"budget_adjustment_requests\"},\"BudgetPrediction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departmentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetYear\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetMonth\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"predictedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"confidence\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"algorithm\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"aiInsights\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"categoryBreakdown\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"comparisonData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"triggerType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggeredBy\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"department\",\"kind\":\"object\",\"type\":\"Department\",\"relationName\":\"BudgetPredictionToDepartment\"},{\"name\":\"triggeredByUser\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BudgetPredictionTriggeredBy\"}],\"dbName\":\"budget_predictions\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"audit_logs\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"action\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"entity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"entityId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"changes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorMsg\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"backup_history\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"backupType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filePath\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileSize\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"errorMsg\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"}],\"dbName\":null},\"budget_adjustment_requests\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departmentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"requestType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"requestedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"requestedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"requestedBy\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"reviewNotes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reviewedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"reviewedBy\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"targetMonth\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetYear\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departments\",\"kind\":\"object\",\"type\":\"departments\",\"relationName\":\"budget_adjustment_requestsTodepartments\"},{\"name\":\"users_budget_adjustment_requests_requestedByTousers\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"budget_adjustment_requests_requestedByTousers\"},{\"name\":\"users_budget_adjustment_requests_reviewedByTousers\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"budget_adjustment_requests_reviewedByTousers\"}],\"dbName\":null},\"budget_predictions\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departmentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aiInsights\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"algorithm\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"categoryBreakdown\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"comparisonData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"confidence\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"predictedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"targetMonth\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetYear\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"triggerType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggeredBy\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departments\",\"kind\":\"object\",\"type\":\"departments\",\"relationName\":\"budget_predictionsTodepartments\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"budget_predictionsTousers\"}],\"dbName\":null},\"chat_messages\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"chat_sessions\",\"kind\":\"object\",\"type\":\"chat_sessions\",\"relationName\":\"chat_messagesTochat_sessions\"},{\"name\":\"message_attachments\",\"kind\":\"object\",\"type\":\"message_attachments\",\"relationName\":\"chat_messagesTomessage_attachments\"}],\"dbName\":null},\"chat_sessions\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"chat_messages\",\"kind\":\"object\",\"type\":\"chat_messages\",\"relationName\":\"chat_messagesTochat_sessions\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"chat_sessionsTousers\"},{\"name\":\"sources\",\"kind\":\"object\",\"type\":\"sources\",\"relationName\":\"chat_sessionsTosources\"}],\"dbName\":null},\"departments\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"budget_adjustment_requests\",\"kind\":\"object\",\"type\":\"budget_adjustment_requests\",\"relationName\":\"budget_adjustment_requestsTodepartments\"},{\"name\":\"budget_predictions\",\"kind\":\"object\",\"type\":\"budget_predictions\",\"relationName\":\"budget_predictionsTodepartments\"},{\"name\":\"monthly_budgets\",\"kind\":\"object\",\"type\":\"monthly_budgets\",\"relationName\":\"departmentsTomonthly_budgets\"}],\"dbName\":null},\"feedbacks\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"adminComment\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"feedbacksTousers\"}],\"dbName\":null},\"message_attachments\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"messageId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileSize\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"mimeType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"thumbnailUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"aiAnalysis\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"uploadedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"chat_messages\",\"kind\":\"object\",\"type\":\"chat_messages\",\"relationName\":\"chat_messagesTomessage_attachments\"}],\"dbName\":null},\"monthly_budgets\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departmentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"allocatedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"month\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reservedAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"spentAmount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"year\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"lastNotifiedThreshold\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"departments\",\"kind\":\"object\",\"type\":\"departments\",\"relationName\":\"departmentsTomonthly_budgets\"}],\"dbName\":null},\"notifications\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channel\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"readAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"notificationsTousers\"}],\"dbName\":null},\"password_reset_codes\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"codeHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"salt\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"attempts\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"usedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"password_reset_codesTousers\"}],\"dbName\":null},\"purchase_order_records\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"purchase_request_records\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"purchasing_lookups\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"kind\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"role_change_audits\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"targetId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fromRole\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"toRole\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actorEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actorName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"role_change_auditsTousers\"}],\"dbName\":null},\"source_chunks\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sourceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"chunkIndex\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sources\",\"kind\":\"object\",\"type\":\"sources\",\"relationName\":\"source_chunksTosources\"}],\"dbName\":null},\"sources\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filePath\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileSize\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"uploadedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"source_chunks\",\"kind\":\"object\",\"type\":\"source_chunks\",\"relationName\":\"source_chunksTosources\"},{\"name\":\"chat_sessions\",\"kind\":\"object\",\"type\":\"chat_sessions\",\"relationName\":\"chat_sessionsTosources\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"sourcesTousers\"}],\"dbName\":null},\"supplier_delivery_records\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"supplier_grn_records\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"supplier_inventory_items\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"supplierId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"itemName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"reorderLevel\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"unit\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"unitPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"imageDataUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"taxType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taxRate\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"supplier_inventory_itemsTousers\"}],\"dbName\":null},\"supplier_order_acknowledgement_records\":{\"fields\":[{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payload\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"supplier_type_assignments\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"supplier_type_assignmentsTousers\"}],\"dbName\":null},\"users\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"department\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"preferredLanguage\",\"kind\":\"enum\",\"type\":\"Language\"},{\"name\":\"budget_adjustment_requests_budget_adjustment_requests_requestedByTousers\",\"kind\":\"object\",\"type\":\"budget_adjustment_requests\",\"relationName\":\"budget_adjustment_requests_requestedByTousers\"},{\"name\":\"budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers\",\"kind\":\"object\",\"type\":\"budget_adjustment_requests\",\"relationName\":\"budget_adjustment_requests_reviewedByTousers\"},{\"name\":\"budget_predictions\",\"kind\":\"object\",\"type\":\"budget_predictions\",\"relationName\":\"budget_predictionsTousers\"},{\"name\":\"chat_sessions\",\"kind\":\"object\",\"type\":\"chat_sessions\",\"relationName\":\"chat_sessionsTousers\"},{\"name\":\"feedbacks\",\"kind\":\"object\",\"type\":\"feedbacks\",\"relationName\":\"feedbacksTousers\"},{\"name\":\"notifications\",\"kind\":\"object\",\"type\":\"notifications\",\"relationName\":\"notificationsTousers\"},{\"name\":\"password_reset_codes\",\"kind\":\"object\",\"type\":\"password_reset_codes\",\"relationName\":\"password_reset_codesTousers\"},{\"name\":\"role_change_audits\",\"kind\":\"object\",\"type\":\"role_change_audits\",\"relationName\":\"role_change_auditsTousers\"},{\"name\":\"sources\",\"kind\":\"object\",\"type\":\"sources\",\"relationName\":\"sourcesTousers\"},{\"name\":\"supplier_inventory_items\",\"kind\":\"object\",\"type\":\"supplier_inventory_items\",\"relationName\":\"supplier_inventory_itemsTousers\"},{\"name\":\"supplier_type_assignments\",\"kind\":\"object\",\"type\":\"supplier_type_assignments\",\"relationName\":\"supplier_type_assignmentsTousers\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
   getRuntime: async () => require('./query_compiler_bg.js'),
