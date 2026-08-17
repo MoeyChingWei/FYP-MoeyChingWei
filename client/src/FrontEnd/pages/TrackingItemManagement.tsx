@@ -727,7 +727,7 @@ export default function TrackingItemManagement(): React.ReactElement {
     const searchBase = canSearchAll ? trackingRows : ownRows;
 
     return searchBase.filter((row) =>
-      row.requester.toLowerCase().includes(keyword),
+      row.itemSummary.toLowerCase().includes(keyword),
     );
   }, [trackingRows, searchValue, sessionUser]);
 

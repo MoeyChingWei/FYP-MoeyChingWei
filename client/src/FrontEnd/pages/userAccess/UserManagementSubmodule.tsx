@@ -22,10 +22,6 @@ export default function UserManagementSubmodule(): React.ReactElement {
           items={[
             { key: "list", label: <span className={styles.noSelect}>{t("userManagement.tabs.userList")}</span> },
             { key: "create", label: <span className={styles.noSelect}>{t("userManagement.tabs.createUser")}</span> },
-            {
-              key: "supplier-types",
-              label: <span className={styles.noSelect}>{t("userManagement.tabs.supplierTypes")}</span>,
-            },
           ]}
         />
         <Outlet />

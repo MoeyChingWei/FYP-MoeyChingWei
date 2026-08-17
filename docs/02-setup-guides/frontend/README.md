@@ -109,7 +109,6 @@ npm run build
 |------|-------|-------------|------|
 | `UserManagement.tsx` | `/admin/users` | Manage users (create, edit, activate/deactivate) | Super Admin |
 | `RoleManagement.tsx` | `/admin/roles` | Change user roles + view audit log | Super Admin |
-| `SupplierTypeManagement.tsx` | `/admin/supplier-types` | Assign categories to suppliers | Super Admin |
 
 ### Category Selection (Lookups)
 
@@ -222,13 +221,6 @@ export const API_ROOT = "/api";  // Proxied to http://localhost:4000 in dev
 **Lookup kinds:**
 - `ITEM_CATEGORY` — Product categories
 - `UNIT_OF_MEASURE` — Units (kg, pcs, etc.)
-
-### `supplierTypes.ts`
-
-| Function | Backend Endpoint | Description |
-|----------|------------------|-------------|
-| `fetchSupplierTypes()` | `GET /api/admin/supplier-types` | Get supplier type assignments |
-| `updateSupplierTypes(userId, categories)` | `PUT /api/admin/supplier-types/:userId` | Assign categories to supplier |
 
 ### `workflowStorage.ts`
 
@@ -494,7 +486,6 @@ const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
 **Files to modify:**
 - `pages/userAccess/UserManagement.tsx` - User CRUD
 - `pages/userAccess/RoleManagement.tsx` - Role changes + audit log
-- `pages/userAccess/SupplierTypeManagement.tsx` - Supplier categories
 
 **To add a new user field:**
 1. Update backend schema (see backend README)

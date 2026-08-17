@@ -9,8 +9,7 @@
     "title": "User Management",
     "tabs": {
       "userList": "User list",
-      "createUser": "Create user",
-      "supplierTypes": "Type of Supplier"
+      "createUser": "Create user"
     }
   },
   "userList": {
@@ -99,29 +98,6 @@
     "messages": {
       "createSuccess": "User created",
       "createFailed": "Failed to create user"
-    }
-  },
-  "supplierTypes": {
-    "title": "Type of Supplier",
-    "description": "Assign multiple supply categories to users with the Supplier role so matching suppliers is easier when a purchase request category is selected.",
-    "table": {
-      "supplier": "Supplier",
-      "department": "Department",
-      "status": "Status",
-      "supplierTypes": "Type of Supplier"
-    },
-    "status": {
-      "active": "Active",
-      "inactive": "Inactive"
-    },
-    "placeholders": {
-      "selectSupplierTypes": "Select supplier types"
-    },
-    "messages": {
-      "loadFailed": "Failed to load suppliers",
-      "updateSuccess": "Supplier types updated.",
-      "updateFailed": "Failed to update supplier types",
-      "noSuppliers": "No users with Supplier role found."
     }
   },
   "rbac": {

@@ -164,18 +164,6 @@ function captureAuditLog(req, res, responseData) {
     };
   }
 
-  // Supplier type assignments
-  else if (path.includes("/admin/supplier-types")) {
-    entity = "SupplierTypeAssignment";
-    if (method === "POST") {
-      action = "ASSIGN";
-      entityId = req.body?.userId;
-      metadata = { category: req.body?.category };
-    } else if (method === "DELETE") {
-      action = "UNASSIGN";
-      entityId = req.params.userId || req.body?.userId;
-    }
-  }
 
   // Export operations
   else if (path.includes("/export")) {

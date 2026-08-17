@@ -32,7 +32,6 @@ rectangle "Backend (Node.js + Express)" as BE {
     component "Notifications API\nGET/PATCH/DELETE /api/notifications/*" as NotiApi
     component "Feedback API\nGET/POST /api/feedback/*" as FbApi
     component "Admin Users API\n/api/admin/users*" as AdminUsersApi
-    component "Admin Supplier Types API\n/api/admin/supplier-types*" as AdminSuppApi
     component "Purchasing Lookup API\n/api/purchasing/*" as LookupApi
     component "Health Endpoint\nGET /" as HealthApi
   }
@@ -67,7 +66,6 @@ FEApi --> WorkflowApi
 FEApi --> NotiApi
 FEApi --> FbApi
 FEApi --> AdminUsersApi
-FEApi --> AdminSuppApi
 FEApi --> LookupApi
 
 WorkflowApi --> WfPR
@@ -90,7 +88,6 @@ WfGrn --> DB
 NotiApi --> DB
 FbApi --> DB
 AdminUsersApi --> DB
-AdminSuppApi --> DB
 LookupApi --> DB
 
 WorkflowApi --> NotiSvc

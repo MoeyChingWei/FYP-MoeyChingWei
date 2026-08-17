@@ -1,11 +1,9 @@
 import React from "react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Table, Typography } from "antd";
+import { Button, Card, Flex } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import { DEPARTMENT_OPTIONS } from "../../shared/constants/departments";
-
-const { Text } = Typography;
+import LookupKindTable from "./LookupKindTable";
 
 export default function DepartmentSubmodule(): React.ReactElement {
   const navigate = useNavigate();
@@ -25,15 +23,7 @@ export default function DepartmentSubmodule(): React.ReactElement {
         </Flex>
       }
     >
-      <Text type="secondary">Departments available for user assignment.</Text>
-      <Table
-        size="small"
-        style={{ marginTop: 16 }}
-        rowKey="value"
-        pagination={false}
-        dataSource={DEPARTMENT_OPTIONS}
-        columns={[{ title: "Department", dataIndex: "label", key: "label" }]}
-      />
+      <LookupKindTable kind="DEPARTMENT" />
     </Card>
   );
 }

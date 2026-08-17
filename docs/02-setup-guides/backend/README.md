@@ -71,23 +71,6 @@ All routes are prefixed with `/api` (configured in `server.js`).
 
 ---
 
-### Admin - Supplier Type Assignment (`/api/admin`)
-
-**File:** `routes/adminSupplierTypes.js`
-
-| Method | Endpoint | Description | Request Body | Response |
-|--------|----------|-------------|--------------|----------|
-| GET | `/api/admin/supplier-types` | Get all supplier type assignments | - | `{ success, supplierTypeMap }` |
-| PUT | `/api/admin/supplier-types/:userId` | Assign categories to supplier | `{ categories: string[] }` | `{ success, categories }` |
-
-**Features:**
-- Only users with role `Supplier` can have type assignments
-- Categories are normalized (trim + collapse whitespace)
-- Replaces all existing assignments for the user (atomic transaction)
-- Returns map of `userId -> categories[]`
-
----
-
 ### Purchasing Lookups (`/api/purchasing`)
 
 **File:** `routes/purchasingLookups.js`
@@ -238,7 +221,6 @@ npm run admin:create
 - `RoleChangeAudit` — audit trail for role changes
 - `PasswordResetCode` — password reset verification codes
 - `PurchasingLookup` — user-extensible dropdown options
-- `SupplierTypeAssignment` — supplier category assignments
 - `PurchaseRequestRecord`, `PurchaseOrderRecord`, etc. — workflow state storage (JSON payloads)
 
 **After schema changes:**

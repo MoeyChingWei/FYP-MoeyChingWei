@@ -4,9 +4,15 @@ import {
   ITEM_CATEGORIES,
   UNITS_OF_MEASUREMENT,
 } from "../../modules/purchasing/requestCreation/constants";
+import { DEPARTMENT_OPTIONS } from "../constants/departments";
+import { UserRole } from "../types/roles";
 import { API_ROOT } from "./base";
 
-export type PurchasingLookupKind = "ITEM_CATEGORY" | "UNIT_OF_MEASURE";
+export type PurchasingLookupKind =
+  | "ITEM_CATEGORY"
+  | "UNIT_OF_MEASURE"
+  | "DEPARTMENT"
+  | "ROLE";
 
 export interface PurchasingLookupRow {
   id: number;
@@ -17,7 +23,16 @@ export interface PurchasingLookupRow {
 export function defaultOptionsForKind(
   kind: PurchasingLookupKind,
 ): readonly string[] {
-  return kind === "ITEM_CATEGORY" ? ITEM_CATEGORIES : UNITS_OF_MEASUREMENT;
+  switch (kind) {
+    case "ITEM_CATEGORY":
+      return ITEM_CATEGORIES;
+    case "UNIT_OF_MEASURE":
+      return UNITS_OF_MEASUREMENT;
+    case "DEPARTMENT":
+      return DEPARTMENT_OPTIONS.map(({ value }) => value);
+    case "ROLE":
+      return Object.values(UserRole);
+  }
 }
 
 /** Built-in list first (fixed order), then custom values not already present (case-insensitive). */

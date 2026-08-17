@@ -7,7 +7,6 @@ import { exec } from "child_process";
 
 import authRoutes from "./routes/auth.js";
 import adminUsersRoutes from "./routes/adminUsers.js";
-import adminSupplierTypesRoutes from "./routes/adminSupplierTypes.js";
 import purchasingLookupsRoutes from "./routes/purchasingLookups.js";
 import supplierInventoryRoutes from "./routes/supplierInventory.js";
 import workflowStorageRoutes from "./routes/workflowStorage.js";
@@ -45,7 +44,6 @@ app.use("/api/debug", debugLogsRoutes);
 app.use(auditMiddleware);
 app.use("/api", authRoutes);
 app.use("/api/admin", adminUsersRoutes);
-app.use("/api/admin", adminSupplierTypesRoutes);
 app.use("/api/purchasing", purchasingLookupsRoutes);
 app.use("/api/purchasing", supplierInventoryRoutes);
 app.use("/api/workflow", workflowStorageRoutes);

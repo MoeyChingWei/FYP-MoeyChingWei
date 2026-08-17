@@ -1,15 +1,12 @@
 import React from "react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Table, Typography } from "antd";
+import { Button, Card, Flex } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import { UserRole } from "../../shared/types/roles";
-
-const { Text } = Typography;
+import LookupKindTable from "./LookupKindTable";
 
 export default function RoleSubmodule(): React.ReactElement {
   const navigate = useNavigate();
-  const roles = Object.values(UserRole).map((role) => ({ key: role, role }));
 
   return (
     <Card
@@ -26,14 +23,7 @@ export default function RoleSubmodule(): React.ReactElement {
         </Flex>
       }
     >
-      <Text type="secondary">Roles available when creating or assigning users.</Text>
-      <Table
-        size="small"
-        style={{ marginTop: 16 }}
-        pagination={false}
-        dataSource={roles}
-        columns={[{ title: "Role", dataIndex: "role", key: "role" }]}
-      />
+      <LookupKindTable kind="ROLE" />
     </Card>
   );
 }

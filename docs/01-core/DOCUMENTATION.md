@@ -140,7 +140,7 @@ FYP-MoeyChingWei/
 
 **Key Routes:**
 - `/api` → Authentication & profile
-- `/api/admin` → User management & supplier types
+- `/api/admin` → User management
 - `/api/purchasing` → Purchasing lookups
 - `/api/workflow` → Workflow storage (requests, orders, etc.)
 - `/api/notifications` → Notification management
@@ -227,15 +227,6 @@ All routes prefixed with `/api` (configured in `server.js`).
 | GET | `/api/admin/role-change-audits` | Get role change history | Query: `?take=<number>` |
 
 **Roles:** Employee, Manager, Executive, Super Admin, Supplier
-
-#### Admin - Supplier Type Assignment (`/api/admin`)
-
-**File:** `routes/adminSupplierTypes.js`
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/admin/supplier-types` | Get all supplier type assignments |
-| PUT | `/api/admin/supplier-types/:userId` | Assign categories to supplier |
 
 #### Purchasing Lookups (`/api/purchasing`)
 
@@ -357,7 +348,6 @@ SUPER_ADMIN_NAME=Super Admin
 |------|-------|------|
 | `UserManagement.tsx` | `/admin/users` | Super Admin |
 | `RoleManagement.tsx` | `/admin/roles` | Super Admin |
-| `SupplierTypeManagement.tsx` | `/admin/supplier-types` | Super Admin |
 
 #### Settings
 
@@ -384,7 +374,6 @@ return res.data;
 - `notifications.ts` — Notification operations
 - `feedback.ts` — Feedback submission
 - `purchasingLookups.ts` — Lookup management
-- `supplierTypes.ts` — Supplier type assignments
 - `workflowStorage.ts` — Workflow CRUD
 
 ---
@@ -638,9 +627,6 @@ npm run prisma:generate
 **PurchasingLookup** — Dropdown options
 - `id`, `kind`, `value` (kinds: `ITEM_CATEGORY`, `UNIT_OF_MEASURE`)
 
-**SupplierTypeAssignment** — Supplier categories
-- `id`, `userId`, `category`
-
 **Workflow Records** — JSON payload storage
 - `PurchaseRequestRecord`, `PurchaseOrderRecord`, `SupplierOrderAcknowledgementRecord`, 
   `SupplierDeliveryRecordStore`, `SupplierGrnRecordStore`
@@ -696,4 +682,3 @@ For issues or questions:
 **Last Updated:** 2026-06-04
 **Version:** 1.0.0
 **Status:** Active Development
-

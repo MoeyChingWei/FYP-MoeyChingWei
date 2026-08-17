@@ -360,14 +360,6 @@ exports.Prisma.Supplier_order_acknowledgement_recordsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.Supplier_type_assignmentsScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  category: 'category',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.UsersScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -438,7 +430,6 @@ exports.Prisma.ModelName = {
   supplier_grn_records: 'supplier_grn_records',
   supplier_inventory_items: 'supplier_inventory_items',
   supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
-  supplier_type_assignments: 'supplier_type_assignments',
   users: 'users'
 };
 

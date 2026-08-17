@@ -15,7 +15,6 @@ const routeNameMap: Record<string, string> = {
   users: "User Management",
   list: "User List",
   create: "Create User",
-  "supplier-types": "Supplier Types",
   rbac: "Role Management",
   roles: "Roles",
   purchasing: "Purchasing",

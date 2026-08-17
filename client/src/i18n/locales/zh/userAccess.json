@@ -9,8 +9,7 @@
     "title": "用户管理",
     "tabs": {
       "userList": "用户列表",
-      "createUser": "创建用户",
-      "supplierTypes": "供应商类型"
+      "createUser": "创建用户"
     }
   },
   "userList": {
@@ -99,29 +98,6 @@
     "messages": {
       "createSuccess": "用户已创建",
       "createFailed": "创建用户失败"
-    }
-  },
-  "supplierTypes": {
-    "title": "供应商类型",
-    "description": "为具有供应商角色的用户分配多个供应类别，以便在选择采购申请类别时更容易匹配供应商。",
-    "table": {
-      "supplier": "供应商",
-      "department": "部门",
-      "status": "状态",
-      "supplierTypes": "供应商类型"
-    },
-    "status": {
-      "active": "活跃",
-      "inactive": "停用"
-    },
-    "placeholders": {
-      "selectSupplierTypes": "选择供应商类型"
-    },
-    "messages": {
-      "loadFailed": "加载供应商失败",
-      "updateSuccess": "供应商类型已更新。",
-      "updateFailed": "更新供应商类型失败",
-      "noSuppliers": "未找到具有供应商角色的用户。"
     }
   },
   "rbac": {

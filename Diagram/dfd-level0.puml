@@ -17,7 +17,7 @@ database "D1 Users" as D1
 database "D2 Workflow Stores" as D2
 database "D3 Notifications" as D3
 database "D4 Feedbacks" as D4
-database "D5 Lookups/Supplier Types" as D5
+database "D5 Purchasing Lookups" as D5
 
 Employee --> P1 : credentials/profile updates
 Admin --> P1 : credentials/profile updates
@@ -44,9 +44,9 @@ Admin --> P4 : view feedback list
 P4 --> D4 : create/read feedback
 P4 --> P3 : notify admin for new feedback
 
-Admin --> P5 : manage roles/types/lookups
+Admin --> P5 : manage roles/lookups
 P5 --> D1 : user role updates
-P5 --> D5 : lookup/type updates
+P5 --> D5 : lookup updates
 P5 --> P3 : optional admin change notifications
 
 @enduml

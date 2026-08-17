@@ -4,7 +4,7 @@
     "loadingData": "Loading tracking data..."
   },
   "search": {
-    "placeholder": "Search requester name...",
+    "placeholder": "Search item name...",
     "clearFilter": "Clear Filter",
     "unreadCount": "unread",
     "markAllAsRead": "Mark All as Read"

@@ -4,20 +4,26 @@ import prisma from "../config/prisma.js";
 
 const router = express.Router();
 
-const KINDS = new Set(["ITEM_CATEGORY", "UNIT_OF_MEASURE"]);
+const KINDS = new Set([
+  "ITEM_CATEGORY",
+  "UNIT_OF_MEASURE",
+  "DEPARTMENT",
+  "ROLE",
+]);
 
 function normalizeValue(raw) {
   if (typeof raw !== "string") return "";
   return raw.trim().replace(/\s+/g, " ");
 }
 
-// GET /api/purchasing/lookups?kind=ITEM_CATEGORY|UNIT_OF_MEASURE
+// GET /api/purchasing/lookups?kind=ITEM_CATEGORY|UNIT_OF_MEASURE|DEPARTMENT|ROLE
 router.get("/lookups", async (req, res) => {
   const kind = req.query?.kind;
   if (typeof kind !== "string" || !KINDS.has(kind)) {
     return res.status(400).json({
       success: false,
-      message: "Query kind must be ITEM_CATEGORY or UNIT_OF_MEASURE",
+      message:
+        "Query kind must be ITEM_CATEGORY, UNIT_OF_MEASURE, DEPARTMENT, or ROLE",
     });
   }
   try {
@@ -41,7 +47,8 @@ router.post("/lookups", async (req, res) => {
   if (typeof kind !== "string" || !KINDS.has(kind)) {
     return res.status(400).json({
       success: false,
-      message: "kind must be ITEM_CATEGORY or UNIT_OF_MEASURE",
+      message:
+        "kind must be ITEM_CATEGORY, UNIT_OF_MEASURE, DEPARTMENT, or ROLE",
     });
   }
   if (value.length < 1 || value.length > 200) {

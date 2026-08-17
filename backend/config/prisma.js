@@ -24,7 +24,6 @@ Object.assign(prisma, {
   roleChangeAudit: prisma.role_change_audits,
   passwordResetCode: prisma.password_reset_codes,
   purchasingLookup: prisma.purchasing_lookups,
-  supplierTypeAssignment: prisma.supplier_type_assignments,
   supplierInventoryItem: prisma.supplier_inventory_items,
   purchaseRequestRecord: prisma.purchase_request_records,
   purchaseOrderRecord: prisma.purchase_order_records,

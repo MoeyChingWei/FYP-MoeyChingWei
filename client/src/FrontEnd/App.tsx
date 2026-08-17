@@ -55,9 +55,6 @@ const UserAccessUserManagement = lazy(
 const UserAccessRbac = lazy(() => import("./pages/userAccess/RbacSubmodule"));
 const UserList = lazy(() => import("./pages/userAccess/users/UserList"));
 const CreateUser = lazy(() => import("./pages/userAccess/users/CreateUser"));
-const SupplierTypeSubmodule = lazy(
-  () => import("./pages/userAccess/users/SupplierTypeSubmodule"),
-);
 const RbacRoles = lazy(() => import("./pages/userAccess/rbac/Roles"));
 const PurchasingManagement = lazy(() => import("./pages/purchasing/PurchasingManagement"));
 const PurchasingCreation = lazy(() => import("./pages/purchasing/CreationSubmodule"));
@@ -494,7 +491,6 @@ function MainLayout(): React.ReactElement {
               <Route index element={<Navigate to="list" replace />} />
               <Route path="list" element={<UserList />} />
               <Route path="create" element={<CreateUser />} />
-              <Route path="supplier-types" element={<SupplierTypeSubmodule />} />
               <Route path="*" element={<Navigate to="list" replace />} />
             </Route>
             <Route path="rbac" element={<UserAccessRbac />}>

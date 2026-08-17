@@ -68,15 +68,6 @@ entity "password_reset_codes" as PasswordResetCode {
   createdAt : DateTime
 }
 
-entity "supplier_type_assignments" as SupplierTypeAssignment {
-  * id : Int <<PK>>
-  --
-  userId : Int <<FK>>
-  category : String
-  createdAt : DateTime
-  updatedAt : DateTime
-}
-
 entity "purchasing_lookups" as PurchasingLookup {
   * id : Int <<PK>>
   --
@@ -130,6 +121,5 @@ User ||--o{ Notification
 User ||--o{ Feedback
 User ||--o{ RoleChangeAudit : targetId
 User ||--o{ PasswordResetCode
-User ||--o{ SupplierTypeAssignment
 
 @enduml

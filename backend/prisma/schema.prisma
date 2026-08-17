@@ -345,19 +345,6 @@ model supplier_order_acknowledgement_records {
   @@index([updatedAt])
 }
 
-model supplier_type_assignments {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  category  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, category])
-  @@index([category])
-  @@index([userId])
-}
-
 model users {
   id                                                                       Int                          @id @default(autoincrement())
   name                                                                     String?
@@ -378,7 +365,6 @@ model users {
   role_change_audits                                                       role_change_audits[]
   sources                                                                  sources[]
   supplier_inventory_items                                                 supplier_inventory_items[]
-  supplier_type_assignments                                                supplier_type_assignments[]
 }
 
 enum Language {

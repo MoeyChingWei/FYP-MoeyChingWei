@@ -19,7 +19,6 @@ rectangle "FYP MoeyChingWei System" {
   usecase "Receive In-App Notifications" as UC9
   usecase "Submit Feedback" as UC10
   usecase "Manage Users & Roles (RBAC)" as UC11
-  usecase "Manage Supplier Types" as UC12
   usecase "Manage Purchasing Lookups" as UC13
   usecase "Track Item Status" as UC15
 }
@@ -39,7 +38,6 @@ Admin --> UC3
 Admin --> UC6
 Admin --> UC9
 Admin --> UC11
-Admin --> UC12
 Admin --> UC13
 
 Supplier --> UC1

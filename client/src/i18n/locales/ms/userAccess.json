@@ -9,8 +9,7 @@
     "title": "Pengurusan Pengguna",
     "tabs": {
       "userList": "Senarai pengguna",
-      "createUser": "Cipta pengguna",
-      "supplierTypes": "Jenis Pembekal"
+      "createUser": "Cipta pengguna"
     }
   },
   "userList": {
@@ -99,29 +98,6 @@
     "messages": {
       "createSuccess": "Pengguna dicipta",
       "createFailed": "Gagal mencipta pengguna"
-    }
-  },
-  "supplierTypes": {
-    "title": "Jenis Pembekal",
-    "description": "Tetapkan beberapa kategori bekalan kepada pengguna dengan peranan Pembekal supaya pembekal yang sepadan lebih mudah apabila kategori permintaan pembelian dipilih.",
-    "table": {
-      "supplier": "Pembekal",
-      "department": "Jabatan",
-      "status": "Status",
-      "supplierTypes": "Jenis Pembekal"
-    },
-    "status": {
-      "active": "Aktif",
-      "inactive": "Tidak Aktif"
-    },
-    "placeholders": {
-      "selectSupplierTypes": "Pilih jenis pembekal"
-    },
-    "messages": {
-      "loadFailed": "Gagal memuatkan pembekal",
-      "updateSuccess": "Jenis pembekal dikemas kini.",
-      "updateFailed": "Gagal mengemas kini jenis pembekal",
-      "noSuppliers": "Tiada pengguna dengan peranan Pembekal ditemui."
     }
   },
   "rbac": {

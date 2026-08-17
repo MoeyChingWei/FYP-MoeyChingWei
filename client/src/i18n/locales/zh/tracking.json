@@ -4,7 +4,7 @@
     "loadingData": "正在加载追踪数据..."
   },
   "search": {
-    "placeholder": "搜索请求者姓名...",
+    "placeholder": "搜索项目名称...",
     "clearFilter": "清除筛选",
     "unreadCount": "未读",
     "markAllAsRead": "全部标记为已读"
