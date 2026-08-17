@@ -286,7 +286,7 @@ export default function UserList(): React.ReactElement {
             {t("userList.modal.save")}
           </Button>,
         ]}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical">
           <Form.Item

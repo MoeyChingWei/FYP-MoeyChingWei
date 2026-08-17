@@ -131,7 +131,7 @@ router.get('/', async (req, res) => {
       orderBy: { uploadedAt: 'desc' },
       include: {
         _count: {
-          select: { chunks: true },
+          select: { source_chunks: true },
         },
       },
     });
@@ -144,7 +144,7 @@ router.get('/', async (req, res) => {
         fileType: s.fileType,
         fileSize: s.fileSize,
         uploadedAt: s.uploadedAt,
-        chunkCount: s._count.chunks,
+        chunkCount: s._count.source_chunks,
       })),
     });
   } catch (error) {

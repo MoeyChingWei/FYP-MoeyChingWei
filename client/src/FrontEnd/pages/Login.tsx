@@ -70,8 +70,8 @@ export default function LoginPage(): React.ReactElement {
       </div>
 
       <div className={styles.cardWrap}>
-        <Card className={styles.card} bordered={false}>
-          <Space direction="vertical" style={{ width: "100%" }} size={16}>
+        <Card className={styles.card} variant="borderless">
+          <Space orientation="vertical" style={{ width: "100%" }} size={16}>
             <div style={{ textAlign: "center" }}>
               <Title level={3} style={{ marginBottom: 4 }}>
                 OptiMind
@@ -124,7 +124,7 @@ export default function LoginPage(): React.ReactElement {
             </Divider>
 
             <Space
-              direction="vertical"
+              orientation="vertical"
               style={{ width: "100%", textAlign: "center" }}
               size={8}
             >

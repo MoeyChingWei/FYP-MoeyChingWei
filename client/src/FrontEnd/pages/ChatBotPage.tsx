@@ -834,24 +834,35 @@ const ChatBotPage: React.FC = () => {
             }}
             placeholder={`Message ${agentName}...`}
             autoSize={{ minRows: 1, maxRows: 5 }}
+            maxLength={2000}
             disabled={loading || uploadingFiles}
             variant="borderless"
           />
           <div className="assistant-chat-toolbar">
             {composerTools}
+            <div className="assistant-chat-toolbar-right">
+              <span className="assistant-composer-hint">Enter to send  |  Shift + Enter for a new line</span>
+              <span className="assistant-composer-count" aria-live="polite">
+                {inputValue.length}/2000
+              </span>
+              <VoiceInput
+                onTranscript={(text) => setInputValue((current) => current ? `${current} ${text}` : text)}
+                disabled={loading || uploadingFiles}
+              />
+              <Button
+                type="primary"
+                shape="circle"
+                icon={loading ? <Spin size="small" /> : <SendOutlined />}
+                aria-label="Send message"
+                onClick={() => void sendMessage()}
+                disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+                className="assistant-chat-send-button"
+                style={{ backgroundColor: agentColor, borderColor: agentColor }}
+              />
+            </div>
           </div>
           {agentModePanelRow}
           </div>
-          <VoiceInput onTranscript={(text) => setInputValue((current) => current ? `${current} ${text}` : text)} disabled={loading || uploadingFiles} />
-          <Button
-            type="primary"
-            icon={<SendOutlined />}
-            onClick={() => void sendMessage()}
-            disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
-            style={{ backgroundColor: agentColor, borderColor: agentColor }}
-          >
-            Send
-          </Button>
         </div>
       </section>
     </div>

@@ -3,17 +3,25 @@ import logger from './simple-logger.js';
 
 class DeepSeekAIService {
   constructor() {
-    this.client = new OpenAI({
-      apiKey: process.env.DEEPSEEK_API_KEY,
-      baseURL: 'https://api.deepseek.com',
-      timeout: 30000, // 30 second API timeout
-      maxRetries: 0,  // We control retry logic ourselves
-    });
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    this.client = apiKey
+      ? new OpenAI({
+          apiKey,
+          baseURL: 'https://api.deepseek.com',
+          timeout: 30000, // 30 second API timeout
+          maxRetries: 0,  // We control retry logic ourselves
+        })
+      : null;
 
     this.model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
     this.maxTokens = parseInt(process.env.DEEPSEEK_MAX_TOKENS) || 4096;
 
-    logger.success('DeepSeekService', 'Initialized with model: ' + this.model);
+    logger.success(
+      'DeepSeekService',
+      apiKey
+        ? 'Initialized with model: ' + this.model
+        : 'Disabled because DEEPSEEK_API_KEY is not configured',
+    );
   }
 
   /**
@@ -52,6 +60,10 @@ class DeepSeekAIService {
    * API call with retry mechanism
    */
   async chatWithRetry(params, maxRetries = 3) {
+    if (!this.client) {
+      throw new Error('AI assistant is not configured. Set DEEPSEEK_API_KEY to enable it.');
+    }
+
     let lastError;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {

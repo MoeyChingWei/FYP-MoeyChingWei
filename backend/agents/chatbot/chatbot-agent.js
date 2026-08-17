@@ -1096,6 +1096,7 @@ class ChatBotAgent {
           id: sessionId,
           userId,
           title: 'New Conversation',
+          updatedAt: new Date(),
         },
       });
     }
@@ -1489,7 +1490,7 @@ class ChatBotAgent {
 
     const chunks = await prisma.sourceChunk.findMany({
       where: {
-        source: {
+        sources: {
           userId,
           OR: [
             { sessionId: null },
@@ -1498,7 +1499,7 @@ class ChatBotAgent {
         },
       },
       include: {
-        source: {
+        sources: {
           select: { fileName: true },
         },
       },
@@ -1517,7 +1518,7 @@ class ChatBotAgent {
     if (scored.length === 0) return '';
 
     const context = scored.map(({ chunk }, index) => (
-      `[Source ${index + 1}: ${chunk.source.fileName}]\n${chunk.content.slice(0, 1200)}`
+      `[Source ${index + 1}: ${chunk.sources.fileName}]\n${chunk.content.slice(0, 1200)}`
     )).join('\n\n');
 
     return `\n\n## Uploaded Training Sources\nUse these user-uploaded source excerpts when they are relevant. If the sources do not answer the question, say so and use general system knowledge.\n\n${context}`;
@@ -1543,32 +1544,37 @@ class ChatBotAgent {
       // This prevents abandoned New Chat drafts from appearing in the history list.
       where: {
         userId,
-        messages: { some: {} },
+        chat_messages: { some: {} },
       },
       orderBy: { updatedAt: 'desc' },
       take: limit,
       include: {
         _count: {
-          select: { messages: true },
+          select: { chat_messages: true },
         },
       },
     });
 
     await this.generateMissingTitles(sessions);
 
-    return await prisma.chatSession.findMany({
+    const refreshedSessions = await prisma.chatSession.findMany({
       where: {
         userId,
-        messages: { some: {} },
+        chat_messages: { some: {} },
       },
       orderBy: { updatedAt: 'desc' },
       take: limit,
       include: {
         _count: {
-          select: { messages: true },
+          select: { chat_messages: true },
         },
       },
     });
+
+    return refreshedSessions.map(({ _count, ...session }) => ({
+      ...session,
+      _count: { messages: _count.chat_messages },
+    }));
   }
 
   async generateSessionTitle(sessionId, message) {
@@ -1595,7 +1601,7 @@ class ChatBotAgent {
 
   async generateMissingTitles(sessions) {
     const sessionsToTitle = sessions
-      .filter((session) => titleGenerator.shouldGenerateTitle(session.title) && session._count?.messages > 0)
+      .filter((session) => titleGenerator.shouldGenerateTitle(session.title) && session._count?.chat_messages > 0)
       .slice(0, 10);
 
     await Promise.all(sessionsToTitle.map(async (session) => {

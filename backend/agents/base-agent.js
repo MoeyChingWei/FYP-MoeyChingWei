@@ -218,6 +218,7 @@ class BaseAgent {
           id: sessionId,
           userId,
           title: `${this.name} Conversation`,
+          updatedAt: new Date(),
         },
       });
     }

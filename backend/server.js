@@ -56,7 +56,7 @@ app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/chatbot", chatbotUploadRoutes);
 app.use("/api/sources", sourcesRoutes);
 app.use("/api/agents", agentsRoutes);
-app.use("/api/language", languageRoutes);
+app.use("/api", languageRoutes);
 app.use("/api/export", exportRoutes);
 console.log("🔵 Registering /api/budget routes");
 app.use("/api/budget", budgetRoutes);

@@ -14,7 +14,7 @@ router.get("/supplier-types", async (_req, res) => {
   try {
     const assignments = await prisma.supplierTypeAssignment.findMany({
       include: {
-        user: {
+        users: {
           select: {
             id: true,
             role: true,
@@ -25,7 +25,7 @@ router.get("/supplier-types", async (_req, res) => {
     });
 
     const supplierTypeMap = assignments.reduce((acc, assignment) => {
-      if (assignment.user.role !== "Supplier") return acc;
+      if (assignment.users.role !== "Supplier") return acc;
       const key = String(assignment.userId);
       if (!acc[key]) acc[key] = [];
       acc[key].push(assignment.category);

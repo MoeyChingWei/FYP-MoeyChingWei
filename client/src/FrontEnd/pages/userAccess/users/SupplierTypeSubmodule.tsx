@@ -93,7 +93,7 @@ export default function SupplierTypeSubmodule(): React.ReactElement {
 
   return (
     <Card size="small" title={t("supplierTypes.title")}>
-      <Space direction="vertical" size={12} style={{ width: "100%" }}>
+      <Space orientation="vertical" size={12} style={{ width: "100%" }}>
         <Text type="secondary">
           {t("supplierTypes.description")}
         </Text>
@@ -111,7 +111,7 @@ export default function SupplierTypeSubmodule(): React.ReactElement {
               title: t("supplierTypes.table.supplier"),
               key: "supplier",
               render: (_, user) => (
-                <Space direction="vertical" size={0}>
+                <Space orientation="vertical" size={0}>
                   <Text strong>{user.name ?? "-"}</Text>
                   <Text type="secondary">{user.email}</Text>
                 </Space>

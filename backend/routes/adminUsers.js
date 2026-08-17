@@ -257,10 +257,13 @@ router.get("/role-change-audits", async (req, res) => {
       orderBy: { createdAt: "desc" },
       take,
       include: {
-        target: { select: { id: true, name: true, email: true } },
+        users: { select: { id: true, name: true, email: true } },
       },
     });
-    return res.json({ success: true, audits });
+    return res.json({
+      success: true,
+      audits: audits.map(({ users, ...audit }) => ({ ...audit, target: users })),
+    });
   } catch (err) {
     console.error("GET /api/admin/role-change-audits error:", err);
     return res.status(500).json({ success: false, message: "Server error" });

@@ -1,4 +1,5 @@
 import express from "express";
+import { randomUUID } from "node:crypto";
 
 import prisma from "../config/prisma.js";
 
@@ -60,7 +61,7 @@ router.get("/inventory", async (req, res) => {
     const items = await prisma.supplierInventoryItem.findMany({
       where: {
         ...(supplierId ? { supplierId } : {}),
-        supplier: { role: "Supplier", isActive: true },
+        users: { role: "Supplier", isActive: true },
       },
       orderBy: [{ category: "asc" }, { itemName: "asc" }],
     });
@@ -77,7 +78,9 @@ router.post("/inventory", async (req, res) => {
   try {
     const supplier = await prisma.user.findFirst({ where: { id: data.supplierId, role: "Supplier", isActive: true } });
     if (!supplier) return res.status(404).json({ success: false, message: "Active supplier not found" });
-    const item = await prisma.supplierInventoryItem.create({ data });
+    const item = await prisma.supplierInventoryItem.create({
+      data: { id: randomUUID(), ...data, updatedAt: new Date() },
+    });
     return res.status(201).json({ success: true, item });
   } catch (error) {
     console.error("POST /purchasing/inventory error:", error);
@@ -89,7 +92,10 @@ router.put("/inventory/:id", async (req, res) => {
   const data = parseInventory(req.body);
   if (!data || !req.params.id) return res.status(400).json({ success: false, message: "Invalid inventory item" });
   try {
-    const item = await prisma.supplierInventoryItem.update({ where: { id: req.params.id }, data });
+    const item = await prisma.supplierInventoryItem.update({
+      where: { id: req.params.id },
+      data: { ...data, updatedAt: new Date() },
+    });
     return res.json({ success: true, item });
   } catch (error) {
     if (error?.code === "P2025") return res.status(404).json({ success: false, message: "Inventory item not found" });
@@ -150,7 +156,7 @@ router.post("/inventory/reserve", async (req, res) => {
       for (const [id, quantity] of quantities) {
         const result = await tx.supplierInventoryItem.updateMany({
           where: { id, quantity: { gte: quantity } },
-          data: { quantity: { decrement: quantity } },
+          data: { quantity: { decrement: quantity }, updatedAt: new Date() },
         });
         if (result.count !== 1) {
           const error = new Error("Insufficient inventory or item not found");
