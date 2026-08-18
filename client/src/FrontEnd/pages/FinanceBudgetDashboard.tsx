@@ -118,7 +118,7 @@ const FinanceBudgetDashboard: React.FC = () => {
               value={totalAllocated}
               precision={2}
               prefix={<DollarOutlined />}
-              valueStyle={{ color: "#1890ff" }}
+              styles={{ content: { color: "#1890ff" } }}
             />
           </Card>
         </Col>
@@ -139,7 +139,7 @@ const FinanceBudgetDashboard: React.FC = () => {
               value={totalRemaining}
               precision={2}
               prefix={<DollarOutlined />}
-              valueStyle={{ color: totalRemaining < 0 ? "#ff4d4f" : "#52c41a" }}
+              styles={{ content: { color: totalRemaining < 0 ? "#ff4d4f" : "#52c41a" } }}
             />
           </Card>
         </Col>
@@ -203,10 +203,12 @@ const FinanceBudgetDashboard: React.FC = () => {
                   value={selectedBudget.allocatedAmount - selectedBudget.spentAmount}
                   precision={2}
                   prefix="$"
-                  valueStyle={{
-                    color: selectedBudget.allocatedAmount - selectedBudget.spentAmount < 0
-                      ? "#ff4d4f"
-                      : "#52c41a"
+                  styles={{
+                    content: {
+                      color: selectedBudget.allocatedAmount - selectedBudget.spentAmount < 0
+                        ? "#ff4d4f"
+                        : "#52c41a"
+                    }
                   }}
                 />
               </Col>

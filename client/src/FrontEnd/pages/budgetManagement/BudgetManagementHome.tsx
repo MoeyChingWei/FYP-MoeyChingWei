@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LineChartOutlined } from "@ant-design/icons";
+import { ApartmentOutlined, LineChartOutlined } from "@ant-design/icons";
 
 import styles from "./BudgetManagementHome.module.css";
 
@@ -17,6 +17,13 @@ export default function BudgetManagementHome(): React.ReactElement {
       description: t("budgetManagement:forecastingDescription"),
       icon: <LineChartOutlined className={styles.cardIcon} />,
       path: "/budget-management/forecasting",
+    },
+    {
+      key: "department-forecasting",
+      title: t("budgetManagement:departmentBudgetForecasting"),
+      description: t("budgetManagement:departmentForecastingDescription"),
+      icon: <ApartmentOutlined className={`${styles.cardIcon} ${styles.departmentCardIcon}`} />,
+      path: "/budget/department-overview",
     },
   ];
 

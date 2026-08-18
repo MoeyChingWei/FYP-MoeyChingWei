@@ -50,7 +50,7 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({ prediction, load
           value={prediction.predictedAmount}
           precision={2}
           prefix="$"
-          valueStyle={{ fontSize: 20 }}
+          styles={{ content: { fontSize: 20 } }}
         />
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

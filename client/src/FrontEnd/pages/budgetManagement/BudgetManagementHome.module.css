@@ -60,6 +60,11 @@
   box-shadow: 0 12px 22px rgba(34, 197, 94, 0.24);
 }
 
+.departmentCardIcon {
+  background: #2563eb;
+  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.24);
+}
+
 .cardTitle {
   font-size: 20px;
   font-weight: 700;

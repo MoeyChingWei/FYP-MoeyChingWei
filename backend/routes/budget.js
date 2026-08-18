@@ -20,6 +20,34 @@ function filterByDepartment(requests, departmentCode) {
   });
 }
 
+// GET /api/budget/departments - Departments present in approved purchase requests.
+// Purchasing records store the department inside their JSON payload, so this
+// endpoint intentionally does not depend on the separate department-budget table.
+router.get("/departments", async (_req, res) => {
+  try {
+    const requests = await prisma.purchaseRequestRecord.findMany({
+      select: { payload: true },
+    });
+    const departments = new Map();
+
+    for (const request of requests) {
+      if (!isApprovedStatus(request.payload?.status)) continue;
+      const value = String(request.payload?.department ?? "").trim();
+      if (value) departments.set(value.toUpperCase(), value);
+    }
+
+    return res.json({
+      success: true,
+      data: Array.from(departments.values())
+        .sort((left, right) => left.localeCompare(right))
+        .map((department) => ({ code: department, name: department })),
+    });
+  } catch (error) {
+    console.error("Budget departments error:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch purchasing departments" });
+  }
+});
+
 // Debug: Log all middleware in this router
 console.log("🟢 Budget router initialized - stack length:", router.stack.length);
 

@@ -5,23 +5,31 @@ import { BudgetUsageCard } from "../components/budget/BudgetUsageCard";
 import { PredictionCard } from "../components/budget/PredictionCard";
 import { BudgetUsageChart } from "../components/budget/BudgetUsageChart";
 import {
-  getDepartments,
-  getBudgetUsage,
-  getPredictions,
-  getHistoricalComparison,
-  type Department,
   type BudgetUsageSummary,
   type BudgetPrediction,
   type HistoricalComparison
 } from "../shared/api/departmentBudget";
-import axios from "axios";
 import { API_ROOT } from "../shared/api/base";
 
 const { Title } = Typography;
 
+interface ForecastDepartment {
+  code: string;
+  name: string;
+}
+
+interface ForecastResponse {
+  success: boolean;
+  data: {
+    historical: Array<{ period: string; totalAmount: number; requestCount: number }>;
+    forecast: Array<{ period: string; forecastAmount: number; confidence: "high" | "medium" | "low" }>;
+    summary: { avgPerPeriod: number };
+  };
+}
+
 export const DepartmentBudgetOverview: React.FC = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null);
+  const [departments, setDepartments] = useState<ForecastDepartment[]>([]);
+  const [selectedDepartmentCode, setSelectedDepartmentCode] = useState<string | null>(null);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
 
@@ -39,36 +47,101 @@ export const DepartmentBudgetOverview: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedDeptId) {
+    if (selectedDepartmentCode) {
       loadBudgetData();
     }
-  }, [selectedDeptId, currentYear, currentMonth]);
+  }, [selectedDepartmentCode, currentYear, currentMonth]);
 
   const loadDepartments = async () => {
-    const depts = await getDepartments(true);
-    setDepartments(depts);
-    if (depts.length > 0 && !selectedDeptId) {
-      setSelectedDeptId(depts[0].id);
+    try {
+      const response = await fetch(`${API_ROOT}/budget/departments`);
+      const result = await response.json();
+      const depts: ForecastDepartment[] = result.success ? result.data ?? [] : [];
+      setDepartments(depts);
+      if (depts.length > 0 && !selectedDepartmentCode) {
+        setSelectedDepartmentCode(depts[0].code);
+      }
+    } catch (error) {
+      console.error("Load purchasing departments error:", error);
+      message.error("Failed to load departments");
     }
   };
 
   const loadBudgetData = async () => {
-    if (!selectedDeptId) return;
+    if (!selectedDepartmentCode) return;
 
     setLoadingUsage(true);
     setLoadingPredictions(true);
     setLoadingHistorical(true);
 
     try {
-      const [usageData, predictionsData, historicalData] = await Promise.all([
-        getBudgetUsage(selectedDeptId, currentYear, currentMonth),
-        getPredictions(selectedDeptId, { limit: 6 }),
-        getHistoricalComparison(selectedDeptId, { preset: "last-6-months" })
-      ]);
+      const params = new URLSearchParams({
+        period: "monthly",
+        departmentCode: selectedDepartmentCode,
+      });
+      const response = await fetch(`${API_ROOT}/budget/forecast?${params}`);
+      const result: ForecastResponse = await response.json();
+      if (!result.success) throw new Error("Forecast request failed");
 
-      setUsage(usageData);
-      setPredictions(predictionsData);
-      setHistorical(historicalData);
+      const department = departments.find((dept) => dept.code === selectedDepartmentCode);
+      const selectedPeriod = `${currentYear}-${String(currentMonth).padStart(2, "0")}`;
+      const currentPeriodData = result.data.historical.find((item) => item.period === selectedPeriod);
+      const averageAmount = result.data.summary.avgPerPeriod;
+      const spentAmount = currentPeriodData?.totalAmount ?? 0;
+      const usagePercentage = averageAmount > 0 ? (spentAmount / averageAmount) * 100 : 0;
+
+      setUsage({
+        budgetId: 0,
+        department: { id: 0, code: selectedDepartmentCode, name: department?.name ?? selectedDepartmentCode },
+        year: currentYear,
+        month: currentMonth,
+        allocatedAmount: averageAmount,
+        spentAmount,
+        reservedAmount: 0,
+        remainingAmount: averageAmount - spentAmount,
+        usagePercentage,
+        status: usagePercentage > 100 ? "exceeded" : usagePercentage >= 80 ? "warning" : "normal",
+      });
+
+      setPredictions(result.data.forecast.map((item, index) => {
+        const [year, month] = item.period.split("-").map(Number);
+        return {
+          id: index + 1,
+          departmentId: 0,
+          targetYear: year,
+          targetMonth: month,
+          predictedAmount: item.forecastAmount,
+          confidence: item.confidence,
+          triggerType: "automatic",
+          triggeredBy: 0,
+          createdAt: new Date().toISOString(),
+          department: { id: 0, code: selectedDepartmentCode, name: department?.name ?? selectedDepartmentCode, isActive: true },
+          metadata: { algorithm: "Three-period moving average", basedOnMonths: 3 },
+        };
+      }));
+
+      setHistorical({
+        historicalData: result.data.historical.slice(-6).map((item) => {
+          const [year, month] = item.period.split("-").map(Number);
+          return {
+            year,
+            month,
+            period: item.period,
+            allocatedAmount: averageAmount,
+            spentAmount: item.totalAmount,
+            remainingAmount: averageAmount - item.totalAmount,
+            utilization: averageAmount > 0 ? (item.totalAmount / averageAmount) * 100 : 0,
+          };
+        }),
+        summary: {
+          totalPeriods: result.data.historical.length,
+          avgAllocated: averageAmount,
+          avgSpent: averageAmount,
+          avgUtilization: 100,
+          totalAllocated: averageAmount * result.data.historical.length,
+          totalSpent: result.data.historical.reduce((total, item) => total + item.totalAmount, 0),
+        },
+      });
     } catch (error) {
       console.error("Load budget data error:", error);
       message.error("Failed to load budget data");
@@ -80,35 +153,15 @@ export const DepartmentBudgetOverview: React.FC = () => {
   };
 
   const handleTriggerPrediction = async () => {
-    if (!selectedDeptId) return;
+    if (!selectedDepartmentCode) return;
 
     setTriggeringPrediction(true);
     try {
-      const dept = departments.find(d => d.id === selectedDeptId);
-      if (!dept) {
-        message.error("Department not found");
-        return;
-      }
-
-      const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-      const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
-
-      const res = await axios.post(`${API_ROOT}/department-budget/predict/manual`, {
-        departmentCode: dept.code,
-        targetYear: nextYear,
-        targetMonth: nextMonth,
-        userId: 1
-      });
-
-      if (res.data.success) {
-        message.success(`Prediction generated: $${res.data.data.predictedAmount.toFixed(2)}`);
-        loadBudgetData();
-      } else {
-        message.error(res.data.message || "Failed to generate prediction");
-      }
+      await loadBudgetData();
+      message.success("Predictions generated from purchasing history");
     } catch (error: any) {
       console.error("Trigger prediction error:", error);
-      message.error(error.response?.data?.message || "Failed to trigger prediction");
+      message.error(error.message || "Failed to generate prediction");
     } finally {
       setTriggeringPrediction(false);
     }
@@ -121,12 +174,12 @@ export const DepartmentBudgetOverview: React.FC = () => {
         <Space>
           <Select
             style={{ width: 200 }}
-            value={selectedDeptId}
-            onChange={setSelectedDeptId}
+            value={selectedDepartmentCode}
+            onChange={setSelectedDepartmentCode}
             placeholder="Select Department"
           >
             {departments.map(d => (
-              <Select.Option key={d.id} value={d.id}>
+              <Select.Option key={d.code} value={d.code}>
                 {d.name}
               </Select.Option>
             ))}
@@ -205,3 +258,5 @@ export const DepartmentBudgetOverview: React.FC = () => {
     </div>
   );
 };
+
+export default DepartmentBudgetOverview;

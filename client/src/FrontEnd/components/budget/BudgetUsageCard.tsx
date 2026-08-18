@@ -59,7 +59,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
             value={usage.spentAmount}
             precision={2}
             prefix="$"
-            valueStyle={{ color: usage.status === "exceeded" ? "#ff4d4f" : undefined }}
+            styles={{ content: { color: usage.status === "exceeded" ? "#ff4d4f" : undefined } }}
           />
         </Col>
         <Col span={8}>
@@ -68,7 +68,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
             value={usage.remainingAmount}
             precision={2}
             prefix="$"
-            valueStyle={{ color: usage.remainingAmount < 0 ? "#ff4d4f" : "#3f8600" }}
+            styles={{ content: { color: usage.remainingAmount < 0 ? "#ff4d4f" : "#3f8600" } }}
           />
         </Col>
       </Row>

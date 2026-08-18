@@ -29,7 +29,6 @@ import {
 import { DollarOutlined, RiseOutlined, FallOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
-import { getDepartments, type Department } from "../../shared/api/departmentBudget";
 import { API_ROOT } from "../../shared/api/base";
 import styles from "./BudgetForecasting.module.css";
 
@@ -52,6 +51,11 @@ interface ForecastData {
 interface CategoryData {
   category: string;
   amount: number;
+}
+
+interface ForecastDepartment {
+  code: string;
+  name: string;
 }
 
 interface BudgetForecastResponse {
@@ -81,7 +85,7 @@ const BudgetForecasting: React.FC = () => {
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [forecastData, setForecastData] = useState<BudgetForecastResponse["data"] | null>(null);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState<ForecastDepartment[]>([]);
   const [selectedDepartmentCode, setSelectedDepartmentCode] = useState<string | null>(null);
 
   const fetchForecastData = async () => {
@@ -137,8 +141,10 @@ const BudgetForecasting: React.FC = () => {
   useEffect(() => {
     const loadDepartments = async () => {
       try {
-        const depts = await getDepartments(true);
-        setDepartments(depts);
+        const response = await fetch(`${API_ROOT}/budget/departments`);
+        const result = await response.json();
+        if (result.success) setDepartments(result.data ?? []);
+        else message.error(t("common:fetchError"));
       } catch (error) {
         console.error("Load departments error:", error);
         message.error(t("common:fetchError"));
@@ -282,7 +288,7 @@ const BudgetForecasting: React.FC = () => {
                   precision={2}
                   prefix={<DollarOutlined />}
                   suffix="RM"
-                  valueStyle={{ color: "#16A34A" }}
+                  styles={{ content: { color: "#16A34A" } }}
                 />
               </Card>
             </Col>
@@ -292,7 +298,7 @@ const BudgetForecasting: React.FC = () => {
                   title={t("budgetManagement:totalRequests")}
                   value={forecastData.summary.totalRequests}
                   prefix={<RiseOutlined />}
-                  valueStyle={{ color: "#0EA5E9" }}
+                  styles={{ content: { color: "#0EA5E9" } }}
                 />
               </Card>
             </Col>
@@ -303,7 +309,7 @@ const BudgetForecasting: React.FC = () => {
                   value={forecastData.summary.avgPerPeriod}
                   precision={2}
                   suffix="RM"
-                  valueStyle={{ color: "#D97706" }}
+                  styles={{ content: { color: "#D97706" } }}
                 />
               </Card>
             </Col>
