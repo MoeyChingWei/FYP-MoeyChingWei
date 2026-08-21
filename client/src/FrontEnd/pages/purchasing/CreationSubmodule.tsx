@@ -13,6 +13,7 @@ import {
   Select,
   Space,
   Spin,
+  Statistic,
   Typography,
   message,
 } from "antd";
@@ -52,8 +53,14 @@ import type {
 import { UserRole } from "../../shared/types/roles";
 import { API_ROOT } from "../../shared/api/base";
 import {
+  getBudgetUsage,
+  getDepartments,
+  type BudgetUsageSummary,
+} from "../../shared/api/departmentBudget";
+import {
   createSupplierInventory,
   fetchSupplierInventory,
+  reserveSupplierInventory,
   seedSampleSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
@@ -181,7 +188,7 @@ function InventoryProductPicker({
   }, [products, searchTerm]);
 
   useEffect(() => {
-    if (!selectedId || inventory.some((item) => item.id === selectedId && item.quantity > 0 && item.category.trim().toLowerCase() === String(category ?? "").trim().toLowerCase())) return;
+    if (!selectedId || inventory.some((item) => item.id === selectedId && (item.quantity - Number(item.reservedQuantity ?? 0)) > 0 && item.category.trim().toLowerCase() === String(category ?? "").trim().toLowerCase())) return;
     form.setFieldValue(["lineItems", index, "supplierInventoryItemId"], undefined);
     form.setFieldValue(["lineItems", index, "itemImageUrl"], undefined);
     form.setFieldValue(["lineItems", index, "inventoryAvailableQuantity"], undefined);
@@ -189,14 +196,15 @@ function InventoryProductPicker({
   }, [category, form, index, inventory, selectedId]);
 
   const chooseProduct = (item: SupplierInventoryItem) => {
-    if (item.quantity <= 0) return;
+    const availableQuantity = Math.max(0, item.quantity - Number(item.reservedQuantity ?? 0));
+    if (availableQuantity <= 0) return;
     const supplier = supplierUsers.find((user) => user.id === item.supplierId);
     const rows = ([...(form.getFieldValue("lineItems") ?? [])] as LineItemFormRow[]);
     rows[index] = {
       ...rows[index],
       supplierInventoryItemId: item.id,
       itemImageUrl: item.imageDataUrl,
-      inventoryAvailableQuantity: item.quantity,
+      inventoryAvailableQuantity: availableQuantity,
       itemName: item.itemName,
       itemCategory: item.category,
       supplierId: item.supplierId,
@@ -242,7 +250,7 @@ function InventoryProductPicker({
           {filteredProducts.map((item) => {
           const supplier = supplierUsers.find((user) => user.id === item.supplierId);
           const selected = selectedId === item.id;
-          const outOfStock = item.quantity <= 0;
+          const outOfStock = item.quantity - Number(item.reservedQuantity ?? 0) <= 0;
           return (
             <button
               type="button"
@@ -255,7 +263,7 @@ function InventoryProductPicker({
               <span className={creationStyles.inventoryProductCopy}>
                 <strong>{item.itemName}</strong>
                 <span>{supplier?.name ?? supplier?.email ?? "Supplier"}</span>
-                <span>{outOfStock ? "Out of stock" : `${item.quantity.toLocaleString()} ${item.unit} available`}</span>
+                <span>{outOfStock ? "Out of stock" : `${Math.max(0, item.quantity - Number(item.reservedQuantity ?? 0)).toLocaleString()} ${item.unit} available`}</span>
               </span>
               <span className={creationStyles.inventoryProductPrice}>MYR {item.unitPrice.toFixed(2)}</span>
             </button>
@@ -434,10 +442,50 @@ export default function CreationSubmodule(): React.ReactElement {
   const [requestDate, setRequestDate] = useState(() => todayIsoDate());
   const [supplierUsers, setSupplierUsers] = useState<ApiUser[]>([]);
   const [editingDraft, setEditingDraft] = useState<PurchaseRequestDraft | null>(null);
+  const [departmentBudget, setDepartmentBudget] = useState<BudgetUsageSummary | null>(null);
+  const [loadingDepartmentBudget, setLoadingDepartmentBudget] = useState(false);
 
   useEffect(() => {
     setSessionUser(getSessionUser());
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadDepartmentBudget = async (): Promise<void> => {
+      if (!sessionUser?.department) {
+        setDepartmentBudget(null);
+        return;
+      }
+
+      setLoadingDepartmentBudget(true);
+      try {
+        const departments = await getDepartments(true);
+        const departmentValue = String(sessionUser.department).trim().toLowerCase();
+        const matchedDepartment = departments.find((item) =>
+          item.code.trim().toLowerCase() === departmentValue ||
+          item.name.trim().toLowerCase() === departmentValue,
+        );
+
+        const today = new Date();
+        const usage = matchedDepartment
+          ? await getBudgetUsage(matchedDepartment.id, today.getFullYear(), today.getMonth() + 1)
+          : null;
+
+        if (!cancelled) setDepartmentBudget(usage);
+      } catch (error) {
+        console.error("Load purchase request department budget error:", error);
+        if (!cancelled) setDepartmentBudget(null);
+      } finally {
+        if (!cancelled) setLoadingDepartmentBudget(false);
+      }
+    };
+
+    void loadDepartmentBudget();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionUser?.department, sessionUser?.id, sessionUser?.email]);
 
   useEffect(() => {
     if (!localId) {
@@ -589,6 +637,30 @@ export default function CreationSubmodule(): React.ReactElement {
         amountAfterTax: computeAmountAfterTax(row.quantity, row.estimatedUnitPrice, row.taxType),
       };
     });
+    const inventoryReservations = lineItems
+      .filter((item) => item.supplierInventoryItemId && item.quantity > 0)
+      .map((item) => ({
+        inventoryItemId: item.supplierInventoryItemId,
+        quantity: item.quantity,
+        supplierId: item.supplierId,
+        itemName: item.itemName,
+        category: item.itemCategory,
+        unit: item.unitOfMeasurement,
+      }));
+
+    if (
+      status === "SUBMITTED" &&
+      inventoryReservations.length > 0 &&
+      editingDraft?.inventoryReservationStatus !== "RESERVED"
+    ) {
+      try {
+        await reserveSupplierInventory(inventoryReservations);
+      } catch (error) {
+        message.error(error instanceof Error ? error.message : "Could not reserve inventory");
+        throw error;
+      }
+    }
+
     const draft: PurchaseRequestDraft = {
       localId: editingDraft?.localId ?? newTempId(),
       prNumber,
@@ -601,6 +673,14 @@ export default function CreationSubmodule(): React.ReactElement {
       status,
       lineItems,
       requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? UserRole.EMPLOYEE,
+      inventoryReservationStatus:
+        status === "SUBMITTED" && inventoryReservations.length > 0
+          ? "RESERVED"
+          : editingDraft?.inventoryReservationStatus,
+      inventoryReservedItemIds:
+        status === "SUBMITTED" && inventoryReservations.length > 0
+          ? inventoryReservations.map((item) => item.inventoryItemId as string)
+          : editingDraft?.inventoryReservedItemIds,
     };
     if (editingDraft) {
       replacePurchaseRequestDraft(editingDraft.localId, draft);
@@ -886,10 +966,11 @@ export default function CreationSubmodule(): React.ReactElement {
                           ]}
                         >
                           <InputNumber
+                            readOnly
                             min={0}
                             step={0.01}
                             prefix={DEFAULT_CURRENCY}
-                            style={{ width: "100%" }}
+                            style={{ width: "100%", ...autoFieldStyle }}
                           />
                         </Form.Item>
                       </Col>
@@ -952,6 +1033,64 @@ export default function CreationSubmodule(): React.ReactElement {
               </Button>
             </Col>
           </Row>
+
+          <Card
+            size="small"
+            title={
+              departmentBudget
+                ? `Department Budget (${departmentBudget.year}-${String(departmentBudget.month).padStart(2, "0")})`
+                : "Department Budget"
+            }
+            loading={loadingDepartmentBudget}
+            style={{ marginTop: 16 }}
+          >
+            {departmentBudget ? (
+              <Row gutter={[16, 12]}>
+                <Col xs={24} sm={6}>
+                  <Text type="secondary">Department</Text>
+                  <div><Text strong>{departmentBudget.department.name}</Text></div>
+                </Col>
+                <Col xs={24} sm={6}>
+                  <Statistic
+                    title="Allocated"
+                    value={departmentBudget.allocatedAmount}
+                    precision={2}
+                    prefix={DEFAULT_CURRENCY}
+                  />
+                </Col>
+                <Col xs={24} sm={6}>
+                  <Statistic
+                    title="Spent"
+                    value={departmentBudget.spentAmount}
+                    precision={2}
+                    prefix={DEFAULT_CURRENCY}
+                  />
+                </Col>
+                <Col xs={24} sm={6}>
+                  <Statistic
+                    title="Remaining"
+                    value={departmentBudget.remainingAmount}
+                    precision={2}
+                    prefix={DEFAULT_CURRENCY}
+                    styles={{
+                      content: {
+                        color: departmentBudget.remainingAmount < 0 ? "#ff4d4f" : "#52c41a",
+                      },
+                    }}
+                  />
+                </Col>
+                <Col span={24}>
+                  <Text type="secondary">
+                    Usage: {departmentBudget.usagePercentage.toFixed(2)}% ({departmentBudget.status.toUpperCase()})
+                  </Text>
+                </Col>
+              </Row>
+            ) : (
+              <Text type="secondary">
+                No budget has been allocated for your department in the current month.
+              </Text>
+            )}
+          </Card>
 
           <div className={creationStyles.formActions}>
             <Button onClick={() => void onSaveDraft()}>{t('purchaseRequest.creation.actions.saveAsDraft')}</Button>

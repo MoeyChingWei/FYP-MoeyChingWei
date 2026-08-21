@@ -18,6 +18,8 @@ import { loadSupplierGrns, type SupplierGrnRecord } from "../../modules/supplier
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
+import WorkflowPartyInfo from "../../components/shared/WorkflowPartyInfo";
 
 const { Paragraph, Title } = Typography;
 
@@ -173,7 +175,10 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
                 {t("grnStatus.detail.actions.createNewDelivery")}
               </Button>
             ) : null}
+          <Flex align="center" gap={8} wrap="wrap">
+            <WorkflowDocumentActions workflowType="grn" record={row} filenamePrefix="grn" />
             <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          </Flex>
           </Flex>
         </div>
 
@@ -198,19 +203,15 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
 
         <div className={styles.sectionCard}>
           <h3 className={styles.sectionTitle}>{t("grnStatus.detail.info.title")}</h3>
+          <WorkflowPartyInfo workflowType="grn" record={row} />
           <Descriptions column={2} bordered size="middle">
             <Descriptions.Item label={t("grnStatus.detail.info.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item>
             <Descriptions.Item label={t("grnStatus.detail.info.purchaseRequester")}>
               {row.sourceRequester || "-"}
             </Descriptions.Item>
             <Descriptions.Item label={t("grnStatus.detail.info.createdBy")}>{row.createdBy}</Descriptions.Item>
-            <Descriptions.Item label={t("grnStatus.detail.info.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
-            <Descriptions.Item label={t("grnStatus.detail.info.supplierEmail")}>{row.supplierEmail || "-"}</Descriptions.Item>
             <Descriptions.Item label={t("grnStatus.detail.info.department")}>{row.department || "-"}</Descriptions.Item>
             <Descriptions.Item label={t("grnStatus.detail.info.currentStatus")}>{statusText(row.status, t)}</Descriptions.Item>
-            <Descriptions.Item label={t("grnStatus.detail.info.companyAddress")} span={2}>
-              {row.companyAddress}
-            </Descriptions.Item>
             <Descriptions.Item label={t("grnStatus.detail.info.discrepancyReason")} span={2}>
               {row.discrepancyReason || "-"}
             </Descriptions.Item>

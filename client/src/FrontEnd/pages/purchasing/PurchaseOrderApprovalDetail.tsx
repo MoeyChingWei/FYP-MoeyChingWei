@@ -36,6 +36,7 @@ import { getSessionUser } from "../../shared/auth/session";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
 
 const { Paragraph, Title } = Typography;
 
@@ -248,7 +249,10 @@ export default function PurchaseOrderApprovalDetail(): React.ReactElement {
             </Title>
           </Flex>
 
-          <Tag color="blue">{t('purchaseOrder.review.status.submitted')}</Tag>
+          <Flex align="center" gap={8} wrap="wrap">
+            <WorkflowDocumentActions workflowType="purchase-order" record={order} filenamePrefix="purchase-order" />
+            <Tag color="blue">{t('purchaseOrder.review.status.submitted')}</Tag>
+          </Flex>
         </div>
 
         <div className={styles.summaryGrid}>

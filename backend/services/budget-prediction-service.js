@@ -191,7 +191,8 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
         confidence: 'low',
         algorithm: 'default',
         aiInsights: 'No historical data available and no similar departments found. Using system default.',
-        triggerType: userId ? 'manual' : 'automatic'
+        triggerType: userId ? 'manual' : 'automatic',
+        triggeredBy: userId || null
       }
     });
   } else {
@@ -214,7 +215,8 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
           similarity: topSimilar.similarity,
           referenceMonths: topSimilar.historicalMonths
         },
-        triggerType: userId ? 'manual' : 'automatic'
+        triggerType: userId ? 'manual' : 'automatic',
+        triggeredBy: userId || null
       }
     });
   }
@@ -243,16 +245,52 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
  * @returns {Object} Parsed prediction data
  */
 function parseAIResponse(response) {
-  try {
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+  const content = String(response ?? '').trim();
+  const jsonCandidates = [content];
+
+  const fencedJson = content.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fencedJson?.[1]) jsonCandidates.push(fencedJson[1].trim());
+
+  const objectJson = content.match(/\{[\s\S]*\}/);
+  if (objectJson?.[0]) jsonCandidates.push(objectJson[0]);
+
+  for (const candidate of jsonCandidates) {
+    try {
+      const parsed = JSON.parse(candidate);
+      const predictedAmount = Number(parsed.predictedAmount ?? parsed.amount);
+      if (Number.isFinite(predictedAmount) && predictedAmount >= 0) {
+        return {
+          predictedAmount,
+          confidence: ['low', 'medium', 'high'].includes(parsed.confidence)
+            ? parsed.confidence
+            : 'low',
+          insights: String(parsed.insights || 'AI Agent generated this forecast from the available purchasing history.'),
+          categoryBreakdown: parsed.categoryBreakdown && typeof parsed.categoryBreakdown === 'object'
+            ? parsed.categoryBreakdown
+            : {}
+        };
+      }
+    } catch {
+      // Try the next response format before using the fallback forecast.
     }
-    throw new Error('No JSON found in response');
-  } catch (error) {
-    console.error('Failed to parse AI response:', error);
-    throw error;
   }
+
+  // Some models follow the analysis request but omit the JSON wrapper. Preserve
+  // a clearly labelled amount instead of silently discarding the AI result.
+  const amountMatch = content.match(/(?:predicted(?:\s+(?:amount|spending|budget))?|forecast(?:ed)?(?:\s+(?:amount|spending|budget))?)\s*(?:is|:|of|for)?\s*(?:MYR|RM|\$)?\s*([\d,]+(?:\.\d{1,2})?)(?![-\d])/i);
+  if (amountMatch) {
+    const predictedAmount = Number(amountMatch[1].replace(/,/g, ''));
+    if (Number.isFinite(predictedAmount) && predictedAmount >= 0) {
+      return {
+        predictedAmount,
+        confidence: /\bhigh confidence\b/i.test(content) ? 'high' : /\bmedium confidence\b/i.test(content) ? 'medium' : 'low',
+        insights: content,
+        categoryBreakdown: {}
+      };
+    }
+  }
+
+  throw new Error(`AI response did not include a valid predicted amount: ${content.slice(0, 240)}`);
 }
 
 /**
@@ -322,17 +360,25 @@ Format your response as JSON:
   "categoryBreakdown": {<category>: <amount>, ...}
 }`;
 
+  const structuredOutputInstruction = `\n\nSTRUCTURED FORECAST MODE:\nThe user has already supplied the authoritative department purchasing history. Do not call tools and do not write a conversational report. Return only one valid JSON object, with no Markdown or extra text, matching the requested predictedAmount, confidence, insights, and categoryBreakdown fields. predictedAmount must be a non-negative number.`;
+
   try {
     const aiResponse = await analyticsAgent.chat({
       userId: 1,
       message: prompt,
-      sessionId: `budget-prediction-${department.id}-${Date.now()}`
+      sessionId: `budget-prediction-${department.id}-${Date.now()}`,
+      systemPromptAddition: structuredOutputInstruction,
+      availableTools: [],
+      maxTokens: 700,
+      temperature: 0.2
     });
 
     if (!aiResponse.success) {
       throw new Error('AI agent returned unsuccessful response');
     }
 
+    // Reasoning is not a prediction result and may contain dates or intermediate
+    // calculations. Only parse the model's final answer content.
     const parsed = parseAIResponse(aiResponse.content);
 
     return {
@@ -421,7 +467,8 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
         ...aiResponse.comparisonData,
         usedFallback: aiResponse.usedFallback || false
       },
-      triggerType: userId ? 'manual' : 'automatic'
+      triggerType: userId ? 'manual' : 'automatic',
+      triggeredBy: userId || null
     }
   });
 

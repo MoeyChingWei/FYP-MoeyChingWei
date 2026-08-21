@@ -45,12 +45,6 @@ import {
   updateSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
-import { reserveSupplierInventory } from "../../modules/supplierFulfillment/inventory";
-import {
-  hydratePurchaseRequestDrafts,
-  loadPurchaseRequestDrafts,
-  updatePurchaseRequestDraft,
-} from "../../modules/purchasing/requestCreation/storage";
 import {
   computeAmountAfterTax,
   MALAYSIAN_TAXES,
@@ -61,7 +55,7 @@ import styles from "./SupplierInventorySubmodule.module.css";
 
 const { Text, Title } = Typography;
 
-type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "imageDataUrl" | "taxType" | "taxRate"> & {
+type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "reservedQuantity" | "imageDataUrl" | "taxType" | "taxRate"> & {
   taxType?: string[];
 };
 
@@ -114,9 +108,14 @@ function readImageFile(file: File): Promise<string> {
   });
 }
 
+function availableQuantity(row: SupplierInventoryItem): number {
+  return Math.max(0, row.quantity - Number(row.reservedQuantity ?? 0));
+}
+
 function stockStatus(row: SupplierInventoryItem): "Healthy" | "Low stock" | "Out of stock" {
-  if (row.quantity <= 0) return "Out of stock";
-  if (row.quantity <= row.reorderLevel) return "Low stock";
+  const available = availableQuantity(row);
+  if (available <= 0) return "Out of stock";
+  if (available <= row.reorderLevel) return "Low stock";
   return "Healthy";
 }
 
@@ -161,64 +160,6 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       });
   }, [supplierId]);
 
-  // Backfill reservations for PRs approved before inventory reservation was added.
-  useEffect(() => {
-    if (!supplierId) return;
-    let cancelled = false;
-
-    const backfillApprovedRequests = async (): Promise<void> => {
-      await hydratePurchaseRequestDrafts();
-      if (cancelled) return;
-
-      const approvedRequests = loadPurchaseRequestDrafts().filter(
-        (request) => request.status === "APPROVED",
-      );
-
-      for (const request of approvedRequests) {
-        if (cancelled) return;
-
-        const reservedIds = new Set(request.inventoryReservedItemIds ?? []);
-        const pendingItems = request.lineItems
-          .filter(
-            (item) =>
-              item.supplierId === supplierId &&
-              !!item.supplierInventoryItemId &&
-              !reservedIds.has(item.supplierInventoryItemId),
-          )
-          .map((item) => ({
-            inventoryItemId: item.supplierInventoryItemId,
-            quantity: item.quantity,
-            supplierId,
-            itemName: item.itemName,
-            category: item.itemCategory,
-            unit: item.unitOfMeasurement,
-          }));
-
-        if (!pendingItems.length) continue;
-
-        try {
-          await reserveSupplierInventory(pendingItems);
-          updatePurchaseRequestDraft(request.localId, (draft) => ({
-            ...draft,
-            inventoryReservedItemIds: Array.from(
-              new Set([
-                ...(draft.inventoryReservedItemIds ?? []),
-                ...pendingItems.map((item) => item.inventoryItemId),
-              ]),
-            ),
-          }));
-        } catch {
-          // Leave the request unmarked so it can be retried after stock is corrected.
-        }
-      }
-    };
-
-    void backfillApprovedRequests();
-    return () => {
-      cancelled = true;
-    };
-  }, [supplierId]);
-
   useEffect(() => {
     const sync = () => setRows(loadSupplierInventory(supplierId));
     window.addEventListener("storage", sync);
@@ -254,7 +195,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
     });
   }, [rows, searchValue, statusFilter]);
 
-  const totalUnits = rows.reduce((sum, row) => sum + row.quantity, 0);
+  const totalUnits = rows.reduce((sum, row) => sum + availableQuantity(row), 0);
   const lowStockCount = rows.filter((row) => stockStatus(row) !== "Healthy").length;
   const inventoryValue = rows.reduce((sum, row) => sum + row.quantity * row.unitPrice, 0);
 
@@ -339,10 +280,16 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
     },
     { title: "Category", dataIndex: "category", key: "category" },
     {
-      title: "Quantity",
+      title: "Available",
       key: "available",
-      sorter: (a, b) => a.quantity - b.quantity,
-      render: (_, row) => <strong>{row.quantity.toLocaleString()} {row.unit}</strong>,
+      sorter: (a, b) => availableQuantity(a) - availableQuantity(b),
+      render: (_, row) => <strong>{availableQuantity(row).toLocaleString()} {row.unit}</strong>,
+    },
+    {
+      title: "Reserved",
+      key: "reserved",
+      sorter: (a, b) => Number(a.reservedQuantity ?? 0) - Number(b.reservedQuantity ?? 0),
+      render: (_, row) => <Text type={row.reservedQuantity ? "warning" : "secondary"}>{Number(row.reservedQuantity ?? 0).toLocaleString()} {row.unit}</Text>,
     },
     {
       title: "Value",

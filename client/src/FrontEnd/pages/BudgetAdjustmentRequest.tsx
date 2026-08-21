@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Typography, message, Row, Col, Card, Table, Tag } from "antd";
 import { AdjustmentRequestForm, type AdjustmentFormValues } from "../components/budget/AdjustmentRequestForm";
-import { getDepartments, type Department } from "../shared/api/departmentBudget";
+import { getDepartments, toBudgetNumber, type Department } from "../shared/api/departmentBudget";
 import axios from "axios";
 import { API_ROOT } from "../shared/api/base";
+import { getSessionUser } from "../shared/auth/session";
+import { UserRole } from "../shared/types/roles";
 
 const { Title } = Typography;
 
@@ -22,6 +24,7 @@ interface AdjustmentRequest {
 }
 
 const BudgetAdjustmentRequest: React.FC = () => {
+  const sessionUser = getSessionUser();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [myRequests, setMyRequests] = useState<AdjustmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,17 +37,31 @@ const BudgetAdjustmentRequest: React.FC = () => {
 
   const loadDepartments = async () => {
     const depts = await getDepartments(true);
-    setDepartments(depts);
+    const canViewAll = [UserRole.ADMIN, UserRole.MANAGER, UserRole.TREASURY_FINANCE_OFFICER, UserRole.BUDGET_CONTROLLER]
+      .includes(sessionUser?.role as UserRole);
+    setDepartments(canViewAll
+      ? depts
+      : depts.filter(department => {
+          const value = String(sessionUser?.department ?? "").toLowerCase();
+          return department.code.toLowerCase() === value || department.name.toLowerCase() === value;
+        }));
   };
 
   const loadMyRequests = async () => {
     setLoadingRequests(true);
     try {
       const res = await axios.get(`${API_ROOT}/department-budget/adjustments`, {
-        params: { status: "pending,approved,rejected", limit: 20 }
+        params: {
+          userId: sessionUser?.id,
+          email: sessionUser?.email,
+          limit: 20
+        }
       });
       if (res.data.success) {
-        setMyRequests(res.data.data);
+        setMyRequests(res.data.data.map((request: AdjustmentRequest) => ({
+          ...request,
+          requestedAmount: toBudgetNumber(request.requestedAmount)
+        })));
       }
     } catch (error) {
       console.error("Load requests error:", error);
@@ -58,7 +75,9 @@ const BudgetAdjustmentRequest: React.FC = () => {
     try {
       const res = await axios.post(`${API_ROOT}/department-budget/adjustments`, {
         ...values,
-        requestedBy: 1
+        requestedBy: sessionUser?.id,
+        userId: sessionUser?.id,
+        email: sessionUser?.email
       });
 
       if (res.data.success) {
@@ -101,7 +120,7 @@ const BudgetAdjustmentRequest: React.FC = () => {
       title: "Amount",
       dataIndex: "requestedAmount",
       key: "requestedAmount",
-      render: (amount: number) => `$${amount.toFixed(2)}`
+      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`
     },
     {
       title: "Status",
@@ -128,6 +147,7 @@ const BudgetAdjustmentRequest: React.FC = () => {
         <Col span={24} lg={12}>
           <AdjustmentRequestForm
             departments={departments}
+            initialDepartmentId={departments.length === 1 ? departments[0].id : undefined}
             onSubmit={handleSubmit}
             loading={loading}
           />

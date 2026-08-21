@@ -2,6 +2,7 @@ import type { PurchaseRequestDraft } from "./types";
 import {
   fetchWorkflowRows,
   fetchWorkflowRowsForRecovery,
+  getPendingWorkflowRows,
   isWorkflowSyncEnabled,
   queueWorkflowRowsSave,
 } from "../../../shared/api/workflowStorage";
@@ -109,9 +110,13 @@ export async function hydratePurchaseRequestDrafts(): Promise<PurchaseRequestDra
     const remoteDrafts = localDrafts.length
       ? await fetchWorkflowRows<PurchaseRequestDraft>(PURCHASE_REQUEST_STORE, 200)
       : await fetchWorkflowRowsForRecovery<PurchaseRequestDraft>(PURCHASE_REQUEST_STORE);
-    const drafts = isWorkflowSyncEnabled()
+    // A create/update can still be in the debounced PUT when this page mounts.
+    // Prefer that exact pending snapshot over the stale GET response so a new
+    // request appears immediately without requiring a refresh or navigation.
+    const pendingDrafts = getPendingWorkflowRows<PurchaseRequestDraft>(PURCHASE_REQUEST_STORE);
+    const drafts = pendingDrafts ?? (isWorkflowSyncEnabled()
       ? remoteDrafts
-      : mergeByLocalId(localDrafts, remoteDrafts);
+      : mergeByLocalId(localDrafts, remoteDrafts));
     purchaseRequestDraftCache = drafts;
     try {
       window.localStorage.setItem(PURCHASE_REQUEST_DRAFTS_KEY, JSON.stringify(drafts));

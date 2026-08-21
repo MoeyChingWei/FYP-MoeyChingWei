@@ -57,7 +57,7 @@ class BaseAgent {
   /**
    * Standard chat interface (with logging and error handling)
    */
-  async chat({ userId, message, sessionId }) {
+  async chat({ userId, message, sessionId, systemPromptAddition = '', availableTools, maxTokens, temperature }) {
     const startTime = Date.now();
 
     try {
@@ -85,7 +85,7 @@ class BaseAgent {
       const history = await this.loadSessionHistory(sessionId);
 
       // 4. Build the system prompt
-      const systemPrompt = this.buildSystemPrompt(user);
+      const systemPrompt = `${this.buildSystemPrompt(user)}${systemPromptAddition}`;
 
       // 5. Build the messages array
       const messages = [
@@ -101,8 +101,10 @@ class BaseAgent {
         agentType: this.agentType,
         systemPrompt,
         messages,
-        availableTools: this.tools,
+        availableTools: availableTools ?? this.tools,
         toolHandlers: this.enrichToolHandlers(userId, user),
+        ...(maxTokens ? { maxTokens } : {}),
+        ...(temperature !== undefined ? { temperature } : {}),
       });
 
       // 7. Save chat history

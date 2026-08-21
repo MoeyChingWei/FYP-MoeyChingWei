@@ -51,7 +51,7 @@
     "pleaseWait": "请稍候",
     "loading": "加载中...",
     "noChanges": "未检测到更改",
-    "totalCalculated": "总计: {currency} {total}"
+    "totalCalculated": "总计: {{currency}} {{total}}"
   },
   "confirm": {
     "delete": "确定要删除此项吗？",

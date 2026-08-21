@@ -4,6 +4,11 @@ import { getSessionUser } from "../auth/session";
 
 const API = `${API_ROOT}/department-budget`;
 
+export const toBudgetNumber = (value: unknown): number => {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+};
+
 export interface BudgetDeductionResult {
   success: boolean;
   deductedAmount?: number;
@@ -52,7 +57,17 @@ export async function getBudgetUsage(
     const res = await axios.get(`${API}/usage/${departmentId}`, {
       params: { userId: user.id, email: user.email, year, month }
     });
-    return res.data.success ? res.data.data : null;
+    if (!res.data.success) return null;
+
+    const data = res.data.data;
+    return {
+      ...data,
+      allocatedAmount: toBudgetNumber(data.allocatedAmount),
+      spentAmount: toBudgetNumber(data.spentAmount),
+      reservedAmount: toBudgetNumber(data.reservedAmount),
+      remainingAmount: toBudgetNumber(data.remainingAmount),
+      usagePercentage: toBudgetNumber(data.usagePercentage)
+    };
   } catch (error) {
     console.error("Get budget usage error:", error);
     return null;
@@ -105,7 +120,14 @@ export async function getDepartments(isActive?: boolean): Promise<Department[]> 
       params.isActive = String(isActive);
     }
     const res = await axios.get(`${API}/departments`, { params });
-    return res.data.success ? res.data.data : [];
+    if (!res.data.success) return [];
+
+    return res.data.data.map((budget: MonthlyBudget) => ({
+      ...budget,
+      allocatedAmount: toBudgetNumber(budget.allocatedAmount),
+      spentAmount: toBudgetNumber(budget.spentAmount),
+      reservedAmount: toBudgetNumber(budget.reservedAmount)
+    }));
   } catch (error) {
     console.error("Get departments error:", error);
     return [];
@@ -127,7 +149,12 @@ export async function getMonthlyBudgets(
     if (year) params.year = year;
     if (month) params.month = month;
     const res = await axios.get(`${API}/monthly/${departmentId}`, { params });
-    return res.data.success ? res.data.data : [];
+    if (!res.data.success) return [];
+
+    return res.data.data.map((prediction: BudgetPrediction) => ({
+      ...prediction,
+      predictedAmount: toBudgetNumber(prediction.predictedAmount)
+    }));
   } catch (error) {
     console.error("Get monthly budgets error:", error);
     return [];
@@ -166,6 +193,7 @@ export interface HistoricalData {
   allocatedAmount: number;
   spentAmount: number;
   remainingAmount: number;
+  hasAllocatedBudget: boolean;
   utilization: number;
 }
 
@@ -173,6 +201,7 @@ export interface HistoricalComparison {
   historicalData: HistoricalData[];
   summary: {
     totalPeriods: number;
+    budgetedPeriods: number;
     avgAllocated: number;
     avgSpent: number;
     avgUtilization: number;
@@ -193,7 +222,27 @@ export async function getHistoricalComparison(
     }
     const params = { userId: user.id, email: user.email, ...options };
     const res = await axios.get(`${API}/historical/${departmentId}`, { params });
-    return res.data.success ? res.data.data : null;
+    if (!res.data.success) return null;
+
+    const data = res.data.data;
+    return {
+      ...data,
+      historicalData: data.historicalData.map((period: HistoricalData) => ({
+        ...period,
+        allocatedAmount: toBudgetNumber(period.allocatedAmount),
+        spentAmount: toBudgetNumber(period.spentAmount),
+        remainingAmount: toBudgetNumber(period.remainingAmount),
+        utilization: toBudgetNumber(period.utilization)
+      })),
+      summary: {
+        ...data.summary,
+        avgAllocated: toBudgetNumber(data.summary.avgAllocated),
+        avgSpent: toBudgetNumber(data.summary.avgSpent),
+        avgUtilization: toBudgetNumber(data.summary.avgUtilization),
+        totalAllocated: toBudgetNumber(data.summary.totalAllocated),
+        totalSpent: toBudgetNumber(data.summary.totalSpent)
+      }
+    };
   } catch (error) {
     console.error("Get historical comparison error:", error);
     return null;

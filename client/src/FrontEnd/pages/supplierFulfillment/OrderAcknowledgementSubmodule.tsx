@@ -27,6 +27,7 @@ import {
   createDeliveryFromAcknowledgement,
   hydrateSupplierOrderAcknowledgements,
   loadSupplierOrderAcknowledgements,
+  sortWorkflowRowsByStatusAndDate,
   type SupplierOrderAcknowledgementRecord,
   updateSupplierOrderAcknowledgement,
 } from "../../modules/supplierFulfillment/workflow";
@@ -91,7 +92,9 @@ export default function OrderAcknowledgementSubmodule(): React.ReactElement {
   }, []);
 
   const visibleRows = useMemo(
-    () => rows.filter((row) => matchesCurrentSupplier(row, sessionUser)).reverse(),
+    () => sortWorkflowRowsByStatusAndDate(
+      rows.filter((row) => matchesCurrentSupplier(row, sessionUser)),
+    ),
     [rows, sessionUser],
   );
 

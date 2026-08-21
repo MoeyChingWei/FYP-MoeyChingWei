@@ -4,16 +4,14 @@ import { EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-desi
 import { AdjustmentApprovalModal } from "../components/budget/AdjustmentApprovalModal";
 import axios, { AxiosError } from "axios";
 import { API_ROOT } from "../shared/api/base";
+import { getSessionUser } from "../shared/auth/session";
+import { toBudgetNumber } from "../shared/api/departmentBudget";
 
 const { Title } = Typography;
 const MAX_REVIEWED_REQUESTS = 50;
 
-// Helper function to get current user ID
-// TODO: Replace with actual auth context when available
 const getCurrentUserId = (): number => {
-  // Placeholder: In production, this should come from auth context/session
-  // Example: return useAuth().user?.id || 1;
-  return 1;
+  return getSessionUser()?.id ?? 0;
 };
 
 interface AdjustmentRequest {
@@ -36,6 +34,7 @@ interface AdjustmentRequest {
 }
 
 export const BudgetApprovalQueue: React.FC = () => {
+  const sessionUser = getSessionUser();
   const [pendingRequests, setPendingRequests] = useState<AdjustmentRequest[]>([]);
   const [reviewedRequests, setReviewedRequests] = useState<AdjustmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,26 +52,35 @@ export const BudgetApprovalQueue: React.FC = () => {
     try {
       const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
         axios.get(`${API_ROOT}/department-budget/adjustments`, {
-          params: { status: "pending" }
+          params: { status: "pending", userId: sessionUser?.id, email: sessionUser?.email }
         }),
         axios.get(`${API_ROOT}/department-budget/adjustments`, {
-          params: { status: "approved" }
+          params: { status: "approved", userId: sessionUser?.id, email: sessionUser?.email }
         }),
         axios.get(`${API_ROOT}/department-budget/adjustments`, {
-          params: { status: "rejected" }
+          params: { status: "rejected", userId: sessionUser?.id, email: sessionUser?.email }
         })
       ]);
 
       if (pendingRes.data.success) {
-        setPendingRequests(pendingRes.data.data);
+        setPendingRequests(pendingRes.data.data.map((request: AdjustmentRequest) => ({
+          ...request,
+          requestedAmount: toBudgetNumber(request.requestedAmount)
+        })));
       }
 
       const reviewed = [];
       if (approvedRes.data.success) {
-        reviewed.push(...approvedRes.data.data);
+        reviewed.push(...approvedRes.data.data.map((request: AdjustmentRequest) => ({
+          ...request,
+          requestedAmount: toBudgetNumber(request.requestedAmount)
+        })));
       }
       if (rejectedRes.data.success) {
-        reviewed.push(...rejectedRes.data.data);
+        reviewed.push(...rejectedRes.data.data.map((request: AdjustmentRequest) => ({
+          ...request,
+          requestedAmount: toBudgetNumber(request.requestedAmount)
+        })));
       }
 
       reviewed.sort((a, b) => {
@@ -101,7 +109,9 @@ export const BudgetApprovalQueue: React.FC = () => {
     try {
       const res = await axios.patch(`${API_ROOT}/department-budget/adjustments/${id}/approve`, {
         reviewedBy: getCurrentUserId(),
-        reviewComment: comment
+        reviewComment: comment,
+        userId: sessionUser?.id,
+        email: sessionUser?.email
       });
 
       if (res.data.success) {
@@ -125,7 +135,9 @@ export const BudgetApprovalQueue: React.FC = () => {
     try {
       const res = await axios.patch(`${API_ROOT}/department-budget/adjustments/${id}/reject`, {
         reviewedBy: getCurrentUserId(),
-        reviewComment: comment
+        reviewComment: comment,
+        userId: sessionUser?.id,
+        email: sessionUser?.email
       });
 
       if (res.data.success) {
@@ -170,8 +182,8 @@ export const BudgetApprovalQueue: React.FC = () => {
       title: "Amount",
       dataIndex: "requestedAmount",
       key: "requestedAmount",
-      render: (amount: number) => `$${amount.toFixed(2)}`,
-      sorter: (a: AdjustmentRequest, b: AdjustmentRequest) => a.requestedAmount - b.requestedAmount
+      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`,
+      sorter: (a: AdjustmentRequest, b: AdjustmentRequest) => toBudgetNumber(a.requestedAmount) - toBudgetNumber(b.requestedAmount)
     },
     {
       title: "Requested By",
@@ -217,7 +229,7 @@ export const BudgetApprovalQueue: React.FC = () => {
       title: "Amount",
       dataIndex: "requestedAmount",
       key: "requestedAmount",
-      render: (amount: number) => `$${amount.toFixed(2)}`
+      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`
     },
     {
       title: "Status",

@@ -209,6 +209,8 @@ class DeepSeekAIService {
     availableTools = [],
     toolHandlers = {},
     maxIterations = 5,
+    maxTokens = this.maxTokens,
+    temperature = 1.0,
     overallTimeoutMs = 90000,  // Overall 90 second timeout
     toolTimeoutMs = 30000,     // Single tool 30 second timeout
   }) {
@@ -233,6 +235,8 @@ class DeepSeekAIService {
         systemPrompt,
         messages: currentMessages,
         tools: availableTools,
+        maxTokens,
+        temperature,
       });
 
       if (!response.success) {
@@ -248,6 +252,7 @@ class DeepSeekAIService {
           success: true,
           content: textBlock?.text || '',
           usage: response.usage,
+          reasoningContent: response.reasoningContent,
         };
       }
 

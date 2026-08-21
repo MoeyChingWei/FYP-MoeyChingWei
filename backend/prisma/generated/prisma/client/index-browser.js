@@ -343,6 +343,7 @@ exports.Prisma.Supplier_inventory_itemsScalarFieldEnum = {
   itemName: 'itemName',
   category: 'category',
   quantity: 'quantity',
+  reservedQuantity: 'reservedQuantity',
   reorderLevel: 'reorderLevel',
   unit: 'unit',
   unitPrice: 'unitPrice',

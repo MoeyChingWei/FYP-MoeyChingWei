@@ -27,6 +27,7 @@ import {
 } from "../../modules/purchasing/requestCreation/constants";
 
 import styles from "./ReviewDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
 
 const { Paragraph, Title } = Typography;
 
@@ -236,6 +237,7 @@ export default function PurchaseOrderReviewDetail(): React.ReactElement {
                 {t('purchaseOrder.detail.actions.edit')}
               </Button>
             ) : null}
+            <WorkflowDocumentActions workflowType="purchase-order" record={order} filenamePrefix="purchase-order" />
             <Tag color={statusColor(order.status)}>{formatStatus(order.status, t)}</Tag>
           </Flex>
         </div>

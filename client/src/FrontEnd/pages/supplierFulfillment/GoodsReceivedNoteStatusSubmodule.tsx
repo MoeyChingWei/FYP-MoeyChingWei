@@ -22,6 +22,7 @@ import { UserRole } from "../../shared/types/roles";
 import {
   hydrateSupplierGrns,
   loadSupplierGrns,
+  sortWorkflowRowsByStatusAndDate,
   type SupplierGrnRecord,
 } from "../../modules/supplierFulfillment/workflow";
 
@@ -81,7 +82,9 @@ export default function GoodsReceivedNoteStatusSubmodule(): React.ReactElement {
   }, []);
 
   const visibleRows = useMemo(
-    () => rows.filter((row) => matchesCurrentSupplier(row, sessionUser)).reverse(),
+    () => sortWorkflowRowsByStatusAndDate(
+      rows.filter((row) => matchesCurrentSupplier(row, sessionUser)),
+    ),
     [rows, sessionUser],
   );
 

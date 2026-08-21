@@ -32,6 +32,7 @@ import {
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
 
 const { Paragraph, Title } = Typography;
 
@@ -235,7 +236,10 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
               {t('grn.detail.title')}
             </Title>
           </Flex>
-          <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          <Flex align="center" gap={8} wrap="wrap">
+            <WorkflowDocumentActions workflowType="grn" record={row} filenamePrefix="grn" />
+            <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          </Flex>
         </div>
 
         <div className={styles.summaryGrid}>

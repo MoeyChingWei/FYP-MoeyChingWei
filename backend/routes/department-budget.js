@@ -8,7 +8,7 @@ import {
   notifyBudgetAdjustmentRejected
 } from '../services/notification-service.js';
 import { deductBudgetForPR } from '../services/budget-deduction-service.js';
-import { authenticateRequest, requireRoles } from '../middleware/auth.js';
+import { authenticateRequest, requireRoles, requireOwnDepartment } from '../middleware/auth.js';
 import { ROLES } from '../constants/roles.js';
 
 const router = express.Router();
@@ -336,20 +336,28 @@ router.post('/predict/batch', async (req, res) => {
 });
 
 // POST /api/department-budget/adjustments - Create budget adjustment request
-router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (req, res) => {
+router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), requireOwnDepartment, async (req, res) => {
   try {
     const { departmentId, targetYear, targetMonth, requestType, requestedAmount, reason, requestedBy } = req.body;
+    const authenticatedUserId = req.auth.userId;
 
-    if (!departmentId || !targetYear || !targetMonth || !requestType || !requestedAmount || !reason || !requestedBy) {
+    if (!departmentId || !targetYear || !targetMonth || !requestType || !requestedAmount || !reason) {
       return res.status(400).json({
         success: false,
         message: 'Missing required parameters'
       });
     }
 
+    if (requestedBy !== undefined && parseInt(requestedBy) !== authenticatedUserId) {
+      return res.status(403).json({
+        success: false,
+        message: 'requestedBy must match the authenticated user'
+      });
+    }
+
     // Normalize and validate requestType (accept both uppercase and lowercase)
     const normalizedRequestType = requestType.toLowerCase();
-    const validRequestTypes = ['increase', 'decrease', 'transfer', 'additional'];
+    const validRequestTypes = ['increase', 'additional'];
     if (!validRequestTypes.includes(normalizedRequestType)) {
       return res.status(400).json({
         success: false,
@@ -436,12 +444,12 @@ router.post('/adjustments', requireRoles([ROLES.DEPARTMENT_EXECUTIVE]), async (r
         requestType: normalizedRequestType,
         requestedAmount: amount.toNumber(),
         reason,
-        requestedBy: parseInt(requestedBy),
+        requestedBy: authenticatedUserId,
         status: 'pending'
       },
       include: {
         department: true,
-        requester: true
+        requester: { select: { id: true, name: true, email: true } }
       }
     });
 
@@ -497,6 +505,20 @@ router.get('/adjustments', async (req, res) => {
     if (targetYear) where.targetYear = parseInt(targetYear);
     if (targetMonth) where.targetMonth = parseInt(targetMonth);
 
+    const viewer = await prisma.user.findUnique({
+      where: { id: req.auth.userId },
+      select: { role: true }
+    });
+    const canViewAll = [
+      ROLES.ADMIN,
+      ROLES.MANAGER,
+      ROLES.TREASURY_FINANCE_OFFICER,
+      ROLES.BUDGET_CONTROLLER
+    ].includes(viewer?.role);
+    if (!canViewAll) {
+      where.requestedBy = req.auth.userId;
+    }
+
     const adjustments = await prisma.budgetAdjustmentRequest.findMany({
       where,
       include: {
@@ -522,7 +544,7 @@ router.get('/adjustments', async (req, res) => {
 });
 
 // PATCH /api/department-budget/adjustments/:id/approve - Approve adjustment request
-router.patch('/adjustments/:id/approve', requireRoles([ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
+router.patch('/adjustments/:id/approve', requireRoles([ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
@@ -532,6 +554,13 @@ router.patch('/adjustments/:id/approve', requireRoles([ROLES.TREASURY_FINANCE_OF
       return res.status(400).json({
         success: false,
         message: 'Missing required parameters: reviewedBy and reviewComment'
+      });
+    }
+
+    if (parseInt(reviewedBy) !== req.auth.userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'reviewedBy must match the authenticated user'
       });
     }
 
@@ -567,8 +596,8 @@ router.patch('/adjustments/:id/approve', requireRoles([ROLES.TREASURY_FINANCE_OF
         },
         include: {
           department: true,
-          requester: true,
-          reviewer: true
+          requester: { select: { id: true, name: true, email: true } },
+          reviewer: { select: { id: true, name: true, email: true } }
         }
       });
 
@@ -645,7 +674,7 @@ router.patch('/adjustments/:id/approve', requireRoles([ROLES.TREASURY_FINANCE_OF
 });
 
 // PATCH /api/department-budget/adjustments/:id/reject - Reject adjustment request
-router.patch('/adjustments/:id/reject', requireRoles([ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
+router.patch('/adjustments/:id/reject', requireRoles([ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
@@ -655,6 +684,13 @@ router.patch('/adjustments/:id/reject', requireRoles([ROLES.TREASURY_FINANCE_OFF
       return res.status(400).json({
         success: false,
         message: 'Missing required parameters: reviewedBy and reviewComment'
+      });
+    }
+
+    if (parseInt(reviewedBy) !== req.auth.userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'reviewedBy must match the authenticated user'
       });
     }
 
@@ -1049,52 +1085,43 @@ router.get('/historical/:departmentId', async (req, res) => {
       }
     }
 
-    let dateFilter = {};
+    let periodConditions = [];
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
 
+    const addRecentMonths = (count) => {
+      for (let i = count - 1; i >= 0; i--) {
+        let month = currentMonth - i;
+        let year = currentYear;
+        while (month <= 0) {
+          month += 12;
+          year -= 1;
+        }
+        periodConditions.push({ year, month });
+      }
+    };
+
     if (preset === 'last-3-months') {
-      const conditions = [];
-      for (let i = 0; i < 3; i++) {
-        let month = currentMonth - i;
-        let year = currentYear;
-        if (month <= 0) {
-          month += 12;
-          year -= 1;
-        }
-        conditions.push({ year, month });
-      }
-      dateFilter = { OR: conditions };
-    } else if (preset === 'last-6-months') {
-      const conditions = [];
-      for (let i = 0; i < 6; i++) {
-        let month = currentMonth - i;
-        let year = currentYear;
-        if (month <= 0) {
-          month += 12;
-          year -= 1;
-        }
-        conditions.push({ year, month });
-      }
-      dateFilter = { OR: conditions };
+      addRecentMonths(3);
+    } else if (preset === 'last-6-months' || !preset) {
+      addRecentMonths(6);
+    } else if (preset === 'last-12-months') {
+      addRecentMonths(12);
     } else if (preset === 'year-over-year') {
-      dateFilter = {
-        OR: [
-          { year: currentYear, month: currentMonth },
-          { year: currentYear - 1, month: currentMonth }
-        ]
-      };
+      periodConditions = [
+        { year: currentYear, month: currentMonth },
+        { year: currentYear - 1, month: currentMonth }
+      ];
     } else if (startDate && endDate) {
       const [startYear, startMonth] = startDate.split('-').map(Number);
       const [endYear, endMonth] = endDate.split('-').map(Number);
 
-      const conditions = [];
       let year = startYear;
       let month = startMonth;
 
       while (year < endYear || (year === endYear && month <= endMonth)) {
-        conditions.push({ year, month });
+        periodConditions.push({ year, month });
         month++;
         if (month > 12) {
           month = 1;
@@ -1108,7 +1135,7 @@ router.get('/historical/:departmentId', async (req, res) => {
     const historicalBudgets = await prisma.monthlyBudget.findMany({
       where: {
         departmentId: deptId,
-        ...dateFilter
+        ...(periodConditions.length > 0 ? { OR: periodConditions } : {})
       },
       include: {
         department: true
@@ -1119,34 +1146,90 @@ router.get('/historical/:departmentId', async (req, res) => {
       ]
     });
 
-    const historicalData = historicalBudgets.map(b => {
-      const allocated = parseFloat(b.allocatedAmount);
-      const spent = parseFloat(b.spentAmount);
-      const reserved = parseFloat(b.reservedAmount);
-      const remaining = allocated - spent - reserved;
+    const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
+      orderBy: { createdAt: 'asc' },
+      select: { createdAt: true, payload: true }
+    });
+    const departmentNames = new Set([department.code, department.name]
+      .filter(Boolean)
+      .map(value => String(value).trim().toLowerCase()));
+    const spendingByPeriod = new Map();
+
+    for (const request of purchaseRequests) {
+      const payload = request.payload || {};
+      const requestDepartment = String(payload.department || '').trim().toLowerCase();
+      const status = String(payload.status || '').trim().toUpperCase();
+      if (status !== 'APPROVED' || !departmentNames.has(requestDepartment)) continue;
+
+      const recordDate = new Date(payload.createdAt || request.createdAt);
+      if (Number.isNaN(recordDate.getTime())) continue;
+
+      const year = recordDate.getFullYear();
+      const month = recordDate.getMonth() + 1;
+      const period = `${year}-${String(month).padStart(2, '0')}`;
+      if (periodConditions.length > 0 && !periodConditions.some(item => item.year === year && item.month === month)) continue;
+
+      const items = Array.isArray(payload.lineItems)
+        ? payload.lineItems
+        : Array.isArray(payload.items) ? payload.items : [];
+      const amount = items.reduce((total, item) => {
+        const quantity = new Decimal(item.quantity || 0);
+        const unitPrice = new Decimal(item.unitPrice || 0);
+        return total.plus(quantity.times(unitPrice));
+      }, new Decimal(0));
+
+      spendingByPeriod.set(period, (spendingByPeriod.get(period) || new Decimal(0)).plus(amount));
+    }
+
+    const budgetByPeriod = new Map(historicalBudgets.map(budget => [
+      `${budget.year}-${String(budget.month).padStart(2, '0')}`,
+      budget
+    ]));
+    const periods = periodConditions.length > 0
+      ? periodConditions
+      : Array.from(new Set([
+          ...historicalBudgets.map(budget => `${budget.year}-${String(budget.month).padStart(2, '0')}`),
+          ...spendingByPeriod.keys()
+        ])).sort().map(period => {
+          const [year, month] = period.split('-').map(Number);
+          return { year, month };
+        });
+
+    const historicalData = periods.map(({ year, month }) => {
+      const period = `${year}-${String(month).padStart(2, '0')}`;
+      const budget = budgetByPeriod.get(period);
+      const allocated = budget ? Number(budget.allocatedAmount) : 0;
+      const reserved = budget ? Number(budget.reservedAmount) : 0;
+      const spent = (spendingByPeriod.get(period) || new Decimal(0)).toDecimalPlaces(2).toNumber();
+      const hasAllocatedBudget = Boolean(budget);
+      const remaining = hasAllocatedBudget ? allocated - spent - reserved : 0;
       const utilization = allocated > 0 ? (spent / allocated) * 100 : 0;
 
       return {
-        year: b.year,
-        month: b.month,
-        period: `${b.year}-${String(b.month).padStart(2, '0')}`,
+        year,
+        month,
+        period,
         allocatedAmount: allocated,
         spentAmount: spent,
         remainingAmount: remaining,
+        hasAllocatedBudget,
         utilization: Math.round(utilization * 100) / 100
       };
     });
 
+    const budgetedData = historicalData.filter(item => item.hasAllocatedBudget);
+
     const summary = {
       totalPeriods: historicalData.length,
+      budgetedPeriods: budgetedData.length,
       avgAllocated: historicalData.length > 0
         ? Math.round((historicalData.reduce((sum, d) => sum + d.allocatedAmount, 0) / historicalData.length) * 100) / 100
         : 0,
       avgSpent: historicalData.length > 0
         ? Math.round((historicalData.reduce((sum, d) => sum + d.spentAmount, 0) / historicalData.length) * 100) / 100
         : 0,
-      avgUtilization: historicalData.length > 0
-        ? Math.round((historicalData.reduce((sum, d) => sum + d.utilization, 0) / historicalData.length) * 100) / 100
+      avgUtilization: budgetedData.length > 0
+        ? Math.round((budgetedData.reduce((sum, d) => sum + d.utilization, 0) / budgetedData.length) * 100) / 100
         : 0,
       totalAllocated: Math.round(historicalData.reduce((sum, d) => sum + d.allocatedAmount, 0) * 100) / 100,
       totalSpent: Math.round(historicalData.reduce((sum, d) => sum + d.spentAmount, 0) * 100) / 100

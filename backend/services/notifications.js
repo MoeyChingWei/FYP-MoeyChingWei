@@ -125,10 +125,17 @@ async function createInAppNotifications(
   await sendRoleEventEmails(users, payload);
 }
 
-async function findUsersByRoles(roles) {
+async function findUsersByRoles(roles, department) {
   if (!roles.length) return [];
+  const normalizedDepartment = String(department ?? "").trim();
   return prisma.user.findMany({
-    where: { role: { in: roles }, isActive: true },
+    where: {
+      role: { in: roles },
+      isActive: true,
+      ...(normalizedDepartment
+        ? { department: { equals: normalizedDepartment, mode: "insensitive" } }
+        : {}),
+    },
     select: { id: true, email: true, role: true },
   });
 }
@@ -283,8 +290,14 @@ export async function processWorkflowNotifications(
           console.log(`📋 [DEBUG] Department Executive → Manager route - found ${approvers.length} managers:`, approvers.map(u => u.email));
         } else {
           // Employee submits PR (or missing role) → Department Executive approves
-          approvers = await findUsersByRoles([ROLES.DEPARTMENT_EXECUTIVE]);
-          console.log(`📋 [DEBUG] Employee → Department Executive route - found ${approvers.length} executives:`, approvers.map(u => u.email));
+          const requestDepartment = String(row.department ?? "").trim();
+          approvers = requestDepartment
+            ? await findUsersByRoles(
+                [ROLES.DEPARTMENT_EXECUTIVE],
+                requestDepartment,
+              )
+            : [];
+          console.log(`📋 [DEBUG] Employee → Department Executive route for department ${row.department ?? "(missing)"} - found ${approvers.length} executives:`, approvers.map(u => u.email));
         }
 
         if (approvers.length) {

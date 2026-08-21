@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Tag, Progress, Button, Space } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
-import type { MonthlyBudget } from "../../shared/api/departmentBudget";
+import { toBudgetNumber, type MonthlyBudget } from "../../shared/api/departmentBudget";
 
 interface DepartmentBudgetTableProps {
   budgets: MonthlyBudget[];
@@ -37,21 +37,21 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
       title: "Allocated",
       dataIndex: "allocatedAmount",
       key: "allocatedAmount",
-      render: (amount: number) => `$${amount.toFixed(2)}`,
-      sorter: (a: MonthlyBudget, b: MonthlyBudget) => a.allocatedAmount - b.allocatedAmount
+      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`,
+      sorter: (a: MonthlyBudget, b: MonthlyBudget) => toBudgetNumber(a.allocatedAmount) - toBudgetNumber(b.allocatedAmount)
     },
     {
       title: "Spent",
       dataIndex: "spentAmount",
       key: "spentAmount",
-      render: (amount: number) => `$${amount.toFixed(2)}`,
-      sorter: (a: MonthlyBudget, b: MonthlyBudget) => a.spentAmount - b.spentAmount
+      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`,
+      sorter: (a: MonthlyBudget, b: MonthlyBudget) => toBudgetNumber(a.spentAmount) - toBudgetNumber(b.spentAmount)
     },
     {
       title: "Remaining",
       key: "remaining",
       render: (_: any, record: MonthlyBudget) => {
-        const remaining = record.allocatedAmount - record.spentAmount;
+        const remaining = toBudgetNumber(record.allocatedAmount) - toBudgetNumber(record.spentAmount);
         return (
           <span style={{ color: remaining < 0 ? "#ff4d4f" : "#52c41a" }}>
             ${remaining.toFixed(2)}
@@ -59,8 +59,8 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
         );
       },
       sorter: (a: MonthlyBudget, b: MonthlyBudget) => {
-        const aRem = a.allocatedAmount - a.spentAmount;
-        const bRem = b.allocatedAmount - b.spentAmount;
+        const aRem = toBudgetNumber(a.allocatedAmount) - toBudgetNumber(a.spentAmount);
+        const bRem = toBudgetNumber(b.allocatedAmount) - toBudgetNumber(b.spentAmount);
         return aRem - bRem;
       }
     },
@@ -68,7 +68,8 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
       title: "Usage",
       key: "usage",
       render: (_: any, record: MonthlyBudget) => {
-        const percentage = record.allocatedAmount === 0 ? 0 : (record.spentAmount / record.allocatedAmount) * 100;
+        const allocated = toBudgetNumber(record.allocatedAmount);
+        const percentage = allocated === 0 ? 0 : (toBudgetNumber(record.spentAmount) / allocated) * 100;
         const status = percentage >= 100 ? "exception" : percentage >= 80 ? "normal" : "success";
         return (
           <Space direction="vertical" size={0} style={{ width: "100%" }}>
@@ -83,8 +84,10 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
         );
       },
       sorter: (a: MonthlyBudget, b: MonthlyBudget) => {
-        const aPerc = a.allocatedAmount === 0 ? 0 : (a.spentAmount / a.allocatedAmount) * 100;
-        const bPerc = b.allocatedAmount === 0 ? 0 : (b.spentAmount / b.allocatedAmount) * 100;
+        const aAllocated = toBudgetNumber(a.allocatedAmount);
+        const bAllocated = toBudgetNumber(b.allocatedAmount);
+        const aPerc = aAllocated === 0 ? 0 : (toBudgetNumber(a.spentAmount) / aAllocated) * 100;
+        const bPerc = bAllocated === 0 ? 0 : (toBudgetNumber(b.spentAmount) / bAllocated) * 100;
         return aPerc - bPerc;
       }
     },
@@ -92,7 +95,8 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
       title: "Status",
       key: "status",
       render: (_: any, record: MonthlyBudget) => {
-        const percentage = record.allocatedAmount === 0 ? 0 : (record.spentAmount / record.allocatedAmount) * 100;
+        const allocated = toBudgetNumber(record.allocatedAmount);
+        const percentage = allocated === 0 ? 0 : (toBudgetNumber(record.spentAmount) / allocated) * 100;
         if (percentage >= 100) {
           return <Tag color="red">EXCEEDED</Tag>;
         } else if (percentage >= 80) {
@@ -106,7 +110,8 @@ export const DepartmentBudgetTable: React.FC<DepartmentBudgetTableProps> = ({
         { text: "Exceeded", value: "exceeded" }
       ],
       onFilter: (value: any, record: MonthlyBudget) => {
-        const percentage = record.allocatedAmount === 0 ? 0 : (record.spentAmount / record.allocatedAmount) * 100;
+        const allocated = toBudgetNumber(record.allocatedAmount);
+        const percentage = allocated === 0 ? 0 : (toBudgetNumber(record.spentAmount) / allocated) * 100;
         if (value === "exceeded") return percentage >= 100;
         if (value === "warning") return percentage >= 80 && percentage < 100;
         return percentage < 80;

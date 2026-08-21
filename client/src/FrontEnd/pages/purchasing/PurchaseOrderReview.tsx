@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { getSessionUser } from "../../shared/auth/session";
+import { sortWorkflowRowsByStatusAndDate } from "../../shared/utils/workflowSorting";
 import {
   hydratePurchaseOrderDrafts,
   loadPurchaseOrderDrafts,
@@ -32,8 +33,6 @@ import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
 import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import { UserRole } from "../../shared/types/roles";
-import ExportButton from "../../components/shared/ExportButton";
-import PrintButton from "../../components/shared/PrintButton";
 
 import styles from "./PurchaseOrderReview.module.css";
 
@@ -59,25 +58,7 @@ function statusColor(status: PurchaseOrderStatus): string {
   }
 }
 
-function sortOrdersByDate(orders: PurchaseOrderDraft[]): PurchaseOrderDraft[] {
-  return orders
-    .map((order, index) => ({ order, index }))
-    .sort((left, right) => {
-      const leftTime = Date.parse(left.order.createdDate);
-      const rightTime = Date.parse(right.order.createdDate);
-
-      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
-        return rightTime - leftTime;
-      }
-
-      return right.index - left.index;
-    })
-    .map(({ order }) => order);
-}
-
 export default function PurchaseOrderReview(): React.ReactElement {
-  const { t: tMsg } = useTranslation('messages');
-
   const { t } = useTranslation('purchasing');
   const navigate = useNavigate();
   const [orders, setOrders] = useState<PurchaseOrderDraft[]>([]);
@@ -114,7 +95,7 @@ export default function PurchaseOrderReview(): React.ReactElement {
 
   const filteredOrders = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
-    const source = sortOrdersByDate(orders).filter((order) => {
+    const source = sortWorkflowRowsByStatusAndDate(orders).filter((order) => {
       if (canViewAllOrders) return true;
       if (!sessionUser) return false;
 
@@ -364,17 +345,6 @@ export default function PurchaseOrderReview(): React.ReactElement {
               onChange={(event) => setSearchValue(event.target.value)}
             />
             <Flex gap={8}>
-              <ExportButton
-                dataType="purchase-orders"
-                data={filteredOrders as unknown as Record<string, unknown>[]}
-                onExportSuccess={() => message.success(tMsg('export.success'))}
-                onExportError={() => message.error(tMsg('export.error'))}
-              />
-              <PrintButton
-                dataType="purchase-orders"
-                data={filteredOrders as unknown as Record<string, unknown>[]}
-                onPrintError={() => message.error(tMsg('print.error'))}
-              />
               <Button
                 type="primary"
                 icon={<PlusOutlined />}

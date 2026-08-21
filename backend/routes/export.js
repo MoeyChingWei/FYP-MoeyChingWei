@@ -4,6 +4,7 @@ import { ExportService } from "../services/export-service.js";
 import path from "path";
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
+import { PDFGenerator } from "../services/pdf-generator.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -12,6 +13,140 @@ const __dirname = path.dirname(__filename);
 // Supported data types and formats
 const SUPPORTED_DATA_TYPES = ["purchase-requests", "purchase-orders", "invoices", "suppliers"];
 const SUPPORTED_FORMATS = ["pdf", "excel", "csv", "json"];
+
+const WORKFLOW_TYPES = {
+  "purchase-request": "Purchase Request",
+  "purchase-order": "Purchase Order",
+  acknowledgement: "Order Acknowledgement",
+  delivery: "Delivery Note",
+  grn: "Goods Received Note",
+};
+
+const htmlEscape = (value) => String(value ?? "-")
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
+
+function workflowHtml(workflowType, record = {}, pageTitle) {
+  const title = pageTitle || WORKFLOW_TYPES[workflowType];
+  const items = Array.isArray(record.items) ? record.items : (record.lineItems || []);
+  const number = record.prNumber || record.poNumber || record.deliveryNo || record.localId;
+  const status = record.status || "-";
+  const companyName = record.companyName || "OptiMind";
+  const companyContact = record.sourceRequester || record.createdBy || companyName;
+  const supplierAddress = record.supplierAddress || record.supplier?.address || "-";
+  const isPartyDocument = ["acknowledgement", "delivery", "grn"].includes(workflowType);
+  const rows = items.map((item, index) => {
+    const imageUrl = item.itemImageUrl || item.imageUrl || item.image || item.imageDataUrl;
+    const image = imageUrl
+      ? `<img src="${htmlEscape(imageUrl)}" alt="${htmlEscape(item.itemName)}" style="width:42px;height:42px;object-fit:contain;display:block" />`
+      : "-";
+    return `<tr><td>${index + 1}</td><td>${image}</td><td>${htmlEscape(item.itemName)}</td><td>${htmlEscape(item.itemDescription)}</td><td>${htmlEscape(item.quantity)}</td><td>${htmlEscape(item.unitOfMeasurement || item.unit)}</td><td>${htmlEscape(item.unitPrice)}</td><td>${htmlEscape(item.amountAfterTax ?? item.amount ?? (Number(item.quantity || 0) * Number(item.unitPrice || 0)))}</td></tr>`;
+  }).join("");
+  const extra = {
+    "purchase-request": [["Requester", record.requestBy], ["Department", record.department], ["Request date", record.requestDate]],
+    "purchase-order": [["Source PR", record.sourcePrNumber], ["Requester", record.sourceRequester], ["Department", record.department]],
+    acknowledgement: [["Sender (Company)", companyContact], ["Sender company", companyName], ["Sender address", record.companyAddress], ["Receiver (Supplier)", record.supplierName], ["Receiver email", record.supplierEmail], ["Receiver address", supplierAddress], ["Department", record.department]],
+    delivery: [["Sender (Supplier)", record.supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
+    grn: [["Sender (Supplier)", record.supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
+  }[workflowType] || [];
+  const partyInfo = isPartyDocument
+    ? (workflowType === "acknowledgement"
+      ? {
+          sender: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
+          receiver: [["Supplier", record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+        }
+      : {
+          sender: [["Supplier", record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+          receiver: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
+        })
+    : null;
+  const partyMarkup = partyInfo ? `<div class="party-grid"><div class="party-card"><h3>Sender</h3>${partyInfo.sender.map(([label, value]) => `<div class="party-row"><b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span></div>`).join("")}</div><div class="party-card"><h3>Receiver</h3>${partyInfo.receiver.map(([label, value]) => `<div class="party-row"><b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span></div>`).join("")}</div></div>` : "";
+  const documentDetails = {
+    acknowledgement: [["Department", record.department], ["Purchase order", record.poNumber], ["Source PR", record.sourcePrNumber]],
+    delivery: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
+    grn: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
+  }[workflowType] || [];
+  const generalMarkup = isPartyDocument
+    ? `<div class="meta secondary-meta">${documentDetails.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span>`).join("")}</div>`
+    : `<div class="meta">${extra.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span>`).join("")}</div>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${htmlEscape(title)}</title><style>
+    @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}.footer{margin-top:24px;color:#667085;font-size:10px}
+  </style></head><body><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${htmlEscape(status)}</div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}<h2>Items</h2><table><thead><tr><th>No.</th><th>Image</th><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${rows || '<tr><td colspan="8">No items</td></tr>'}</tbody></table><div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;
+}
+
+/**
+ * Older workflow records only store the linked inventory ID. Resolve its image
+ * at export time so existing acknowledgement, delivery, and GRN documents can
+ * still show the product image.
+ */
+async function hydrateWorkflowItemImages(record = {}) {
+  const itemField = Array.isArray(record.items)
+    ? "items"
+    : (Array.isArray(record.lineItems) ? "lineItems" : null);
+  if (!itemField) return record;
+
+  const items = record[itemField];
+  const inventoryIds = [...new Set(items
+    .filter((item) => !item.itemImageUrl && !item.imageUrl && !item.image && !item.imageDataUrl)
+    .map((item) => item.supplierInventoryItemId)
+    .filter(Boolean))];
+  if (!inventoryIds.length) return record;
+
+  const inventoryItems = await prisma.supplierInventoryItem.findMany({
+    where: { id: { in: inventoryIds } },
+    select: { id: true, imageDataUrl: true },
+  });
+  const imageByInventoryId = new Map(
+    inventoryItems
+      .filter((item) => item.imageDataUrl)
+      .map((item) => [item.id, item.imageDataUrl]),
+  );
+
+  if (!imageByInventoryId.size) return record;
+  return {
+    ...record,
+    [itemField]: items.map((item) => {
+      const imageDataUrl = imageByInventoryId.get(item.supplierInventoryItemId);
+      return imageDataUrl ? { ...item, itemImageUrl: imageDataUrl } : item;
+    }),
+  };
+}
+
+router.post("/workflow/html", async (req, res) => {
+  const { workflowType, record, pageTitle } = req.body || {};
+  if (!WORKFLOW_TYPES[workflowType] || !record || typeof record !== "object") {
+    return res.status(400).json({ success: false, message: "workflowType and record are required" });
+  }
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  return res.send(workflowHtml(workflowType, await hydrateWorkflowItemImages(record), pageTitle));
+});
+
+router.post("/workflow", async (req, res) => {
+  const { workflowType, record, pageTitle } = req.body || {};
+  if (!WORKFLOW_TYPES[workflowType] || !record || typeof record !== "object") {
+    return res.status(400).json({ success: false, message: "workflowType and record are required" });
+  }
+  const generator = new PDFGenerator();
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const tempDir = path.join(process.cwd(), "temp", "exports");
+  const outputPath = path.join(tempDir, `${workflowType}-${timestamp}.pdf`);
+  try {
+    await generator.generatePDF(
+      workflowHtml(workflowType, await hydrateWorkflowItemImages(record), pageTitle),
+      outputPath,
+    );
+    const fileBuffer = await fs.readFile(outputPath);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${workflowType}-${timestamp}.pdf"`);
+    res.send(fileBuffer);
+  } catch (error) {
+    console.error("Workflow PDF generation error:", error);
+    res.status(500).json({ success: false, message: "Failed to generate workflow PDF" });
+  } finally {
+    await fs.rm(outputPath, { force: true }).catch(() => {});
+    await generator.close().catch(() => {});
+  }
+});
 
 /**
  * POST /api/export/:dataType

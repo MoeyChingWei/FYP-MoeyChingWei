@@ -34,8 +34,14 @@ import { getSessionUser } from "../../shared/auth/session";
 import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { deductBudgetForPR } from "../../shared/api/departmentBudget";
+import {
+  commitSupplierInventory,
+  releaseSupplierInventory,
+  reserveSupplierInventory,
+} from "../../modules/supplierFulfillment/inventory";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
 
 const { Paragraph, Title } = Typography;
 
@@ -161,11 +167,43 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     [localId, requests],
   );
 
-  const onUpdateStatus = (
+  const onUpdateStatus = async (
     nextStatus: "APPROVED" | "REJECTED",
     rejectionReason?: string,
-  ): void => {
+  ): Promise<void> => {
     if (!request) return;
+
+    const inventoryReservations = request.lineItems
+      .filter((item) => item.supplierInventoryItemId && item.quantity > 0)
+      .map((item) => ({
+        inventoryItemId: item.supplierInventoryItemId,
+        quantity: item.quantity,
+        supplierId: item.supplierId,
+        itemName: item.itemName,
+        category: item.itemCategory,
+        unit: item.unitOfMeasurement,
+      }));
+
+    try {
+      if (nextStatus === "APPROVED" && inventoryReservations.length) {
+        // Legacy requests may predate reservation support; reserve them before
+        // committing so approval still has the same inventory semantics.
+        if (request.inventoryReservationStatus !== "RESERVED") {
+          await reserveSupplierInventory(inventoryReservations);
+        }
+        await commitSupplierInventory(inventoryReservations);
+      }
+      if (
+        nextStatus === "REJECTED" &&
+        request.inventoryReservationStatus === "RESERVED" &&
+        inventoryReservations.length
+      ) {
+        await releaseSupplierInventory(inventoryReservations);
+      }
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Could not update inventory");
+      return;
+    }
 
     if (nextStatus === "APPROVED") {
       appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
@@ -180,6 +218,12 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     const updatedRequest = {
       ...request,
       status: nextStatus,
+      inventoryReservationStatus:
+        nextStatus === "APPROVED"
+          ? "COMMITTED"
+          : request.inventoryReservationStatus === "RESERVED"
+            ? "RELEASED"
+            : request.inventoryReservationStatus,
       rejectionReason:
         nextStatus === "REJECTED" ? rejectionReason : request.rejectionReason,
       isSelfApproved: isSelfApproved || request.isSelfApproved,
@@ -188,6 +232,12 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: nextStatus,
+      inventoryReservationStatus:
+        nextStatus === "APPROVED"
+          ? "COMMITTED"
+          : draft.inventoryReservationStatus === "RESERVED"
+            ? "RELEASED"
+            : draft.inventoryReservationStatus,
       rejectionReason:
         nextStatus === "REJECTED" ? rejectionReason : draft.rejectionReason,
       isSelfApproved: isSelfApproved || draft.isSelfApproved,
@@ -261,7 +311,10 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
             </Title>
           </Flex>
 
-          <Tag color="blue">{t('purchaseRequest.review.status.submitted')}</Tag>
+          <Flex align="center" gap={8} wrap="wrap">
+            <WorkflowDocumentActions workflowType="purchase-request" record={request} filenamePrefix="purchase-request" />
+            <Tag color="blue">{t('purchaseRequest.review.status.submitted')}</Tag>
+          </Flex>
         </div>
 
         <div className={styles.summaryGrid}>

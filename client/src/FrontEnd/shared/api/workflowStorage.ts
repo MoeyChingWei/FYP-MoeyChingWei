@@ -12,6 +12,16 @@ export function isWorkflowSyncEnabled(): boolean {
   return WORKFLOW_SYNC_ENABLED;
 }
 
+/**
+ * Returns the latest rows waiting to be written to the server. A newly created
+ * workflow row can briefly be ahead of the database while the debounced PUT
+ * is running, so consumers can avoid replacing it with an older GET result.
+ */
+export function getPendingWorkflowRows<T>(store: string): T[] | null {
+  const rows = pendingRowsByStore.get(store);
+  return rows ? (rows as T[]) : null;
+}
+
 export async function fetchWorkflowRows<T>(store: string, limit?: number): Promise<T[]> {
   return fetchWorkflowRowsInternal<T>(store, false, limit);
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Descriptions, Form, Input, Button, Space, Tag, message } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { toBudgetNumber } from "../../shared/api/departmentBudget";
 
 interface AdjustmentRequest {
   id: number;
@@ -112,7 +113,7 @@ export const AdjustmentApprovalModal: React.FC<AdjustmentApprovalModalProps> = (
         </Descriptions.Item>
         <Descriptions.Item label="Requested Amount" span={2}>
           <span style={{ fontSize: 18, fontWeight: 600, color: "#1890ff" }}>
-            ${request.requestedAmount.toFixed(2)}
+            ${toBudgetNumber(request.requestedAmount).toFixed(2)}
           </span>
         </Descriptions.Item>
         <Descriptions.Item label="Reason" span={2}>

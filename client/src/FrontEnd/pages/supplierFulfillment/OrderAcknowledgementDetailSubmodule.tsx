@@ -29,6 +29,8 @@ import { getSessionUser } from "../../shared/auth/session";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
+import WorkflowPartyInfo from "../../components/shared/WorkflowPartyInfo";
 
 const { Paragraph, Title } = Typography;
 
@@ -213,7 +215,10 @@ export default function OrderAcknowledgementDetailSubmodule(): React.ReactElemen
             </Title>
           </Flex>
 
-          <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          <Flex align="center" gap={8} wrap="wrap">
+            <WorkflowDocumentActions workflowType="acknowledgement" record={row} filenamePrefix="order-acknowledgement" />
+            <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          </Flex>
         </div>
 
         <div className={styles.summaryGrid}>
@@ -237,19 +242,15 @@ export default function OrderAcknowledgementDetailSubmodule(): React.ReactElemen
 
         <div className={styles.sectionCard}>
           <h3 className={styles.sectionTitle}>{t("orderAcknowledgement.detail.info.title")}</h3>
+          <WorkflowPartyInfo workflowType="acknowledgement" record={row} />
           <Descriptions column={2} bordered size="middle">
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.purchaseRequester")}>
               {row.sourceRequester || "-"}
             </Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.createdBy")}>{row.createdBy}</Descriptions.Item>
-            <Descriptions.Item label={t("orderAcknowledgement.detail.info.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
-            <Descriptions.Item label={t("orderAcknowledgement.detail.info.supplierEmail")}>{row.supplierEmail || "-"}</Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.department")}>{row.department || "-"}</Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.currentStatus")}>{statusText(row.status, t)}</Descriptions.Item>
-            <Descriptions.Item label={t("orderAcknowledgement.detail.info.companyAddress")} span={2}>
-              {row.companyAddress}
-            </Descriptions.Item>
             {row.status === "REJECTED" ? (
               <>
                 <Descriptions.Item label={t("orderAcknowledgement.detail.info.rejectedBy")}>

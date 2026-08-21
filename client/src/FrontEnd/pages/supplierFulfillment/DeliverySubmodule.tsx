@@ -27,6 +27,7 @@ import {
   createGrnFromDelivery,
   hydrateSupplierDeliveries,
   loadSupplierDeliveries,
+  sortWorkflowRowsByStatusAndDate,
   type SupplierDeliveryRecord,
   updateSupplierDelivery,
 } from "../../modules/supplierFulfillment/workflow";
@@ -91,7 +92,9 @@ export default function DeliverySubmodule(): React.ReactElement {
   }, []);
 
   const visibleRows = useMemo(
-    () => rows.filter((row) => matchesCurrentSupplier(row, sessionUser)).reverse(),
+    () => sortWorkflowRowsByStatusAndDate(
+      rows.filter((row) => matchesCurrentSupplier(row, sessionUser)),
+    ),
     [rows, sessionUser],
   );
 

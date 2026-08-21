@@ -46,22 +46,22 @@ model backup_history {
 }
 
 model budget_adjustment_requests {
-  id                                                  Int         @id @default(autoincrement())
-  departmentId                                        Int
-  reason                                              String
-  requestType                                         String
-  requestedAmount                                     Decimal     @db.Decimal(15, 2)
-  requestedAt                                         DateTime    @default(now())
-  requestedBy                                         Int
-  reviewNotes                                         String?
-  reviewedAt                                          DateTime?
-  reviewedBy                                          Int?
-  status                                              String      @default("pending")
-  targetMonth                                         Int
-  targetYear                                          Int
-  departments                                         departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  users_budget_adjustment_requests_requestedByTousers users       @relation("budget_adjustment_requests_requestedByTousers", fields: [requestedBy], references: [id], onDelete: Cascade)
-  users_budget_adjustment_requests_reviewedByTousers  users?      @relation("budget_adjustment_requests_reviewedByTousers", fields: [reviewedBy], references: [id])
+  id              Int         @id @default(autoincrement())
+  departmentId    Int
+  reason          String
+  requestType     String
+  requestedAmount Decimal     @db.Decimal(15, 2)
+  requestedAt     DateTime    @default(now())
+  requestedBy     Int
+  reviewNotes     String?
+  reviewedAt      DateTime?
+  reviewedBy      Int?
+  status          String      @default("pending")
+  targetMonth     Int
+  targetYear      Int
+  department      departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  requester       users       @relation("budget_adjustment_requests_requestedByTousers", fields: [requestedBy], references: [id], onDelete: Cascade)
+  reviewer        users?      @relation("budget_adjustment_requests_reviewedByTousers", fields: [reviewedBy], references: [id])
 
   @@index([departmentId, status])
   @@index([status, requestedAt])
@@ -81,8 +81,8 @@ model budget_predictions {
   targetYear        Int
   triggerType       String
   triggeredBy       Int?
-  departments       departments? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  users             users?       @relation(fields: [triggeredBy], references: [id])
+  department        departments? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  triggeredByUser   users?       @relation(fields: [triggeredBy], references: [id])
 
   @@index([createdAt])
   @@index([departmentId])
@@ -179,7 +179,7 @@ model monthly_budgets {
   updatedAt             DateTime
   year                  Int
   lastNotifiedThreshold Int         @default(0)
-  departments           departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  department            departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
 
   @@unique([departmentId, year, month])
   @@index([departmentId])
@@ -315,20 +315,21 @@ model supplier_grn_records {
 }
 
 model supplier_inventory_items {
-  id           String   @id
-  supplierId   Int
-  itemName     String
-  category     String
-  quantity     Int
-  reorderLevel Int      @default(0)
-  unit         String
-  unitPrice    Float
-  imageDataUrl String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime
-  taxType      String   @default("TAX")
-  taxRate      Float    @default(10)
-  users        users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  id               String   @id
+  supplierId       Int
+  itemName         String
+  category         String
+  quantity         Int
+  reservedQuantity Int      @default(0)
+  reorderLevel     Int      @default(0)
+  unit             String
+  unitPrice        Float
+  imageDataUrl     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+  taxType          String   @default("TAX")
+  taxRate          Float    @default(10)
+  users            users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@index([category])
   @@index([supplierId])

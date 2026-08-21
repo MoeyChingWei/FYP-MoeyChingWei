@@ -35,28 +35,17 @@ import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/request
 import { getSessionUser } from "../../shared/auth/session";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { UserRole } from "../../shared/types/roles";
-import { reserveSupplierInventory } from "../../modules/supplierFulfillment/inventory";
+import {
+  commitSupplierInventory,
+  releaseSupplierInventory,
+  reserveSupplierInventory,
+} from "../../modules/supplierFulfillment/inventory";
 import { deductBudgetForPR } from "../../shared/api/departmentBudget";
+import { sortWorkflowRowsByStatusAndDate } from "../../shared/utils/workflowSorting";
 
 import styles from "./ApprovalSubmodule.module.css";
 
 const { Text, Title } = Typography;
-
-function sortRequestsByDate(requests: PurchaseRequestDraft[]): PurchaseRequestDraft[] {
-  return requests
-    .map((request, index) => ({ request, index }))
-    .sort((left, right) => {
-      const leftTime = Date.parse(left.request.requestDate);
-      const rightTime = Date.parse(right.request.requestDate);
-
-      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
-        return rightTime - leftTime;
-      }
-
-      return right.index - left.index;
-    })
-    .map(({ request }) => request);
-}
 
 export default function ApprovalSubmodule(): React.ReactElement {
   const { t: tMsg } = useTranslation('messages');
@@ -119,7 +108,7 @@ export default function ApprovalSubmodule(): React.ReactElement {
 
   const filteredRequests = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
-    return sortRequestsByDate(submittedRequests).filter((request) => {
+    return sortWorkflowRowsByStatusAndDate(submittedRequests).filter((request) => {
       const matchesDate =
         !selectedDate || request.requestDate === selectedDate;
 
@@ -202,7 +191,12 @@ export default function ApprovalSubmodule(): React.ReactElement {
       }));
 
     try {
-      await reserveSupplierInventory(inventoryReservations);
+      // Requests created before reservation support may not have a RESERVED
+      // marker. Reserve and immediately commit those legacy requests.
+      if (request.inventoryReservationStatus !== "RESERVED") {
+        await reserveSupplierInventory(inventoryReservations);
+      }
+      await commitSupplierInventory(inventoryReservations);
     } catch (error) {
       message.error(error instanceof Error ? error.message : "Could not reserve inventory");
       setApprovingRequestIds((current) => {
@@ -217,6 +211,7 @@ export default function ApprovalSubmodule(): React.ReactElement {
     const updatedRequest = {
       ...request,
       status: "APPROVED" as const,
+      inventoryReservationStatus: "COMMITTED" as const,
       inventoryReservedItemIds: inventoryReservations.map(
         (item) => item.inventoryItemId,
       ),
@@ -224,6 +219,7 @@ export default function ApprovalSubmodule(): React.ReactElement {
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: "APPROVED",
+      inventoryReservationStatus: "COMMITTED",
       inventoryReservedItemIds: inventoryReservations.map(
         (item) => item.inventoryItemId,
       ),
@@ -254,13 +250,34 @@ export default function ApprovalSubmodule(): React.ReactElement {
     navigate("/purchasing/po-review");
   };
 
-  const onRejectConfirm = (reason: string): void => {
+  const onRejectConfirm = async (reason: string): Promise<void> => {
     if (!rejectTarget) return;
+
+    const inventoryReservations = rejectTarget.lineItems
+      .filter((item) => item.supplierInventoryItemId && item.quantity > 0)
+      .map((item) => ({
+        inventoryItemId: item.supplierInventoryItemId,
+        quantity: item.quantity,
+        supplierId: item.supplierId,
+        itemName: item.itemName,
+        category: item.itemCategory,
+        unit: item.unitOfMeasurement,
+      }));
+
+    if (rejectTarget.inventoryReservationStatus === "RESERVED" && inventoryReservations.length) {
+      try {
+        await releaseSupplierInventory(inventoryReservations);
+      } catch (error) {
+        message.error(error instanceof Error ? error.message : "Could not release reserved inventory");
+        return;
+      }
+    }
 
     updatePurchaseRequestDraft(rejectTarget.localId, (draft) => ({
       ...draft,
       status: "REJECTED",
       rejectionReason: reason,
+      inventoryReservationStatus: "RELEASED",
     }));
     message.success(t('purchaseRequest.approval.messages.rejected', { prNumber: rejectTarget.prNumber }));
     setRejectTarget(null);

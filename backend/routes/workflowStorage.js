@@ -119,6 +119,7 @@ router.put("/:store", async (req, res) => {
     const incomingIds = new Set(rows.map((row) => row.localId));
     const previousIds = previousRows.map((row) => row[config.field]);
     const idsToDelete = previousIds.filter((id) => !incomingIds.has(id));
+    const updatedAt = new Date();
 
     console.log(`💾 [DEBUG] Starting database transaction - deleting ${idsToDelete.length} rows, upserting ${rows.length} rows`);
     await prisma.$transaction([
@@ -130,10 +131,11 @@ router.put("/:store", async (req, res) => {
       ...rows.map((row) =>
         config.model.upsert({
           where: { [config.field]: row.localId },
-          update: { payload: row },
+          update: { payload: row, updatedAt },
           create: {
             [config.field]: row.localId,
             payload: row,
+            updatedAt,
           },
         }),
       ),

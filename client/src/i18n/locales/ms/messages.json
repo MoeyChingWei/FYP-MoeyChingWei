@@ -51,7 +51,7 @@
     "pleaseWait": "Sila tunggu",
     "loading": "Memuatkan...",
     "noChanges": "Tiada perubahan dikesan",
-    "totalCalculated": "Jumlah dikira: {currency} {total}"
+    "totalCalculated": "Jumlah dikira: {{currency}} {{total}}"
   },
   "confirm": {
     "delete": "Adakah anda pasti mahu memadam item ini?",

@@ -26,6 +26,7 @@ import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
 import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
 
 import styles from "./ReviewDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -228,6 +229,7 @@ export default function ReviewDetailSubmodule(): React.ReactElement {
                 {t('purchaseRequest.detail.actions.edit')}
               </Button>
             ) : null}
+            <WorkflowDocumentActions workflowType="purchase-request" record={request} filenamePrefix="purchase-request" />
             <Tag color={statusColor(request.status)}>{formatStatus(request.status)}</Tag>
           </Flex>
         </div>

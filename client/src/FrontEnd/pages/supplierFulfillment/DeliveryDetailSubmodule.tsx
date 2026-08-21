@@ -27,6 +27,8 @@ import {
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
+import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
+import WorkflowPartyInfo from "../../components/shared/WorkflowPartyInfo";
 
 const { Paragraph, Title } = Typography;
 
@@ -180,7 +182,10 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
               {t("delivery.detail.title")}
             </Title>
           </Flex>
-          <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          <Flex align="center" gap={8} wrap="wrap">
+            <WorkflowDocumentActions workflowType="delivery" record={row} filenamePrefix="delivery" />
+            <Tag color={statusColor(row.status)}>{statusText(row.status, t)}</Tag>
+          </Flex>
         </div>
 
         <div className={styles.summaryGrid}>
@@ -204,6 +209,7 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
 
         <div className={styles.sectionCard}>
           <h3 className={styles.sectionTitle}>{t("delivery.detail.info.title")}</h3>
+          <WorkflowPartyInfo workflowType="delivery" record={row} />
           <Descriptions column={2} bordered size="middle">
             <Descriptions.Item label={t("delivery.detail.info.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item>
             <Descriptions.Item label={t("delivery.detail.info.originalOrderNo")}>
@@ -213,13 +219,8 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
               {row.sourceRequester || "-"}
             </Descriptions.Item>
             <Descriptions.Item label={t("delivery.detail.info.createdBy")}>{row.createdBy}</Descriptions.Item>
-            <Descriptions.Item label={t("delivery.detail.info.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
-            <Descriptions.Item label={t("delivery.detail.info.supplierEmail")}>{row.supplierEmail || "-"}</Descriptions.Item>
             <Descriptions.Item label={t("delivery.detail.info.department")}>{row.department || "-"}</Descriptions.Item>
             <Descriptions.Item label={t("delivery.detail.info.currentStatus")}>{statusText(row.status, t)}</Descriptions.Item>
-            <Descriptions.Item label={t("delivery.detail.info.companyAddress")} span={2}>
-              {row.companyAddress}
-            </Descriptions.Item>
           </Descriptions>
         </div>
 

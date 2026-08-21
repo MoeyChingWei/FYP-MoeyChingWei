@@ -4,6 +4,7 @@ export interface SupplierInventoryItem {
   itemName: string;
   category: string;
   quantity: number;
+  reservedQuantity: number;
   reorderLevel: number;
   unit: string;
   unitPrice: number;
@@ -16,7 +17,7 @@ export interface SupplierInventoryItem {
 const STORAGE_PREFIX = "erp_supplier_inventory_v1";
 const SAMPLE_CATALOGUE_VERSION = "5";
 
-type InventoryCatalogItem = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt">;
+type InventoryCatalogItem = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "reservedQuantity">;
 
 const INVENTORY_IMAGE_URLS: Record<string, string> = {
   "Laptop": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=160&h=160&q=80",
@@ -107,7 +108,9 @@ export function loadSupplierInventory(supplierId?: number): SupplierInventoryIte
   try {
     const raw = window.localStorage.getItem(storageKey(supplierId));
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed)
+      ? parsed.map((row) => ({ ...row, reservedQuantity: Number(row?.reservedQuantity ?? 0) }))
+      : [];
   } catch {
     return [];
   }
@@ -152,12 +155,13 @@ export function seedSampleSupplierInventory(supplierId?: number): SupplierInvent
 
 export function createSupplierInventoryItem(
   supplierId: number,
-  values: Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt">,
+  values: Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "reservedQuantity">,
 ): SupplierInventoryItem {
   return {
     ...values,
     id: newId(),
     supplierId,
+    reservedQuantity: 0,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -171,7 +175,7 @@ export async function fetchSupplierInventory(supplierId?: number): Promise<Suppl
   return response.data.items ?? [];
 }
 
-export async function createSupplierInventory(item: Omit<SupplierInventoryItem, "id" | "updatedAt">): Promise<SupplierInventoryItem> {
+export async function createSupplierInventory(item: Omit<SupplierInventoryItem, "id" | "updatedAt" | "reservedQuantity">): Promise<SupplierInventoryItem> {
   const response = await axios.post<{ success: boolean; item?: SupplierInventoryItem; message?: string }>(
     `${API_ROOT}/purchasing/inventory`,
     item,
@@ -189,15 +193,64 @@ export async function updateSupplierInventory(item: SupplierInventoryItem): Prom
   return response.data.item;
 }
 
-export async function reserveSupplierInventory(
-  items: Array<{
-    inventoryItemId?: string;
-    quantity: number;
-    supplierId?: number;
-    itemName?: string;
-    category?: string;
-    unit?: string;
-  }>,
+export type InventoryReservationItem = {
+  inventoryItemId?: string;
+  quantity: number;
+  supplierId?: number;
+  itemName?: string;
+  category?: string;
+  unit?: string;
+};
+
+function updateLocalInventoryAfterTransition(
+  items: InventoryReservationItem[],
+  mode: "reserve" | "commit" | "release",
+): void {
+  const grouped = new Map<number, typeof items>();
+  for (const item of items) {
+    const supplierId = Number(item.supplierId);
+    if (!Number.isFinite(supplierId)) continue;
+    grouped.set(supplierId, [...(grouped.get(supplierId) ?? []), item]);
+  }
+
+  for (const [supplierId, reservations] of grouped) {
+    const rows = loadSupplierInventory(supplierId);
+    const requestedById = new Map<string, number>();
+    for (const reservation of reservations) {
+      const matchedRow = rows.find(
+        (row) =>
+          row.id === reservation.inventoryItemId ||
+          (row.itemName.trim().toLowerCase() === reservation.itemName?.trim().toLowerCase() &&
+            (!reservation.category || row.category.trim().toLowerCase() === reservation.category.trim().toLowerCase()) &&
+            (!reservation.unit || row.unit.trim().toLowerCase() === reservation.unit.trim().toLowerCase())),
+      );
+      if (!matchedRow) throw new Error("Inventory item not found");
+      requestedById.set(matchedRow.id, (requestedById.get(matchedRow.id) ?? 0) + reservation.quantity);
+    }
+
+    const nextRows = rows.map((row) => {
+      const requested = requestedById.get(row.id) ?? 0;
+      if (!requested) return row;
+      const reserved = Number(row.reservedQuantity ?? 0);
+      const available = row.quantity - reserved;
+      if (mode === "reserve" && available < requested) throw new Error("Insufficient inventory");
+      if ((mode === "commit" || mode === "release") && reserved < requested) {
+        throw new Error("Reserved inventory is no longer available");
+      }
+      return {
+        ...row,
+        quantity: mode === "commit" ? row.quantity - requested : row.quantity,
+        reservedQuantity: mode === "reserve" ? reserved + requested : reserved - requested,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    saveSupplierInventory(supplierId, nextRows);
+  }
+}
+
+async function transitionSupplierInventory(
+  path: "reserve" | "commit" | "release",
+  items: InventoryReservationItem[],
 ): Promise<void> {
   if (!items.length) return;
 
@@ -207,12 +260,10 @@ export async function reserveSupplierInventory(
       message?: string;
       items?: SupplierInventoryItem[];
     }>(
-      `${API_ROOT}/purchasing/inventory/reserve`,
+      `${API_ROOT}/purchasing/inventory/${path}`,
       { items },
     );
-    if (!response.data?.success) {
-      throw new Error(response.data?.message ?? "Could not reserve inventory");
-    }
+    if (!response.data?.success) throw new Error(response.data?.message ?? `Could not ${path} inventory`);
     const updatedRowsBySupplier = new Map<number, SupplierInventoryItem[]>();
     for (const row of response.data.items ?? []) {
       updatedRowsBySupplier.set(row.supplierId, [
@@ -235,46 +286,25 @@ export async function reserveSupplierInventory(
   } catch (error) {
     // Keep local/demo catalogues usable when the API is unavailable.
     if (axios.isAxiosError(error) && error.response?.status === 409) {
-      throw new Error(error.response.data?.message ?? "Insufficient inventory");
+      throw new Error(error.response.data?.message ?? `Could not ${path} inventory`);
     }
     if (axios.isAxiosError(error) && error.response && error.response.status !== 404) {
-      throw new Error(error.response.data?.message ?? "Could not reserve inventory");
+      throw new Error(error.response.data?.message ?? `Could not ${path} inventory`);
     }
-
-    const grouped = new Map<number, typeof items>();
-    for (const item of items) {
-      const supplierId = Number(item.supplierId);
-      if (!Number.isFinite(supplierId)) continue;
-      grouped.set(supplierId, [...(grouped.get(supplierId) ?? []), item]);
-    }
-
-    const localRowsBySupplier = new Map<number, SupplierInventoryItem[]>();
-    for (const [supplierId, reservations] of grouped) {
-      const rows = loadSupplierInventory(supplierId);
-      const requestedById = new Map<string, number>();
-      for (const reservation of reservations) {
-        const matchedRow = rows.find(
-          (row) =>
-            row.id === reservation.inventoryItemId ||
-            (row.itemName.trim().toLowerCase() === reservation.itemName?.trim().toLowerCase() &&
-              (!reservation.category || row.category.trim().toLowerCase() === reservation.category.trim().toLowerCase()) &&
-              (!reservation.unit || row.unit.trim().toLowerCase() === reservation.unit.trim().toLowerCase())),
-        );
-        if (!matchedRow) throw new Error("Inventory item not found");
-        requestedById.set(matchedRow.id, (requestedById.get(matchedRow.id) ?? 0) + reservation.quantity);
-      }
-      const nextRows = rows.map((row) => {
-        const requested = requestedById.get(row.id) ?? 0;
-        if (!requested) return row;
-        if (row.quantity < requested) throw new Error("Insufficient inventory");
-        return { ...row, quantity: row.quantity - requested, updatedAt: new Date().toISOString() };
-      });
-      localRowsBySupplier.set(supplierId, nextRows);
-    }
-    for (const [supplierId, nextRows] of localRowsBySupplier) {
-      saveSupplierInventory(supplierId, nextRows);
-    }
+    updateLocalInventoryAfterTransition(items, path);
   }
+}
+
+export function reserveSupplierInventory(items: InventoryReservationItem[]): Promise<void> {
+  return transitionSupplierInventory("reserve", items);
+}
+
+export function commitSupplierInventory(items: InventoryReservationItem[]): Promise<void> {
+  return transitionSupplierInventory("commit", items);
+}
+
+export function releaseSupplierInventory(items: InventoryReservationItem[]): Promise<void> {
+  return transitionSupplierInventory("release", items);
 }
 
 export async function deleteSupplierInventory(id: string): Promise<void> {

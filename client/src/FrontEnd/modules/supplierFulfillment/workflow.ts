@@ -1,9 +1,11 @@
 import type { DraftLineItem } from "../purchasing/requestCreation/types";
 import type { PurchaseOrderDraft } from "../purchasing/purchaseOrder/types";
-import { getCompanyAddress } from "../settings/companyAddress";
+import { getCompanyAddress, getSupplierCompanyAddress } from "../settings/companyAddress";
+import { sortWorkflowRowsByStatusAndDate } from "../../shared/utils/workflowSorting";
 import {
   fetchWorkflowRows,
   fetchWorkflowRowsForRecovery,
+  getPendingWorkflowRows,
   isWorkflowSyncEnabled,
   queueWorkflowRowsSave,
 } from "../../shared/api/workflowStorage";
@@ -31,6 +33,7 @@ export interface SupplierOrderAcknowledgementRecord {
   supplierId?: number;
   supplierName?: string;
   supplierEmail?: string;
+  supplierAddress?: string;
   status: OrderAcknowledgementStatus;
   rejectionReason?: string;
   rejectedBy?: string;
@@ -54,6 +57,7 @@ export interface SupplierDeliveryRecord {
   supplierId?: number;
   supplierName?: string;
   supplierEmail?: string;
+  supplierAddress?: string;
   status: DeliveryStatus;
   items: DraftLineItem[];
   deliveredDate?: string;
@@ -76,6 +80,7 @@ export interface SupplierGrnRecord {
   supplierId?: number;
   supplierName?: string;
   supplierEmail?: string;
+  supplierAddress?: string;
   status: GrnStatus;
   items: DraftLineItem[];
   completedDate?: string;
@@ -91,6 +96,8 @@ const GRNS_STORE = "grns";
 let supplierOrderAcknowledgementCache: SupplierOrderAcknowledgementRecord[] = [];
 let supplierDeliveryCache: SupplierDeliveryRecord[] = [];
 let supplierGrnCache: SupplierGrnRecord[] = [];
+
+export { sortWorkflowRowsByStatusAndDate };
 
 function mergeByLocalId<T extends { localId: string }>(localRows: T[], remoteRows: T[]): T[] {
   if (!localRows.length) return [...remoteRows];
@@ -325,6 +332,7 @@ export function createOrderAcknowledgementRecordsFromPurchaseOrder(
     supplierId: bucket.supplierId,
     supplierName: bucket.supplierName,
     supplierEmail: bucket.supplierEmail,
+    supplierAddress: bucket.supplierId != null ? getSupplierCompanyAddress(bucket.supplierId) : undefined,
     status: "PENDING_ORDER_ACKNOWLEDGE",
     items: bucket.items,
   }));
@@ -350,6 +358,7 @@ export function createDeliveryFromAcknowledgement(
     supplierId: row.supplierId,
     supplierName: row.supplierName,
     supplierEmail: row.supplierEmail,
+    supplierAddress: row.supplierAddress,
     status: "PENDING_DELIVERY",
     items: row.items.map((item) => ({ ...item })),
   };
@@ -375,6 +384,7 @@ export function createGrnFromDelivery(
     supplierId: row.supplierId,
     supplierName: row.supplierName,
     supplierEmail: row.supplierEmail,
+    supplierAddress: row.supplierAddress,
     status: "PENDING_GRN",
     items: row.items.map((item) => ({ ...item })),
   };
@@ -401,6 +411,7 @@ export function createDeliveryFromGrnDiscrepancy(
     supplierId: row.supplierId,
     supplierName: row.supplierName,
     supplierEmail: row.supplierEmail,
+    supplierAddress: row.supplierAddress,
     status: "PENDING_DELIVERY",
     items: row.items.map((item) => ({ ...item })),
   };
@@ -417,9 +428,10 @@ export async function hydrateSupplierOrderAcknowledgements(): Promise<
     const remoteRows = localRows.length
       ? await fetchWorkflowRows<SupplierOrderAcknowledgementRecord>(ORDER_ACKS_STORE, 200)
       : await fetchWorkflowRowsForRecovery<SupplierOrderAcknowledgementRecord>(ORDER_ACKS_STORE);
-    const rows = isWorkflowSyncEnabled()
+    const pendingRows = getPendingWorkflowRows<SupplierOrderAcknowledgementRecord>(ORDER_ACKS_STORE);
+    const rows = pendingRows ?? (isWorkflowSyncEnabled()
       ? remoteRows
-      : mergeByLocalId(localRows, remoteRows);
+      : mergeByLocalId(localRows, remoteRows));
     supplierOrderAcknowledgementCache = rows;
     try {
       window.localStorage.setItem(ORDER_ACKS_KEY, JSON.stringify(rows));
@@ -441,9 +453,10 @@ export async function hydrateSupplierDeliveries(): Promise<SupplierDeliveryRecor
     const remoteRows = localRows.length
       ? await fetchWorkflowRows<SupplierDeliveryRecord>(DELIVERIES_STORE, 200)
       : await fetchWorkflowRowsForRecovery<SupplierDeliveryRecord>(DELIVERIES_STORE);
-    const rows = isWorkflowSyncEnabled()
+    const pendingRows = getPendingWorkflowRows<SupplierDeliveryRecord>(DELIVERIES_STORE);
+    const rows = pendingRows ?? (isWorkflowSyncEnabled()
       ? remoteRows
-      : mergeByLocalId(localRows, remoteRows);
+      : mergeByLocalId(localRows, remoteRows));
     supplierDeliveryCache = rows;
     try {
       window.localStorage.setItem(DELIVERIES_KEY, JSON.stringify(rows));
@@ -465,9 +478,10 @@ export async function hydrateSupplierGrns(): Promise<SupplierGrnRecord[]> {
     const remoteRows = localRows.length
       ? await fetchWorkflowRows<SupplierGrnRecord>(GRNS_STORE, 200)
       : await fetchWorkflowRowsForRecovery<SupplierGrnRecord>(GRNS_STORE);
-    const rows = isWorkflowSyncEnabled()
+    const pendingRows = getPendingWorkflowRows<SupplierGrnRecord>(GRNS_STORE);
+    const rows = pendingRows ?? (isWorkflowSyncEnabled()
       ? remoteRows
-      : mergeByLocalId(localRows, remoteRows);
+      : mergeByLocalId(localRows, remoteRows));
     supplierGrnCache = rows;
     try {
       window.localStorage.setItem(GRNS_KEY, JSON.stringify(rows));
