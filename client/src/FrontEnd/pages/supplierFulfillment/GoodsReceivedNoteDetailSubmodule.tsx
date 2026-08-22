@@ -31,6 +31,7 @@ function statusColor(status: SupplierGrnRecord["status"]): string {
   switch (status) {
     case "PENDING_GRN":
       return "orange";
+    case "RECEIVED":
     case "COMPLETED":
       return "green";
     case "DISCREPANCY":
@@ -44,8 +45,9 @@ function statusText(status: SupplierGrnRecord["status"], t: any): string {
   switch (status) {
     case "PENDING_GRN":
       return t("grnStatus.detail.status.pendingGrn");
+    case "RECEIVED":
     case "COMPLETED":
-      return t("grnStatus.detail.status.completed");
+      return t("grnStatus.detail.status.received");
     case "DISCREPANCY":
       return t("grnStatus.detail.status.discrepancy");
     default:

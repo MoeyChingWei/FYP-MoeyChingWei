@@ -420,7 +420,7 @@
       },
       "status": {
         "pendingGrn": "Pending GRN",
-        "completed": "Completed",
+        "received": "Received",
         "discrepancy": "Discrepancy"
       },
       "actions": {

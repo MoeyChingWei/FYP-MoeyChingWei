@@ -17,7 +17,13 @@ export type OrderAcknowledgementStatus =
 
 export type DeliveryStatus = "PENDING_DELIVERY" | "DELIVERED";
 
-export type GrnStatus = "PENDING_GRN" | "COMPLETED" | "DISCREPANCY";
+// RECEIVED is the canonical terminal GRN status. COMPLETED remains accepted
+// when reading older records that were saved before the status was renamed.
+export type GrnStatus = "PENDING_GRN" | "RECEIVED" | "DISCREPANCY" | "COMPLETED";
+
+export function isGrnReceived(status: GrnStatus | string | undefined): boolean {
+  return status === "RECEIVED" || status === "COMPLETED";
+}
 
 export type SupplierInvoiceStatus = "DRAFT" | "SUBMITTED";
 

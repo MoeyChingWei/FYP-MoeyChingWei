@@ -3,7 +3,6 @@ import { ROLES } from "../constants/roles.js";
 import {
   sendDetailedSupplierDiscrepancyEmail,
   sendDetailedSupplierPendingOrderEmail,
-  sendSupplierOrderCompletedEmail,
   sendPurchaseOrderWorkflowEmail,
   sendPurchaseRequestWorkflowEmail,
   sendSystemNotificationEmail,
@@ -571,44 +570,22 @@ export async function processWorkflowNotifications(
         continue;
       }
 
-      if (store === "grns" && nowStatus === "COMPLETED") {
+      if (store === "grns" && (nowStatus === "RECEIVED" || nowStatus === "COMPLETED")) {
         const supplier = await findUserByEmail(row.supplierEmail);
         if (supplier) {
           await createInAppNotifications([supplier], {
             title: "Order Completed",
-            message: `${row.poNumber ?? "PO"} has been received by requester. Thank you, this order is completed.`,
+            message: `${row.poNumber ?? "PO"} has been received by requester. The system created a supplier invoice. Please review it in OptiMind.`,
             type: "SUPPLIER_UPDATE",
             refType: "grn",
             refId: localId,
           });
 
-          const supplierCompleteMailResult = await sendSupplierOrderCompletedEmail({
-            supplierEmail: supplier.email,
-            supplierName: row.supplierName,
-            orderNo: row.poNumber,
-          });
-          if (!supplierCompleteMailResult?.sent) {
-            console.warn("Supplier completion email not sent:", {
-              supplierEmail: supplier.email,
-              reason: supplierCompleteMailResult?.reason,
-              accepted: supplierCompleteMailResult?.accepted ?? [],
-              rejected: supplierCompleteMailResult?.rejected ?? [],
-              response: supplierCompleteMailResult?.response,
-            });
-          } else {
-            console.log("Supplier completion email sent:", {
-              supplierEmail: supplier.email,
-              messageId: supplierCompleteMailResult?.messageId,
-              accepted: supplierCompleteMailResult?.accepted ?? [],
-              rejected: supplierCompleteMailResult?.rejected ?? [],
-              response: supplierCompleteMailResult?.response,
-            });
-          }
         }
 
         await createInAppNotifications([requesterContext.user], {
           title: "Item Completed",
-          message: `${row.poNumber ?? "PO"} is completed. Your requested item flow has finished.`,
+          message: `${row.poNumber ?? "PO"} is completed. Your requested item flow has been completed.`,
           type: "REQUESTER_UPDATE",
           refType: "tracking-item",
           refId: requesterContext.requestLocalId || localId,

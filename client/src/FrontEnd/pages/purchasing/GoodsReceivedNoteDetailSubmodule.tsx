@@ -47,6 +47,7 @@ function statusColor(status: SupplierGrnRecord["status"]): string {
   switch (status) {
     case "PENDING_GRN":
       return "orange";
+    case "RECEIVED":
     case "COMPLETED":
       return "green";
     case "DISCREPANCY":
@@ -60,8 +61,9 @@ function statusText(status: SupplierGrnRecord["status"], t: any): string {
   switch (status) {
     case "PENDING_GRN":
       return t('grn.list.status.pendingGrn');
+    case "RECEIVED":
     case "COMPLETED":
-      return t('grn.list.status.completed');
+      return t('grn.list.status.received');
     case "DISCREPANCY":
       return t('grn.list.status.discrepancy');
     default:
@@ -178,7 +180,7 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
     if (!row) return;
     const completedRow: SupplierGrnRecord = {
       ...row,
-      status: "COMPLETED",
+      status: "RECEIVED",
       completedDate: todayIsoDate(),
       discrepancyReason: undefined,
     };

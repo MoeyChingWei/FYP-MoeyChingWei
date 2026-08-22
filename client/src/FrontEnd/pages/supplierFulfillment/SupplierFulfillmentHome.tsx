@@ -28,6 +28,7 @@ import {
   hydrateSupplierOrderAcknowledgements,
   loadSupplierDeliveries,
   loadSupplierGrns,
+  isGrnReceived,
   loadSupplierOrderAcknowledgements,
 } from "../../modules/supplierFulfillment/workflow";
 
@@ -257,8 +258,8 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
         accent: "#ef4444",
       },
       {
-        label: t("statusCards.completed"),
-        value: visibleGrns.filter((row) => row.status === "COMPLETED").length,
+        label: t("statusCards.received"),
+        value: visibleGrns.filter((row) => isGrnReceived(row.status)).length,
         accent: "#14b8a6",
       },
     ],

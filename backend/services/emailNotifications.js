@@ -320,37 +320,6 @@ export async function sendDetailedSupplierPendingOrderEmail(args) {
   });
 }
 
-export async function sendSupplierOrderCompletedEmail(args) {
-  const supplierEmail = String(args?.supplierEmail ?? "").trim();
-  if (!supplierEmail) {
-    return { sent: false, reason: "Missing supplier email", accepted: [], rejected: [] };
-  }
-
-  const orderNo = String(args?.orderNo ?? "PO");
-  const supplierName = String(args?.supplierName ?? "").trim();
-  const greetingName = supplierName || supplierEmail;
-
-  const subject = `OptiMind — Order Completed (${orderNo})`;
-  const text =
-    `Hello ${greetingName},\n\n` +
-    `The requester has confirmed receipt for order ${orderNo}.\n` +
-    `Thank you for your delivery support. This order is now completed.\n\n` +
-    `Regards,\nOptiMind System`;
-
-  const html =
-    `<p>Hello ${greetingName},</p>` +
-    `<p>The requester has confirmed receipt for order <b>${orderNo}</b>.</p>` +
-    `<p>Thank you for your delivery support. This order is now <b>completed</b>.</p>` +
-    `<p>Regards,<br/>OptiMind System</p>`;
-
-  return sendSystemNotificationEmail({
-    to: [supplierEmail],
-    subject,
-    text,
-    html,
-  });
-}
-
 export async function sendDetailedSupplierDiscrepancyEmail(args) {
   const supplierEmail = String(args?.supplierEmail ?? "").trim();
   if (!supplierEmail) {

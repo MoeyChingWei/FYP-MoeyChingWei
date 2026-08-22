@@ -419,7 +419,7 @@
       },
       "status": {
         "pendingGrn": "待收货",
-        "completed": "已完成",
+        "received": "已收货",
         "discrepancy": "差异"
       },
       "actions": {

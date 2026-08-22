@@ -37,8 +37,9 @@ function statusTag(status: SupplierGrnRecord["status"], t: any): React.ReactNode
   switch (status) {
     case "PENDING_GRN":
       return <Tag color="orange">{t('grn.list.status.pendingGrn')}</Tag>;
+    case "RECEIVED":
     case "COMPLETED":
-      return <Tag color="green">{t('grn.list.status.completed')}</Tag>;
+      return <Tag color="green">{t('grn.list.status.received')}</Tag>;
     case "DISCREPANCY":
       return <Tag color="red">{t('grn.list.status.discrepancy')}</Tag>;
     default:

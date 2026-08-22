@@ -43,6 +43,7 @@ import {
   hydrateSupplierOrderAcknowledgements,
   loadSupplierDeliveries,
   loadSupplierGrns,
+  isGrnReceived,
   loadSupplierOrderAcknowledgements,
   type SupplierDeliveryRecord,
   type SupplierGrnRecord,
@@ -301,7 +302,7 @@ function getTrackingStage(
       return { stage: "delivery", statusLabel: t('stages.delivery.pending') };
     }
 
-    if (latestGrn?.status === "COMPLETED") {
+    if (isGrnReceived(latestGrn?.status)) {
       return { stage: "completed", statusLabel: t('status.completed') };
     }
     if (latestGrn?.status === "DISCREPANCY") {

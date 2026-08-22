@@ -24,7 +24,7 @@
     "pendingDelivery": "Menunggu Penghantaran",
     "pendingGrn": "Menunggu Nota Barang Diterima",
     "discrepancy": "Percanggahan",
-    "completed": "Selesai"
+    "received": "Diterima"
   },
   "modules": {
     "orderAcknowledge": {

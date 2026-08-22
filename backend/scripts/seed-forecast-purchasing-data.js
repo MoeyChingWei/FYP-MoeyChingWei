@@ -217,7 +217,7 @@ async function main() {
       supplierId: supplier.id,
       supplierName: supplier.name,
       supplierEmail: supplier.email,
-      status: "COMPLETED",
+      status: "RECEIVED",
       items: lineItems,
       completedDate: isoDate(grnDate),
     };

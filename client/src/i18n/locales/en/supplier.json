@@ -26,7 +26,7 @@
     "pendingDelivery": "Pending Delivery",
     "pendingGrn": "Pending GRN",
     "discrepancy": "Discrepancy",
-    "completed": "Completed"
+    "received": "Received"
   },
   "modules": {
     "orderAcknowledge": {
@@ -263,7 +263,7 @@
       "summary": "{{count}} GRN record(s)",
       "status": {
         "pendingGrn": "Pending GRN",
-        "completed": "Completed",
+        "received": "Received",
         "discrepancy": "Discrepancy"
       },
       "actions": {
@@ -304,7 +304,7 @@
       },
       "status": {
         "pendingGrn": "Pending GRN",
-        "completed": "Completed",
+        "received": "Received",
         "discrepancy": "Discrepancy"
       },
       "messages": {
