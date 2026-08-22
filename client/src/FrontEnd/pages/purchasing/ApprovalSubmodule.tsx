@@ -40,7 +40,7 @@ import {
   releaseSupplierInventory,
   reserveSupplierInventory,
 } from "../../modules/supplierFulfillment/inventory";
-import { deductBudgetForPR } from "../../shared/api/departmentBudget";
+import { deductBudgetForPR, releaseBudgetForPR } from "../../shared/api/departmentBudget";
 import { sortWorkflowRowsByStatusAndDate } from "../../shared/utils/workflowSorting";
 
 import styles from "./ApprovalSubmodule.module.css";
@@ -291,11 +291,25 @@ export default function ApprovalSubmodule(): React.ReactElement {
       }
     }
 
+    if (!rejectTarget.budgetReleasedAt) {
+      const budgetResult = await releaseBudgetForPR({
+        ...rejectTarget,
+        status: "REJECTED",
+        requestedBy: rejectTarget.createdByUserId,
+        createdAt: rejectTarget.requestDate,
+      });
+      if (!budgetResult.success) {
+        message.error(`Rejection blocked: ${budgetResult.reason ?? "budget release failed"}`);
+        return;
+      }
+    }
+
     updatePurchaseRequestDraft(rejectTarget.localId, (draft) => ({
       ...draft,
       status: "REJECTED",
       rejectionReason: reason,
       inventoryReservationStatus: "RELEASED",
+      budgetReleasedAt: draft.budgetReleasedAt ?? new Date().toISOString(),
     }));
     message.success(t('purchaseRequest.approval.messages.rejected', { prNumber: rejectTarget.prNumber }));
     setRejectTarget(null);

@@ -7,6 +7,14 @@ function isApprovedStatus(status) {
   return String(status ?? "").trim().toUpperCase() === "APPROVED";
 }
 
+function isSubmittedStatus(status) {
+  return String(status ?? "").trim().toUpperCase() === "SUBMITTED";
+}
+
+function isRejectedStatus(status) {
+  return String(status ?? "").trim().toUpperCase() === "REJECTED";
+}
+
 function calculatePRTotal(payload) {
   const items = Array.isArray(payload?.lineItems) ? payload.lineItems : (Array.isArray(payload?.items) ? payload.items : []);
   return items.reduce((sum, item) => {
@@ -79,6 +87,15 @@ export async function deductBudgetForPR(prPayload) {
       return { success: false, reason: 'PR not approved' };
     }
 
+    if (prPayload?.budgetDeductedAt) {
+      return {
+        success: true,
+        alreadyProcessed: true,
+        deductedAmount: calculatePRTotal(prPayload).toNumber(),
+        warnings: [],
+      };
+    }
+
     const context = await resolveBudgetContext(prPayload);
     if (context.error) return { success: false, reason: context.error };
     const { budget } = context;
@@ -104,12 +121,18 @@ export async function deductBudgetForPR(prPayload) {
     const amount = calculatePRTotal(prPayload);
 
     const result = await prisma.$transaction(async (tx) => {
+      const currentBudget = await tx.monthlyBudget.findUnique({
+        where: { id: budget.id },
+      });
+      if (!currentBudget) throw new Error('Budget not found');
+
+      const reserved = new Decimal(currentBudget.reservedAmount);
+      const reservedToRelease = Decimal.min(reserved, amount);
       const updatedBudget = await tx.monthlyBudget.update({
         where: { id: budget.id },
         data: {
-          spentAmount: {
-            increment: amount.toNumber()
-          }
+          spentAmount: { increment: amount.toNumber() },
+          reservedAmount: { decrement: reservedToRelease.toNumber() },
         }
       });
 
@@ -150,6 +173,148 @@ export async function deductBudgetForPR(prPayload) {
       timestamp: new Date().toISOString(),
       error: error.message,
       stack: error.stack
+    });
+    throw error;
+  }
+}
+
+export async function reserveBudgetForPR(prPayload) {
+  const requestId = crypto.randomUUID();
+
+  try {
+    if (!isSubmittedStatus(prPayload?.status)) {
+      return { success: false, reason: 'PR is not submitted' };
+    }
+
+    const context = await resolveBudgetContext(prPayload);
+    if (context.error) return { success: false, reason: context.error };
+    const { budget } = context;
+    const amount = calculatePRTotal(prPayload);
+    if (amount.isNegative() || amount.isZero()) {
+      return { success: false, reason: 'Purchase request amount must be positive' };
+    }
+
+    if (prPayload.localId) {
+      const existing = await prisma.purchaseRequestRecord.findUnique({
+        where: { localId: prPayload.localId },
+        select: { payload: true },
+      });
+      if (existing?.payload?.budgetReservedAt) {
+        return { success: true, alreadyProcessed: true, reservedAmount: 0, budgetId: budget.id };
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const currentBudget = await tx.monthlyBudget.findUnique({ where: { id: budget.id } });
+      if (!currentBudget) throw new Error('Budget not found');
+
+      const available = new Decimal(currentBudget.allocatedAmount)
+        .minus(new Decimal(currentBudget.spentAmount))
+        .minus(new Decimal(currentBudget.reservedAmount));
+      if (amount.gt(available)) {
+        const error = new Error(
+          `Request total exceeds the available budget of ${available.toFixed(2)}`,
+        );
+        error.code = 'BUDGET_EXCEEDED';
+        throw error;
+      }
+
+      await tx.monthlyBudget.update({
+        where: { id: budget.id },
+        data: { reservedAmount: { increment: amount.toNumber() } },
+      });
+
+      if (prPayload.localId) {
+        const record = await tx.purchase_request_records.findUnique({
+          where: { localId: prPayload.localId },
+          select: { payload: true },
+        });
+        if (record) {
+          await tx.purchase_request_records.update({
+            where: { localId: prPayload.localId },
+            data: {
+              payload: {
+                ...(record.payload && typeof record.payload === 'object' ? record.payload : {}),
+                budgetReservedAt: new Date().toISOString(),
+              },
+            },
+          });
+        }
+      }
+    });
+
+    return { success: true, reservedAmount: amount.toNumber(), budgetId: budget.id };
+  } catch (error) {
+    if (error.code === 'BUDGET_EXCEEDED') {
+      return { success: false, reason: error.message };
+    }
+    console.error('[BudgetReservation]', {
+      operation: 'reserveBudgetForPR', requestId, error: error.message, stack: error.stack,
+    });
+    throw error;
+  }
+}
+
+export async function releaseBudgetForPR(prPayload) {
+  const requestId = crypto.randomUUID();
+
+  try {
+    if (!isRejectedStatus(prPayload?.status)) {
+      return { success: false, reason: 'PR is not rejected' };
+    }
+
+    if (prPayload?.budgetReleasedAt) {
+      return { success: true, alreadyProcessed: true, releasedAmount: 0 };
+    }
+
+    const context = await resolveBudgetContext(prPayload);
+    if (context.error) return { success: false, reason: context.error };
+    const { budget } = context;
+    const amount = calculatePRTotal(prPayload);
+
+    if (prPayload.localId) {
+      const existing = await prisma.purchaseRequestRecord.findUnique({
+        where: { localId: prPayload.localId },
+        select: { payload: true },
+      });
+      if (existing?.payload?.budgetReleasedAt) {
+        return { success: true, alreadyProcessed: true, releasedAmount: 0, budgetId: budget.id };
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const currentBudget = await tx.monthlyBudget.findUnique({ where: { id: budget.id } });
+      if (!currentBudget) throw new Error('Budget not found');
+      const releaseAmount = Decimal.min(new Decimal(currentBudget.reservedAmount), amount);
+
+      await tx.monthlyBudget.update({
+        where: { id: budget.id },
+        data: { reservedAmount: { decrement: releaseAmount.toNumber() } },
+      });
+
+      if (prPayload.localId) {
+        const record = await tx.purchase_request_records.findUnique({
+          where: { localId: prPayload.localId },
+          select: { payload: true },
+        });
+        if (record) {
+          await tx.purchase_request_records.update({
+            where: { localId: prPayload.localId },
+            data: {
+              payload: {
+                ...(record.payload && typeof record.payload === 'object' ? record.payload : {}),
+                budgetReleasedAt: new Date().toISOString(),
+              },
+            },
+          });
+        }
+      }
+    });
+
+    return { success: true, releasedAmount: amount.toNumber(), budgetId: budget.id };
+  } catch (error) {
+    console.error('[BudgetRelease]', {
+      operation: 'releaseBudgetForPR', requestId, error: error.message, stack: error.stack,
     });
     throw error;
   }

@@ -25,7 +25,10 @@ export function sortWorkflowRowsByStatusAndDate<T extends WorkflowRow>(rows: T[]
       if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
         return rightTime - leftTime;
       }
-      return right.index - left.index;
+      // The API already returns rows by their latest backend update time.
+      // Preserve that order when records only contain a date (for example,
+      // several requests created on the same day).
+      return left.index - right.index;
     })
     .map(({ row }) => row);
 }

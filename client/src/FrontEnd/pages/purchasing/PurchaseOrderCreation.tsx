@@ -39,6 +39,7 @@ import {
   replacePurchaseOrderDraft,
 } from "../../modules/purchasing/purchaseOrder/storage";
 import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/types";
+import { getCompanyLogo } from "../../modules/settings/companyAddress";
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
 
 import creationStyles from "./CreationSubmodule.module.css";
@@ -236,6 +237,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
       createdByUserId: editingDraft?.createdByUserId ?? sessionUser?.id,
       createdByEmail: editingDraft?.createdByEmail ?? sessionUser?.email,
       department: department === "-" ? undefined : department,
+      companyLogo: getCompanyLogo(),
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,

@@ -29,6 +29,7 @@ export interface PurchaseRequestDraft {
   createdByUserId?: number;
   createdByEmail?: string;
   department?: string;
+  companyLogo?: string;
   currency: string;
   status: PurchaseOrderStatus;
   lineItems: DraftLineItem[];
@@ -42,4 +43,7 @@ export interface PurchaseRequestDraft {
   /** Inventory line IDs included in this request's reservation. */
   inventoryReservedItemIds?: string[];
   inventoryReservationStatus?: "RESERVED" | "COMMITTED" | "RELEASED";
+  budgetReservedAt?: string;
+  budgetReleasedAt?: string;
+  budgetDeductedAt?: string;
 }

@@ -12,6 +12,7 @@ export interface PurchaseOrderDraft {
   createdByUserId?: number;
   createdByEmail?: string;
   department?: string;
+  companyLogo?: string;
   currency: string;
   status: PurchaseOrderStatus;
   lineItems: DraftLineItem[];

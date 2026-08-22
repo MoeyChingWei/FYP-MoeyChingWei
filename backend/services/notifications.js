@@ -1,9 +1,11 @@
 import prisma from "../config/prisma.js";
 import { ROLES } from "../constants/roles.js";
 import {
-  sendSupplierDiscrepancyEmail,
+  sendDetailedSupplierDiscrepancyEmail,
+  sendDetailedSupplierPendingOrderEmail,
   sendSupplierOrderCompletedEmail,
-  sendSupplierPendingOrderEmail,
+  sendPurchaseOrderWorkflowEmail,
+  sendPurchaseRequestWorkflowEmail,
   sendSystemNotificationEmail,
 } from "./emailNotifications.js";
 import { addDebugLog } from "../routes/debug-logs.js";
@@ -55,15 +57,16 @@ async function sendRoleEventEmails(users, payload) {
     return;
   }
   try {
-    const result = await sendSystemNotificationEmail({
-      to,
-      subject: `[ERP Notification] ${payload.title}`,
-      text: `${payload.message}\n\nReference: ${payload.refType ?? "-"} ${payload.refId ?? ""}`.trim(),
-      html:
-        `<h3>${payload.title}</h3>` +
-        `<p>${payload.message}</p>` +
-        `<p><b>Reference:</b> ${payload.refType ?? "-"} ${payload.refId ?? ""}</p>`,
-    });
+    const result = payload.emailSender
+      ? await payload.emailSender(to)
+      : await sendSystemNotificationEmail({
+          to,
+          subject: `[ERP Notification] ${payload.title}`,
+          text: String(payload.message ?? "").trim(),
+          html:
+            `<h3>${payload.title}</h3>` +
+            `<p>${payload.message}</p>`,
+        });
     if (!result?.sent) {
       const warnMessage = `Notification email not sent: ${result?.reason ?? "Unknown reason"} ${JSON.stringify({
         title: payload.title,
@@ -308,6 +311,11 @@ export async function processWorkflowNotifications(
             type: "PURCHASE_REQUEST_APPROVAL",
             refType: "purchase-request",
             refId: localId,
+            emailSender: (recipients) => sendPurchaseRequestWorkflowEmail({
+              event: "SUBMITTED",
+              record: row,
+              recipients,
+            }),
           });
         } else {
           console.warn(`⚠️ [DEBUG] No approvers found for PR ${row.prNumber} with requesterRole: ${requesterRole}`);
@@ -337,6 +345,11 @@ export async function processWorkflowNotifications(
             type: "REQUESTER_UPDATE",
             refType: "tracking-item",
             refId: requesterContext.requestLocalId || localId,
+            emailSender: (recipients) => sendPurchaseRequestWorkflowEmail({
+              event: "APPROVED",
+              record: row,
+              recipients,
+            }),
           });
 
           // CRITICAL: Integrate budget deduction on PR approval (Task 16)
@@ -362,6 +375,11 @@ export async function processWorkflowNotifications(
             type: "REQUESTER_UPDATE",
             refType: "tracking-item",
             refId: requesterContext.requestLocalId || localId,
+            emailSender: (recipients) => sendPurchaseRequestWorkflowEmail({
+              event: "REJECTED",
+              record: row,
+              recipients,
+            }),
           });
         }
       }
@@ -398,21 +416,11 @@ export async function processWorkflowNotifications(
             type: "PURCHASE_ORDER_APPROVAL",
             refType: "purchase-order",
             refId: localId,
-          });
-        }
-      }
-      if (nowStatus === "REQUEST_CHANGE" && beforeStatus !== "REQUEST_CHANGE") {
-        // Notify PO creator (usually Department Executive or Manager)
-        const requesterContext = await resolveRequesterContext(row, undefined, {
-          preferSourceRequest: true,
-        });
-        if (requesterContext?.user) {
-          await createInAppNotifications([requesterContext.user], {
-            title: "Purchase Order - Changes Requested",
-            message: `${row.poNumber ?? "PO"} requires changes. Please review the feedback and resubmit.`,
-            type: "PURCHASE_ORDER_CHANGE",
-            refType: "purchase-order",
-            refId: localId,
+            emailSender: (recipients) => sendPurchaseOrderWorkflowEmail({
+              event: "SUBMITTED",
+              record: row,
+              recipients,
+            }),
           });
         }
       }
@@ -429,6 +437,11 @@ export async function processWorkflowNotifications(
             type: "REQUESTER_UPDATE",
             refType: "tracking-item",
             refId: requesterContext.requestLocalId || localId,
+            emailSender: (recipients) => sendPurchaseOrderWorkflowEmail({
+              event: "APPROVED",
+              record: row,
+              recipients,
+            }),
           });
         } else if (nowStatus === "REJECTED") {
           await createInAppNotifications([requesterContext.user], {
@@ -437,6 +450,11 @@ export async function processWorkflowNotifications(
             type: "REQUESTER_UPDATE",
             refType: "tracking-item",
             refId: requesterContext.requestLocalId || localId,
+            emailSender: (recipients) => sendPurchaseOrderWorkflowEmail({
+              event: "REJECTED",
+              record: row,
+              recipients,
+            }),
           });
         }
       }
@@ -459,13 +477,14 @@ export async function processWorkflowNotifications(
             refType: "supplier-order-ack",
             refId: localId,
           });
-          const supplierMailResult = await sendSupplierPendingOrderEmail({
+          const supplierMailResult = await sendDetailedSupplierPendingOrderEmail({
             supplierEmail: supplier.email,
             supplierName: row.supplierName,
             orderNo: row.poNumber,
             sourcePrNumber: row.sourcePrNumber,
             createdDate: row.createdDate,
             companyAddress: row.companyAddress,
+            record: row,
           });
           if (!supplierMailResult?.sent) {
             console.warn("Supplier pending order email not sent:", {
@@ -608,11 +627,12 @@ export async function processWorkflowNotifications(
             refId: localId,
           });
 
-          const supplierDiscrepancyMailResult = await sendSupplierDiscrepancyEmail({
+          const supplierDiscrepancyMailResult = await sendDetailedSupplierDiscrepancyEmail({
             supplierEmail: supplier.email,
             supplierName: row.supplierName,
             orderNo: row.poNumber,
             discrepancyReason: row.discrepancyReason,
+            record: row,
           });
           if (!supplierDiscrepancyMailResult?.sent) {
             console.warn("Supplier discrepancy email not sent:", {

@@ -54,7 +54,40 @@
     "title": "供应商发票",
     "empty": "目前没有供应商发票。",
     "actions": {
-      "back": "返回"
+      "back": "返回",
+      "view": "查看",
+      "submit": "提交发票"
+    },
+    "status": { "draft": "草稿", "submitted": "已提交" },
+    "labels": { "pending": "待填写发票" },
+    "fields": {
+      "invoiceNumber": "发票号码",
+      "invoiceDate": "发票日期",
+      "poNumber": "采购订单编号",
+      "grnNumber": "收货单/交付编号",
+      "sourcePr": "采购申请编号",
+      "supplier": "供应商",
+      "paymentTerms": "付款条款",
+      "subtotal": "小计",
+      "taxTotal": "税额合计",
+      "grandTotal": "总金额",
+      "status": "状态",
+      "attachment": "发票附件"
+    },
+    "detail": {
+      "title": "供应商发票详情",
+      "information": "发票信息",
+      "items": "发票物品",
+      "itemsHint": "请确认已收货物品，并填写供应商发票资料后提交。",
+      "submitInformation": "提交发票"
+    },
+    "validation": {
+      "invoiceNumberRequired": "请输入发票号码",
+      "invoiceDateRequired": "请输入发票日期"
+    },
+    "messages": {
+      "submitted": "供应商发票已提交。",
+      "notFound": "找不到供应商发票。"
     }
   },
   "orderAcknowledgement": {

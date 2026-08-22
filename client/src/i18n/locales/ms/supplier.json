@@ -52,7 +52,40 @@
     "title": "Invois Pembekal",
     "empty": "Tiada invois pembekal lagi.",
     "actions": {
-      "back": "Kembali"
+      "back": "Kembali",
+      "view": "Lihat",
+      "submit": "Hantar invois"
+    },
+    "status": { "draft": "Draf", "submitted": "Dihantar" },
+    "labels": { "pending": "Invois belum lengkap" },
+    "fields": {
+      "invoiceNumber": "Nombor invois",
+      "invoiceDate": "Tarikh invois",
+      "poNumber": "Nombor PO",
+      "grnNumber": "Nombor GRN / penghantaran",
+      "sourcePr": "Nombor PR",
+      "supplier": "Pembekal",
+      "paymentTerms": "Terma pembayaran",
+      "subtotal": "Jumlah kecil",
+      "taxTotal": "Jumlah cukai",
+      "grandTotal": "Jumlah keseluruhan",
+      "status": "Status",
+      "attachment": "Lampiran invois"
+    },
+    "detail": {
+      "title": "Butiran Invois Pembekal",
+      "information": "Maklumat invois",
+      "items": "Item invois",
+      "itemsHint": "Semak item yang telah diterima dan masukkan maklumat invois pembekal sebelum menghantar.",
+      "submitInformation": "Hantar invois"
+    },
+    "validation": {
+      "invoiceNumberRequired": "Masukkan nombor invois",
+      "invoiceDateRequired": "Masukkan tarikh invois"
+    },
+    "messages": {
+      "submitted": "Invois pembekal telah dihantar.",
+      "notFound": "Invois pembekal tidak ditemui."
     }
   },
   "orderAcknowledgement": {

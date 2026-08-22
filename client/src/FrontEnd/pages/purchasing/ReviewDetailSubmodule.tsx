@@ -12,6 +12,7 @@ import {
 import { ArrowLeftOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { reserveBudgetForPR } from "../../shared/api/departmentBudget";
 
 import {
   hydratePurchaseRequestDrafts,
@@ -173,12 +174,29 @@ export default function ReviewDetailSubmodule(): React.ReactElement {
     [localId, requests],
   );
 
-  const onSubmit = (): void => {
+  const onSubmit = async (): Promise<void> => {
     if (!request) return;
+
+    let budgetReservedAt = request.budgetReservedAt;
+    if (!budgetReservedAt) {
+      const budgetResult = await reserveBudgetForPR({
+        ...request,
+        status: "SUBMITTED",
+        requestedBy: request.createdByUserId,
+        createdAt: request.requestDate,
+      });
+      if (!budgetResult.success) {
+        message.error(budgetResult.reason ?? "Could not reserve department budget");
+        return;
+      }
+      budgetReservedAt = new Date().toISOString();
+    }
 
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: "SUBMITTED",
+      budgetReservedAt,
+      budgetReleasedAt: undefined,
     }));
     message.success(t('purchaseRequest.detail.messages.submitted', { prNumber: request.prNumber }));
     navigate("/purchasing/review");

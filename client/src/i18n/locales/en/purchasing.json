@@ -117,7 +117,9 @@
       },
       "status": {
         "draft": "Draft",
-        "submitted": "Submitted"
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected"
       },
       "messages": {
         "submitted": "{{prNumber}} submitted.",
@@ -311,7 +313,9 @@
       },
       "status": {
         "draft": "Draft",
-        "submitted": "Submitted"
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected"
       },
       "messages": {
         "submitted": "{{poNumber}} submitted.",

@@ -4,3 +4,4 @@ logs/
 node_modules/
 .env
 vision-service-account.json
+secrets/

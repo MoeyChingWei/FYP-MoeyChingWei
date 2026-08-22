@@ -7,6 +7,9 @@ const WORKFLOW_SYNC_ENABLED = process.env.REACT_APP_ENABLE_WORKFLOW_SYNC === "tr
 const pendingRowsByStore = new Map<string, { localId: string }[]>();
 const pendingTimerByStore = new Map<string, number>();
 const syncRunningByStore = new Set<string>();
+// IDs present in the last server snapshot seen by this browser. The backend
+// uses these to distinguish an intentional delete from a concurrent create.
+const knownServerIdsByStore = new Map<string, Set<string>>();
 
 export function isWorkflowSyncEnabled(): boolean {
   return WORKFLOW_SYNC_ENABLED;
@@ -46,7 +49,13 @@ async function fetchWorkflowRowsInternal<T>(
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? `Failed to load ${store}`);
   }
-  return Array.isArray(res.data?.rows) ? (res.data.rows as T[]) : [];
+  const rows = Array.isArray(res.data?.rows) ? (res.data.rows as T[]) : [];
+  knownServerIdsByStore.set(
+    store,
+    new Set(rows.filter((row) => row && typeof (row as { localId?: unknown }).localId === "string")
+      .map((row) => (row as { localId: string }).localId)),
+  );
+  return rows;
 }
 
 export async function saveWorkflowRows<T extends { localId: string }>(
@@ -58,7 +67,8 @@ export async function saveWorkflowRows<T extends { localId: string }>(
     return;
   }
   console.log(`🔄 [WORKFLOW-SYNC] Saving ${rows.length} rows to store: ${store}`);
-  const res = await axios.put(`${API}/${store}`, { rows });
+  const baseLocalIds = Array.from(knownServerIdsByStore.get(store) ?? []);
+  const res = await axios.put(`${API}/${store}`, { rows, baseLocalIds });
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? `Failed to save ${store}`);
   }

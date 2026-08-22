@@ -17,9 +17,60 @@ export interface BudgetDeductionResult {
   reason?: string;
 }
 
+export interface BudgetReservationResult {
+  success: boolean;
+  reservedAmount?: number;
+  releasedAmount?: number;
+  budgetId?: number;
+  alreadyProcessed?: boolean;
+  reason?: string;
+}
+
+async function postBudgetWorkflowAction(
+  action: "reserve" | "release",
+  prPayload: any,
+): Promise<BudgetReservationResult> {
+  try {
+    const user = getSessionUser();
+    if (!user) return { success: false, reason: "Authentication required" };
+
+    const res = await axios.post(`${API}/usage/${action}`, {
+      prPayload,
+      userId: user.id,
+      email: user.email,
+    });
+    return res.data.success
+      ? res.data.data
+      : { success: false, reason: res.data.message };
+  } catch (error: any) {
+    console.error(`Budget ${action} error:`, error);
+    return {
+      success: false,
+      reason: error.response?.data?.message || error.message || `Failed to ${action} budget`,
+    };
+  }
+}
+
+export function reserveBudgetForPR(prPayload: any): Promise<BudgetReservationResult> {
+  return postBudgetWorkflowAction("reserve", prPayload);
+}
+
+export function releaseBudgetForPR(prPayload: any): Promise<BudgetReservationResult> {
+  return postBudgetWorkflowAction("release", prPayload);
+}
+
 export async function deductBudgetForPR(prPayload: any): Promise<BudgetDeductionResult> {
   try {
-    const res = await axios.post(`${API}/usage/deduct`, { prPayload });
+    const user = getSessionUser();
+    if (!user) {
+      return { success: false, reason: "Authentication required" };
+    }
+
+    const res = await axios.post(`${API}/usage/deduct`, {
+      prPayload,
+      userId: user.id,
+      email: user.email,
+    });
     return res.data.success ? res.data.data : { success: false, reason: res.data.message };
   } catch (error: any) {
     console.error("Budget deduction error:", error);

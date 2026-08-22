@@ -27,6 +27,7 @@ import databaseRoutes from "./routes/database.js";
 import homeRoutes from "./routes/home.js";
 import budgetRoutes from "./routes/budget.js";
 import departmentBudgetRoutes from "./routes/department-budget.js";
+import gmailRoutes from "./routes/gmail.js";
 import { auditMiddleware } from "./middleware/auditMiddleware.js";
 
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/audit", auditRoutes);
 app.use("/api/backup", backupRoutes);
 app.use("/api/database", databaseRoutes);
 app.use("/api/debug", debugLogsRoutes);
+app.use("/api/gmail", gmailRoutes);
 
 app.use(auditMiddleware);
 app.use("/api", authRoutes);

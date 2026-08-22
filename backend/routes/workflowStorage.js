@@ -106,6 +106,15 @@ router.put("/:store", async (req, res) => {
     });
   }
 
+  // A client sends the IDs from its last GET. IDs created by another client
+  // after that snapshot must not be interpreted as deletions from this stale
+  // full-snapshot PUT. Older clients omit this field and retain legacy
+  // replacement behaviour.
+  const hasBaseSnapshot = Array.isArray(req.body?.baseLocalIds);
+  const baseLocalIds = hasBaseSnapshot
+    ? new Set(req.body.baseLocalIds.filter((id) => typeof id === "string"))
+    : null;
+
   try {
     console.log(`📊 [DEBUG] Fetching previousRows from database...`);
     const previousRows = await config.model.findMany({
@@ -118,17 +127,23 @@ router.put("/:store", async (req, res) => {
 
     const incomingIds = new Set(rows.map((row) => row.localId));
     const previousIds = previousRows.map((row) => row[config.field]);
-    const idsToDelete = previousIds.filter((id) => !incomingIds.has(id));
+    const idsToDelete = previousIds.filter((id) =>
+      !incomingIds.has(id) && (!baseLocalIds || baseLocalIds.has(id)),
+    );
+    const concurrentRows = baseLocalIds
+      ? previousRows.filter((row) => !incomingIds.has(row[config.field]) && !baseLocalIds.has(row[config.field]))
+      : [];
+    const rowsToPersist = [...rows, ...concurrentRows.map((row) => row.payload)];
     const updatedAt = new Date();
 
-    console.log(`💾 [DEBUG] Starting database transaction - deleting ${idsToDelete.length} rows, upserting ${rows.length} rows`);
+    console.log(`💾 [DEBUG] Starting database transaction - deleting ${idsToDelete.length} rows, upserting ${rowsToPersist.length} rows`);
     await prisma.$transaction([
       ...idsToDelete.map((id) =>
         config.model.delete({
           where: { [config.field]: id },
         }),
       ),
-      ...rows.map((row) =>
+      ...rowsToPersist.map((row) =>
         config.model.upsert({
           where: { [config.field]: row.localId },
           update: { payload: row, updatedAt },
@@ -144,18 +159,18 @@ router.put("/:store", async (req, res) => {
     addDebugLog("WORKFLOW", "Database transaction completed successfully", {
       store: req.params.store,
       deletedCount: idsToDelete.length,
-      upsertedCount: rows.length,
+      upsertedCount: rowsToPersist.length,
     });
 
-    const nextRows = rows.map((row) => ({
+    const nextRows = rowsToPersist.map((row) => ({
       localId: row.localId,
       payload: row,
     }));
 
-    console.log(`🚀 [DEBUG] Triggering processWorkflowNotifications for store: ${req.params.store}, rows: ${rows.length}`);
+    console.log(`🚀 [DEBUG] Triggering processWorkflowNotifications for store: ${req.params.store}, rows: ${rowsToPersist.length}`);
     addDebugLog("WORKFLOW", "Triggering processWorkflowNotifications", {
       store: req.params.store,
-      rowCount: rows.length,
+      rowCount: rowsToPersist.length,
     });
 
     setImmediate(() => {
@@ -176,9 +191,9 @@ router.put("/:store", async (req, res) => {
     console.log(`📤 [DEBUG] Sending success response to client`);
     addDebugLog("WORKFLOW", "Sending success response to client", {
       store: req.params.store,
-      count: rows.length,
+      count: rowsToPersist.length,
     });
-    return res.json({ success: true, count: rows.length });
+    return res.json({ success: true, count: rowsToPersist.length });
   } catch (err) {
     console.error(`❌ [ERROR] PUT /api/workflow/${req.params.store} error:`, err);
     return res.status(500).json({ success: false, message: "Server error" });

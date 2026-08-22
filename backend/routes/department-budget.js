@@ -7,7 +7,11 @@ import {
   notifyBudgetAdjustmentApproved,
   notifyBudgetAdjustmentRejected
 } from '../services/notification-service.js';
-import { deductBudgetForPR } from '../services/budget-deduction-service.js';
+import {
+  deductBudgetForPR,
+  reserveBudgetForPR,
+  releaseBudgetForPR,
+} from '../services/budget-deduction-service.js';
 import { authenticateRequest, requireRoles, requireOwnDepartment } from '../middleware/auth.js';
 import { ROLES } from '../constants/roles.js';
 
@@ -968,6 +972,42 @@ router.post('/usage/deduct', async (req, res) => {
       message: 'Failed to deduct budget',
       error: error.message
     });
+  }
+});
+
+// POST /api/department-budget/usage/reserve - Reserve budget for submitted PR
+router.post('/usage/reserve', async (req, res) => {
+  try {
+    const { prPayload } = req.body;
+    if (!prPayload) {
+      return res.status(400).json({ success: false, message: 'prPayload required' });
+    }
+    const result = await reserveBudgetForPR(prPayload);
+    if (!result.success) {
+      return res.status(400).json({ success: false, message: result.reason });
+    }
+    return res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Budget reservation error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to reserve budget', error: error.message });
+  }
+});
+
+// POST /api/department-budget/usage/release - Release budget for rejected PR
+router.post('/usage/release', async (req, res) => {
+  try {
+    const { prPayload } = req.body;
+    if (!prPayload) {
+      return res.status(400).json({ success: false, message: 'prPayload required' });
+    }
+    const result = await releaseBudgetForPR(prPayload);
+    if (!result.success) {
+      return res.status(400).json({ success: false, message: result.reason });
+    }
+    return res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Budget release error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to release budget', error: error.message });
   }
 });
 

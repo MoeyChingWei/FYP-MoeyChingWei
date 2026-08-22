@@ -54,7 +54,40 @@
     "title": "Supplier Invoice",
     "empty": "No supplier invoices yet.",
     "actions": {
-      "back": "Back"
+      "back": "Back",
+      "view": "View",
+      "submit": "Submit invoice"
+    },
+    "status": { "draft": "Draft", "submitted": "Submitted" },
+    "labels": { "pending": "Pending invoice" },
+    "fields": {
+      "invoiceNumber": "Invoice number",
+      "invoiceDate": "Invoice date",
+      "poNumber": "PO number",
+      "grnNumber": "GRN / delivery number",
+      "sourcePr": "PR number",
+      "supplier": "Supplier",
+      "paymentTerms": "Payment terms",
+      "subtotal": "Subtotal",
+      "taxTotal": "Tax total",
+      "grandTotal": "Grand total",
+      "status": "Status",
+      "attachment": "Invoice attachment"
+    },
+    "detail": {
+      "title": "Supplier Invoice Details",
+      "information": "Invoice information",
+      "items": "Invoice items",
+      "itemsHint": "Review the received items and enter the supplier invoice details before submitting.",
+      "submitInformation": "Submit invoice"
+    },
+    "validation": {
+      "invoiceNumberRequired": "Enter the invoice number",
+      "invoiceDateRequired": "Enter the invoice date"
+    },
+    "messages": {
+      "submitted": "Supplier invoice submitted.",
+      "notFound": "Supplier invoice not found."
     }
   },
   "orderAcknowledgement": {

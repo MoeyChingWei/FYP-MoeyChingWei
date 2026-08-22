@@ -19,6 +19,8 @@ export type DeliveryStatus = "PENDING_DELIVERY" | "DELIVERED";
 
 export type GrnStatus = "PENDING_GRN" | "COMPLETED" | "DISCREPANCY";
 
+export type SupplierInvoiceStatus = "DRAFT" | "SUBMITTED";
+
 export interface SupplierOrderAcknowledgementRecord {
   localId: string;
   poLocalId: string;
@@ -29,6 +31,7 @@ export interface SupplierOrderAcknowledgementRecord {
   createdBy: string;
   department?: string;
   currency: string;
+  paymentTerms?: string;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -57,6 +60,7 @@ export interface SupplierDeliveryRecord {
   createdBy: string;
   department?: string;
   currency: string;
+  paymentTerms?: string;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -84,6 +88,7 @@ export interface SupplierGrnRecord {
   createdBy: string;
   department?: string;
   currency: string;
+  paymentTerms?: string;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -99,15 +104,49 @@ export interface SupplierGrnRecord {
   discrepancyReason?: string;
 }
 
+export interface SupplierInvoiceRecord {
+  localId: string;
+  invoiceNumber?: string;
+  invoiceDate?: string;
+  grnLocalId: string;
+  deliveryNo?: string;
+  poLocalId: string;
+  poNumber: string;
+  sourcePrNumber: string;
+  sourceRequester?: string;
+  createdDate: string;
+  supplierId?: number;
+  supplierName?: string;
+  supplierCompanyName?: string;
+  supplierEmail?: string;
+  supplierAddress?: string;
+  currency: string;
+  paymentTerms?: string;
+  companyName?: string;
+  companyAddress: string;
+  status: SupplierInvoiceStatus;
+  items: DraftLineItem[];
+  subtotal: number;
+  taxTotal: number;
+  grandTotal: number;
+  attachmentName?: string;
+  attachmentDataUrl?: string;
+  notes?: string;
+  submittedDate?: string;
+}
+
 const ORDER_ACKS_KEY = "erp_supplier_order_acks_v1";
 const DELIVERIES_KEY = "erp_supplier_deliveries_v1";
 const GRNS_KEY = "erp_supplier_grns_v1";
+const INVOICES_KEY = "erp_supplier_invoices_v1";
 const ORDER_ACKS_STORE = "supplier-order-acks";
 const DELIVERIES_STORE = "deliveries";
 const GRNS_STORE = "grns";
+const INVOICES_STORE = "supplier-invoices";
 let supplierOrderAcknowledgementCache: SupplierOrderAcknowledgementRecord[] = [];
 let supplierDeliveryCache: SupplierDeliveryRecord[] = [];
 let supplierGrnCache: SupplierGrnRecord[] = [];
+let supplierInvoiceCache: SupplierInvoiceRecord[] = [];
 
 export { sortWorkflowRowsByStatusAndDate };
 
@@ -126,6 +165,24 @@ function mergeByLocalId<T extends { localId: string }>(localRows: T[], remoteRow
   return Array.from(merged.values());
 }
 
+function hydrateCompanyLogo<T extends { companyLogo?: string }>(
+  rows: T[],
+  store: string,
+): T[] {
+  const companyLogo = getCompanyLogo();
+  if (!companyLogo || !rows.some((row) => !row.companyLogo)) return rows;
+
+  const hydratedRows = rows.map((row) =>
+    row.companyLogo ? row : { ...row, companyLogo },
+  );
+  queueWorkflowRowsSave(store, hydratedRows, () => {
+    window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", {
+      detail: { store },
+    }));
+  });
+  return hydratedRows;
+}
+
 function readLocalRows<T>(key: string): T[] {
   try {
     const raw = window.localStorage.getItem(key);
@@ -139,6 +196,13 @@ function readLocalRows<T>(key: string): T[] {
 
 function newTempId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `tmp-${Date.now()}`;
+}
+
+function generateInvoiceNumber(): string {
+  const d = new Date();
+  const date = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+  const suffix = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `INV-${date}-${suffix}`;
 }
 
 function generateDeliveryNo(): string {
@@ -209,6 +273,12 @@ function parseStoredArray<T>(key: string): T[] {
     }
     return [...supplierGrnCache] as T[];
   }
+  if (key === INVOICES_KEY) {
+    if (!supplierInvoiceCache.length) {
+      supplierInvoiceCache = readLocalRows<SupplierInvoiceRecord>(key);
+    }
+    return [...supplierInvoiceCache] as T[];
+  }
   return [];
 }
 
@@ -219,6 +289,8 @@ function saveStoredArray<T>(key: string, eventName: string, rows: T[]): void {
     supplierDeliveryCache = [...(rows as SupplierDeliveryRecord[])];
   } else if (key === GRNS_KEY) {
     supplierGrnCache = [...(rows as SupplierGrnRecord[])];
+  } else if (key === INVOICES_KEY) {
+    supplierInvoiceCache = [...(rows as SupplierInvoiceRecord[])];
   }
   try {
     window.localStorage.setItem(key, JSON.stringify(rows));
@@ -325,6 +397,62 @@ export function updateSupplierGrn(
   );
 }
 
+export function loadSupplierInvoices(): SupplierInvoiceRecord[] {
+  return parseStoredArray<SupplierInvoiceRecord>(INVOICES_KEY);
+}
+
+export function saveSupplierInvoices(rows: SupplierInvoiceRecord[]): void {
+  saveStoredArray(INVOICES_KEY, "erp-supplier-invoices", rows);
+  queueWorkflowRowsSave(INVOICES_STORE, rows, () => {
+    window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", { detail: { store: INVOICES_STORE } }));
+  });
+}
+
+export function appendSupplierInvoice(row: SupplierInvoiceRecord): void {
+  saveSupplierInvoices([...loadSupplierInvoices(), row]);
+}
+
+export function updateSupplierInvoice(
+  localId: string,
+  updater: (row: SupplierInvoiceRecord) => SupplierInvoiceRecord,
+): void {
+  saveSupplierInvoices(loadSupplierInvoices().map((row) => row.localId === localId ? updater(row) : row));
+}
+
+function invoiceTotals(items: DraftLineItem[]): { subtotal: number; taxTotal: number; grandTotal: number } {
+  const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const taxTotal = items.reduce((sum, item) => sum + (item.taxAmount ?? item.quantity * item.unitPrice * (item.taxRate ?? 0) / 100), 0);
+  return { subtotal, taxTotal, grandTotal: subtotal + taxTotal };
+}
+
+export function createSupplierInvoiceFromGrn(row: SupplierGrnRecord): SupplierInvoiceRecord {
+  const totals = invoiceTotals(row.items);
+  return {
+    localId: newTempId(),
+    invoiceNumber: generateInvoiceNumber(),
+    invoiceDate: row.completedDate ?? row.createdDate,
+    grnLocalId: row.localId,
+    deliveryNo: row.deliveryNo,
+    poLocalId: row.poLocalId,
+    poNumber: row.poNumber,
+    sourcePrNumber: row.sourcePrNumber,
+    sourceRequester: row.sourceRequester,
+    createdDate: row.completedDate ?? row.createdDate,
+    supplierId: row.supplierId,
+    supplierName: row.supplierName,
+    supplierCompanyName: row.supplierCompanyName,
+    supplierEmail: row.supplierEmail,
+    supplierAddress: row.supplierAddress,
+    currency: row.currency,
+    paymentTerms: row.paymentTerms,
+    companyName: row.companyName,
+    companyAddress: row.companyAddress,
+    status: "DRAFT",
+    items: row.items.map((item) => ({ ...item })),
+    ...totals,
+  };
+}
+
 export function createOrderAcknowledgementRecordsFromPurchaseOrder(
   order: PurchaseOrderDraft,
 ): SupplierOrderAcknowledgementRecord[] {
@@ -340,6 +468,7 @@ export function createOrderAcknowledgementRecordsFromPurchaseOrder(
     createdBy: order.createdBy,
     department: order.department,
     currency: order.currency,
+    paymentTerms: order.paymentTerms,
     companyName: getCompanyName(),
     companyLogo: getCompanyLogo(),
     companyAddress,
@@ -370,6 +499,7 @@ export function createDeliveryFromAcknowledgement(
     createdBy: row.createdBy,
     department: row.department,
     currency: row.currency,
+    paymentTerms: row.paymentTerms,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
@@ -400,6 +530,7 @@ export function createGrnFromDelivery(
     createdBy: row.createdBy,
     department: row.department,
     currency: row.currency,
+    paymentTerms: row.paymentTerms,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
@@ -431,6 +562,7 @@ export function createDeliveryFromGrnDiscrepancy(
     createdBy: row.createdBy,
     department: row.department,
     currency: row.currency,
+    paymentTerms: row.paymentTerms,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
@@ -460,13 +592,14 @@ export async function hydrateSupplierOrderAcknowledgements(): Promise<
     const rows = pendingRows ?? (isWorkflowSyncEnabled()
       ? remoteRows
       : mergeByLocalId(localRows, remoteRows));
-    supplierOrderAcknowledgementCache = rows;
+    const hydratedRows = hydrateCompanyLogo(rows, ORDER_ACKS_STORE);
+    supplierOrderAcknowledgementCache = hydratedRows;
     try {
-      window.localStorage.setItem(ORDER_ACKS_KEY, JSON.stringify(rows));
+      window.localStorage.setItem(ORDER_ACKS_KEY, JSON.stringify(hydratedRows));
     } catch {
       // Ignore local persistence errors to keep UI usable.
     }
-    return rows;
+    return hydratedRows;
   } catch {
     return loadSupplierOrderAcknowledgements();
   }
@@ -485,13 +618,14 @@ export async function hydrateSupplierDeliveries(): Promise<SupplierDeliveryRecor
     const rows = pendingRows ?? (isWorkflowSyncEnabled()
       ? remoteRows
       : mergeByLocalId(localRows, remoteRows));
-    supplierDeliveryCache = rows;
+    const hydratedRows = hydrateCompanyLogo(rows, DELIVERIES_STORE);
+    supplierDeliveryCache = hydratedRows;
     try {
-      window.localStorage.setItem(DELIVERIES_KEY, JSON.stringify(rows));
+      window.localStorage.setItem(DELIVERIES_KEY, JSON.stringify(hydratedRows));
     } catch {
       // Ignore local persistence errors to keep UI usable.
     }
-    return rows;
+    return hydratedRows;
   } catch {
     return loadSupplierDeliveries();
   }
@@ -510,14 +644,32 @@ export async function hydrateSupplierGrns(): Promise<SupplierGrnRecord[]> {
     const rows = pendingRows ?? (isWorkflowSyncEnabled()
       ? remoteRows
       : mergeByLocalId(localRows, remoteRows));
-    supplierGrnCache = rows;
+    const hydratedRows = hydrateCompanyLogo(rows, GRNS_STORE);
+    supplierGrnCache = hydratedRows;
     try {
-      window.localStorage.setItem(GRNS_KEY, JSON.stringify(rows));
+      window.localStorage.setItem(GRNS_KEY, JSON.stringify(hydratedRows));
     } catch {
       // Ignore local persistence errors to keep UI usable.
     }
-    return rows;
+    return hydratedRows;
   } catch {
     return loadSupplierGrns();
+  }
+}
+
+export async function hydrateSupplierInvoices(): Promise<SupplierInvoiceRecord[]> {
+  const localRows = readLocalRows<SupplierInvoiceRecord>(INVOICES_KEY);
+  if (localRows.length) supplierInvoiceCache = [...localRows];
+  try {
+    const remoteRows = localRows.length
+      ? await fetchWorkflowRows<SupplierInvoiceRecord>(INVOICES_STORE, 200)
+      : await fetchWorkflowRowsForRecovery<SupplierInvoiceRecord>(INVOICES_STORE);
+    const pendingRows = getPendingWorkflowRows<SupplierInvoiceRecord>(INVOICES_STORE);
+    const rows = pendingRows ?? (isWorkflowSyncEnabled() ? remoteRows : mergeByLocalId(localRows, remoteRows));
+    supplierInvoiceCache = rows;
+    try { window.localStorage.setItem(INVOICES_KEY, JSON.stringify(rows)); } catch { /* keep in-memory data */ }
+    return rows;
+  } catch {
+    return loadSupplierInvoices();
   }
 }

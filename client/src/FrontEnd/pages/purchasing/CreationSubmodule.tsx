@@ -60,8 +60,11 @@ import {
 import {
   getBudgetUsage,
   getDepartments,
+  releaseBudgetForPR,
+  reserveBudgetForPR,
   type BudgetUsageSummary,
 } from "../../shared/api/departmentBudget";
+import { getCompanyLogo } from "../../modules/settings/companyAddress";
 import {
   createSupplierInventory,
   fetchSupplierInventory,
@@ -691,6 +694,7 @@ export default function CreationSubmodule(): React.ReactElement {
       (sum, item) => sum + (item.amountAfterTax ?? item.quantity * item.unitPrice),
       0,
     );
+    const localId = editingDraft?.localId ?? newTempId();
 
     // A submitted request must fit the current department's available budget.
     // Drafts remain available even when finance has not configured a budget yet.
@@ -705,6 +709,25 @@ export default function CreationSubmodule(): React.ReactElement {
         );
         return;
       }
+    }
+
+    let budgetReservedAt = editingDraft?.budgetReservedAt;
+    if (status === "SUBMITTED" && !budgetReservedAt) {
+      const budgetResult = await reserveBudgetForPR({
+        ...editingDraft,
+        localId,
+        status: "SUBMITTED",
+        createdByUserId: editingDraft?.createdByUserId ?? sessionUser?.id,
+        createdAt: editingDraft?.requestDate ?? requestDate,
+        requestDate,
+        department: department === "â€”" ? undefined : department,
+        lineItems,
+      });
+      if (!budgetResult.success) {
+        message.error(budgetResult.reason ?? "Could not reserve department budget");
+        throw new Error(budgetResult.reason ?? "Could not reserve department budget");
+      }
+      budgetReservedAt = new Date().toISOString();
     }
     const inventoryReservations = lineItems
       .filter((item) => item.supplierInventoryItemId && item.quantity > 0)
@@ -725,19 +748,32 @@ export default function CreationSubmodule(): React.ReactElement {
       try {
         await reserveSupplierInventory(inventoryReservations);
       } catch (error) {
+        if (budgetReservedAt) {
+          await releaseBudgetForPR({
+            ...editingDraft,
+            localId,
+            status: "REJECTED",
+            requestedBy: editingDraft?.createdByUserId ?? sessionUser?.id,
+            createdAt: requestDate,
+            requestDate,
+            department: department === "â€”" ? undefined : department,
+            lineItems,
+          });
+        }
         message.error(error instanceof Error ? error.message : "Could not reserve inventory");
         throw error;
       }
     }
 
     const draft: PurchaseRequestDraft = {
-      localId: editingDraft?.localId ?? newTempId(),
+      localId,
       prNumber,
       requestDate,
       requestBy,
       createdByUserId: editingDraft?.createdByUserId ?? sessionUser?.id,
       createdByEmail: editingDraft?.createdByEmail ?? sessionUser?.email,
       department: department === "—" ? undefined : department,
+      companyLogo: getCompanyLogo(),
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,
@@ -751,6 +787,8 @@ export default function CreationSubmodule(): React.ReactElement {
         status === "SUBMITTED" && inventoryReservations.length > 0
           ? inventoryReservations.map((item) => item.inventoryItemId as string)
           : editingDraft?.inventoryReservedItemIds,
+      budgetReservedAt,
+      budgetReleasedAt: undefined,
     };
     if (editingDraft) {
       replacePurchaseRequestDraft(editingDraft.localId, draft);
@@ -1134,7 +1172,7 @@ export default function CreationSubmodule(): React.ReactElement {
           >
             {departmentBudget ? (
               <Row gutter={[16, 12]}>
-                <Col xs={24} sm={6}>
+                <Col xs={24}>
                   <Text type="secondary">Department</Text>
                   <div><Text strong>{departmentBudget.department.name}</Text></div>
                 </Col>
@@ -1152,6 +1190,17 @@ export default function CreationSubmodule(): React.ReactElement {
                     value={departmentBudget.spentAmount}
                     precision={2}
                     prefix={DEFAULT_CURRENCY}
+                  />
+                </Col>
+                <Col xs={24} sm={6}>
+                  <Statistic
+                    title="Reserved"
+                    value={departmentBudget.reservedAmount}
+                    precision={2}
+                    prefix={DEFAULT_CURRENCY}
+                    styles={{
+                      content: { color: "#fa8c16" },
+                    }}
                   />
                 </Col>
                 <Col xs={24} sm={6}>

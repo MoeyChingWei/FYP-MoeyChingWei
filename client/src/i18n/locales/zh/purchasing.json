@@ -116,7 +116,9 @@
       },
       "status": {
         "draft": "草稿",
-        "submitted": "已提交"
+        "submitted": "已提交",
+        "approved": "已批准",
+        "rejected": "已拒绝"
       },
       "messages": {
         "submitted": "{{prNumber}} 已提交。",
@@ -310,7 +312,9 @@
       },
       "status": {
         "draft": "草稿",
-        "submitted": "已提交"
+        "submitted": "已提交",
+        "approved": "已批准",
+        "rejected": "已拒绝"
       },
       "messages": {
         "submitted": "{{poNumber}} 已提交。",

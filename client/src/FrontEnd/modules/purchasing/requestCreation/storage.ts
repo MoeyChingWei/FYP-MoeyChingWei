@@ -6,6 +6,7 @@ import {
   isWorkflowSyncEnabled,
   queueWorkflowRowsSave,
 } from "../../../shared/api/workflowStorage";
+import { getCompanyLogo } from "../../settings/companyAddress";
 
 export const PURCHASE_REQUEST_DRAFTS_KEY = "erp_purchase_request_drafts_v1";
 const PURCHASE_REQUEST_STORE = "purchase-requests";
@@ -117,13 +118,25 @@ export async function hydratePurchaseRequestDrafts(): Promise<PurchaseRequestDra
     const drafts = pendingDrafts ?? (isWorkflowSyncEnabled()
       ? remoteDrafts
       : mergeByLocalId(localDrafts, remoteDrafts));
-    purchaseRequestDraftCache = drafts;
+    const companyLogo = getCompanyLogo();
+    const needsLogoSync = Boolean(companyLogo) && drafts.some((draft) => !draft.companyLogo);
+    const hydratedDrafts = needsLogoSync
+      ? drafts.map((draft) => draft.companyLogo ? draft : { ...draft, companyLogo })
+      : drafts;
+    purchaseRequestDraftCache = hydratedDrafts;
     try {
-      window.localStorage.setItem(PURCHASE_REQUEST_DRAFTS_KEY, JSON.stringify(drafts));
+      window.localStorage.setItem(PURCHASE_REQUEST_DRAFTS_KEY, JSON.stringify(hydratedDrafts));
     } catch {
       // Ignore local persistence errors to keep UI usable.
     }
-    return drafts;
+    if (needsLogoSync) {
+      queueWorkflowRowsSave(PURCHASE_REQUEST_STORE, hydratedDrafts, () => {
+        window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", {
+          detail: { store: PURCHASE_REQUEST_STORE },
+        }));
+      });
+    }
+    return hydratedDrafts;
   } catch {
     return loadPurchaseRequestDrafts();
   }

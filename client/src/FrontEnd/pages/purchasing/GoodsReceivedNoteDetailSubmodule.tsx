@@ -26,6 +26,9 @@ import {
 } from "../../modules/purchasing/requestCreation/constants";
 import {
   loadSupplierGrns,
+  appendSupplierInvoice,
+  createSupplierInvoiceFromGrn,
+  loadSupplierInvoices,
   type SupplierGrnRecord,
   updateSupplierGrn,
 } from "../../modules/supplierFulfillment/workflow";
@@ -173,11 +176,17 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
 
   const onReceived = (): void => {
     if (!row) return;
-    updateSupplierGrn(row.localId, (draft) => ({
-      ...draft,
+    const completedRow: SupplierGrnRecord = {
+      ...row,
       status: "COMPLETED",
       completedDate: todayIsoDate(),
       discrepancyReason: undefined,
+    };
+    if (!loadSupplierInvoices().some((invoice) => invoice.grnLocalId === row.localId)) {
+      appendSupplierInvoice(createSupplierInvoiceFromGrn(completedRow));
+    }
+    updateSupplierGrn(row.localId, (draft) => ({
+      ...completedRow,
     }));
     message.success(t('grn.detail.messages.received', { poNumber: row.poNumber }));
     navigate("/purchasing/goods-received-note");

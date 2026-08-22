@@ -33,7 +33,7 @@ import type {
 import { getSessionUser } from "../../shared/auth/session";
 import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
-import { deductBudgetForPR } from "../../shared/api/departmentBudget";
+import { deductBudgetForPR, releaseBudgetForPR } from "../../shared/api/departmentBudget";
 import {
   commitSupplierInventory,
   releaseSupplierInventory,
@@ -236,6 +236,19 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
       appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
     }
 
+    if (nextStatus === "REJECTED" && !request.budgetReleasedAt) {
+      const budgetResult = await releaseBudgetForPR({
+        ...updatedRequest,
+        status: "REJECTED",
+        requestedBy: request.createdByUserId,
+        createdAt: request.requestDate,
+      });
+      if (!budgetResult.success) {
+        message.error(`Rejection blocked: ${budgetResult.reason ?? "budget release failed"}`);
+        return;
+      }
+    }
+
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: nextStatus,
@@ -248,6 +261,9 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
             : draft.inventoryReservationStatus,
       rejectionReason:
         nextStatus === "REJECTED" ? rejectionReason : draft.rejectionReason,
+      ...(nextStatus === "REJECTED"
+        ? { budgetReleasedAt: draft.budgetReleasedAt ?? new Date().toISOString() }
+        : {}),
       isSelfApproved: isSelfApproved || draft.isSelfApproved,
     }));
 

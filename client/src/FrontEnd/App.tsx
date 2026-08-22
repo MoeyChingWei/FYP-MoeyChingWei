@@ -7,7 +7,8 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { Avatar, Button, Dropdown, Flex, Layout, Menu, Spin, theme, Tooltip } from "antd";
+import { Avatar, Button, Dropdown, Flex, Layout, Menu, Modal, Spin, theme, Tooltip } from "antd";
+import axios from "axios";
 import { useTranslation } from "react-i18next";
 import {
   AppstoreOutlined,
@@ -40,6 +41,7 @@ import BreadcrumbNav from "./components/shared/BreadcrumbNav";
 import ChatBotWidget from "./components/ChatBot/ChatBotWidget";
 import ScrollButtons from "./components/shared/ScrollButtons";
 import LanguageSelector from "./components/shared/LanguageSelector";
+import { API_ROOT } from "./shared/api/base";
 
 import sidebarStyles from "./Sidebar.module.css";
 import appStyles from "./App.module.css";
@@ -187,13 +189,59 @@ function MainLayout(): React.ReactElement {
   const [sessionUser, setSessionUserState] = useState<SessionUser | null>(() =>
     getSessionUser(),
   );
+  const [gmailPromptVisible, setGmailPromptVisible] = useState(false);
 
   useEffect(() => {
-    const sync = () => setSessionUserState(getSessionUser());
+    const sync = () => {
+      const next = getSessionUser();
+      setSessionUserState((previous) => {
+        if (
+          previous?.id === next?.id &&
+          previous?.email?.toLowerCase() === next?.email?.toLowerCase()
+        ) {
+          return previous;
+        }
+        return next;
+      });
+    };
     sync();
     window.addEventListener("erp-portal-session", sync);
     return () => window.removeEventListener("erp-portal-session", sync);
   }, [location.pathname]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!sessionUser) {
+      setGmailPromptVisible(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const statusEmail = encodeURIComponent(String(sessionUser.email || "").trim());
+    axios
+      .get(`${API_ROOT}/gmail/status?email=${statusEmail}`)
+      .then(({ data }) => {
+        if (cancelled) return;
+        // The backend resolves aliases between the OptiMind login and the
+        // Google account authorized by the user. A connected response is
+        // therefore sufficient; comparing raw Gmail addresses can prompt
+        // repeatedly when a university alias is used.
+        setGmailPromptVisible(!data?.connected);
+      })
+      .catch(() => {
+        if (!cancelled) setGmailPromptVisible(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionUser]);
+
+  const connectGmail = () => {
+    const email = encodeURIComponent(String(sessionUser?.email || "").trim());
+    window.location.assign(`${API_ROOT}/gmail/oauth/start?email=${email}`);
+  };
 
   const role = sessionUser?.role;
 
@@ -323,6 +371,20 @@ function MainLayout(): React.ReactElement {
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden" }}>
+      <Modal
+        open={gmailPromptVisible}
+        title="Connect Gmail"
+        okText="Connect Gmail"
+        cancelText="Later"
+        onOk={connectGmail}
+        onCancel={() => setGmailPromptVisible(false)}
+        centered
+      >
+        <p>
+          Connect the Gmail account you use for OptiMind notifications so the
+          system can organise them under the OptiMind label.
+        </p>
+      </Modal>
       <Sider
         width={240}
         collapsedWidth={72}
@@ -590,6 +652,10 @@ function MainLayout(): React.ReactElement {
           />
           <Route
             path="/supplier-overview/invoice"
+            element={<SupplierInvoiceSubmodule />}
+          />
+          <Route
+            path="/supplier-overview/invoice/:localId"
             element={<SupplierInvoiceSubmodule />}
           />
           <Route

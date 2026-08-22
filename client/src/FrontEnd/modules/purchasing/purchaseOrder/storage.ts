@@ -1,6 +1,7 @@
 import { todayIsoDate } from "../requestCreation/constants";
 import type { PurchaseRequestDraft } from "../requestCreation/types";
 import type { PurchaseOrderDraft } from "./types";
+import { getCompanyLogo } from "../../settings/companyAddress";
 import {
   fetchWorkflowRows,
   fetchWorkflowRowsForRecovery,
@@ -127,13 +128,25 @@ export async function hydratePurchaseOrderDrafts(): Promise<PurchaseOrderDraft[]
     const drafts = pendingDrafts ?? (isWorkflowSyncEnabled()
       ? remoteDrafts
       : mergeByLocalId(localDrafts, remoteDrafts));
-    purchaseOrderDraftCache = drafts;
+    const companyLogo = getCompanyLogo();
+    const needsLogoSync = Boolean(companyLogo) && drafts.some((draft) => !draft.companyLogo);
+    const hydratedDrafts = needsLogoSync
+      ? drafts.map((draft) => draft.companyLogo ? draft : { ...draft, companyLogo })
+      : drafts;
+    purchaseOrderDraftCache = hydratedDrafts;
     try {
-      window.localStorage.setItem(PURCHASE_ORDER_DRAFTS_KEY, JSON.stringify(drafts));
+      window.localStorage.setItem(PURCHASE_ORDER_DRAFTS_KEY, JSON.stringify(hydratedDrafts));
     } catch {
       // Ignore local persistence errors to keep UI usable.
     }
-    return drafts;
+    if (needsLogoSync) {
+      queueWorkflowRowsSave(PURCHASE_ORDER_STORE, hydratedDrafts, () => {
+        window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", {
+          detail: { store: PURCHASE_ORDER_STORE },
+        }));
+      });
+    }
+    return hydratedDrafts;
   } catch {
     return loadPurchaseOrderDrafts();
   }
@@ -158,6 +171,7 @@ export function createPurchaseOrderFromRequest(
     createdByUserId: approver?.id,
     createdByEmail: approver?.email,
     department: request.department,
+    companyLogo: request.companyLogo || getCompanyLogo(),
     currency: request.currency,
     status: "DRAFT",
     lineItems: request.lineItems.map((item) => ({ ...item })),

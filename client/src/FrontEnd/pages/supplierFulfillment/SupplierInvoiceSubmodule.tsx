@@ -1,33 +1,91 @@
-import React from "react";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, Card, Empty, Flex, Typography } from "antd";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Card, Descriptions, Empty, Flex, Table, Tag, Typography, message } from "antd";
+import { ArrowLeftOutlined, CheckOutlined, EyeOutlined } from "@ant-design/icons";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const { Title } = Typography;
+import { getSessionUser } from "../../shared/auth/session";
+import { UserRole } from "../../shared/types/roles";
+import { hydrateSupplierInvoices, loadSupplierInvoices, updateSupplierInvoice, type SupplierInvoiceRecord } from "../../modules/supplierFulfillment/workflow";
+import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
+import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
+import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
+
+const { Paragraph, Title } = Typography;
+
+function currencyLabel(currency: string, amount: number): string { return `${currency} ${amount.toFixed(2)}`; }
+function statusColor(status: SupplierInvoiceRecord["status"]): string { return status === "SUBMITTED" ? "blue" : "orange"; }
+
+function ItemRow({ item, currency }: { item: DraftLineItem; currency: string }): React.ReactElement {
+  return <div className={styles.itemCard}>
+    <div className={styles.itemHeader}><h4 className={styles.itemTitle}>{item.itemName}</h4><Tag>{item.itemCategory || "-"}</Tag></div>
+    <div className={styles.itemGrid}>
+      <div className={`${styles.detailBlock} ${styles.detailWide}`}><span className={styles.detailLabel}>Description</span><div className={styles.detailValue}>{item.itemDescription || "-"}</div></div>
+      <div className={styles.detailBlock}><span className={styles.detailLabel}>Quantity</span><div className={styles.detailValue}>{item.quantity}</div></div>
+      <div className={styles.detailBlock}><span className={styles.detailLabel}>Unit</span><div className={styles.detailValue}>{item.unitOfMeasurement || "-"}</div></div>
+      <div className={styles.detailBlock}><span className={styles.detailLabel}>Unit price</span><div className={styles.detailValue}>{currencyLabel(currency, item.unitPrice)}</div></div>
+      <div className={styles.detailBlock}><span className={styles.detailLabel}>Line total</span><div className={styles.detailValue}>{currencyLabel(currency, computeDraftLineAmountAfterTax(item))}</div></div>
+    </div>
+  </div>;
+}
 
 export default function SupplierInvoiceSubmodule(): React.ReactElement {
   const { t } = useTranslation("supplier");
   const navigate = useNavigate();
+  const { localId } = useParams();
+  const [rows, setRows] = useState<SupplierInvoiceRecord[]>([]);
+  const sessionUser = useMemo(() => getSessionUser(), []);
 
-  return (
-    <Card
-      title={
-        <Flex align="center" gap={8}>
-          <Button
-            type="text"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/supplier-overview")}
-            style={{ paddingInline: 0 }}
-            aria-label={t("invoice.actions.back")}
-          />
-          <Title level={4} style={{ margin: 0 }}>
-            {t("invoice.title")}
-          </Title>
-        </Flex>
-      }
-    >
-      <Empty description={t("invoice.empty")} />
-    </Card>
-  );
+  useEffect(() => {
+    const sync = async (): Promise<void> => { await hydrateSupplierInvoices(); setRows(loadSupplierInvoices()); };
+    const handleSync = (): void => { void sync(); };
+    void sync();
+    window.addEventListener("storage", handleSync);
+    window.addEventListener("erp-supplier-invoices", handleSync);
+    return () => { window.removeEventListener("storage", handleSync); window.removeEventListener("erp-supplier-invoices", handleSync); };
+  }, []);
+
+  const visibleRows = useMemo(() => rows.filter((row) => {
+    if (!sessionUser || sessionUser.role !== UserRole.SUPPLIER) return true;
+    return (row.supplierId != null && row.supplierId === sessionUser.id) || row.supplierEmail === sessionUser.email;
+  }), [rows, sessionUser]);
+  const row = useMemo(() => visibleRows.find((item) => item.localId === localId), [localId, visibleRows]);
+
+  const onSubmit = (): void => {
+    if (!row) return;
+    updateSupplierInvoice(row.localId, (draft) => ({ ...draft, status: "SUBMITTED", submittedDate: new Date().toISOString().slice(0, 10) }));
+    message.success(t("invoice.messages.submitted"));
+    navigate("/supplier-overview/invoice");
+  };
+
+  if (localId) {
+    if (!row) return <Card><Empty description={t("invoice.messages.notFound")} /></Card>;
+    return <Card><div className={styles.page}>
+      <div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview/invoice")} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.detail.title")}</Title></Flex><Tag color={statusColor(row.status)}>{t(`invoice.status.${row.status.toLowerCase()}`)}</Tag></div>
+      <div className={styles.summaryGrid}>
+        <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.poNumber")}</div><div className={styles.summaryValue}>{row.poNumber}</div></div>
+        <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.grnNumber")}</div><div className={styles.summaryValue}>{row.deliveryNo || "-"}</div></div>
+        <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.paymentTerms")}</div><div className={styles.summaryValue}>{row.paymentTerms || "-"}</div></div>
+        <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.grandTotal")}</div><div className={styles.summaryValue}>{currencyLabel(row.currency, row.grandTotal)}</div></div>
+      </div>
+      <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.information")}</h3><Descriptions column={2} bordered size="middle">
+        <Descriptions.Item label={t("invoice.fields.invoiceNumber")}>{row.invoiceNumber || "-"}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.invoiceDate")}>{row.invoiceDate || "-"}</Descriptions.Item>
+        <Descriptions.Item label={t("invoice.fields.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
+        <Descriptions.Item label={t("invoice.fields.subtotal")}>{currencyLabel(row.currency, row.subtotal)}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.taxTotal")}>{currencyLabel(row.currency, row.taxTotal)}</Descriptions.Item>
+      </Descriptions></div>
+      <div className={styles.itemsCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.items")}</h3><Paragraph type="secondary">{t("invoice.detail.itemsHint")}</Paragraph><div className={styles.itemList}>{row.items.map((item) => <ItemRow key={item.tempId} item={item} currency={row.currency} />)}</div></div>
+      {row.status === "DRAFT" ? <div className={styles.actionRow}><Button type="primary" icon={<CheckOutlined />} onClick={onSubmit}>{t("invoice.actions.submit")}</Button></div> : null}
+    </div></Card>;
+  }
+
+  const columns = [
+    { title: t("invoice.fields.invoiceNumber"), dataIndex: "invoiceNumber", render: (value: string | undefined, item: SupplierInvoiceRecord) => value || `${t("invoice.labels.pending")} (${item.poNumber})` },
+    { title: t("invoice.fields.poNumber"), dataIndex: "poNumber" },
+    { title: t("invoice.fields.grnNumber"), dataIndex: "deliveryNo", render: (value: string | undefined) => value || "-" },
+    { title: t("invoice.fields.paymentTerms"), dataIndex: "paymentTerms", render: (value: string | undefined) => value || "-" },
+    { title: t("invoice.fields.grandTotal"), key: "total", render: (_: unknown, item: SupplierInvoiceRecord) => currencyLabel(item.currency, item.grandTotal) },
+    { title: t("invoice.fields.status"), dataIndex: "status", render: (value: SupplierInvoiceRecord["status"]) => <Tag color={statusColor(value)}>{t(`invoice.status.${value.toLowerCase()}`)}</Tag> },
+    { title: t("invoice.actions.view"), key: "action", render: (_: unknown, item: SupplierInvoiceRecord) => <Button icon={<EyeOutlined />} onClick={() => navigate(`/supplier-overview/invoice/${item.localId}`)}>{t("invoice.actions.view")}</Button> },
+  ];
+  return <Card><div className={styles.page}><div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview")} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.title")}</Title></Flex></div><Table rowKey="localId" dataSource={visibleRows} columns={columns} pagination={{ pageSize: 8 }} locale={{ emptyText: <Empty description={t("invoice.empty")} /> }} scroll={{ x: 980 }} /></div></Card>;
 }
