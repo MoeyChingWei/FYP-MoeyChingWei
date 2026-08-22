@@ -205,10 +205,6 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
       return;
     }
 
-    if (nextStatus === "APPROVED") {
-      appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
-    }
-
     const isSelfApproved =
       nextStatus === "APPROVED" &&
       sessionUser?.role === "Manager" &&
@@ -218,6 +214,8 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     const updatedRequest = {
       ...request,
       status: nextStatus,
+      requestedBy: request.createdByUserId,
+      createdAt: request.requestDate,
       inventoryReservationStatus:
         nextStatus === "APPROVED"
           ? "COMMITTED"
@@ -229,9 +227,19 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
       isSelfApproved: isSelfApproved || request.isSelfApproved,
     };
 
+    if (nextStatus === "APPROVED") {
+      const budgetResult = await deductBudgetForPR(updatedRequest);
+      if (!budgetResult.success) {
+        message.error(`Approval blocked: ${budgetResult.reason ?? "budget deduction failed"}`);
+        return;
+      }
+      appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
+    }
+
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: nextStatus,
+      ...(nextStatus === "APPROVED" ? { budgetDeductedAt: new Date().toISOString() } : {}),
       inventoryReservationStatus:
         nextStatus === "APPROVED"
           ? "COMMITTED"
@@ -247,7 +255,11 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     if (nextStatus === "APPROVED") {
       console.log("🔵 [BUDGET] Triggering budget deduction for approved PR");
 
-      deductBudgetForPR(updatedRequest)
+      Promise.resolve({
+        success: true,
+        deductedAmount: 0,
+        warnings: [] as Array<{ threshold: number; percentage: number }>,
+      })
         .then(result => {
           if (result.success) {
             console.log(`✅ [BUDGET] Deducted $${result.deductedAmount?.toFixed(2)} from department budget`);
@@ -346,6 +358,11 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
             </Descriptions.Item>
             <Descriptions.Item label={t('purchaseRequest.detail.info.department')}>
               {request.department || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label={t('purchaseRequest.detail.info.paymentTerms')}>
+              {request.paymentTerms
+                ? t(`purchaseRequest.creation.form.paymentTermOptions.${request.paymentTerms}`)
+                : "-"}
             </Descriptions.Item>
             <Descriptions.Item label={t('purchaseRequest.detail.info.currentStatus')}>
               {t('purchaseRequest.review.status.submitted')}

@@ -905,8 +905,11 @@ router.get('/usage/:departmentId', async (req, res) => {
     const allocated = new Decimal(budget.allocatedAmount);
     const spent = new Decimal(budget.spentAmount);
     const reserved = new Decimal(budget.reservedAmount);
-    const remaining = allocated.minus(spent);
-    const usagePercentage = spent.dividedBy(allocated).times(100);
+    // Reserved requests already consume available capacity even though they
+    // have not reached the approved/spent state yet.
+    const committed = spent.plus(reserved);
+    const remaining = allocated.minus(committed);
+    const usagePercentage = committed.dividedBy(allocated).times(100);
 
     res.json({
       success: true,

@@ -32,6 +32,8 @@ export interface PurchaseRequestDraft {
   currency: string;
   status: PurchaseOrderStatus;
   lineItems: DraftLineItem[];
+  /** Payment terms selected for the whole purchase request. */
+  paymentTerms?: string;
   notes?: string;
   rejectionReason?: string;
   rejectedBy?: string;

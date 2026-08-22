@@ -264,6 +264,11 @@ export default function ReviewDetailSubmodule(): React.ReactElement {
             <Descriptions.Item label={t('purchaseRequest.detail.info.department')}>
               {request.department || "-"}
             </Descriptions.Item>
+            <Descriptions.Item label={t('purchaseRequest.detail.info.paymentTerms')}>
+              {request.paymentTerms
+                ? t(`purchaseRequest.creation.form.paymentTermOptions.${request.paymentTerms}`)
+                : "-"}
+            </Descriptions.Item>
             <Descriptions.Item label={t('purchaseRequest.detail.info.status')}>
               {formatStatus(request.status)}
             </Descriptions.Item>

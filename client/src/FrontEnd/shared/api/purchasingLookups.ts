@@ -12,7 +12,8 @@ export type PurchasingLookupKind =
   | "ITEM_CATEGORY"
   | "UNIT_OF_MEASURE"
   | "DEPARTMENT"
-  | "ROLE";
+  | "ROLE"
+  | "PAYMENT_TERM";
 
 export interface PurchasingLookupRow {
   id: number;
@@ -32,6 +33,8 @@ export function defaultOptionsForKind(
       return DEPARTMENT_OPTIONS.map(({ value }) => value);
     case "ROLE":
       return Object.values(UserRole);
+    case "PAYMENT_TERM":
+      return ["DUE_ON_RECEIPT", "NET_7", "NET_30", "NET_60", "NET_90"];
   }
 }
 

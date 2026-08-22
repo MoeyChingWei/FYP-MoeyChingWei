@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Flex, message } from "antd";
 import { DownloadOutlined, PrinterOutlined, LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { getSupplierCompanyAddress } from "../../modules/settings/companyAddress";
+import { getCompanyAddress, getCompanyLogo, getCompanyName, getSupplierCompanyAddress, getSupplierCompanyLogo, getSupplierCompanyName } from "../../modules/settings/companyAddress";
 
 export type WorkflowDocumentType = "purchase-request" | "purchase-order" | "acknowledgement" | "delivery" | "grn";
 
@@ -28,9 +28,24 @@ export default function WorkflowDocumentActions({ workflowType, record, pageTitl
 
   const documentRecord = (): any => {
     const supplierId = Number(record.supplierId);
+    const supplierCompanyName = record.supplierCompanyName ||
+      (Number.isFinite(supplierId) ? getSupplierCompanyName(supplierId) : "");
+    const supplierLogo = record.supplierLogo ||
+      (Number.isFinite(supplierId) ? getSupplierCompanyLogo(supplierId) : "");
+    const supplierName = record.supplierName ||
+      supplierCompanyName;
     const supplierAddress = record.supplierAddress ||
       (Number.isFinite(supplierId) ? getSupplierCompanyAddress(supplierId) : "");
-    return supplierAddress ? { ...record, supplierAddress } : record;
+    return {
+      ...record,
+      companyName: getCompanyName(),
+      companyAddress: getCompanyAddress(),
+      companyLogo: getCompanyLogo(),
+      ...(supplierCompanyName ? { supplierCompanyName } : {}),
+      ...(supplierLogo ? { supplierLogo } : {}),
+      ...(supplierName ? { supplierName } : {}),
+      ...(supplierAddress ? { supplierAddress } : {}),
+    };
   };
 
   const onExport = async (): Promise<void> => {

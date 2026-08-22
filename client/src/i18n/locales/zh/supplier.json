@@ -44,6 +44,17 @@
     "inventory": {
       "title": "库存",
       "hint": "管理可用库存和补货水平"
+    },
+    "invoice": {
+      "title": "供应商发票",
+      "hint": "创建和管理供应商发票"
+    }
+  },
+  "invoice": {
+    "title": "供应商发票",
+    "empty": "目前没有供应商发票。",
+    "actions": {
+      "back": "返回"
     }
   },
   "orderAcknowledgement": {

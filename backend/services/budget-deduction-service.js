@@ -12,8 +12,63 @@ function calculatePRTotal(payload) {
   return items.reduce((sum, item) => {
     const quantity = new Decimal(item.quantity || 0);
     const unitPrice = new Decimal(item.unitPrice || 0);
-    return sum.plus(quantity.times(unitPrice));
+    // Purchase requests already calculate the tax-inclusive line total. Use it
+    // when available so budget usage matches the amount shown in the UI.
+    const lineTotal = item.amountAfterTax ?? item.totalAmount;
+    return sum.plus(lineTotal != null ? new Decimal(lineTotal) : quantity.times(unitPrice));
   }, new Decimal(0));
+}
+
+function getRequestDate(payload) {
+  return payload?.createdAt || payload?.requestDate || payload?.createdDate;
+}
+
+async function resolveBudgetContext(payload) {
+  const requestedBy = payload?.requestedBy ?? payload?.createdByUserId ?? payload?.userId;
+  const user = requestedBy
+    ? await prisma.user.findUnique({
+        where: { id: parseInt(requestedBy) },
+        select: { department: true },
+      })
+    : null;
+  const departmentValue = user?.department || payload?.department;
+
+  if (!departmentValue) {
+    return { error: 'No department assigned to user' };
+  }
+
+  const department = await prisma.department.findFirst({
+    where: {
+      OR: [
+        { code: { equals: departmentValue, mode: 'insensitive' } },
+        { name: { equals: departmentValue, mode: 'insensitive' } },
+      ],
+    },
+  });
+  if (!department) {
+    return { error: `Department "${departmentValue}" not found in Department table` };
+  }
+
+  const dateValue = getRequestDate(payload);
+  const requestDate = dateValue ? new Date(dateValue) : new Date();
+  if (Number.isNaN(requestDate.getTime())) {
+    return { error: 'Purchase request date is invalid' };
+  }
+
+  const budget = await prisma.monthlyBudget.findUnique({
+    where: {
+      departmentId_year_month: {
+        departmentId: department.id,
+        year: requestDate.getFullYear(),
+        month: requestDate.getMonth() + 1,
+      },
+    },
+  });
+  if (!budget) {
+    return { error: `No budget found for ${department.name} ${requestDate.getFullYear()}-${requestDate.getMonth() + 1}` };
+  }
+
+  return { requestedBy, department, budget };
 }
 
 export async function deductBudgetForPR(prPayload) {
@@ -24,49 +79,26 @@ export async function deductBudgetForPR(prPayload) {
       return { success: false, reason: 'PR not approved' };
     }
 
-    const requestedBy = prPayload.requestedBy;
-    if (!requestedBy) {
-      return { success: false, reason: 'No requestedBy user ID' };
-    }
+    const context = await resolveBudgetContext(prPayload);
+    if (context.error) return { success: false, reason: context.error };
+    const { budget } = context;
 
-    const user = await prisma.user.findUnique({
-      where: { id: parseInt(requestedBy) },
-      select: { department: true }
-    });
-
-    if (!user || !user.department) {
-      return { success: false, reason: 'No department assigned to user' };
-    }
-
-    const department = await prisma.department.findFirst({
-      where: {
-        OR: [
-          { code: { equals: user.department, mode: 'insensitive' } },
-          { name: { equals: user.department, mode: 'insensitive' } }
-        ]
+    // Approval screens can be revisited or submitted twice. A persisted marker
+    // makes the operation idempotent without changing the existing schema.
+    if (prPayload.localId) {
+      const existing = await prisma.purchaseRequestRecord.findUnique({
+        where: { localId: prPayload.localId },
+        select: { payload: true },
+      });
+      if (existing?.payload?.budgetDeductedAt) {
+        return {
+          success: true,
+          alreadyProcessed: true,
+          deductedAmount: calculatePRTotal(prPayload).toNumber(),
+          budgetId: budget.id,
+          warnings: [],
+        };
       }
-    });
-
-    if (!department) {
-      return { success: false, reason: `Department "${user.department}" not found in Department table` };
-    }
-
-    const prDate = new Date(prPayload.createdAt);
-    const year = prDate.getFullYear();
-    const month = prDate.getMonth() + 1;
-
-    const budget = await prisma.monthlyBudget.findUnique({
-      where: {
-        departmentId_year_month: {
-          departmentId: department.id,
-          year,
-          month
-        }
-      }
-    });
-
-    if (!budget) {
-      return { success: false, reason: `No budget found for ${department.name} ${year}-${month}` };
     }
 
     const amount = calculatePRTotal(prPayload);
@@ -82,6 +114,24 @@ export async function deductBudgetForPR(prPayload) {
       });
 
       const warnings = await checkBudgetThresholds(budget.id, tx);
+
+      if (prPayload.localId) {
+        const record = await tx.purchase_request_records.findUnique({
+          where: { localId: prPayload.localId },
+          select: { payload: true },
+        });
+        if (record) {
+          await tx.purchase_request_records.update({
+            where: { localId: prPayload.localId },
+            data: {
+              payload: {
+                ...(record.payload && typeof record.payload === 'object' ? record.payload : {}),
+                budgetDeductedAt: new Date().toISOString(),
+              },
+            },
+          });
+        }
+      }
 
       return { updatedBudget, warnings };
     });

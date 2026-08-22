@@ -85,6 +85,7 @@
         "approvalTitle": "Approval Overview",
         "requester": "Requester",
         "department": "Department",
+        "paymentTerms": "Payment terms",
         "status": "Status",
         "currentStatus": "Current Status",
         "matchedSuppliers": "Matched Suppliers"
@@ -137,6 +138,7 @@
         "requestDate": "Request date",
         "requestBy": "Request by",
         "department": "Department",
+        "paymentTerms": "Payment terms",
         "itemDetails": "Item details",
         "itemDetail": "Item detail {{index}}",
         "itemName": "Item name",
@@ -149,12 +151,14 @@
         "requestTotal": "Estimated request total (all items)",
         "supplierDetail": "Supplier detail",
         "placeholders": {
+          "paymentTerms": "Select payment terms",
           "itemName": "e.g. USB-C hub",
           "itemCategory": "Select or add category",
           "itemDescription": "Specifications, purpose, etc.",
           "unitOfMeasurement": "Select or add unit"
         },
         "validation": {
+          "paymentTermsRequired": "Select payment terms",
           "itemNameRequired": "Enter item name",
           "categoryRequired": "Select a category",
           "descriptionRequired": "Enter description",
@@ -164,6 +168,13 @@
           "unitPriceRequired": "Enter unit price",
           "unitPriceNonNegative": "Unit price cannot be negative",
           "atLeastOneItem": "Add at least one item detail."
+        },
+        "paymentTermOptions": {
+          "DUE_ON_RECEIPT": "Due on receipt",
+          "NET_7": "Net 7 days",
+          "NET_30": "Net 30 days",
+          "NET_60": "Net 60 days",
+          "NET_90": "Net 90 days"
         }
       },
       "supplier": {

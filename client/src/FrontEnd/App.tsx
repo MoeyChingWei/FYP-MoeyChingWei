@@ -65,6 +65,9 @@ const ItemCategoriesPage = lazy(() => import("./pages/categorySelection/ItemCate
 const UnitsOfMeasurementPage = lazy(
   () => import("./pages/categorySelection/UnitsOfMeasurementPage"),
 );
+const PaymentTermsPage = lazy(
+  () => import("./pages/categorySelection/PaymentTermsPage"),
+);
 const DepartmentSubmodule = lazy(
   () => import("./pages/categorySelection/DepartmentSubmodule"),
 );
@@ -98,6 +101,9 @@ const SupplierFulfillmentHome = lazy(
 );
 const SupplierInventorySubmodule = lazy(
   () => import("./pages/supplierFulfillment/SupplierInventorySubmodule"),
+);
+const SupplierInvoiceSubmodule = lazy(
+  () => import("./pages/supplierFulfillment/SupplierInvoiceSubmodule"),
 );
 const DeliverySubmodule = lazy(() => import("./pages/supplierFulfillment/DeliverySubmodule"));
 const OrderAcknowledgementSubmodule = lazy(
@@ -519,6 +525,10 @@ function MainLayout(): React.ReactElement {
             element={<UnitsOfMeasurementPage />}
           />
           <Route
+            path="/category-selection/payment-terms"
+            element={<PaymentTermsPage />}
+          />
+          <Route
             path="/category-selection/departments"
             element={<DepartmentSubmodule />}
           />
@@ -577,6 +587,10 @@ function MainLayout(): React.ReactElement {
           <Route
             path="/supplier-overview/inventory"
             element={<SupplierInventorySubmodule />}
+          />
+          <Route
+            path="/supplier-overview/invoice"
+            element={<SupplierInvoiceSubmodule />}
           />
           <Route
             path="/supplier-overview/delivery"

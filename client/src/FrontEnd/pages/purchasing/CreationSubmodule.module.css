@@ -178,6 +178,17 @@
   color: #64748b;
 }
 
+.inventoryProductReserve {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  margin-top: 3px;
+  color: #1677ff !important;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .inventoryProductPrice {
   align-self: start;
   white-space: nowrap;

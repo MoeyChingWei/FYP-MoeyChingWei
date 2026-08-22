@@ -1,5 +1,5 @@
 import React from "react";
-import { getCompanyAddress, getSupplierCompanyAddress } from "../../modules/settings/companyAddress";
+import { getCompanyAddress, getCompanyLogo, getCompanyName, getSupplierCompanyAddress, getSupplierCompanyLogo, getSupplierCompanyName } from "../../modules/settings/companyAddress";
 import styles from "./WorkflowPartyInfo.module.css";
 
 export type PartyWorkflowType = "acknowledgement" | "delivery" | "grn";
@@ -20,11 +20,19 @@ export default function WorkflowPartyInfo({ workflowType, record }: Props): Reac
       record?.supplier?.address ||
       (Number.isFinite(supplierId) ? getSupplierCompanyAddress(supplierId) : ""),
   );
-  const companyName = value(record?.companyName || "OptiMind");
+  const companyName = value(getCompanyName());
   const companyContact = value(record?.sourceRequester || record?.createdBy || companyName);
-  const companyAddress = value(record?.companyAddress || getCompanyAddress());
-  const supplierName = value(record?.supplierName || record?.supplierEmail);
+  const companyAddress = value(getCompanyAddress());
+  const supplierName = value(
+    record?.supplierCompanyName ||
+      record?.supplierName ||
+      (Number.isFinite(supplierId) ? getSupplierCompanyName(supplierId) : "") ||
+      record?.supplierEmail,
+  );
   const supplierEmail = value(record?.supplierEmail);
+  const companyLogo = getCompanyLogo();
+  const supplierLogo = record?.supplierLogo ||
+    (Number.isFinite(supplierId) ? getSupplierCompanyLogo(supplierId) : "");
   const acknowledgement = workflowType === "acknowledgement";
   const sender = acknowledgement
     ? [["Company", companyName], ["Contact", companyContact], ["Address", companyAddress]]
@@ -33,8 +41,9 @@ export default function WorkflowPartyInfo({ workflowType, record }: Props): Reac
     ? [["Supplier", supplierName], ["Email", supplierEmail], ["Address", supplierAddress]]
     : [["Company", companyName], ["Contact", companyContact], ["Address", companyAddress]];
 
-  const renderParty = (title: string, rows: string[][]): React.ReactElement => (
+  const renderParty = (title: string, rows: string[][], logo: string): React.ReactElement => (
     <div className={styles.partyColumn}>
+      {logo ? <img className={styles.partyLogo} src={logo} alt={`${title} logo`} /> : null}
       <h4 className={styles.partyTitle}>{title}</h4>
       {rows.map(([label, item]) => (
         <div className={styles.partyRow} key={label}>
@@ -45,5 +54,8 @@ export default function WorkflowPartyInfo({ workflowType, record }: Props): Reac
     </div>
   );
 
-  return <div className={styles.partyGrid}>{renderParty("Sender", sender)}{renderParty("Receiver", receiver)}</div>;
+  return <div className={styles.partyGrid}>
+    {renderParty("Sender", sender, acknowledgement ? companyLogo : supplierLogo)}
+    {renderParty("Receiver", receiver, acknowledgement ? supplierLogo : companyLogo)}
+  </div>;
 }

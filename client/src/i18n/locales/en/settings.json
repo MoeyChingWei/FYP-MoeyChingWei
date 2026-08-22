@@ -19,9 +19,16 @@
     "supplierLabel": "Your supplier company address",
     "description": "This address is used when the system generates supplier-facing order acknowledgement details.",
     "supplierDescription": "This address is saved only for your supplier account.",
+    "nameLabel": "Company name",
+    "supplierNameLabel": "Supplier company name",
+    "namePlaceholder": "Enter company name",
+    "supplierNamePlaceholder": "Enter your supplier company name",
+    "logoLabel": "Company logo",
+    "uploadLogo": "Upload image",
+    "removeLogo": "Remove logo",
     "placeholder": "Enter company address",
     "supplierPlaceholder": "Enter your supplier company address",
-    "saveButton": "Save Address"
+    "saveButton": "Save Details"
   },
   "feedback": {
     "title": "Feedback",

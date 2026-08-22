@@ -84,6 +84,7 @@
         "approvalTitle": "批准概览",
         "requester": "申请人",
         "department": "部门",
+        "paymentTerms": "付款条款",
         "status": "状态",
         "currentStatus": "当前状态",
         "matchedSuppliers": "匹配的供应商"
@@ -136,6 +137,7 @@
         "requestDate": "申请日期",
         "requestBy": "申请人",
         "department": "部门",
+        "paymentTerms": "付款条款",
         "itemDetails": "物品详情",
         "itemDetail": "物品详情 {{index}}",
         "itemName": "物品名称",
@@ -148,12 +150,14 @@
         "requestTotal": "估计申请总额（所有物品）",
         "supplierDetail": "供应商详情",
         "placeholders": {
+          "paymentTerms": "请选择付款条款",
           "itemName": "例如：USB-C 集线器",
           "itemCategory": "选择或添加类别",
           "itemDescription": "规格、用途等",
           "unitOfMeasurement": "选择或添加单位"
         },
         "validation": {
+          "paymentTermsRequired": "请选择付款条款",
           "itemNameRequired": "输入物品名称",
           "categoryRequired": "选择一个类别",
           "descriptionRequired": "输入描述",
@@ -163,6 +167,13 @@
           "unitPriceRequired": "输入单价",
           "unitPriceNonNegative": "单价不能为负数",
           "atLeastOneItem": "至少添加一个物品详情。"
+        },
+        "paymentTermOptions": {
+          "DUE_ON_RECEIPT": "收到即付",
+          "NET_7": "7 天付款",
+          "NET_30": "30 天付款",
+          "NET_60": "60 天付款",
+          "NET_90": "90 天付款"
         }
       },
       "supplier": {

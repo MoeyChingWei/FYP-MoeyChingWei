@@ -207,18 +207,32 @@ export default function ApprovalSubmodule(): React.ReactElement {
       return;
     }
 
-    appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
     const updatedRequest = {
       ...request,
       status: "APPROVED" as const,
+      requestedBy: request.createdByUserId,
+      createdAt: request.requestDate,
       inventoryReservationStatus: "COMMITTED" as const,
       inventoryReservedItemIds: inventoryReservations.map(
         (item) => item.inventoryItemId,
       ),
     };
+    const budgetResult = await deductBudgetForPR(updatedRequest);
+    if (!budgetResult.success) {
+      message.error(`Approval blocked: ${budgetResult.reason ?? "budget deduction failed"}`);
+      setApprovingRequestIds((current) => {
+        const next = new Set(current);
+        next.delete(request.localId);
+        return next;
+      });
+      return;
+    }
+
+    appendPurchaseOrderDraft(createPurchaseOrderFromRequest(request, sessionUser));
     updatePurchaseRequestDraft(request.localId, (draft) => ({
       ...draft,
       status: "APPROVED",
+      budgetDeductedAt: new Date().toISOString(),
       inventoryReservationStatus: "COMMITTED",
       inventoryReservedItemIds: inventoryReservations.map(
         (item) => item.inventoryItemId,
@@ -228,7 +242,11 @@ export default function ApprovalSubmodule(): React.ReactElement {
     // Deduct budget when PR is approved
     console.log("🔵 [BUDGET] Triggering budget deduction for approved PR");
 
-    deductBudgetForPR(updatedRequest)
+    Promise.resolve({
+      success: true,
+      deductedAmount: 0,
+      warnings: [] as Array<{ threshold: number; percentage: number }>,
+    })
       .then(result => {
         if (result.success) {
           console.log(`✅ [BUDGET] Deducted $${result.deductedAmount?.toFixed(2)} from department budget`);

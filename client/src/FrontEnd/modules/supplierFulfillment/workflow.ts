@@ -1,6 +1,6 @@
 import type { DraftLineItem } from "../purchasing/requestCreation/types";
 import type { PurchaseOrderDraft } from "../purchasing/purchaseOrder/types";
-import { getCompanyAddress, getSupplierCompanyAddress } from "../settings/companyAddress";
+import { getCompanyAddress, getCompanyLogo, getCompanyName, getSupplierCompanyAddress, getSupplierCompanyLogo, getSupplierCompanyName } from "../settings/companyAddress";
 import { sortWorkflowRowsByStatusAndDate } from "../../shared/utils/workflowSorting";
 import {
   fetchWorkflowRows,
@@ -29,9 +29,13 @@ export interface SupplierOrderAcknowledgementRecord {
   createdBy: string;
   department?: string;
   currency: string;
+  companyName?: string;
+  companyLogo?: string;
   companyAddress: string;
   supplierId?: number;
   supplierName?: string;
+  supplierCompanyName?: string;
+  supplierLogo?: string;
   supplierEmail?: string;
   supplierAddress?: string;
   status: OrderAcknowledgementStatus;
@@ -53,9 +57,13 @@ export interface SupplierDeliveryRecord {
   createdBy: string;
   department?: string;
   currency: string;
+  companyName?: string;
+  companyLogo?: string;
   companyAddress: string;
   supplierId?: number;
   supplierName?: string;
+  supplierCompanyName?: string;
+  supplierLogo?: string;
   supplierEmail?: string;
   supplierAddress?: string;
   status: DeliveryStatus;
@@ -76,9 +84,13 @@ export interface SupplierGrnRecord {
   createdBy: string;
   department?: string;
   currency: string;
+  companyName?: string;
+  companyLogo?: string;
   companyAddress: string;
   supplierId?: number;
   supplierName?: string;
+  supplierCompanyName?: string;
+  supplierLogo?: string;
   supplierEmail?: string;
   supplierAddress?: string;
   status: GrnStatus;
@@ -169,7 +181,7 @@ function groupPurchaseOrderItemsBySupplier(
 
     buckets.set(key, {
       supplierId: item.supplierId,
-      supplierName: item.supplierName,
+      supplierName: item.supplierName || (item.supplierId != null ? getSupplierCompanyName(item.supplierId) : undefined),
       supplierEmail: item.supplierEmail,
       items: [{ ...item }],
     });
@@ -328,9 +340,13 @@ export function createOrderAcknowledgementRecordsFromPurchaseOrder(
     createdBy: order.createdBy,
     department: order.department,
     currency: order.currency,
+    companyName: getCompanyName(),
+    companyLogo: getCompanyLogo(),
     companyAddress,
     supplierId: bucket.supplierId,
     supplierName: bucket.supplierName,
+    supplierCompanyName: bucket.supplierId != null ? getSupplierCompanyName(bucket.supplierId) || undefined : undefined,
+    supplierLogo: bucket.supplierId != null ? getSupplierCompanyLogo(bucket.supplierId) || undefined : undefined,
     supplierEmail: bucket.supplierEmail,
     supplierAddress: bucket.supplierId != null ? getSupplierCompanyAddress(bucket.supplierId) : undefined,
     status: "PENDING_ORDER_ACKNOWLEDGE",
@@ -354,9 +370,13 @@ export function createDeliveryFromAcknowledgement(
     createdBy: row.createdBy,
     department: row.department,
     currency: row.currency,
+    companyName: row.companyName,
+    companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
     supplierId: row.supplierId,
     supplierName: row.supplierName,
+    supplierCompanyName: row.supplierCompanyName,
+    supplierLogo: row.supplierLogo,
     supplierEmail: row.supplierEmail,
     supplierAddress: row.supplierAddress,
     status: "PENDING_DELIVERY",
@@ -380,9 +400,13 @@ export function createGrnFromDelivery(
     createdBy: row.createdBy,
     department: row.department,
     currency: row.currency,
+    companyName: row.companyName,
+    companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
     supplierId: row.supplierId,
     supplierName: row.supplierName,
+    supplierCompanyName: row.supplierCompanyName,
+    supplierLogo: row.supplierLogo,
     supplierEmail: row.supplierEmail,
     supplierAddress: row.supplierAddress,
     status: "PENDING_GRN",
@@ -407,9 +431,13 @@ export function createDeliveryFromGrnDiscrepancy(
     createdBy: row.createdBy,
     department: row.department,
     currency: row.currency,
+    companyName: row.companyName,
+    companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
     supplierId: row.supplierId,
     supplierName: row.supplierName,
+    supplierCompanyName: row.supplierCompanyName,
+    supplierLogo: row.supplierLogo,
     supplierEmail: row.supplierEmail,
     supplierAddress: row.supplierAddress,
     status: "PENDING_DELIVERY",

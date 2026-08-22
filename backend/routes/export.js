@@ -26,6 +26,12 @@ const htmlEscape = (value) => String(value ?? "-")
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   .replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 
+const logoMarkup = (source, alt) => {
+  const value = String(source || "");
+  if (!/^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(value)) return "";
+  return `<img class="party-logo" src="${htmlEscape(value)}" alt="${htmlEscape(alt)}" />`;
+};
+
 function workflowHtml(workflowType, record = {}, pageTitle) {
   const title = pageTitle || WORKFLOW_TYPES[workflowType];
   const items = Array.isArray(record.items) ? record.items : (record.lineItems || []);
@@ -34,6 +40,9 @@ function workflowHtml(workflowType, record = {}, pageTitle) {
   const companyName = record.companyName || "OptiMind";
   const companyContact = record.sourceRequester || record.createdBy || companyName;
   const supplierAddress = record.supplierAddress || record.supplier?.address || "-";
+  const supplierName = record.supplierCompanyName || record.supplierName || "-";
+  const companyLogo = record.companyLogo || "";
+  const supplierLogo = record.supplierLogo || "";
   const isPartyDocument = ["acknowledgement", "delivery", "grn"].includes(workflowType);
   const rows = items.map((item, index) => {
     const imageUrl = item.itemImageUrl || item.imageUrl || item.image || item.imageDataUrl;
@@ -45,22 +54,29 @@ function workflowHtml(workflowType, record = {}, pageTitle) {
   const extra = {
     "purchase-request": [["Requester", record.requestBy], ["Department", record.department], ["Request date", record.requestDate]],
     "purchase-order": [["Source PR", record.sourcePrNumber], ["Requester", record.sourceRequester], ["Department", record.department]],
-    acknowledgement: [["Sender (Company)", companyContact], ["Sender company", companyName], ["Sender address", record.companyAddress], ["Receiver (Supplier)", record.supplierName], ["Receiver email", record.supplierEmail], ["Receiver address", supplierAddress], ["Department", record.department]],
-    delivery: [["Sender (Supplier)", record.supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
-    grn: [["Sender (Supplier)", record.supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
+    acknowledgement: [["Sender (Company)", companyContact], ["Sender company", companyName], ["Sender address", record.companyAddress], ["Receiver (Supplier)", supplierName], ["Receiver email", record.supplierEmail], ["Receiver address", supplierAddress], ["Department", record.department]],
+    delivery: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
+    grn: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
   }[workflowType] || [];
   const partyInfo = isPartyDocument
     ? (workflowType === "acknowledgement"
       ? {
           sender: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
-          receiver: [["Supplier", record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+          receiver: [["Supplier", supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+          senderLogo: companyLogo,
+          receiverLogo: supplierLogo,
         }
       : {
-          sender: [["Supplier", record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+          sender: [["Supplier", supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
           receiver: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
+          senderLogo: supplierLogo,
+          receiverLogo: companyLogo,
         })
     : null;
-  const partyMarkup = partyInfo ? `<div class="party-grid"><div class="party-card"><h3>Sender</h3>${partyInfo.sender.map(([label, value]) => `<div class="party-row"><b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span></div>`).join("")}</div><div class="party-card"><h3>Receiver</h3>${partyInfo.receiver.map(([label, value]) => `<div class="party-row"><b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span></div>`).join("")}</div></div>` : "";
+  const renderPartyCard = (titleText, rows, logo, alt) => `<div class="party-card">${logoMarkup(logo, alt)}<h3>${titleText}</h3>${rows.map(([label, value]) => `<div class="party-row"><b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span></div>`).join("")}</div>`;
+  const partyMarkup = partyInfo
+    ? `<div class="party-grid">${renderPartyCard("Sender", partyInfo.sender, partyInfo.senderLogo, "Sender logo")}${renderPartyCard("Receiver", partyInfo.receiver, partyInfo.receiverLogo, "Receiver logo")}</div>`
+    : "";
   const documentDetails = {
     acknowledgement: [["Department", record.department], ["Purchase order", record.poNumber], ["Source PR", record.sourcePrNumber]],
     delivery: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
@@ -70,8 +86,8 @@ function workflowHtml(workflowType, record = {}, pageTitle) {
     ? `<div class="meta secondary-meta">${documentDetails.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span>`).join("")}</div>`
     : `<div class="meta">${extra.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span>`).join("")}</div>`;
   return `<!doctype html><html><head><meta charset="utf-8"><title>${htmlEscape(title)}</title><style>
-    @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}.footer{margin-top:24px;color:#667085;font-size:10px}
-  </style></head><body><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${htmlEscape(status)}</div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}<h2>Items</h2><table><thead><tr><th>No.</th><th>Image</th><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${rows || '<tr><td colspan="8">No items</td></tr>'}</tbody></table><div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;
+    @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}.document-heading{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:start;gap:24px;min-height:100px}.document-heading-copy{min-width:0;padding-top:3px}.header-brand{display:flex;justify-content:flex-end;align-items:flex-start;min-height:100px}.header-logo{width:150px;height:100px;object-fit:contain;display:block}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-logo{width:52px;height:40px;object-fit:contain;display:block;margin-bottom:7px}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}.footer{margin-top:24px;color:#667085;font-size:10px}
+  </style></head><body><div class="document-heading"><div class="document-heading-copy"><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${htmlEscape(status)}</div></div><div class="header-brand">${logoMarkup(companyLogo, "Company logo").replace('class="party-logo"', 'class="header-logo"')}</div></div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}<h2>Items</h2><table><thead><tr><th>No.</th><th>Image</th><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${rows || '<tr><td colspan="8">No items</td></tr>'}</tbody></table><div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;
 }
 
 /**

@@ -3,7 +3,8 @@
   --accentRgb: 139, 92, 246;
   --accentSoft: rgba(var(--accentRgb), 0.16);
   --accentSofter: rgba(var(--accentRgb), 0.08);
-  max-width: 720px;
+  width: 100%;
+  max-width: none;
 }
 
 .pageHeading {
@@ -14,6 +15,15 @@
 
 .grid {
   margin-inline: 0 !important;
+  width: 100%;
+}
+
+.grid :global(.ant-col) {
+  display: flex;
+}
+
+.grid .tile {
+  width: 100%;
 }
 
 .tile {

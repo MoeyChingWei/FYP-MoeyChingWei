@@ -63,6 +63,7 @@ type LineItemFormRow = {
 type FormValues = {
   sourcePrNumber?: string;
   sourceRequester?: string;
+  paymentTerms?: string;
   lineItems: LineItemFormRow[];
 };
 
@@ -135,6 +136,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
     form.setFieldsValue({
       sourcePrNumber: foundDraft.sourcePrNumber,
       sourceRequester: foundDraft.sourceRequester,
+      paymentTerms: foundDraft.paymentTerms,
       lineItems: foundDraft.lineItems.map((item) => ({
         itemName: item.itemName,
         itemDescription: item.itemDescription,
@@ -237,6 +239,8 @@ export default function PurchaseOrderCreation(): React.ReactElement {
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,
+      paymentTerms: editingDraft?.paymentTerms,
+      requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? "EMPLOYEE",
     };
 
     if (editingDraft) {
@@ -252,6 +256,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
       form.setFieldsValue({
         sourcePrNumber: "",
         sourceRequester: "",
+        paymentTerms: undefined,
         lineItems: [emptyLineRow()],
       });
     }
@@ -328,9 +333,13 @@ export default function PurchaseOrderCreation(): React.ReactElement {
           layout="vertical"
           initialValues={{
             sourcePrNumber: "",
+            paymentTerms: undefined,
             lineItems: [emptyLineRow()],
           }}
         >
+          <Form.Item name="paymentTerms" hidden>
+            <Input />
+          </Form.Item>
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Form.Item

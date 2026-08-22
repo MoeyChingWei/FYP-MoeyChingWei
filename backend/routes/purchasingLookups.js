@@ -9,6 +9,7 @@ const KINDS = new Set([
   "UNIT_OF_MEASURE",
   "DEPARTMENT",
   "ROLE",
+  "PAYMENT_TERM",
 ]);
 
 function normalizeValue(raw) {
@@ -16,14 +17,14 @@ function normalizeValue(raw) {
   return raw.trim().replace(/\s+/g, " ");
 }
 
-// GET /api/purchasing/lookups?kind=ITEM_CATEGORY|UNIT_OF_MEASURE|DEPARTMENT|ROLE
+// GET /api/purchasing/lookups?kind=ITEM_CATEGORY|UNIT_OF_MEASURE|DEPARTMENT|ROLE|PAYMENT_TERM
 router.get("/lookups", async (req, res) => {
   const kind = req.query?.kind;
   if (typeof kind !== "string" || !KINDS.has(kind)) {
     return res.status(400).json({
       success: false,
       message:
-        "Query kind must be ITEM_CATEGORY, UNIT_OF_MEASURE, DEPARTMENT, or ROLE",
+        "Query kind must be ITEM_CATEGORY, UNIT_OF_MEASURE, DEPARTMENT, ROLE, or PAYMENT_TERM",
     });
   }
   try {
@@ -48,7 +49,7 @@ router.post("/lookups", async (req, res) => {
     return res.status(400).json({
       success: false,
       message:
-        "kind must be ITEM_CATEGORY, UNIT_OF_MEASURE, DEPARTMENT, or ROLE",
+        "kind must be ITEM_CATEGORY, UNIT_OF_MEASURE, DEPARTMENT, ROLE, or PAYMENT_TERM",
     });
   }
   if (value.length < 1 || value.length > 200) {

@@ -15,6 +15,8 @@ export interface PurchaseOrderDraft {
   currency: string;
   status: PurchaseOrderStatus;
   lineItems: DraftLineItem[];
+  /** Payment terms carried forward from the source purchase request. */
+  paymentTerms?: string;
   rejectionReason?: string;
   rejectedBy?: string;
   requesterRole: string;

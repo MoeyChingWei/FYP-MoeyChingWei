@@ -5,6 +5,7 @@ import {
   AppstoreOutlined,
   ArrowLeftOutlined,
   DeploymentUnitOutlined,
+  DollarOutlined,
   RightOutlined,
   SafetyCertificateOutlined,
   TeamOutlined,
@@ -32,7 +33,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
         </Text>
       </Flex>
       <Row gutter={[20, 20]} className={styles.grid}>
-        <Col xs={24} sm={12} lg={10}>
+        <Col xs={24} sm={12} lg={4}>
           <Card
             hoverable
             className={styles.tile}
@@ -63,7 +64,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
             </Flex>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={10}>
+        <Col xs={24} sm={12} lg={4}>
           <Card
             hoverable
             className={styles.tile}
@@ -94,7 +95,38 @@ export default function CategorySelectionManagement(): React.ReactElement {
             </Flex>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={10}>
+        <Col xs={24} sm={12} lg={4}>
+          <Card
+            hoverable
+            className={styles.tile}
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/category-selection/payment-terms")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate("/category-selection/payment-terms");
+              }
+            }}
+            aria-label="Open payment terms"
+          >
+            <Flex vertical align="center" gap={14} className={styles.tileInner}>
+              <div className={styles.iconWrap} aria-hidden>
+                <DollarOutlined className={styles.tileIcon} />
+              </div>
+              <div className={styles.tileTextBlock}>
+                <Text strong className={styles.tileTitle}>
+                  Payment terms
+                </Text>
+                <Flex align="center" gap={6} className={styles.tileAction}>
+                  <Text type="secondary">Open</Text>
+                  <RightOutlined className={styles.tileChevron} />
+                </Flex>
+              </div>
+            </Flex>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={4}>
           <Card
             hoverable
             className={styles.tile}
@@ -125,7 +157,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
             </Flex>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={10}>
+        <Col xs={24} sm={12} lg={4}>
           <Card
             hoverable
             className={styles.tile}

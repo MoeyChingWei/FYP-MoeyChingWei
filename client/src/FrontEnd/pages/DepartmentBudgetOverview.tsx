@@ -15,6 +15,7 @@ import {
 import { API_ROOT } from "../shared/api/base";
 import { getSessionUser } from "../shared/auth/session";
 import { UserRole } from "../shared/types/roles";
+import styles from "./DepartmentBudgetOverview.module.css";
 
 const { Title } = Typography;
 
@@ -260,10 +261,11 @@ export const DepartmentBudgetOverview: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Title level={2}>Department Budget Overview</Title>
-        <Space>
+    <div className={styles.page}>
+      <div className={styles.toolbar}>
+        <Title level={2} className={styles.title}>Department Budget Overview</Title>
+        <div className={styles.controls}>
+          <Space wrap size={[8, 8]}>
           <Select
             style={{ width: 200 }}
             value={selectedDepartmentCode}
@@ -322,7 +324,8 @@ export const DepartmentBudgetOverview: React.FC = () => {
               Approval Queue
             </Button>
           )}
-        </Space>
+          </Space>
+        </div>
       </div>
 
       <Row gutter={[16, 16]}>

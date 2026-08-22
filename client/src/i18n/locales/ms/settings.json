@@ -19,9 +19,16 @@
     "supplierLabel": "Alamat syarikat pembekal anda",
     "description": "Alamat ini digunakan apabila sistem menjana butiran pengakuan pesanan untuk pembekal.",
     "supplierDescription": "Alamat ini disimpan untuk akaun pembekal anda sahaja.",
+    "nameLabel": "Nama syarikat",
+    "supplierNameLabel": "Nama syarikat pembekal",
+    "namePlaceholder": "Masukkan nama syarikat",
+    "supplierNamePlaceholder": "Masukkan nama syarikat pembekal anda",
+    "logoLabel": "Logo syarikat",
+    "uploadLogo": "Muat naik imej",
+    "removeLogo": "Buang logo",
     "placeholder": "Masukkan alamat syarikat",
     "supplierPlaceholder": "Masukkan alamat syarikat pembekal anda",
-    "saveButton": "Simpan Alamat"
+    "saveButton": "Simpan Butiran"
   },
   "feedback": {
     "title": "Maklum Balas",

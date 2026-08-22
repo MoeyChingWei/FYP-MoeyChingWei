@@ -23,6 +23,7 @@ import {
   ClearOutlined,
   DeleteOutlined,
   InboxOutlined,
+  LockOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -53,6 +54,10 @@ import type {
 import { UserRole } from "../../shared/types/roles";
 import { API_ROOT } from "../../shared/api/base";
 import {
+  fetchPurchasingLookups,
+  mergePurchasingOptions,
+} from "../../shared/api/purchasingLookups";
+import {
   getBudgetUsage,
   getDepartments,
   type BudgetUsageSummary,
@@ -71,6 +76,14 @@ const { Text } = Typography;
 
 const DEFAULT_CURRENCY = "MYR";
 const API = API_ROOT;
+
+const PAYMENT_TERM_VALUES = [
+  "DUE_ON_RECEIPT",
+  "NET_7",
+  "NET_30",
+  "NET_60",
+  "NET_90",
+] as const;
 
 type ApiUser = {
   id: number;
@@ -250,7 +263,9 @@ function InventoryProductPicker({
           {filteredProducts.map((item) => {
           const supplier = supplierUsers.find((user) => user.id === item.supplierId);
           const selected = selectedId === item.id;
-          const outOfStock = item.quantity - Number(item.reservedQuantity ?? 0) <= 0;
+          const reservedQuantity = Number(item.reservedQuantity ?? 0);
+          const availableQuantity = Math.max(0, item.quantity - reservedQuantity);
+          const outOfStock = availableQuantity <= 0;
           return (
             <button
               type="button"
@@ -263,7 +278,19 @@ function InventoryProductPicker({
               <span className={creationStyles.inventoryProductCopy}>
                 <strong>{item.itemName}</strong>
                 <span>{supplier?.name ?? supplier?.email ?? "Supplier"}</span>
-                <span>{outOfStock ? "Out of stock" : `${Math.max(0, item.quantity - Number(item.reservedQuantity ?? 0)).toLocaleString()} ${item.unit} available`}</span>
+                <span>
+                  {outOfStock
+                    ? "Out of stock"
+                    : `${availableQuantity.toLocaleString()} ${item.unit} available`}
+                  {reservedQuantity > 0 && !outOfStock
+                    ? ` · ${reservedQuantity.toLocaleString()} reserved`
+                    : ""}
+                </span>
+                {selected && !outOfStock ? (
+                  <span className={creationStyles.inventoryProductReserve}>
+                    <LockOutlined /> Reserve
+                  </span>
+                ) : null}
               </span>
               <span className={creationStyles.inventoryProductPrice}>MYR {item.unitPrice.toFixed(2)}</span>
             </button>
@@ -318,6 +345,7 @@ function TaxSummary({ index }: { index: number }): React.ReactElement {
 }
 
 type FormValues = {
+  paymentTerms?: string;
   lineItems: LineItemFormRow[];
 };
 
@@ -444,9 +472,30 @@ export default function CreationSubmodule(): React.ReactElement {
   const [editingDraft, setEditingDraft] = useState<PurchaseRequestDraft | null>(null);
   const [departmentBudget, setDepartmentBudget] = useState<BudgetUsageSummary | null>(null);
   const [loadingDepartmentBudget, setLoadingDepartmentBudget] = useState(false);
+  const [paymentTermOptions, setPaymentTermOptions] = useState<string[]>(
+    () => [...PAYMENT_TERM_VALUES],
+  );
 
   useEffect(() => {
     setSessionUser(getSessionUser());
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void fetchPurchasingLookups("PAYMENT_TERM")
+      .then((rows) => {
+        if (!cancelled) {
+          setPaymentTermOptions(mergePurchasingOptions("PAYMENT_TERM", rows));
+        }
+      })
+      .catch((error) => {
+        console.error("Load payment terms error:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -507,6 +556,7 @@ export default function CreationSubmodule(): React.ReactElement {
     setPrNumber(foundDraft.prNumber);
     setRequestDate(foundDraft.requestDate);
     form.setFieldsValue({
+      paymentTerms: foundDraft.paymentTerms,
       lineItems: foundDraft.lineItems.map((item) => ({
         supplierInventoryItemId: item.supplierInventoryItemId,
         itemImageUrl: item.itemImageUrl,
@@ -637,6 +687,25 @@ export default function CreationSubmodule(): React.ReactElement {
         amountAfterTax: computeAmountAfterTax(row.quantity, row.estimatedUnitPrice, row.taxType),
       };
     });
+    const requestAmount = lineItems.reduce(
+      (sum, item) => sum + (item.amountAfterTax ?? item.quantity * item.unitPrice),
+      0,
+    );
+
+    // A submitted request must fit the current department's available budget.
+    // Drafts remain available even when finance has not configured a budget yet.
+    if (status === "SUBMITTED") {
+      if (!departmentBudget) {
+        message.error("No department budget is available for the current month.");
+        return;
+      }
+      if (requestAmount > departmentBudget.remainingAmount + 0.005) {
+        message.error(
+          `Request total ${DEFAULT_CURRENCY} ${requestAmount.toFixed(2)} exceeds the available budget of ${DEFAULT_CURRENCY} ${departmentBudget.remainingAmount.toFixed(2)}.`,
+        );
+        return;
+      }
+    }
     const inventoryReservations = lineItems
       .filter((item) => item.supplierInventoryItemId && item.quantity > 0)
       .map((item) => ({
@@ -672,6 +741,7 @@ export default function CreationSubmodule(): React.ReactElement {
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,
+      paymentTerms: String(form.getFieldValue("paymentTerms") ?? "").trim(),
       requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? UserRole.EMPLOYEE,
       inventoryReservationStatus:
         status === "SUBMITTED" && inventoryReservations.length > 0
@@ -693,6 +763,7 @@ export default function CreationSubmodule(): React.ReactElement {
       appendPurchaseRequestDraft(draft);
       message.success(tMsg('success.save'));
       form.setFieldsValue({
+        paymentTerms: undefined,
         lineItems: [emptyLineRow()],
       });
     }
@@ -765,15 +836,38 @@ export default function CreationSubmodule(): React.ReactElement {
           </Col>
         </Row>
 
-        <Divider titlePlacement="left">{t('purchaseRequest.creation.form.itemDetails')}</Divider>
-
         <Form<FormValues>
           form={form}
           layout="vertical"
           initialValues={{
+            paymentTerms: undefined,
             lineItems: [emptyLineRow()],
           }}
         >
+          <Form.Item
+            label={t('purchaseRequest.creation.form.paymentTerms')}
+            name="paymentTerms"
+            rules={[{
+              required: true,
+              message: t('purchaseRequest.creation.form.validation.paymentTermsRequired'),
+            }]}
+          >
+            <Select
+              allowClear
+              placeholder={t('purchaseRequest.creation.form.placeholders.paymentTerms')}
+              options={paymentTermOptions.map((value) => ({
+                value,
+                label: PAYMENT_TERM_VALUES.includes(
+                  value as (typeof PAYMENT_TERM_VALUES)[number],
+                )
+                  ? t(`purchaseRequest.creation.form.paymentTermOptions.${value}`)
+                  : value,
+              }))}
+            />
+          </Form.Item>
+
+          <Divider titlePlacement="left">{t('purchaseRequest.creation.form.itemDetails')}</Divider>
+
           <Form.List name="lineItems">
             {(fields, { add, remove }) => (
               <>
@@ -871,14 +965,8 @@ export default function CreationSubmodule(): React.ReactElement {
                         <Form.Item
                           label={t('purchaseRequest.creation.form.itemName')}
                           name={[field.name, "itemName"]}
-                          rules={[
-                            { required: true, message: t('purchaseRequest.creation.form.validation.itemNameRequired') },
-                          ]}
                         >
-                          <Input
-                            placeholder={t('purchaseRequest.creation.form.placeholders.itemName')}
-                            allowClear
-                          />
+                          <Input readOnly />
                         </Form.Item>
                       </Col>
                       <Col span={24}>

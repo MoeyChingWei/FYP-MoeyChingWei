@@ -1,0 +1,53 @@
+.page {
+  padding: 24px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.title {
+  flex: 1 1 320px;
+  min-width: 280px;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+.controls {
+  display: flex;
+  flex: 1 1 760px;
+  min-width: 0;
+  max-width: 100%;
+  justify-content: flex-end;
+}
+
+.controls :global(.ant-space) {
+  max-width: 100%;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 16px;
+  }
+
+  .title {
+    flex-basis: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .controls {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+
+  .controls :global(.ant-space) {
+    justify-content: flex-start;
+  }
+}

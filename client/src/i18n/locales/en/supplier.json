@@ -44,6 +44,17 @@
     "inventory": {
       "title": "Inventory",
       "hint": "Manage your available stock and reorder levels"
+    },
+    "invoice": {
+      "title": "Supplier Invoice",
+      "hint": "Create and manage supplier invoices"
+    }
+  },
+  "invoice": {
+    "title": "Supplier Invoice",
+    "empty": "No supplier invoices yet.",
+    "actions": {
+      "back": "Back"
     }
   },
   "orderAcknowledgement": {

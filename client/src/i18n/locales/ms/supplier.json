@@ -42,6 +42,17 @@
     "inventory": {
       "title": "Inventori",
       "hint": "Urus stok tersedia dan tahap pesanan semula"
+    },
+    "invoice": {
+      "title": "Invois Pembekal",
+      "hint": "Cipta dan urus invois pembekal"
+    }
+  },
+  "invoice": {
+    "title": "Invois Pembekal",
+    "empty": "Tiada invois pembekal lagi.",
+    "actions": {
+      "back": "Kembali"
     }
   },
   "orderAcknowledgement": {
