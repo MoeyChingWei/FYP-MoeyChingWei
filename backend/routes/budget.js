@@ -20,34 +20,6 @@ function filterByDepartment(requests, departmentCode) {
   });
 }
 
-// GET /api/budget/departments - Departments present in approved purchase requests.
-// Purchasing records store the department inside their JSON payload, so this
-// endpoint intentionally does not depend on the separate department-budget table.
-router.get("/departments", async (_req, res) => {
-  try {
-    const requests = await prisma.purchaseRequestRecord.findMany({
-      select: { payload: true },
-    });
-    const departments = new Map();
-
-    for (const request of requests) {
-      if (!isApprovedStatus(request.payload?.status)) continue;
-      const value = String(request.payload?.department ?? "").trim();
-      if (value) departments.set(value.toUpperCase(), value);
-    }
-
-    return res.json({
-      success: true,
-      data: Array.from(departments.values())
-        .sort((left, right) => left.localeCompare(right))
-        .map((department) => ({ code: department, name: department })),
-    });
-  } catch (error) {
-    console.error("Budget departments error:", error);
-    return res.status(500).json({ success: false, message: "Failed to fetch purchasing departments" });
-  }
-});
-
 // Debug: Log all middleware in this router
 console.log("🟢 Budget router initialized - stack length:", router.stack.length);
 
@@ -220,66 +192,6 @@ router.get("/forecast", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to generate budget forecast",
-      error: error.message,
-    });
-  }
-});
-
-// GET /api/budget/categories - Get spending by category from approved PRs
-router.get("/categories", async (req, res) => {
-  try {
-    const { startDate, endDate, departmentCode } = req.query;
-
-    const purchaseRequests = await prisma.purchaseRequestRecord.findMany({
-      where: {
-        ...(startDate && endDate
-          ? {
-              createdAt: {
-                gte: new Date(startDate),
-                lte: new Date(endDate),
-              },
-            }
-          : {}),
-      },
-    });
-
-    // Accept the current workflow's uppercase status and legacy persisted values.
-    const approvedRequests = purchaseRequests.filter(
-      (pr) => isApprovedStatus(pr.payload?.status)
-    );
-
-    // Filter by department if specified
-    const filteredRequests = filterByDepartment(approvedRequests, departmentCode);
-
-    const categoryTotals = {};
-
-    filteredRequests.forEach((request) => {
-      const items = getRequestItems(request.payload);
-      items.forEach((item) => {
-        const category = item.itemCategory || "Uncategorized";
-        const itemTotal = (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0);
-
-        if (!categoryTotals[category]) {
-          categoryTotals[category] = 0;
-        }
-        categoryTotals[category] += itemTotal;
-      });
-    });
-
-    const categories = Object.entries(categoryTotals).map(([name, amount]) => ({
-      category: name,
-      amount: Math.round(amount * 100) / 100,
-    })).sort((a, b) => b.amount - a.amount);
-
-    res.json({
-      success: true,
-      data: categories,
-    });
-  } catch (error) {
-    console.error("Category spending error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch category spending",
       error: error.message,
     });
   }

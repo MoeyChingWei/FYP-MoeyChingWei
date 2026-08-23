@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ApartmentOutlined, LineChartOutlined, FormOutlined, AuditOutlined, FundOutlined } from "@ant-design/icons";
+import { ApartmentOutlined, FormOutlined, AuditOutlined, FundOutlined } from "@ant-design/icons";
 import { getSessionUser } from "../../shared/auth/session";
 import { UserRole, isFinanceRole } from "../../shared/types/roles";
 
@@ -15,13 +15,6 @@ export default function BudgetManagementHome(): React.ReactElement {
   const role = sessionUser?.role;
 
   const modules = [
-    {
-      key: "forecasting",
-      title: t("budgetManagement:budgetForecasting"),
-      description: t("budgetManagement:forecastingDescription"),
-      icon: <LineChartOutlined className={styles.cardIcon} />,
-      path: "/budget-management/forecasting",
-    },
     {
       key: "department-forecasting",
       title: t("budgetManagement:departmentBudgetForecasting"),

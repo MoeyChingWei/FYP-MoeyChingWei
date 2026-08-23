@@ -1,7 +1,5 @@
 {
   "budgetManagement": "预算管理",
-  "budgetForecasting": "预算预测",
-  "forecastingDescription": "分析历史支出模式并预测未来预算需求",
   "departmentBudgetForecasting": "部门预算预测",
   "departmentForecastingDescription": "查看部门预算、AI 预测和预算调整申请",
   "homeDescription": "有效管理和预测您组织的预算",

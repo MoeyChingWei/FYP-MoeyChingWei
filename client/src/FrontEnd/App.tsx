@@ -140,9 +140,6 @@ const ChatBotPage = lazy(() => import("./pages/ChatBotPage"));
 const BudgetManagementHome = lazy(
   () => import("./pages/budgetManagement/BudgetManagementHome"),
 );
-const BudgetForecasting = lazy(
-  () => import("./pages/budgetManagement/BudgetForecasting"),
-);
 const DepartmentBudgetOverview = lazy(() => import("./pages/DepartmentBudgetOverview"));
 const BudgetAdjustmentRequest = lazy(() => import("./pages/BudgetAdjustmentRequest"));
 const FinanceBudgetDashboard = lazy(() => import("./pages/FinanceBudgetDashboard"));
@@ -161,7 +158,12 @@ type MenuKey =
 function useMenuKeyFromPath(pathname: string): MenuKey {
   if (pathname.startsWith("/users-access")) return "users-access";
   if (pathname.startsWith("/purchasing")) return "purchasing";
-  if (pathname.startsWith("/budget-management")) return "budget-management";
+  if (
+    pathname.startsWith("/budget-management") ||
+    pathname.startsWith("/budget/")
+  ) {
+    return "budget-management";
+  }
   if (pathname.startsWith("/supplier-overview")) return "supplier-overview";
   if (pathname.startsWith("/tracking-item")) return "tracking-item";
   if (pathname.startsWith("/chatbot")) return "chatbot";
@@ -635,7 +637,6 @@ function MainLayout(): React.ReactElement {
           />
           <Route path="/purchasing/*" element={<Navigate to="/purchasing" replace />} />
           <Route path="/budget-management" element={<BudgetManagementHome />} />
-          <Route path="/budget-management/forecasting" element={<BudgetForecasting />} />
           <Route path="/budget/department-overview" element={<DepartmentBudgetOverview />} />
           <Route path="/budget/adjustment-request" element={<BudgetAdjustmentRequest />} />
           <Route path="/budget/finance-dashboard" element={<FinanceBudgetDashboard />} />

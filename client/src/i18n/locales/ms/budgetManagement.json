@@ -1,7 +1,5 @@
 {
   "budgetManagement": "Pengurusan Bajet",
-  "budgetForecasting": "Ramalan Bajet",
-  "forecastingDescription": "Analisis corak perbelanjaan sejarah dan ramalkan keperluan bajet masa depan",
   "departmentBudgetForecasting": "Ramalan Bajet Jabatan",
   "departmentForecastingDescription": "Lihat bajet jabatan, ramalan AI dan permohonan pelarasan",
   "homeDescription": "Urus dan ramalkan bajet organisasi anda dengan berkesan",

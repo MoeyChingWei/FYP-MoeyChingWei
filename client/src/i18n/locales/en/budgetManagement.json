@@ -1,7 +1,5 @@
 {
   "budgetManagement": "Budget Management",
-  "budgetForecasting": "Budget Forecasting",
-  "forecastingDescription": "Analyze historical spending patterns and forecast future budget needs",
   "departmentBudgetForecasting": "Department Budget Forecasting",
   "departmentForecastingDescription": "Review department budgets, AI predictions, and adjustment requests",
   "homeDescription": "Manage and forecast your organization's budget effectively",

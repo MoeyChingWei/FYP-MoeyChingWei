@@ -118,13 +118,13 @@
   padding: 24px !important;
 }
 
-/* AI Assistant card styling (4th card) */
-.tile:nth-child(4) {
+/* AI Assistant card styling (5th card) */
+.tile:nth-child(5) {
   --accent: #f59e0b;
   --accentRgb: 245, 158, 11;
 }
 
-.tile:nth-child(4) .iconWrap {
+.tile:nth-child(5) .iconWrap {
   background: linear-gradient(
     145deg,
     rgba(245, 158, 11, 0.08) 0%,
@@ -133,21 +133,21 @@
   border: 1px solid rgba(245, 158, 11, 0.12);
 }
 
-.tile:nth-child(4):hover,
-.tile:nth-child(4):focus-visible {
+.tile:nth-child(5):hover,
+.tile:nth-child(5):focus-visible {
   border-color: rgba(245, 158, 11, 0.35) !important;
   box-shadow: 0 8px 28px rgba(245, 158, 11, 0.1);
 }
 
-.tile:nth-child(4):focus-visible {
+.tile:nth-child(5):focus-visible {
   box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.16);
 }
 
-.tile:nth-child(4) .tileIcon {
+.tile:nth-child(5) .tileIcon {
   color: #f59e0b;
 }
 
-.tile:nth-child(4) .tileChevron {
+.tile:nth-child(5) .tileChevron {
   color: #f59e0b;
 }
 

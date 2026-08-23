@@ -202,9 +202,11 @@ export async function getMonthlyBudgets(
     const res = await axios.get(`${API}/monthly/${departmentId}`, { params });
     if (!res.data.success) return [];
 
-    return res.data.data.map((prediction: BudgetPrediction) => ({
-      ...prediction,
-      predictedAmount: toBudgetNumber(prediction.predictedAmount)
+    return res.data.data.map((budget: MonthlyBudget) => ({
+      ...budget,
+      allocatedAmount: toBudgetNumber(budget.allocatedAmount),
+      spentAmount: toBudgetNumber(budget.spentAmount),
+      reservedAmount: toBudgetNumber(budget.reservedAmount)
     }));
   } catch (error) {
     console.error("Get monthly budgets error:", error);
