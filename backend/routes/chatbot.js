@@ -1,5 +1,7 @@
 import express from 'express';
-import chatbotAgent from '../agents/chatbot/chatbot-agent.js';
+// Keep the legacy /api/chatbot contract, but route it through the enhanced agent.
+import chatbotAgent from '../agents/chatbot/chatbot-agent-v2.js';
+import legacyChatbotAgent from '../agents/chatbot/chatbot-agent.js';
 import prisma from '../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 import { exportPurchaseRequestsToCSV, exportPurchaseRequestsToJSON, generateExportFilename } from '../utils/export-purchase-requests.js';
@@ -44,7 +46,10 @@ router.post('/chat', async (req, res) => {
       console.log(`📎 With ${attachmentData.length} attachment(s)`);
     }
 
-    const response = await chatbotAgent.chat({
+    // Keep attachment/image analysis on the legacy implementation until that
+    // capability is ported to v2. Normal messages use the enhanced agent.
+    const activeAgent = attachmentData?.length ? legacyChatbotAgent : chatbotAgent;
+    const response = await activeAgent.chat({
       userId,
       message,
       sessionId: actualSessionId,

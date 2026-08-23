@@ -261,13 +261,16 @@ function parseAIResponse(response) {
       if (Number.isFinite(predictedAmount) && predictedAmount >= 0) {
         return {
           predictedAmount,
-          confidence: ['low', 'medium', 'high'].includes(parsed.confidence)
+          confidence: ['very_high', 'low', 'medium', 'high'].includes(parsed.confidence)
             ? parsed.confidence
             : 'low',
           insights: String(parsed.insights || 'AI Agent generated this forecast from the available purchasing history.'),
           categoryBreakdown: parsed.categoryBreakdown && typeof parsed.categoryBreakdown === 'object'
             ? parsed.categoryBreakdown
-            : {}
+            : {},
+          predictionInterval: parsed.predictionInterval ?? parsed.interval,
+          modelBreakdown: parsed.modelBreakdown,
+          method: parsed.method
         };
       }
     } catch {
@@ -335,57 +338,53 @@ async function callAnalyticsAgent(department, historicalData, targetYear, target
     .dividedBy(historicalData.length)
     .toDecimalPlaces(2);
 
-  const prompt = `You are a budget forecasting AI using Holt-Winters Triple Exponential Smoothing.
+  const prompt = `Predict the budget spending for department "${department.name}" for period ${targetYear}-${String(targetMonth).padStart(2, '0')}.
 
-Department: ${department.name}
-Target Period: ${targetYear}-${String(targetMonth).padStart(2, '0')}
+Use the predict_future_spending tool with the following parameters:
+- department: "${department.name}"
+- forecastMonths: 1
+- includeSeasonality: ${historicalData.length >= 12}
 
-Historical Spending (Last ${historicalData.length} months):
-${historicalData.map(h => `- ${h.period}: $${h.amount.toFixed(2)} (${h.requestCount} requests)`).join('\n')}
+The system has ${historicalData.length} months of historical data available.
 
-Category Breakdown (Latest Period ${lastPeriod.period}):
-${Object.entries(lastPeriod.categoryTotals).map(([cat, amt]) => `- ${cat}: $${amt.toFixed(2)}`).join('\n')}
-
-Please predict next month's budget using Holt-Winters algorithm and provide:
-1. Predicted amount (number only)
-2. Confidence level (low/medium/high)
-3. Key insights (2-3 sentences)
-4. Category breakdown forecast (JSON object)
-
-Format your response as JSON:
+After getting the prediction, format the response as JSON with these fields:
 {
-  "predictedAmount": <number>,
-  "confidence": "<low|medium|high>",
-  "insights": "<string>",
-  "categoryBreakdown": {<category>: <amount>, ...}
+  "predictedAmount": <number from ensemble forecast>,
+  "confidence": "<confidence level>",
+  "insights": "<explanation including model used and confidence reasoning>",
+  "categoryBreakdown": <estimate based on historical category distribution>,
+  "predictionInterval": <interval data if available>,
+  "modelBreakdown": <individual model predictions if available>,
+  "method": "<forecast method used>"
 }`;
-
-  const structuredOutputInstruction = `\n\nSTRUCTURED FORECAST MODE:\nThe user has already supplied the authoritative department purchasing history. Do not call tools and do not write a conversational report. Return only one valid JSON object, with no Markdown or extra text, matching the requested predictedAmount, confidence, insights, and categoryBreakdown fields. predictedAmount must be a non-negative number.`;
 
   try {
     const aiResponse = await analyticsAgent.chat({
       userId: 1,
       message: prompt,
       sessionId: `budget-prediction-${department.id}-${Date.now()}`,
-      systemPromptAddition: structuredOutputInstruction,
-      availableTools: [],
-      maxTokens: 700,
-      temperature: 0.2
+      systemPromptAddition: '',
+      // BaseAgent requires complete tool definitions, not just tool names.
+      availableTools: analyticsAgent.tools.filter(tool => tool.name === 'predict_future_spending'),
+      maxTokens: 2048,
+      temperature: 0.3
     });
 
     if (!aiResponse.success) {
       throw new Error('AI agent returned unsuccessful response');
     }
 
-    // Reasoning is not a prediction result and may contain dates or intermediate
-    // calculations. Only parse the model's final answer content.
+    // Parse the AI response
     const parsed = parseAIResponse(aiResponse.content);
 
     return {
       amount: parsed.predictedAmount,
-      confidence: parsed.confidence,
+      confidence: parsed.confidence || 'medium',
       insights: parsed.insights,
       categoryBreakdown: parsed.categoryBreakdown,
+      predictionInterval: parsed.predictionInterval, // New: upper/lower bounds
+      modelBreakdown: parsed.modelBreakdown, // New: individual model predictions
+      method: parsed.method, // New: which ensemble method was used
       comparisonData: {
         lastMonthAmount: lastPeriod.amount,
         avgAmount: avgAmount.toNumber(),
@@ -452,7 +451,7 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
   // Call analytics agent for prediction
   const aiResponse = await callAnalyticsAgent(department, historicalData, targetYear, targetMonth);
 
-  // Create prediction record with fallback status
+  // Create prediction record with enhanced analytics data
   const prediction = await prisma.budgetPrediction.create({
     data: {
       departmentId: department.id,
@@ -460,12 +459,14 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
       targetMonth,
       predictedAmount: aiResponse.amount,
       confidence: aiResponse.confidence,
-      algorithm: aiResponse.usedFallback ? 'moving_average_fallback' : 'holt_winters',
+      algorithm: aiResponse.method || (aiResponse.usedFallback ? 'moving_average_fallback' : 'ensemble'),
       aiInsights: aiResponse.insights,
       categoryBreakdown: aiResponse.categoryBreakdown,
       comparisonData: {
         ...aiResponse.comparisonData,
-        usedFallback: aiResponse.usedFallback || false
+        usedFallback: aiResponse.usedFallback || false,
+        predictionInterval: aiResponse.predictionInterval, // New: upper/lower bounds
+        modelBreakdown: aiResponse.modelBreakdown // New: individual model results
       },
       triggerType: userId ? 'manual' : 'automatic',
       triggeredBy: userId || null

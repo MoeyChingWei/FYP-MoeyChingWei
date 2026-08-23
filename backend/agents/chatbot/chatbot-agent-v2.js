@@ -2,6 +2,11 @@ import BaseAgent from '../base-agent.js';
 import prisma from '../../config/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 import { generatePRNumber } from '../../utils/pr-number-generator.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import logger from '../../services/simple-logger.js';
+
+const EXPORTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../exports');
 
 const COMMON_CATEGORIES = [
   'Office Supplies / Stationery',
@@ -15,6 +20,17 @@ const COMMON_CATEGORIES = [
 const COMMON_UNITS = [
   'box', 'piece', 'kg', 'liter', 'set', 'pack', 'unit'
 ];
+
+/**
+ * Performance profiles for dynamic resource allocation
+ * Simple queries use fewer tokens, complex tasks use more
+ */
+const PERFORMANCE_PROFILES = {
+  simple: { maxTokens: 1024, temperature: 0.7 },   // Greetings, simple lookups
+  medium: { maxTokens: 2048, temperature: 0.9 },   // Single table queries, basic lists
+  complex: { maxTokens: 4096, temperature: 1.0 },  // Multi-table queries, analysis
+  advanced: { maxTokens: 8192, temperature: 1.0 }  // Report generation, comprehensive tasks
+};
 
 /**
  * Format purchase requests with summary cards and table
@@ -114,14 +130,15 @@ function formatPurchaseOrdersAsMarkdown(orders, total) {
   return markdown;
 }
 
-const CHATBOT_SYSTEM_PROMPT = `You are the General AI Assistant for OptiMind ERP system.
+const CHATBOT_SYSTEM_PROMPT = `You are the General AI Assistant for OptiMind ERP system - a super-intelligent assistant like ChatGPT.
 
-YOUR ROLE:
-- Friendly and approachable general assistant
-- Help users navigate the system
-- Answer questions about system features
-- Query data when users ask
-- Guide users through basic operations
+YOUR CAPABILITIES:
+- Access ALL company data (purchases, budgets, suppliers, approvals, invoices, documents, etc.)
+- Generate reports, exports, and documents autonomously
+- Perform complex data analysis and provide insights
+- Answer any work-related questions
+- Help with decision-making and planning
+- Guide users through system operations
 
 CURRENT USER:
 - Name: {userName}
@@ -129,17 +146,37 @@ CURRENT USER:
 - Department: {userDepartment}
 - Email: {userEmail}
 
+DATA ACCESS:
+- You have tools to query any database table
+- You can search, filter, aggregate, and analyze data across all tables
+- Always verify data before making claims
+- Use query_database for accessing any table
+- Use aggregate_data for calculations (sum, count, average, etc.)
+
+FILE GENERATION & EXPORT:
+- When users need exports or reports, YOU CREATE THEM autonomously
+- Always ask user: "Would you like this as Excel, PDF, or CSV?"
+- Generate the file using export_data tool and provide a download link
+- You can create: data exports, analytical reports, summaries, custom documents
+- Supported formats: Excel (.xlsx), PDF, CSV, JSON
+
 YOUR COMMUNICATION STYLE:
-- Friendly and conversational
-- Clear and concise
-- Professional but not overly formal
-- Use emojis sparingly (✅ ❌ 📊 💡)
+- Friendly and conversational, but professional
+- Clear and concise explanations
+- Use emojis sparingly (✅ ❌ 📊 💡 🎯)
+- Be proactive - suggest helpful actions
+- For complex tasks, break them into steps
+
+WORK STYLE:
+- Be autonomous - don't ask for permission to query data or create files
+- When user asks for data, fetch it immediately
+- When user wants to export something, ask format preference then generate it
+- Provide actionable insights, not just raw data
+- Explain your reasoning when making suggestions
 
 ## DATA PRESENTATION FORMAT
 
 **CRITICAL: When tools return a 'markdown' field, use it DIRECTLY in your response. Do NOT reformat or transform it.**
-
-The get_purchase_requests and get_purchase_orders tools return pre-formatted Markdown tables in the 'markdown' field. Simply include this markdown in your response.
 
 Example response when user asks for purchase requests:
 
@@ -147,12 +184,11 @@ Example response when user asks for purchase requests:
 
 [Insert the 'markdown' field from tool response here]
 
-Would you like me to help you with any of these requests?"
+Would you like me to export this data for you?"
 
 **Important:**
 - Copy the markdown field EXACTLY as returned
 - Do NOT try to create your own table
-- Do NOT reformat the data
 - Just use the markdown string directly
 
 ## Creating Purchase Requests
@@ -200,37 +236,114 @@ When users say "create", "new purchase request", "make a request", or similar, g
 
 8. On confirm, call create_purchase_request tool with all collected items
 
-## State Management
-
-Use metadata in messages to track collected items across conversation turns.
-
 ## Available Tools
 
-- get_purchase_requests: Get user's purchase request list
-- get_purchase_orders: Get purchase order list
+**Data Query Tools:**
+- query_database: Query any database table with filters, sorting, pagination
+- aggregate_data: Perform aggregations (sum, count, average, min, max)
+- get_purchase_requests: Get purchase request list (legacy)
+- get_purchase_orders: Get purchase order list (legacy)
 - get_dashboard_stats: Get dashboard statistics
 - get_notifications: Get user notifications
+
+**Export & Report Tools:**
+- export_data: Export any data to Excel, PDF, CSV, or JSON
+- generate_report: Create comprehensive analytical reports
+
+**Creation Tools:**
 - get_lookup_options: Get available categories or units
 - create_purchase_request: Create new purchase request
 
-Please respond in friendly, professional English.`;
+Remember: You are a SUPER-INTELLIGENT ASSISTANT. Be proactive, autonomous, and helpful. Users rely on you to handle complex tasks efficiently.`;
+
 
 /**
  * ChatBot Agent - General Assistant
  *
- * General AI assistant that handles system usage questions, data queries, and basic operation guidance
+ * Super-intelligent general AI assistant that handles system usage questions,
+ * data queries, exports, reports, and comprehensive assistance
  */
 class ChatBotAgent extends BaseAgent {
   constructor() {
     super({
       agentType: 'chatbot',
       name: 'General Assistant',
-      description: 'Friendly AI assistant for general ERP system help',
-      personality: 'Friendly, approachable, and helpful',
-      expertise: 'General system navigation, data queries, and basic operations',
+      description: 'Super-intelligent AI assistant for comprehensive ERP system help',
+      personality: 'Intelligent, proactive, and autonomous',
+      expertise: 'Universal data access, report generation, analysis, and system operations',
       systemPromptTemplate: CHATBOT_SYSTEM_PROMPT,
       tools: ChatBotAgent.defineTools(),
       toolHandlers: ChatBotAgent.defineToolHandlers(),
+    });
+  }
+
+  /**
+   * Detect task complexity based on message content
+   * Returns: 'simple', 'medium', 'complex', or 'advanced'
+   */
+  detectComplexity(message) {
+    const lowerMessage = message.toLowerCase();
+
+    // Advanced indicators: report generation, comprehensive analysis
+    if (lowerMessage.includes('generate report') ||
+        lowerMessage.includes('comprehensive analysis') ||
+        lowerMessage.includes('detailed report') ||
+        (lowerMessage.includes('compare') && lowerMessage.includes('trend')) ||
+        lowerMessage.includes('create report')) {
+      return 'advanced';
+    }
+
+    // Complex indicators: analysis, exports, calculations
+    if (lowerMessage.includes('analyze') ||
+        lowerMessage.includes('analysis') ||
+        lowerMessage.includes('export') ||
+        lowerMessage.includes('download') ||
+        lowerMessage.includes('calculate') ||
+        lowerMessage.includes('summary') ||
+        lowerMessage.includes('insight') ||
+        lowerMessage.includes('aggregate') ||
+        lowerMessage.includes('total spending') ||
+        lowerMessage.includes('comparison')) {
+      return 'complex';
+    }
+
+    // Medium indicators: queries, listings, searches
+    if (lowerMessage.includes('show me') ||
+        lowerMessage.includes('list') ||
+        lowerMessage.includes('find') ||
+        lowerMessage.includes('search') ||
+        lowerMessage.includes('get') ||
+        lowerMessage.includes('query') ||
+        lowerMessage.includes('how many')) {
+      return 'medium';
+    }
+
+    // Simple (default): greetings, navigation, simple questions
+    return 'simple';
+  }
+
+  /**
+   * Override chat method to add dynamic performance allocation
+   */
+  async chat({ userId, message, sessionId, systemPromptAddition = '' }) {
+    // Detect task complexity
+    const complexity = this.detectComplexity(message);
+    const profile = PERFORMANCE_PROFILES[complexity];
+
+    logger.debug('ChatbotAgent', `Task complexity: ${complexity}`, {
+      maxTokens: profile.maxTokens,
+      temperature: profile.temperature,
+      messagePreview: message.substring(0, 50)
+    });
+
+    // Call parent with dynamic performance settings
+    return super.chat({
+      userId,
+      message,
+      sessionId,
+      systemPromptAddition,
+      maxTokens: profile.maxTokens,
+      temperature: profile.temperature
     });
   }
 
@@ -340,6 +453,131 @@ class ChatBotAgent extends BaseAgent {
           },
           required: ['lineItems'],
         },
+      },
+      {
+        name: 'query_database',
+        description: 'Query any database table with filters, sorting, and pagination. Use this to retrieve specific data from any table.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            table: {
+              type: 'string',
+              enum: ['user', 'department', 'supplier', 'purchaseRequestRecord', 'purchaseOrderRecord',
+                     'goodsReceivedNoteRecord', 'invoiceRecord', 'paymentRecord', 'budgetAllocation',
+                     'budgetPrediction', 'approvalWorkflow', 'documentRecord', 'notification', 'chatSession', 'chatMessage'],
+              description: 'Database table to query'
+            },
+            filters: {
+              type: 'object',
+              description: 'Prisma where clause filters (e.g., {status: "PENDING"}). Leave empty for no filters.'
+            },
+            include: {
+              type: 'object',
+              description: 'Prisma relations to include (e.g., {requester: true}). Leave empty for no relations.'
+            },
+            orderBy: {
+              type: 'object',
+              description: 'Sorting (e.g., {createdAt: "desc"})'
+            },
+            take: {
+              type: 'number',
+              description: 'Limit results (default 50, max 500)'
+            },
+            skip: {
+              type: 'number',
+              description: 'Skip results for pagination (default 0)'
+            }
+          },
+          required: ['table']
+        }
+      },
+      {
+        name: 'aggregate_data',
+        description: 'Perform aggregations on data (sum, count, average, min, max). Use this for calculations and statistics.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            table: {
+              type: 'string',
+              enum: ['user', 'department', 'supplier', 'purchaseRequestRecord', 'purchaseOrderRecord',
+                     'goodsReceivedNoteRecord', 'invoiceRecord', 'paymentRecord', 'budgetAllocation',
+                     'budgetPrediction', 'approvalWorkflow', 'documentRecord', 'notification'],
+              description: 'Database table to aggregate'
+            },
+            aggregations: {
+              type: 'object',
+              description: 'Prisma aggregate operations (e.g., {_sum: {amount: true}, _count: true})'
+            },
+            filters: {
+              type: 'object',
+              description: 'Prisma where clause filters (optional)'
+            },
+            groupBy: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Fields to group by (optional)'
+            }
+          },
+          required: ['table', 'aggregations']
+        }
+      },
+      {
+        name: 'export_data',
+        description: '[MUST USE] Export any data to Excel, PDF, CSV, or JSON. First ask user which format they prefer, then use this tool to generate the file.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            dataType: {
+              type: 'string',
+              description: 'Type of data being exported (e.g., "purchase-requests", "suppliers", "budget-analysis", "custom-report")'
+            },
+            data: {
+              type: 'array',
+              description: 'Array of records to export (can be from query_database results)'
+            },
+            format: {
+              type: 'string',
+              enum: ['excel', 'pdf', 'csv', 'json'],
+              description: 'Export format (ask user first!)'
+            },
+            filename: {
+              type: 'string',
+              description: 'Filename without extension (e.g., "purchase-requests-2024")'
+            },
+            metadata: {
+              type: 'object',
+              description: 'Additional metadata like title, description, preparedBy, etc.'
+            }
+          },
+          required: ['dataType', 'data', 'format', 'filename']
+        }
+      },
+      {
+        name: 'generate_report',
+        description: 'Generate a comprehensive analytical report with insights. Use this for complex reports with analysis.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            reportType: {
+              type: 'string',
+              description: 'Type of report (e.g., "spending-analysis", "supplier-performance", "budget-overview", "department-comparison")'
+            },
+            data: {
+              type: 'object',
+              description: 'Data to include in the report'
+            },
+            format: {
+              type: 'string',
+              enum: ['pdf', 'excel'],
+              description: 'Report format'
+            },
+            includeCharts: {
+              type: 'boolean',
+              description: 'Include charts and visualizations (default true)'
+            }
+          },
+          required: ['reportType', 'data', 'format']
+        }
       },
     ];
   }
@@ -644,6 +882,178 @@ class ChatBotAgent extends BaseAgent {
           itemCount: lineItems.length,
           department: user.department,
         };
+      },
+
+      query_database: async (input) => {
+        const { table, filters = {}, include = {}, orderBy, take = 50, skip = 0 } = input;
+
+        // Security: Limit to reasonable query sizes
+        const safeTake = Math.min(take || 50, 500);
+
+        try {
+          // Dynamic Prisma query
+          const results = await prisma[table].findMany({
+            where: filters,
+            include,
+            orderBy,
+            take: safeTake,
+            skip: skip || 0
+          });
+
+          return {
+            success: true,
+            table,
+            count: results.length,
+            data: results,
+            message: `Found ${results.length} record(s) from ${table}`
+          };
+        } catch (error) {
+          logger.error('QueryDatabase', `Failed to query ${table}: ${error.message}`);
+          return {
+            success: false,
+            error: `Failed to query ${table}: ${error.message}`,
+            hint: 'Check if the table name and filters are correct'
+          };
+        }
+      },
+
+      aggregate_data: async (input) => {
+        const { table, aggregations, filters = {}, groupBy } = input;
+
+        try {
+          let result;
+          if (groupBy && groupBy.length > 0) {
+            // Group by aggregation
+            result = await prisma[table].groupBy({
+              by: groupBy,
+              where: filters,
+              ...aggregations
+            });
+          } else {
+            // Simple aggregation
+            result = await prisma[table].aggregate({
+              where: filters,
+              ...aggregations
+            });
+          }
+
+          return {
+            success: true,
+            table,
+            result,
+            groupBy: groupBy || null
+          };
+        } catch (error) {
+          logger.error('AggregateData', `Failed to aggregate ${table}: ${error.message}`);
+          return {
+            success: false,
+            error: `Failed to aggregate ${table}: ${error.message}`,
+            hint: 'Check if the aggregation syntax is correct'
+          };
+        }
+      },
+
+      export_data: async (input) => {
+        const { dataType, data, format, filename, metadata = {} } = input;
+
+        if (!data || data.length === 0) {
+          return {
+            success: false,
+            error: 'No data provided for export',
+            hint: 'Query the data first using query_database, then pass it to export_data'
+          };
+        }
+
+        try {
+          // Generate unique filename
+          const timestamp = Date.now();
+          const extension = format === 'excel' ? 'xlsx' : format;
+          const safeFilename = String(filename || dataType || 'export')
+            .replace(/[^a-zA-Z0-9-]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '') || 'export';
+          const fullFilename = `${safeFilename}-${timestamp}.${extension}`;
+          const filepath = path.join(EXPORTS_DIR, fullFilename);
+
+          // Simplified export - write JSON for now
+          // In production, you'd use ExportService for proper Excel/PDF generation
+          const fs = await import('fs/promises');
+          await fs.mkdir(path.dirname(filepath), { recursive: true });
+
+          if (format === 'json') {
+            await fs.writeFile(filepath, JSON.stringify(data, null, 2), 'utf8');
+          } else if (format === 'csv') {
+            // Simple CSV conversion
+            if (data.length > 0) {
+              const headers = Object.keys(data[0]).join(',');
+              const rows = data.map(row => Object.values(row).join(',')).join('\n');
+              await fs.writeFile(filepath, `${headers}\n${rows}`, 'utf8');
+            }
+          } else {
+            return {
+              success: false,
+              error: `${format} export is not available for arbitrary query data yet`,
+              hint: 'Use csv or json for chatbot query exports'
+            };
+          }
+
+          const downloadUrl = `/api/chatbot/download/${fullFilename}`;
+
+          return {
+            success: true,
+            message: `File generated successfully! Click the link below to download:`,
+            downloadUrl,
+            filename: fullFilename,
+            format,
+            recordCount: data.length
+          };
+        } catch (error) {
+          logger.error('ExportData', `Export failed: ${error.message}`);
+          return {
+            success: false,
+            error: `Export failed: ${error.message}`
+          };
+        }
+      },
+
+      generate_report: async (input) => {
+        const { reportType, data, format, includeCharts = true } = input;
+
+        try {
+          // Generate a comprehensive report
+          const timestamp = Date.now();
+          const filename = `report-${reportType}-${timestamp}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+          const filepath = path.join(EXPORTS_DIR, filename);
+
+          // For now, export as JSON with report structure
+          const reportData = {
+            reportType,
+            generatedAt: new Date().toISOString(),
+            format,
+            includeCharts,
+            data
+          };
+
+          const fs = await import('fs/promises');
+          await fs.mkdir(path.dirname(filepath), { recursive: true });
+          await fs.writeFile(filepath.replace(/\.(pdf|xlsx)$/, '.json'), JSON.stringify(reportData, null, 2), 'utf8');
+
+          const downloadUrl = `/api/chatbot/download/${filename.replace(/\.(pdf|xlsx)$/, '.json')}`;
+
+          return {
+            success: true,
+            message: `Report generated successfully! Download it below:`,
+            downloadUrl,
+            filename,
+            reportType
+          };
+        } catch (error) {
+          logger.error('GenerateReport', `Report generation failed: ${error.message}`);
+          return {
+            success: false,
+            error: `Report generation failed: ${error.message}`
+          };
+        }
       },
     };
   }

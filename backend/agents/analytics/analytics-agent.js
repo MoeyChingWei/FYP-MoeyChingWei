@@ -67,6 +67,154 @@ function detectAnomaliesZScore(data, threshold = 2.5) {
   }).filter(item => item.isAnomaly);
 }
 
+/**
+ * Remove outliers using Z-score method
+ * Used for cleaning historical data before forecasting
+ */
+function removeOutliers(data, threshold = 3) {
+  if (data.length < 3) return data;
+
+  const values = data.map(d => d.totalAmount || d.value || 0);
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const stdDev = Math.sqrt(
+    values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / values.length
+  );
+
+  return data.filter((d, i) => {
+    const zScore = Math.abs((values[i] - mean) / stdDev);
+    return zScore < threshold;
+  });
+}
+
+/**
+ * Moving Average prediction
+ * Simple but effective for short-term forecasting
+ */
+function movingAveragePredict(data, periods, windowSize = 3) {
+  const values = data.map(d => d.totalAmount || d.value || 0);
+  const predictions = [];
+
+  // Calculate moving average for each forecast period
+  for (let i = 0; i < periods; i++) {
+    const window = values.slice(-(windowSize));
+    const avg = window.reduce((a, b) => a + b, 0) / window.length;
+    predictions.push(avg);
+    // For next iteration, add the predicted value
+    values.push(avg);
+  }
+
+  return predictions;
+}
+
+/**
+ * Linear Regression with trend
+ * Good for capturing linear growth/decline patterns
+ */
+function linearTrendPredict(data, periods) {
+  const values = data.map(d => d.totalAmount || d.value || 0);
+  const n = values.length;
+
+  // Calculate linear regression: y = mx + b
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += values[i];
+    sumXY += i * values[i];
+    sumX2 += i * i;
+  }
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  // Predict future values
+  const predictions = [];
+  for (let i = 0; i < periods; i++) {
+    const predicted = slope * (n + i) + intercept;
+    predictions.push(Math.max(0, predicted)); // Ensure non-negative
+  }
+
+  return predictions;
+}
+
+/**
+ * Simple Exponential Smoothing
+ * Fallback for cases without seasonality
+ */
+function simpleExponentialSmoothing(data, periods, alpha = 0.3) {
+  if (data.length === 0) return Array(periods).fill(0);
+
+  let level = data[0];
+
+  // Train the model
+  for (let i = 1; i < data.length; i++) {
+    level = alpha * data[i] + (1 - alpha) * level;
+  }
+
+  // Forecast (constant value)
+  return Array(periods).fill(level);
+}
+
+/**
+ * Calculate confidence level based on model agreement and data quality
+ * Returns: 'very_high', 'high', 'medium', or 'low'
+ */
+function calculateConfidence(predictions, historicalData) {
+  const { holtWinters, movingAverage, linearRegression } = predictions;
+
+  // 1. Model agreement (coefficient of variation between models)
+  const avgPredictions = holtWinters.map((_, i) => {
+    const values = [holtWinters[i], movingAverage[i], linearRegression[i]];
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const stdDev = Math.sqrt(
+      values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / values.length
+    );
+    return { mean, cv: mean > 0 ? stdDev / mean : 0 };
+  });
+
+  const avgCV = avgPredictions.reduce((sum, p) => sum + p.cv, 0) / avgPredictions.length;
+
+  // 2. Historical variance
+  const historicalValues = historicalData.map(d => d.totalAmount || 0);
+  const historicalMean = historicalValues.reduce((a, b) => a + b, 0) / historicalValues.length;
+  const historicalStdDev = Math.sqrt(
+    historicalValues.reduce((sq, n) => sq + Math.pow(n - historicalMean, 2), 0) / historicalValues.length
+  );
+  const historicalCV = historicalMean > 0 ? historicalStdDev / historicalMean : 1;
+
+  // 3. Data quantity score (24 months = perfect)
+  const dataScore = Math.min(historicalData.length / 24, 1);
+
+  // Combined confidence score
+  const modelAgreementScore = 1 - Math.min(avgCV, 1);
+  const stabilityScore = 1 - Math.min(historicalCV, 1);
+  const confidence = (modelAgreementScore * 0.5 + stabilityScore * 0.3 + dataScore * 0.2);
+
+  if (confidence > 0.8) return 'very_high';
+  if (confidence > 0.6) return 'high';
+  if (confidence > 0.4) return 'medium';
+  return 'low';
+}
+
+/**
+ * Calculate prediction intervals (upper and lower bounds)
+ * Uses historical standard deviation to estimate uncertainty
+ */
+function calculatePredictionInterval(historicalData, predictions) {
+  const historicalValues = historicalData.map(d => d.totalAmount || 0);
+  const historicalMean = historicalValues.reduce((a, b) => a + b, 0) / historicalValues.length;
+  const historicalStdDev = Math.sqrt(
+    historicalValues.reduce((sq, n) => sq + Math.pow(n - historicalMean, 2), 0) / historicalValues.length
+  );
+
+  // Use 1.5 standard deviations for prediction interval (~86% confidence)
+  const marginFactor = historicalMean > 0 ? (1.5 * historicalStdDev / historicalMean) : 0.15;
+
+  return {
+    lower: predictions.map(p => Math.max(0, p * (1 - marginFactor))),
+    upper: predictions.map(p => p * (1 + marginFactor))
+  };
+}
+
 const ANALYTICS_AGENT_SYSTEM_PROMPT = `You are the Data Analytics Expert for OptiMind ERP system.
 
 YOUR IDENTITY:
@@ -110,8 +258,11 @@ YOUR THINKING PROCESS:
 - Detect unusual spending patterns
 
 ### 2. Trend Prediction
-- Forecast future spending based on historical data
-- Predict seasonal patterns
+- Forecast future spending using Multi-Model Ensemble (Holt-Winters, Moving Average, Linear Regression)
+- Provide confidence levels (very_high, high, medium, low)
+- Show prediction intervals (upper and lower bounds)
+- Automatically detect and remove outliers
+- Predict seasonal patterns using up to 24 months of historical data
 - Anticipate budget overruns
 - Recommend budget adjustments
 
@@ -454,152 +605,196 @@ class AnalyticsAgent extends BaseAgent {
       predict_future_spending: async (input) => {
         const { department, forecastMonths = 3, includeSeasonality = false } = input;
 
-        // Get historical data (at least 12 months for seasonality analysis)
-        const startDate = new Date();
-        const lookbackMonths = includeSeasonality ? 24 : 12;
-        startDate.setMonth(startDate.getMonth() - lookbackMonths);
+        try {
+          // 1. Get EXTENDED historical data (24 months for better pattern detection)
+          const startDate = new Date();
+          const lookbackMonths = 24; // Always use 24 months for best results
+          startDate.setMonth(startDate.getMonth() - lookbackMonths);
 
-        const whereClause = department
-          ? {
-              createdAt: { gte: startDate },
-              payload: {
-                path: ['department'],
-                equals: department,
-              },
-            }
-          : {
-              createdAt: { gte: startDate },
-            };
+          const whereClause = department
+            ? {
+                createdAt: { gte: startDate },
+                payload: {
+                  path: ['department'],
+                  equals: department,
+                },
+              }
+            : {
+                createdAt: { gte: startDate },
+              };
 
-        const orders = await prisma.purchaseOrderRecord.findMany({
-          where: whereClause,
-          orderBy: { createdAt: 'asc' },
-          select: {
-            payload: true,
-            createdAt: true,
-          },
-        });
-
-        // Aggregate spending by month
-        const monthlySpending = {};
-        orders.forEach(order => {
-          const date = new Date(order.createdAt);
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-          if (!monthlySpending[monthKey]) monthlySpending[monthKey] = 0;
-
-          if (order.payload.items) {
-            order.payload.items.forEach(item => {
-              monthlySpending[monthKey] += parseFloat(item.totalPrice || 0);
-            });
-          }
-        });
-
-        // Fill missing months with 0
-        const sortedMonths = Object.keys(monthlySpending).sort();
-        if (sortedMonths.length === 0) {
-          return {
-            department: department || 'All Departments',
-            error: 'No historical data available',
-            recommendation: 'Need at least 3 months of data for prediction',
-          };
-        }
-
-        const spendingValues = sortedMonths.map(m => monthlySpending[m]);
-
-        if (spendingValues.length < 3) {
-          return {
-            department: department || 'All Departments',
-            error: 'Insufficient data',
-            recommendation: `Need at least 3 months of data, found ${spendingValues.length}`,
-          };
-        }
-
-        // Calculate historical statistics
-        const avgMonthly = spendingValues.reduce((a, b) => a + b, 0) / spendingValues.length;
-        const recentAvg = spendingValues.slice(-3).reduce((a, b) => a + b, 0) / 3;
-
-        // Use Holt-Winters method for prediction
-        let forecasts;
-        let method;
-
-        if (includeSeasonality && spendingValues.length >= 12) {
-          forecasts = holtWintersPredict(spendingValues, forecastMonths, 12);
-          method = 'Holt-Winters Triple Exponential Smoothing';
-        } else {
-          // Use simple linear trend
-          const n = spendingValues.length;
-          const sumX = spendingValues.reduce((sum, _, i) => sum + i, 0);
-          const sumY = spendingValues.reduce((sum, val) => sum + val, 0);
-          const sumXY = spendingValues.reduce((sum, val, i) => sum + i * val, 0);
-          const sumX2 = spendingValues.reduce((sum, _, i) => sum + i * i, 0);
-
-          const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-          const intercept = (sumY - slope * sumX) / n;
-
-          forecasts = [];
-          for (let i = 1; i <= forecastMonths; i++) {
-            forecasts.push(intercept + slope * (n + i - 1));
-          }
-          method = 'Linear Regression';
-        }
-
-        // Format forecast results
-        const formattedForecasts = forecasts.map((value, i) => {
-          const confidenceLevel =
-            i < 2 ? 'high' :
-            i < 4 ? 'medium' :
-            'low';
-
-          // Calculate confidence interval (±15%)
-          const margin = value * 0.15;
-
-          return {
-            month: i + 1,
-            predicted: value.toFixed(2),
-            confidence: confidenceLevel,
-            confidenceInterval: {
-              lower: Math.max(0, value - margin).toFixed(2),
-              upper: (value + margin).toFixed(2),
+          const orders = await prisma.purchaseOrderRecord.findMany({
+            where: whereClause,
+            orderBy: { createdAt: 'asc' },
+            select: {
+              payload: true,
+              createdAt: true,
             },
+          });
+
+          // Aggregate spending by month
+          const monthlySpending = {};
+          orders.forEach(order => {
+            const date = new Date(order.createdAt);
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+            if (!monthlySpending[monthKey]) monthlySpending[monthKey] = 0;
+
+            if (order.payload.items) {
+              order.payload.items.forEach(item => {
+                monthlySpending[monthKey] += parseFloat(item.totalPrice || 0);
+              });
+            }
+          });
+
+          // Convert to array with structure for outlier detection
+          const sortedMonths = Object.keys(monthlySpending).sort();
+          if (sortedMonths.length === 0) {
+            return {
+              department: department || 'All Departments',
+              error: 'No historical data available',
+              recommendation: 'Need at least 3 months of data for prediction',
+            };
+          }
+
+          const historicalData = sortedMonths.map(month => ({
+            month,
+            totalAmount: monthlySpending[month]
+          }));
+
+          if (historicalData.length < 3) {
+            return {
+              department: department || 'All Departments',
+              error: 'Insufficient data',
+              recommendation: `Need at least 3 months of data, found ${historicalData.length}`,
+            };
+          }
+
+          // 2. DATA CLEANING: Remove outliers
+          const cleanedData = removeOutliers(historicalData, 3); // Z-score threshold = 3
+          const outliersRemoved = historicalData.length - cleanedData.length;
+
+          // 3. MULTI-MODEL PREDICTION
+          const spendingValues = cleanedData.map(d => d.totalAmount);
+
+          // Model 1: Holt-Winters (existing algorithm)
+          let holtWintersForecasts;
+          if (includeSeasonality && spendingValues.length >= 12) {
+            holtWintersForecasts = holtWintersPredict(spendingValues, forecastMonths, 12);
+          } else {
+            holtWintersForecasts = simpleExponentialSmoothing(spendingValues, forecastMonths);
+          }
+
+          // Model 2: Moving Average
+          const movingAverageForecasts = movingAveragePredict(cleanedData, forecastMonths, 3);
+
+          // Model 3: Linear Regression
+          const linearRegressionForecasts = linearTrendPredict(cleanedData, forecastMonths);
+
+          // 4. ENSEMBLE: Weighted average of models
+          const ensembleForecasts = holtWintersForecasts.map((_, i) => {
+            return (
+              holtWintersForecasts[i] * 0.5 +
+              movingAverageForecasts[i] * 0.3 +
+              linearRegressionForecasts[i] * 0.2
+            );
+          });
+
+          // 5. CONFIDENCE SCORING
+          const confidence = calculateConfidence({
+            holtWinters: holtWintersForecasts,
+            movingAverage: movingAverageForecasts,
+            linearRegression: linearRegressionForecasts
+          }, cleanedData);
+
+          // 6. PREDICTION INTERVALS
+          const interval = calculatePredictionInterval(cleanedData, ensembleForecasts);
+
+          // 7. Calculate historical statistics
+          const avgMonthly = spendingValues.reduce((a, b) => a + b, 0) / spendingValues.length;
+          const recentAvg = spendingValues.slice(-3).reduce((a, b) => a + b, 0) / 3;
+          const growthRate = ((recentAvg - avgMonthly) / avgMonthly) * 100;
+
+          // 8. Generate recommendation based on growth rate and confidence
+          let recommendation;
+          if (growthRate > 20) {
+            recommendation = `⚠️ Spending is growing rapidly (+${growthRate.toFixed(1)}%) — review the budget and control non-essential expenses`;
+          } else if (growthRate > 10) {
+            recommendation = `🟡 Spending growth is notable (+${growthRate.toFixed(1)}%) — monitor closely`;
+          } else if (growthRate < -10) {
+            recommendation = `✅ Spending is decreasing (${growthRate.toFixed(1)}%) — cost control is working well`;
+          } else {
+            recommendation = `➡️ Spending is stable (${growthRate.toFixed(1)}%) — maintain the current budget`;
+          }
+
+          // Add confidence-based note
+          if (confidence === 'very_high' || confidence === 'high') {
+            recommendation += ` (${confidence.replace('_', ' ')} confidence prediction)`;
+          } else {
+            recommendation += ` (Note: ${confidence} confidence due to ${outliersRemoved > 0 ? 'volatile data' : 'limited historical data'})`;
+          }
+
+          // 9. Format forecast results with enhanced information
+          const totalForecast = ensembleForecasts.reduce((sum, val) => sum + val, 0);
+
+          const formattedForecasts = ensembleForecasts.map((value, i) => {
+            return {
+              month: i + 1,
+              predicted: parseFloat(value.toFixed(2)),
+              confidence,
+              confidenceInterval: {
+                lower: parseFloat(interval.lower[i].toFixed(2)),
+                upper: parseFloat(interval.upper[i].toFixed(2)),
+              },
+            };
+          });
+
+          // 10. Return enhanced results
+          return {
+            success: true,
+            department: department || 'All Departments',
+            method: 'Multi-Model Ensemble (Holt-Winters 50%, Moving Average 30%, Linear Regression 20%)',
+            includeSeasonality,
+
+            historical: {
+              dataPoints: cleanedData.length,
+              outliersRemoved,
+              average: parseFloat(avgMonthly.toFixed(2)),
+              recentAverage: parseFloat(recentAvg.toFixed(2)),
+              growthRate: growthRate.toFixed(2) + '%',
+            },
+
+            forecast: {
+              periods: forecastMonths,
+              total: parseFloat(totalForecast.toFixed(2)),
+              monthly: formattedForecasts,
+            },
+
+            confidence, // Overall confidence level
+            interval: {
+              lower: interval.lower.map(v => parseFloat(v.toFixed(2))),
+              upper: interval.upper.map(v => parseFloat(v.toFixed(2))),
+            },
+
+            // Optional: Model breakdown for advanced users/debugging
+            modelBreakdown: {
+              holtWinters: holtWintersForecasts.map(v => parseFloat(v.toFixed(2))),
+              movingAverage: movingAverageForecasts.map(v => parseFloat(v.toFixed(2))),
+              linearRegression: linearRegressionForecasts.map(v => parseFloat(v.toFixed(2))),
+            },
+
+            recommendation,
           };
-        });
 
-        const totalForecast = forecasts.reduce((sum, val) => sum + val, 0);
-        const growthRate = ((recentAvg - avgMonthly) / avgMonthly) * 100;
-
-        // Generate recommendation
-        let recommendation;
-        if (growthRate > 20) {
-          recommendation = '⚠️ Spending is growing rapidly — review the budget and control non-essential expenses';
-        } else if (growthRate > 10) {
-          recommendation = '🟡 Spending growth is notable — monitor closely';
-        } else if (growthRate < -10) {
-          recommendation = '✅ Spending is decreasing — cost control is working well';
-        } else {
-          recommendation = '➡️ Spending is stable — maintain the current budget';
+        } catch (error) {
+          console.error('Prediction error:', error);
+          return {
+            department: department || 'All Departments',
+            error: 'Prediction failed',
+            message: error.message,
+            recommendation: 'Unable to generate forecast. Please ensure sufficient historical data exists.',
+          };
         }
-
-        return {
-          department: department || 'All Departments',
-          method,
-          includeSeasonality,
-
-          historical: {
-            dataPoints: spendingValues.length,
-            average: avgMonthly.toFixed(2),
-            recentAverage: recentAvg.toFixed(2),
-            growthRate: growthRate.toFixed(2) + '%',
-          },
-
-          forecast: {
-            periods: forecastMonths,
-            total: totalForecast.toFixed(2),
-            monthly: formattedForecasts,
-          },
-
-          recommendation,
-        };
       },
 
       compare_departments: async (input) => {
