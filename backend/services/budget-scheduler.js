@@ -3,6 +3,7 @@ import Decimal from 'decimal.js';
 import prisma from '../config/prisma.js';
 import { generateDepartmentPrediction } from './budget-prediction-service.js';
 import crypto from 'crypto';
+import { sendBudgetWorkflowEmail } from './notification-service.js';
 
 async function sendNotification(payload) {
   await prisma.notification.create({
@@ -17,7 +18,31 @@ async function sendNotification(payload) {
   });
 }
 
+async function notifyDepartmentHeads(dept, title, message, type, refType, refId, email = null) {
+  const heads = await prisma.user.findMany({
+    where: {
+      OR: [
+        { department: { equals: dept.code, mode: 'insensitive' } },
+        { department: { equals: dept.name, mode: 'insensitive' } }
+      ],
+      role: { in: ['Department Executive', 'Manager'] },
+      isActive: true
+    }
+  });
+  await Promise.all(heads.map(async (head) => {
+    try {
+      await Promise.all([
+        sendNotification({ userId: head.id, title, message, type, refType, refId: String(refId) }),
+        email && head.email ? sendBudgetWorkflowEmail({ to: head.email, ...email }) : Promise.resolve(),
+      ]);
+    } catch (error) {
+      console.error('[Budget Scheduler] Department notification failed', { userId: head.id, error: error.message });
+    }
+  }));
+}
+
 let schedulerTask = null;
+let deadlineTask = null;
 const CRON_SCHEDULE = process.env.BUDGET_PREDICTION_CRON || '0 0 28 * *';
 
 async function runMonthlyPredictions() {
@@ -44,43 +69,26 @@ async function runMonthlyPredictions() {
         null
       );
 
-      // Notify department heads
-      // NOTE: User.department field contains the department code as a string reference
-      const deptHeads = await prisma.user.findMany({
-        where: {
-          OR: [
-            { department: { equals: dept.code, mode: 'insensitive' } },
-            { department: { equals: dept.name, mode: 'insensitive' } }
+      const amount = new Decimal(prediction.predictedAmount).toFixed(2);
+      await notifyDepartmentHeads(
+        dept,
+        'New Budget Prediction Available',
+        `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${amount}. Review and submit your proposed budget before month end.`,
+        'BUDGET_PREDICTION_READY',
+        'budget_prediction',
+        prediction.id,
+        {
+          subject: `OptiMind - AI Budget Prediction Ready (${targetYear}-${String(targetMonth).padStart(2, '0')})`,
+          title: 'AI Budget Prediction Ready',
+          intro: `A new AI budget prediction is ready for ${dept.name}.`,
+          rows: [
+            ['Department', dept.name],
+            ['Target period', `${targetYear}-${String(targetMonth).padStart(2, '0')}`],
+            ['AI suggested budget', `RM ${new Decimal(prediction.predictedAmount).toFixed(2)}`],
           ],
-          role: 'Department Executive',
-          isActive: true
+          action: 'Sign in to OptiMind, review the prediction, and submit the proposed budget before month end.'
         }
-      });
-
-      // Separate error handling for notifications - don't fail the department if notifications fail
-      for (const head of deptHeads) {
-        try {
-          const amount = new Decimal(prediction.predictedAmount).toFixed(2);
-          await sendNotification({
-            userId: head.id,
-            type: 'BUDGET_PREDICTION_READY',
-            title: 'New Budget Prediction Available',
-            message: `AI has generated budget prediction for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')}: $${amount}`,
-            refType: 'budget_prediction',
-            refId: String(prediction.id)
-          });
-        } catch (notifError) {
-          console.error('[Budget Scheduler]', {
-            operation: 'sendNotification',
-            requestId,
-            userId: head.id,
-            departmentCode: dept.code,
-            timestamp: new Date().toISOString(),
-            error: notifError.message,
-            stack: notifError.stack
-          });
-        }
-      }
+      );
 
       success++;
     } catch (error) {
@@ -104,6 +112,94 @@ async function runMonthlyPredictions() {
   return { success, failed };
 }
 
+async function runBudgetDeadlineChecks(now = new Date()) {
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  const isFirstDay = now.getDate() === 1;
+  const lastDay = new Date(currentYear, currentMonth, 0).getDate();
+  const isLastDay = now.getDate() === lastDay;
+  if (!isFirstDay && !isLastDay) return { reminded: 0, autoCreated: 0 };
+
+  const departments = await prisma.department.findMany({ where: { isActive: true } });
+  let reminded = 0;
+  let autoCreated = 0;
+  const targetYear = isLastDay ? (currentMonth === 12 ? currentYear + 1 : currentYear) : currentYear;
+  const targetMonth = isLastDay ? (currentMonth === 12 ? 1 : currentMonth + 1) : currentMonth;
+
+  for (const dept of departments) {
+    const activeSubmission = await prisma.budgetAdjustmentRequest.findFirst({
+      where: { departmentId: dept.id, targetYear, targetMonth, requestType: 'next_month_submission', status: { in: ['pending', 'approved'] } },
+      orderBy: { requestedAt: 'desc' }
+    });
+
+    if (isLastDay && !activeSubmission) {
+      const reminderRef = `${dept.id}-${targetYear}-${targetMonth}-${currentYear}-${currentMonth}`;
+      const alreadySent = await prisma.notification.findFirst({ where: { refType: 'budget_submission_reminder', refId: reminderRef } });
+      if (!alreadySent) {
+        await notifyDepartmentHeads(
+          dept,
+          'Next Month Budget Submission Reminder',
+          `Please submit the proposed budget for ${dept.name} for ${targetYear}-${String(targetMonth).padStart(2, '0')} before today ends. If no submission is received, the system will use the AI prediction on the first day of the month.`,
+          'BUDGET_SUBMISSION_REMINDER',
+          'budget_submission_reminder',
+          reminderRef,
+          {
+            subject: `OptiMind - Budget Submission Reminder (${targetYear}-${String(targetMonth).padStart(2, '0')})`,
+            title: 'Next Month Budget Submission Reminder',
+            intro: `No proposed budget has been submitted yet for ${dept.name}.`,
+            rows: [
+              ['Department', dept.name],
+              ['Target period', `${targetYear}-${String(targetMonth).padStart(2, '0')}`],
+              ['Deadline', 'Today, before month end'],
+            ],
+            action: 'Sign in to OptiMind and submit the proposed budget. Without a submission, the AI suggested amount will be used automatically on the first day of next month.'
+          }
+        );
+        reminded++;
+      }
+    }
+
+    if (isFirstDay && !activeSubmission) {
+      const existingBudget = await prisma.monthlyBudget.findUnique({ where: { departmentId_year_month: { departmentId: dept.id, year: currentYear, month: currentMonth } } });
+      const prediction = await prisma.budgetPrediction.findFirst({ where: { departmentId: dept.id, targetYear: currentYear, targetMonth: currentMonth }, orderBy: { createdAt: 'desc' } });
+      if (!existingBudget && prediction) {
+        await prisma.monthlyBudget.create({
+          data: {
+            departmentId: dept.id,
+            year: currentYear,
+            month: currentMonth,
+            allocatedAmount: prediction.predictedAmount,
+            spentAmount: 0,
+            reservedAmount: 0,
+            notes: `Auto-generated from AI prediction #${prediction.id}`
+          }
+        });
+        await notifyDepartmentHeads(
+          dept,
+          'Budget Auto-generated from AI Prediction',
+          `No budget submission was received for ${dept.name}. The system allocated $${new Decimal(prediction.predictedAmount).toFixed(2)} for ${currentYear}-${String(currentMonth).padStart(2, '0')} based on the AI prediction.`,
+          'BUDGET_AUTO_GENERATED',
+          'monthly_budget',
+          prediction.id,
+          {
+            subject: `OptiMind - Budget Auto-generated (${currentYear}-${String(currentMonth).padStart(2, '0')})`,
+            title: 'Budget Auto-generated from AI Prediction',
+            intro: `No proposed budget was submitted for ${dept.name}, so the system has set this month's budget from the AI prediction.`,
+            rows: [
+              ['Department', dept.name],
+              ['Budget period', `${currentYear}-${String(currentMonth).padStart(2, '0')}`],
+              ['Allocated budget', `RM ${new Decimal(prediction.predictedAmount).toFixed(2)}`],
+            ],
+            action: 'Sign in to OptiMind to review this budget. Submit a current-month adjustment request only if a further change is required.'
+          }
+        );
+        autoCreated++;
+      }
+    }
+  }
+  return { reminded, autoCreated };
+}
+
 function startScheduler() {
   if (schedulerTask) {
     console.log('[Budget Scheduler] Already running');
@@ -115,6 +211,16 @@ function startScheduler() {
     await runMonthlyPredictions();
   });
 
+  // Deadline checks run daily so month-end reminders and first-day fallback
+  // still work even when the prediction cron is overridden.
+  deadlineTask = cron.schedule('0 9 * * *', async () => {
+    try {
+      await runBudgetDeadlineChecks();
+    } catch (error) {
+      console.error('[Budget Scheduler] Deadline check failed', error);
+    }
+  });
+
   console.log(`[Budget Scheduler] Started with schedule: ${CRON_SCHEDULE}`);
 }
 
@@ -124,10 +230,15 @@ function stopScheduler() {
     schedulerTask = null;
     console.log('[Budget Scheduler] Stopped');
   }
+  if (deadlineTask) {
+    deadlineTask.stop();
+    deadlineTask = null;
+  }
 }
 
 export {
   startScheduler,
   stopScheduler,
-  runMonthlyPredictions
+  runMonthlyPredictions,
+  runBudgetDeadlineChecks
 };

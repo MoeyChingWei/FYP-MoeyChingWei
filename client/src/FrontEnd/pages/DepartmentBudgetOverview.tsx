@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Select, Button, Space, Typography, message, Spin } from "antd";
-import { ReloadOutlined, ThunderboltOutlined, FormOutlined, AuditOutlined } from "@ant-design/icons";
+import { Card, Row, Col, Select, Button, Space, Typography, message, Spin, Table, Tag, Segmented, Dropdown } from "antd";
+import { ArrowLeftOutlined, ReloadOutlined, ThunderboltOutlined, FormOutlined, AuditOutlined, CalendarOutlined, MoreOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { BudgetUsageCard } from "../components/budget/BudgetUsageCard";
 import { PredictionCard } from "../components/budget/PredictionCard";
 import { BudgetUsageChart } from "../components/budget/BudgetUsageChart";
 import {
   getHistoricalComparison,
+  getOwnBudgetHistory,
   getPredictions,
   type BudgetUsageSummary,
   type BudgetPrediction,
-  type HistoricalComparison
+  type HistoricalComparison,
+  type OwnBudgetHistoryRow
 } from "../shared/api/departmentBudget";
 import { API_ROOT } from "../shared/api/base";
 import { getSessionUser } from "../shared/auth/session";
@@ -56,12 +58,19 @@ export const DepartmentBudgetOverview: React.FC = () => {
   const [sessionUser] = useState(() => getSessionUser());
   const [departments, setDepartments] = useState<ForecastDepartment[]>([]);
   const [selectedDepartmentCode, setSelectedDepartmentCode] = useState<string | null>(null);
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
 
   const [usage, setUsage] = useState<BudgetUsageSummary | null>(null);
   const [predictions, setPredictions] = useState<BudgetPrediction[]>([]);
   const [historical, setHistorical] = useState<HistoricalComparison | null>(null);
+  const [ownBudgetHistory, setOwnBudgetHistory] = useState<OwnBudgetHistoryRow[]>([]);
+  const [ownDepartmentName, setOwnDepartmentName] = useState("");
+  const [loadingOwnHistory, setLoadingOwnHistory] = useState(false);
+  const [historyMonths, setHistoryMonths] = useState(3);
+  const [historyStatus, setHistoryStatus] = useState<string>("all");
+  const [activeView, setActiveView] = useState<"history" | "prediction" | "trend">("history");
 
   const [loadingUsage, setLoadingUsage] = useState(false);
   const [loadingPredictions, setLoadingPredictions] = useState(false);
@@ -69,16 +78,28 @@ export const DepartmentBudgetOverview: React.FC = () => {
   const [triggeringPrediction, setTriggeringPrediction] = useState(false);
 
   const canViewAllDepartments = DEPARTMENT_OVERVIEW_ROLES.has(sessionUser?.role ?? "");
+  const canGeneratePrediction = Boolean(
+    sessionUser?.role && sessionUser.role !== UserRole.EMPLOYEE
+  );
 
   useEffect(() => {
     loadDepartments();
+    loadOwnBudgetHistory();
   }, []);
+
+  const loadOwnBudgetHistory = async () => {
+    setLoadingOwnHistory(true);
+    const result = await getOwnBudgetHistory();
+    setOwnBudgetHistory(result?.rows ?? []);
+    setOwnDepartmentName(result?.department?.name ?? sessionUser?.department ?? "My Department");
+    setLoadingOwnHistory(false);
+  };
 
   useEffect(() => {
     if (selectedDepartmentCode) {
       loadBudgetData();
     }
-  }, [selectedDepartmentCode, currentYear, currentMonth]);
+  }, [selectedDepartmentCode]);
 
   const loadDepartments = async () => {
     try {
@@ -123,6 +144,8 @@ export const DepartmentBudgetOverview: React.FC = () => {
         period: "monthly",
         departmentCode: selectedDepartmentCode,
       });
+      const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+      const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
       const department = departments.find((dept) =>
         dept.code === selectedDepartmentCode || dept.name === selectedDepartmentCode
       );
@@ -174,26 +197,9 @@ export const DepartmentBudgetOverview: React.FC = () => {
       });
 
       const storedPredictions = department?.id && sessionUser?.id && sessionUser.email
-        ? await getPredictions(department.id, { limit: 6 })
+        ? await getPredictions(department.id, { year: nextYear, month: nextMonth, limit: 1 })
         : [];
-      setPredictions(storedPredictions.length > 0
-        ? storedPredictions
-        : result.data.forecast.map((item, index) => {
-            const [year, month] = item.period.split("-").map(Number);
-            return {
-              id: index + 1,
-              departmentId: department?.id ?? 0,
-              targetYear: year,
-              targetMonth: month,
-              predictedAmount: item.forecastAmount,
-              confidence: item.confidence,
-              triggerType: "automatic" as const,
-              triggeredBy: 0,
-              createdAt: new Date().toISOString(),
-              department: { id: department?.id ?? 0, code: department?.code ?? selectedDepartmentCode, name: department?.name ?? selectedDepartmentCode, isActive: true },
-              metadata: { algorithm: "Three-period moving average", basedOnMonths: 3 },
-            };
-          }));
+      setPredictions(storedPredictions);
 
       const historicalComparison = department?.id
         ? await getHistoricalComparison(department.id, { preset: "last-6-months" })
@@ -260,70 +266,59 @@ export const DepartmentBudgetOverview: React.FC = () => {
     }
   };
 
+  const filteredBudgetHistory = ownBudgetHistory
+    .slice(0, historyMonths)
+    .filter((row) => historyStatus === "all" || row.status === historyStatus);
+
   return (
     <div className={styles.page}>
+      <div className={styles.backRow}>
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate("/budget-management")}
+          className={styles.backButton}
+        >
+          Back
+        </Button>
+      </div>
       <div className={styles.toolbar}>
-        <Title level={2} className={styles.title}>Department Budget Overview</Title>
+        <div className={styles.headingBlock}>
+          <div className={styles.eyebrow}>Budget Management</div>
+          <Title level={2} className={styles.title}>Department Budget Forecasting</Title>
+          <div className={styles.subtitle}>Review current usage and prepare the next monthly allocation.</div>
+        </div>
         <div className={styles.controls}>
           <Space wrap size={[8, 8]}>
-          <Select
-            style={{ width: 200 }}
-            value={selectedDepartmentCode}
-            onChange={setSelectedDepartmentCode}
-            placeholder="Select Department"
-            disabled={!canViewAllDepartments}
-          >
-            {departments.map(d => (
-              <Select.Option key={d.code} value={d.name}>
-                {d.name}
-              </Select.Option>
-            ))}
-          </Select>
-          <Select
-            style={{ width: 100 }}
-            value={currentYear}
-            onChange={setCurrentYear}
-          >
-            {[2024, 2025, 2026, 2027].map(y => (
-              <Select.Option key={y} value={y}>{y}</Select.Option>
-            ))}
-          </Select>
-          <Select
-            style={{ width: 100 }}
-            value={currentMonth}
-            onChange={setCurrentMonth}
-          >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-              <Select.Option key={m} value={m}>
-                {String(m).padStart(2, "0")}
-              </Select.Option>
-            ))}
-          </Select>
-          <Button icon={<ReloadOutlined />} onClick={loadBudgetData}>
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<ThunderboltOutlined />}
-            onClick={handleTriggerPrediction}
-            loading={triggeringPrediction}
-          >
-            {triggeringPrediction ? "Generating..." : "Generate Prediction"}
-          </Button>
-          <Button
-            icon={<FormOutlined />}
-            onClick={() => navigate("/budget/adjustment-request")}
-          >
-            Request Adjustment
-          </Button>
-          {canViewAllDepartments && (
-            <Button
-              icon={<AuditOutlined />}
-              onClick={() => navigate("/budget/approval-queue")}
-            >
-              Approval Queue
+            <Select
+              className={styles.departmentSelect}
+              value={selectedDepartmentCode}
+              onChange={setSelectedDepartmentCode}
+              placeholder="Select Department"
+              disabled={!canViewAllDepartments}
+              options={departments.map((department) => ({ value: department.name, label: department.name }))}
+            />
+            <Button icon={<ReloadOutlined />} onClick={loadBudgetData}>Refresh</Button>
+            {canGeneratePrediction && (
+              <Button
+                type="primary"
+                icon={<ThunderboltOutlined />}
+                onClick={handleTriggerPrediction}
+                loading={triggeringPrediction}
+                disabled={!selectedDepartmentCode}
+              >
+                {triggeringPrediction ? "Generating..." : "Generate Prediction"}
+              </Button>
+            )}
+            <Button icon={<CalendarOutlined />} onClick={() => navigate("/budget/next-month-submission")}>
+              Submit Next Month Budget
             </Button>
-          )}
+            <Dropdown menu={{ items: [
+              { key: "adjustment", icon: <FormOutlined />, label: "Request Adjustment", onClick: () => navigate("/budget/adjustment-request") },
+              ...(canViewAllDepartments ? [{ key: "approval", icon: <AuditOutlined />, label: "Approval Queue", onClick: () => navigate("/budget/approval-queue") }] : []),
+            ] }}>
+              <Button icon={<MoreOutlined />}>More actions</Button>
+            </Dropdown>
           </Space>
         </div>
       </div>
@@ -338,31 +333,69 @@ export const DepartmentBudgetOverview: React.FC = () => {
             <Card>No budget data for selected period</Card>
           )}
         </Col>
-
         <Col span={24}>
-          <Card title="AI Budget Predictions" loading={loadingPredictions}>
-            {predictions.length > 0 ? (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-                {predictions.map(p => (
-                  <PredictionCard key={p.id} prediction={p} />
-                ))}
+          <div className={styles.viewBar}>
+            <div>
+              <div className={styles.sectionEyebrow}>Department workspace</div>
+              <div className={styles.sectionTitle}>
+                {activeView === "history" ? "Budget history" : activeView === "prediction" ? "AI forecast" : "Spending trend"}
               </div>
-            ) : (
-              <div style={{ textAlign: "center", padding: "40px 0", color: "#8c8c8c" }}>
-                No predictions available. Click "Generate Prediction" to create one.
-              </div>
-            )}
-          </Card>
-        </Col>
-
-        <Col span={24}>
-          {historical && (
-            <BudgetUsageChart
-              data={historical.historicalData}
-              loading={loadingHistorical}
-              summary={historical.summary}
-              title="Historical Budget vs Actual Purchasing Spend"
+            </div>
+            <Segmented
+              value={activeView}
+              onChange={(value) => setActiveView(value as "history" | "prediction" | "trend")}
+              options={[
+                { label: "Budget history", value: "history" },
+                { label: "AI forecast", value: "prediction" },
+                { label: "Spending trend", value: "trend" },
+              ]}
             />
+          </div>
+
+          {activeView === "history" && (
+            <Card
+              title={`Budget History - ${ownDepartmentName || "My Department"}`}
+              extra={(
+                <Space wrap>
+                  <Select value={historyMonths} onChange={setHistoryMonths} style={{ width: 140 }} options={[
+                    { value: 3, label: "Last 3 months" },
+                    { value: 6, label: "Last 6 months" },
+                    { value: 12, label: "Last 12 months" },
+                  ]} />
+                  <Select value={historyStatus} onChange={setHistoryStatus} style={{ width: 150 }} options={[
+                    { value: "all", label: "All statuses" },
+                    { value: "approved", label: "Approved" },
+                    { value: "ai_auto_generated", label: "AI auto-generated" },
+                    { value: "pending", label: "Pending approval" },
+                    { value: "rejected", label: "Rejected" },
+                    { value: "not_set", label: "No budget set" },
+                  ]} />
+                  <Button icon={<ReloadOutlined />} onClick={loadOwnBudgetHistory} loading={loadingOwnHistory}>Refresh</Button>
+                </Space>
+              )}
+              loading={loadingOwnHistory}
+            >
+              <Table rowKey="period" dataSource={filteredBudgetHistory} pagination={false} columns={[
+                { title: "Month", dataIndex: "period" },
+                { title: "Budget Amount", dataIndex: "allocatedAmount", render: (value: number | null) => value == null ? <span className={styles.mutedValue}>No budget set</span> : `RM ${value.toFixed(2)}` },
+                { title: "Status", dataIndex: "status", render: (value: OwnBudgetHistoryRow["status"]) => {
+                  const config = { approved: ["green", "Approved"], ai_auto_generated: ["blue", "AI auto-generated"], pending: ["orange", "Pending approval"], rejected: ["red", "Rejected"], not_set: ["default", "No budget set"] }[value] || ["default", "No budget set"];
+                  return <Tag color={config[0]}>{config[1]}</Tag>;
+                } },
+                { title: "Source", dataIndex: "source", render: (value: string | null) => value || "-" },
+                { title: "Spent", dataIndex: "spentAmount", render: (value: number | null) => value == null ? "-" : `RM ${value.toFixed(2)}` },
+              ]} />
+            </Card>
+          )}
+
+          {activeView === "prediction" && (
+            <Card title="AI Budget Predictions" loading={loadingPredictions}>
+              {predictions.length > 0 ? <div className={styles.predictionGrid}>{predictions.map(p => <PredictionCard key={p.id} prediction={p} />)}</div> : <div className={styles.emptyState}>No predictions available. Generate a prediction to create one.</div>}
+            </Card>
+          )}
+
+          {activeView === "trend" && historical && (
+            <BudgetUsageChart data={historical.historicalData} loading={loadingHistorical} summary={historical.summary} title="Historical Budget vs Actual Purchasing Spend" />
           )}
         </Col>
       </Row>

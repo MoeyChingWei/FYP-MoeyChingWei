@@ -73,6 +73,8 @@ async function sendRoleEventEmails(users, payload) {
         accepted: result?.accepted ?? [],
         rejected: result?.rejected ?? [],
         response: result?.response,
+        gmailLabel: result?.gmailLabel ?? null,
+        gmailLabels: result?.gmailLabels ?? [],
       })}`;
       console.warn(warnMessage);
       process.stderr.write(warnMessage + "\n");
@@ -83,6 +85,8 @@ async function sendRoleEventEmails(users, payload) {
         accepted: result?.accepted ?? [],
         rejected: result?.rejected ?? [],
         response: result?.response,
+        gmailLabel: result?.gmailLabel ?? null,
+        gmailLabels: result?.gmailLabels ?? [],
       });
     } else {
       const logMessage = `Notification email sent: ${JSON.stringify({
@@ -92,6 +96,8 @@ async function sendRoleEventEmails(users, payload) {
         accepted: result?.accepted ?? [],
         rejected: result?.rejected ?? [],
         response: result?.response,
+        gmailLabel: result?.gmailLabel ?? null,
+        gmailLabels: result?.gmailLabels ?? [],
       })}`;
       console.log(logMessage);
       process.stdout.write(logMessage + "\n");
@@ -102,6 +108,8 @@ async function sendRoleEventEmails(users, payload) {
         accepted: result?.accepted ?? [],
         rejected: result?.rejected ?? [],
         response: result?.response,
+        gmailLabel: result?.gmailLabel ?? null,
+        gmailLabels: result?.gmailLabels ?? [],
       });
     }
   } catch (err) {
@@ -492,6 +500,7 @@ export async function processWorkflowNotifications(
               accepted: supplierMailResult?.accepted ?? [],
               rejected: supplierMailResult?.rejected ?? [],
               response: supplierMailResult?.response,
+              gmailLabels: supplierMailResult?.gmailLabels ?? [],
             });
           } else {
             console.log("Supplier pending order email sent:", {
@@ -500,8 +509,15 @@ export async function processWorkflowNotifications(
               accepted: supplierMailResult?.accepted ?? [],
               rejected: supplierMailResult?.rejected ?? [],
               response: supplierMailResult?.response,
+              gmailLabels: supplierMailResult?.gmailLabels ?? [],
             });
           }
+        } else {
+          console.warn("Supplier pending order email skipped: active supplier user not found", {
+            supplierEmail: row.supplierEmail,
+            orderNo: row.poNumber,
+            localId,
+          });
         }
       }
       if (before && beforeStatus !== nowStatus) {
@@ -638,6 +654,92 @@ export async function processWorkflowNotifications(
           refId: requesterContext.requestLocalId || localId,
         });
       }
+    }
+  }
+
+  if (store === "supplier-invoices") {
+    const financeRoles = [ROLES.TREASURY_FINANCE_OFFICER];
+    const paymentRoles = [ROLES.PAYMENT_TEAM];
+    for (const [localId, row] of nextMap) {
+      const before = prevMap.get(localId);
+      const nowStatus = String(row.status ?? "");
+      const beforeStatus = String(before?.status ?? "");
+      if (nowStatus === beforeStatus || !["SUBMITTED", "APPROVED", "REJECTED"].includes(nowStatus)) continue;
+      const invoiceRef = row.invoiceNumber || row.poNumber || "Supplier invoice";
+      if (nowStatus === "SUBMITTED" && beforeStatus !== "SUBMITTED") {
+        const financeUsers = await findUsersByRoles(financeRoles);
+        if (financeUsers.length) await createInAppNotifications(financeUsers, {
+          title: "Supplier Invoice Pending Approval",
+          message: `${invoiceRef} from ${row.supplierCompanyName || row.supplierName || row.supplierEmail || "supplier"} requires Finance approval (${row.currency || ""} ${Number(row.grandTotal || 0).toFixed(2)}).`,
+          type: "SUPPLIER_INVOICE_APPROVAL", refType: "supplier-invoice", refId: localId,
+        });
+      }
+      if ((nowStatus === "APPROVED" || nowStatus === "REJECTED") && beforeStatus !== nowStatus) {
+        if (nowStatus === "APPROVED") {
+          const paymentLocalId = `payment-${localId}`;
+          const paymentNumber = `PAY-${String(localId).replace(/[^a-zA-Z0-9]/g, "").slice(-10).toUpperCase()}`;
+          const paymentPayload = {
+            localId: paymentLocalId,
+            paymentNumber,
+            invoiceLocalId: localId,
+            invoiceNumber: row.invoiceNumber,
+            poNumber: row.poNumber,
+            grnNumber: row.deliveryNo,
+            supplierId: row.supplierId,
+            supplierName: row.supplierCompanyName || row.supplierName,
+            supplierEmail: row.supplierEmail,
+            amount: Number(row.grandTotal || 0),
+            currency: row.currency,
+            paymentTerms: row.paymentTerms,
+            invoiceDate: row.invoiceDate,
+            createdDate: new Date().toISOString(),
+            status: "PENDING_PAYMENT",
+          };
+          const existingPayment = await prisma.supplierPaymentRecordStore.findUnique({
+            where: { localId: paymentLocalId },
+            select: { payload: true },
+          });
+          if (!existingPayment) {
+            await prisma.supplierPaymentRecordStore.create({
+              data: {
+                localId: paymentLocalId,
+                payload: paymentPayload,
+                updatedAt: new Date(),
+              },
+            });
+            const paymentUsers = await findUsersByRoles(paymentRoles);
+            if (paymentUsers.length) await createInAppNotifications(paymentUsers, {
+              title: "Payment Pending Processing",
+              message: `${paymentNumber} for ${invoiceRef} is ready for payment processing (${row.currency || ""} ${Number(row.grandTotal || 0).toFixed(2)}).`,
+              type: "SUPPLIER_PAYMENT_PENDING", refType: "supplier-payment", refId: paymentLocalId,
+            });
+          }
+        }
+        const supplier = await findUserByEmail(row.supplierEmail);
+        if (supplier) await createInAppNotifications([supplier], {
+          title: nowStatus === "APPROVED" ? "Supplier Invoice Approved" : "Supplier Invoice Rejected",
+          message: nowStatus === "APPROVED"
+            ? `${invoiceRef} has been approved by Finance.`
+            : `${invoiceRef} was rejected by Finance. Reason: ${row.rejectionReason || "No reason provided."}`,
+          type: "SUPPLIER_UPDATE", refType: "supplier-invoice", refId: localId,
+        });
+      }
+    }
+    return;
+  }
+
+  if (store === "supplier-payments") {
+    for (const [localId, row] of nextMap) {
+      const before = prevMap.get(localId);
+      const nowStatus = String(row.status ?? "");
+      const beforeStatus = String(before?.status ?? "");
+      if (nowStatus !== "PAID" || beforeStatus === "PAID") continue;
+      const supplier = await findUserByEmail(row.supplierEmail);
+      if (supplier) await createInAppNotifications([supplier], {
+        title: "Supplier Payment Completed",
+        message: `${row.paymentNumber || "Payment"} for ${row.invoiceNumber || "your supplier invoice"} has been paid. Transaction reference: ${row.transactionReference || "-"}.`,
+        type: "SUPPLIER_PAYMENT_COMPLETED", refType: "supplier-payment", refId: localId,
+      });
     }
   }
 }

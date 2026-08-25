@@ -128,8 +128,11 @@ router.get("/forecast", async (req, res) => {
       const trend = amounts[2] - amounts[0];
       const avgTrend = Math.abs(trend) / avgAmount;
 
-      // Generate forecast for next 3 periods
-      for (let i = 1; i <= 3; i++) {
+      // Generate one forecast for the next period. The overview only needs
+      // the immediately upcoming month, so avoid presenting a repeated
+      // multi-month moving-average value as separate predictions.
+      const i = 1;
+      {
         const lastPeriod = historicalData[historicalData.length - 1].period;
         let nextPeriod;
 

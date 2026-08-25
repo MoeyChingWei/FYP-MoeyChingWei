@@ -18,6 +18,24 @@ const CONFIDENCE_THRESHOLD_MEDIUM = 6;
 // Default fallback budget when no data exists (MYR)
 const DEFAULT_FALLBACK_BUDGET = 100000;
 
+async function savePredictionForPeriod(departmentId, targetYear, targetMonth, data) {
+  const existingPrediction = await prisma.budgetPrediction.findFirst({
+    where: { departmentId, targetYear, targetMonth },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  if (existingPrediction) {
+    return prisma.budgetPrediction.update({
+      where: { id: existingPrediction.id },
+      data
+    });
+  }
+
+  return prisma.budgetPrediction.create({
+    data: { departmentId, targetYear, targetMonth, ...data }
+  });
+}
+
 /**
  * Get historical spending data aggregated by month for a department
  * @param {number} departmentId - Department ID
@@ -182,18 +200,13 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
 
   let prediction;
   if (similarDepts.length === 0) {
-    prediction = await prisma.budgetPrediction.create({
-      data: {
-        departmentId,
-        targetYear,
-        targetMonth,
-        predictedAmount: DEFAULT_NEW_DEPARTMENT_BUDGET,
-        confidence: 'low',
-        algorithm: 'default',
-        aiInsights: 'No historical data available and no similar departments found. Using system default.',
-        triggerType: userId ? 'manual' : 'automatic',
-        triggeredBy: userId || null
-      }
+    prediction = await savePredictionForPeriod(departmentId, targetYear, targetMonth, {
+      predictedAmount: DEFAULT_NEW_DEPARTMENT_BUDGET,
+      confidence: 'low',
+      algorithm: 'default',
+      aiInsights: 'No historical data available and no similar departments found. Using system default.',
+      triggerType: userId ? 'manual' : 'automatic',
+      triggeredBy: userId || null
     });
   } else {
     const topSimilar = similarDepts[0];
@@ -201,23 +214,18 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
 
     const insight = `New department with no historical data. Prediction based on similar department "${topSimilar.name}" (${Math.round(topSimilar.similarity * 100)}% similarity, ${topSimilar.historicalMonths} months of data). Consider adjusting based on department size and objectives.`;
 
-    prediction = await prisma.budgetPrediction.create({
-      data: {
-        departmentId,
-        targetYear,
-        targetMonth,
-        predictedAmount: avgAmount,
-        confidence: 'low',
-        algorithm: 'similar_department',
-        aiInsights: insight,
-        comparisonData: {
-          similarDepartment: topSimilar.name,
-          similarity: topSimilar.similarity,
-          referenceMonths: topSimilar.historicalMonths
-        },
-        triggerType: userId ? 'manual' : 'automatic',
-        triggeredBy: userId || null
-      }
+    prediction = await savePredictionForPeriod(departmentId, targetYear, targetMonth, {
+      predictedAmount: avgAmount,
+      confidence: 'low',
+      algorithm: 'similar_department',
+      aiInsights: insight,
+      comparisonData: {
+        similarDepartment: topSimilar.name,
+        similarity: topSimilar.similarity,
+        referenceMonths: topSimilar.historicalMonths
+      },
+      triggerType: userId ? 'manual' : 'automatic',
+      triggeredBy: userId || null
     });
   }
 
@@ -330,7 +338,7 @@ function fallbackPrediction(historicalData) {
  * @param {number} targetMonth - Target month
  * @returns {Promise<Object>} AI prediction response
  */
-async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth) {
+async function callAnalyticsAgent(department, historicalData, targetYear, targetMonth, requestedBy) {
   const requestId = crypto.randomUUID();
   const lastPeriod = historicalData[historicalData.length - 1];
   const avgAmount = historicalData
@@ -359,15 +367,27 @@ After getting the prediction, format the response as JSON with these fields:
 }`;
 
   try {
+    const analysisUser = requestedBy
+      ? { id: requestedBy }
+      : await prisma.user.findFirst({
+          where: { isActive: true },
+          select: { id: true }
+        });
+
+    if (!analysisUser) {
+      throw new Error('No active user is available to run the AI analysis');
+    }
+
     const aiResponse = await analyticsAgent.chat({
-      userId: 1,
+      userId: analysisUser.id,
       message: prompt,
       sessionId: `budget-prediction-${department.id}-${Date.now()}`,
       systemPromptAddition: '',
       // BaseAgent requires complete tool definitions, not just tool names.
       availableTools: analyticsAgent.tools.filter(tool => tool.name === 'predict_future_spending'),
       maxTokens: 2048,
-      temperature: 0.3
+      temperature: 0.3,
+      persistHistory: false,
     });
 
     if (!aiResponse.success) {
@@ -449,28 +469,23 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
   }
 
   // Call analytics agent for prediction
-  const aiResponse = await callAnalyticsAgent(department, historicalData, targetYear, targetMonth);
+  const aiResponse = await callAnalyticsAgent(department, historicalData, targetYear, targetMonth, userId);
 
   // Create prediction record with enhanced analytics data
-  const prediction = await prisma.budgetPrediction.create({
-    data: {
-      departmentId: department.id,
-      targetYear,
-      targetMonth,
-      predictedAmount: aiResponse.amount,
-      confidence: aiResponse.confidence,
-      algorithm: aiResponse.method || (aiResponse.usedFallback ? 'moving_average_fallback' : 'ensemble'),
-      aiInsights: aiResponse.insights,
-      categoryBreakdown: aiResponse.categoryBreakdown,
-      comparisonData: {
-        ...aiResponse.comparisonData,
-        usedFallback: aiResponse.usedFallback || false,
-        predictionInterval: aiResponse.predictionInterval, // New: upper/lower bounds
-        modelBreakdown: aiResponse.modelBreakdown // New: individual model results
-      },
-      triggerType: userId ? 'manual' : 'automatic',
-      triggeredBy: userId || null
-    }
+  const prediction = await savePredictionForPeriod(department.id, targetYear, targetMonth, {
+    predictedAmount: aiResponse.amount,
+    confidence: aiResponse.confidence,
+    algorithm: aiResponse.method || (aiResponse.usedFallback ? 'moving_average_fallback' : 'ensemble'),
+    aiInsights: aiResponse.insights,
+    categoryBreakdown: aiResponse.categoryBreakdown,
+    comparisonData: {
+      ...aiResponse.comparisonData,
+      usedFallback: aiResponse.usedFallback || false,
+      predictionInterval: aiResponse.predictionInterval,
+      modelBreakdown: aiResponse.modelBreakdown
+    },
+    triggerType: userId ? 'manual' : 'automatic',
+    triggeredBy: userId || null
   });
 
   // Send notification if manually triggered

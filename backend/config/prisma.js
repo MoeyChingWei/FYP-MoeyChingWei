@@ -31,6 +31,8 @@ Object.assign(prisma, {
     prisma.supplier_order_acknowledgement_records,
   supplierDeliveryRecordStore: prisma.supplier_delivery_records,
   supplierGrnRecordStore: prisma.supplier_grn_records,
+  supplierInvoiceRecordStore: prisma.supplier_invoice_records,
+  supplierPaymentRecordStore: prisma.supplier_payment_records,
   chatSession: prisma.chat_sessions,
   chatMessage: prisma.chat_messages,
   messageAttachment: prisma.message_attachments,

@@ -25,7 +25,8 @@ export function isGrnReceived(status: GrnStatus | string | undefined): boolean {
   return status === "RECEIVED" || status === "COMPLETED";
 }
 
-export type SupplierInvoiceStatus = "DRAFT" | "SUBMITTED";
+export type SupplierInvoiceStatus = "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
+export type SupplierPaymentStatus = "PENDING_PAYMENT" | "PROCESSING" | "PAID" | "FAILED";
 
 export interface SupplierOrderAcknowledgementRecord {
   localId: string;
@@ -139,20 +140,52 @@ export interface SupplierInvoiceRecord {
   attachmentDataUrl?: string;
   notes?: string;
   submittedDate?: string;
+  reviewedDate?: string;
+  reviewedBy?: string;
+  rejectionReason?: string;
+}
+
+export interface SupplierPaymentRecord {
+  localId: string;
+  paymentNumber: string;
+  invoiceLocalId: string;
+  invoiceNumber?: string;
+  poNumber?: string;
+  grnNumber?: string;
+  supplierId?: number;
+  supplierName?: string;
+  supplierEmail?: string;
+  amount: number;
+  currency: string;
+  paymentTerms?: string;
+  invoiceDate?: string;
+  createdDate: string;
+  status: SupplierPaymentStatus;
+  paymentMethod?: string;
+  paidDate?: string;
+  processedBy?: string;
+  transactionReference?: string;
+  remarks?: string;
+  attachmentName?: string;
+  attachmentType?: string;
+  attachmentDataUrl?: string;
 }
 
 const ORDER_ACKS_KEY = "erp_supplier_order_acks_v1";
 const DELIVERIES_KEY = "erp_supplier_deliveries_v1";
 const GRNS_KEY = "erp_supplier_grns_v1";
 const INVOICES_KEY = "erp_supplier_invoices_v1";
+const PAYMENTS_KEY = "erp_supplier_payments_v1";
 const ORDER_ACKS_STORE = "supplier-order-acks";
 const DELIVERIES_STORE = "deliveries";
 const GRNS_STORE = "grns";
 const INVOICES_STORE = "supplier-invoices";
+const PAYMENTS_STORE = "supplier-payments";
 let supplierOrderAcknowledgementCache: SupplierOrderAcknowledgementRecord[] = [];
 let supplierDeliveryCache: SupplierDeliveryRecord[] = [];
 let supplierGrnCache: SupplierGrnRecord[] = [];
 let supplierInvoiceCache: SupplierInvoiceRecord[] = [];
+let supplierPaymentCache: SupplierPaymentRecord[] = [];
 
 export { sortWorkflowRowsByStatusAndDate };
 
@@ -285,6 +318,12 @@ function parseStoredArray<T>(key: string): T[] {
     }
     return [...supplierInvoiceCache] as T[];
   }
+  if (key === PAYMENTS_KEY) {
+    if (!supplierPaymentCache.length) {
+      supplierPaymentCache = readLocalRows<SupplierPaymentRecord>(key);
+    }
+    return [...supplierPaymentCache] as T[];
+  }
   return [];
 }
 
@@ -297,6 +336,8 @@ function saveStoredArray<T>(key: string, eventName: string, rows: T[]): void {
     supplierGrnCache = [...(rows as SupplierGrnRecord[])];
   } else if (key === INVOICES_KEY) {
     supplierInvoiceCache = [...(rows as SupplierInvoiceRecord[])];
+  } else if (key === PAYMENTS_KEY) {
+    supplierPaymentCache = [...(rows as SupplierPaymentRecord[])];
   }
   try {
     window.localStorage.setItem(key, JSON.stringify(rows));
@@ -391,7 +432,11 @@ export function saveSupplierGrns(rows: SupplierGrnRecord[]): void {
 }
 
 export function appendSupplierGrn(row: SupplierGrnRecord): void {
-  saveSupplierGrns([...loadSupplierGrns(), row]);
+  const existing = loadSupplierGrns();
+  // A delivery can be completed from two open tabs. The delivery link is
+  // stable, so use it as the idempotency key for GRN creation.
+  if (existing.some((item) => item.deliveryLocalId === row.deliveryLocalId)) return;
+  saveSupplierGrns([...existing, row]);
 }
 
 export function updateSupplierGrn(
@@ -415,7 +460,10 @@ export function saveSupplierInvoices(rows: SupplierInvoiceRecord[]): void {
 }
 
 export function appendSupplierInvoice(row: SupplierInvoiceRecord): void {
-  saveSupplierInvoices([...loadSupplierInvoices(), row]);
+  const existing = loadSupplierInvoices();
+  // One received GRN must produce exactly one supplier invoice draft.
+  if (existing.some((item) => item.grnLocalId === row.grnLocalId)) return;
+  saveSupplierInvoices([...existing, row]);
 }
 
 export function updateSupplierInvoice(
@@ -423,6 +471,24 @@ export function updateSupplierInvoice(
   updater: (row: SupplierInvoiceRecord) => SupplierInvoiceRecord,
 ): void {
   saveSupplierInvoices(loadSupplierInvoices().map((row) => row.localId === localId ? updater(row) : row));
+}
+
+export function loadSupplierPayments(): SupplierPaymentRecord[] {
+  return parseStoredArray<SupplierPaymentRecord>(PAYMENTS_KEY);
+}
+
+export function saveSupplierPayments(rows: SupplierPaymentRecord[]): void {
+  saveStoredArray(PAYMENTS_KEY, "erp-supplier-payments", rows);
+  queueWorkflowRowsSave(PAYMENTS_STORE, rows, () => {
+    window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", { detail: { store: PAYMENTS_STORE } }));
+  });
+}
+
+export function updateSupplierPayment(
+  localId: string,
+  updater: (row: SupplierPaymentRecord) => SupplierPaymentRecord,
+): void {
+  saveSupplierPayments(loadSupplierPayments().map((row) => row.localId === localId ? updater(row) : row));
 }
 
 function invoiceTotals(items: DraftLineItem[]): { subtotal: number; taxTotal: number; grandTotal: number } {
@@ -673,9 +739,26 @@ export async function hydrateSupplierInvoices(): Promise<SupplierInvoiceRecord[]
     const pendingRows = getPendingWorkflowRows<SupplierInvoiceRecord>(INVOICES_STORE);
     const rows = pendingRows ?? (isWorkflowSyncEnabled() ? remoteRows : mergeByLocalId(localRows, remoteRows));
     supplierInvoiceCache = rows;
-    try { window.localStorage.setItem(INVOICES_KEY, JSON.stringify(rows)); } catch { /* keep in-memory data */ }
+    try { window.localStorage.setItem(INVOICES_KEY, JSON.stringify(rows)); } catch { /* best effort */ }
     return rows;
   } catch {
     return loadSupplierInvoices();
+  }
+}
+
+export async function hydrateSupplierPayments(): Promise<SupplierPaymentRecord[]> {
+  const localRows = readLocalRows<SupplierPaymentRecord>(PAYMENTS_KEY);
+  if (localRows.length) supplierPaymentCache = [...localRows];
+  try {
+    const remoteRows = localRows.length
+      ? await fetchWorkflowRows<SupplierPaymentRecord>(PAYMENTS_STORE, 200)
+      : await fetchWorkflowRowsForRecovery<SupplierPaymentRecord>(PAYMENTS_STORE);
+    const pendingRows = getPendingWorkflowRows<SupplierPaymentRecord>(PAYMENTS_STORE);
+    const rows = pendingRows ?? (isWorkflowSyncEnabled() ? remoteRows : mergeByLocalId(localRows, remoteRows));
+    supplierPaymentCache = rows;
+    try { window.localStorage.setItem(PAYMENTS_KEY, JSON.stringify(rows)); } catch { /* best effort */ }
+    return rows;
+  } catch {
+    return loadSupplierPayments();
   }
 }

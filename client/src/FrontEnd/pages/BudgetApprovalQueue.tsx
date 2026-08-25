@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Card, Table, Tag, Button, Space, message, Tabs } from "antd";
-import { EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { AdjustmentApprovalModal } from "../components/budget/AdjustmentApprovalModal";
 import axios, { AxiosError } from "axios";
 import { API_ROOT } from "../shared/api/base";
@@ -34,6 +35,7 @@ interface AdjustmentRequest {
 }
 
 export const BudgetApprovalQueue: React.FC = () => {
+  const navigate = useNavigate();
   const sessionUser = getSessionUser();
   const [pendingRequests, setPendingRequests] = useState<AdjustmentRequest[]>([]);
   const [reviewedRequests, setReviewedRequests] = useState<AdjustmentRequest[]>([]);
@@ -173,8 +175,8 @@ export const BudgetApprovalQueue: React.FC = () => {
       dataIndex: "requestType",
       key: "requestType",
       render: (type: string) => (
-        <Tag color={type === "increase" ? "blue" : "cyan"}>
-          {type === "increase" ? "One-Time" : "Additional"}
+        <Tag color={type === "next_month_submission" ? "purple" : type === "increase" ? "blue" : "cyan"}>
+          {type === "next_month_submission" ? "Next Month Budget" : type === "increase" ? "One-Time" : "Additional"}
         </Tag>
       )
     },
@@ -182,7 +184,7 @@ export const BudgetApprovalQueue: React.FC = () => {
       title: "Amount",
       dataIndex: "requestedAmount",
       key: "requestedAmount",
-      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`,
+      render: (amount: unknown, record: AdjustmentRequest) => `${record.requestType === "next_month_submission" ? "Proposed: " : ""}$${toBudgetNumber(amount).toFixed(2)}`,
       sorter: (a: AdjustmentRequest, b: AdjustmentRequest) => toBudgetNumber(a.requestedAmount) - toBudgetNumber(b.requestedAmount)
     },
     {
@@ -229,7 +231,7 @@ export const BudgetApprovalQueue: React.FC = () => {
       title: "Amount",
       dataIndex: "requestedAmount",
       key: "requestedAmount",
-      render: (amount: unknown) => `$${toBudgetNumber(amount).toFixed(2)}`
+      render: (amount: unknown, record: AdjustmentRequest) => `${record.requestType === "next_month_submission" ? "Proposed: " : ""}$${toBudgetNumber(amount).toFixed(2)}`
     },
     {
       title: "Status",
@@ -276,6 +278,14 @@ export const BudgetApprovalQueue: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
+      <Button
+        type="link"
+        icon={<ArrowLeftOutlined />}
+        onClick={() => navigate("/budget/department-overview")}
+        style={{ paddingLeft: 0, marginBottom: 4 }}
+      >
+        Back
+      </Button>
       <Title level={2}>Budget Approval Queue</Title>
 
       <Tabs

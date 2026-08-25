@@ -29,11 +29,14 @@ import budgetRoutes from "./routes/budget.js";
 import departmentBudgetRoutes from "./routes/department-budget.js";
 import gmailRoutes from "./routes/gmail.js";
 import { auditMiddleware } from "./middleware/auditMiddleware.js";
+import { startScheduler } from "./services/budget-scheduler.js";
 
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: "10mb" }));
+// Workflow records can contain inline item images. Keep a bounded request
+// limit so existing snapshots are accepted without hitting 413.
+app.use(express.json({ limit: "100mb" }));
 app.use(performanceMiddleware);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
@@ -67,6 +70,7 @@ app.use("/", homeRoutes);
 app.listen(4000, () => {
   console.log("Server running on port 4000");
   console.log("Dashboard: http://localhost:4000");
+  startScheduler();
 
   // Auto-open dashboard in browser
   const url = "http://localhost:4000";

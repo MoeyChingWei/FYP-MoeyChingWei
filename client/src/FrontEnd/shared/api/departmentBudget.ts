@@ -144,15 +144,65 @@ export interface MonthlyBudget {
   department?: Department;
 }
 
+export interface OwnBudgetHistoryRow {
+  period: string;
+  year: number;
+  month: number;
+  budgetId: number | null;
+  allocatedAmount: number | null;
+  spentAmount: number | null;
+  remainingAmount: number | null;
+  status: "approved" | "ai_auto_generated" | "pending" | "rejected" | "not_set";
+  source: "Finance approval" | "AI prediction" | null;
+}
+
+export async function getOwnBudgetHistory(): Promise<{ department: Department; currentPeriod: string; rows: OwnBudgetHistoryRow[] } | null> {
+  try {
+    const user = getSessionUser();
+    if (!user) return null;
+    const res = await axios.get(`${API}/my-budget-history`, {
+      params: { userId: user.id, email: user.email }
+    });
+    if (!res.data.success) return null;
+    return {
+      ...res.data.data,
+      rows: res.data.data.rows.map((row: OwnBudgetHistoryRow) => ({
+        ...row,
+        allocatedAmount: row.allocatedAmount == null ? null : toBudgetNumber(row.allocatedAmount),
+        spentAmount: row.spentAmount == null ? null : toBudgetNumber(row.spentAmount),
+        remainingAmount: row.remainingAmount == null ? null : toBudgetNumber(row.remainingAmount),
+      }))
+    };
+  } catch (error) {
+    console.error("Get own budget history error:", error);
+    return null;
+  }
+}
+
 export interface BudgetPrediction {
   id: number;
   departmentId: number;
   targetYear: number;
   targetMonth: number;
   predictedAmount: number;
-  confidence: "high" | "medium" | "low";
+  confidence: "very_high" | "high" | "medium" | "low";
   triggerType: "automatic" | "manual";
   triggeredBy: number;
+  aiInsights?: string;
+  algorithm?: string;
+  categoryBreakdown?: Record<string, number>;
+  comparisonData?: {
+    lastMonthAmount?: number;
+    avgAmount?: number;
+    trend?: "increasing" | "decreasing" | "stable" | string;
+    historicalPeriods?: number;
+    usedFallback?: boolean;
+    predictionInterval?: { lower?: number; upper?: number };
+    modelBreakdown?: Record<string, number>;
+    similarDepartment?: string;
+    similarity?: number;
+    referenceMonths?: number;
+  };
   metadata?: any;
   createdAt: string;
   department?: Department;

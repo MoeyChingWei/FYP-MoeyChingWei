@@ -80,6 +80,10 @@ function removeOutliers(data, threshold = 3) {
     values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / values.length
   );
 
+  // A flat series has no outliers. Without this guard every z-score is NaN
+  // (0 / 0), which filters out the complete historical series.
+  if (!Number.isFinite(stdDev) || stdDev === 0) return data;
+
   return data.filter((d, i) => {
     const zScore = Math.abs((values[i] - mean) / stdDev);
     return zScore < threshold;
@@ -611,20 +615,10 @@ class AnalyticsAgent extends BaseAgent {
           const lookbackMonths = 24; // Always use 24 months for best results
           startDate.setMonth(startDate.getMonth() - lookbackMonths);
 
-          const whereClause = department
-            ? {
-                createdAt: { gte: startDate },
-                payload: {
-                  path: ['department'],
-                  equals: department,
-                },
-              }
-            : {
-                createdAt: { gte: startDate },
-              };
-
-          const orders = await prisma.purchaseOrderRecord.findMany({
-            where: whereClause,
+          // Forecast from approved purchase requests, matching the budget
+          // prediction service's historical-spending source of truth.
+          const requests = await prisma.purchaseRequestRecord.findMany({
+            where: { createdAt: { gte: startDate } },
             orderBy: { createdAt: 'asc' },
             select: {
               payload: true,
@@ -632,19 +626,69 @@ class AnalyticsAgent extends BaseAgent {
             },
           });
 
+          const departmentRecord = department
+            ? await prisma.department.findFirst({
+                where: {
+                  OR: [
+                    { code: { equals: department, mode: 'insensitive' } },
+                    { name: { equals: department, mode: 'insensitive' } }
+                  ]
+                }
+              })
+            : null;
+          const departmentUsers = departmentRecord
+            ? await prisma.user.findMany({
+                where: {
+                  OR: [
+                    { department: { equals: departmentRecord.code, mode: 'insensitive' } },
+                    { department: { equals: departmentRecord.name, mode: 'insensitive' } }
+                  ]
+                },
+                select: { id: true }
+              })
+            : [];
+          const departmentUserIds = new Set(departmentUsers.map(user => user.id));
+
           // Aggregate spending by month
           const monthlySpending = {};
-          orders.forEach(order => {
-            const date = new Date(order.createdAt);
+          requests.forEach(request => {
+            const payload = request.payload && typeof request.payload === 'object'
+              ? request.payload
+              : {};
+            const status = String(payload.status || '').trim().toUpperCase();
+
+            if (status !== 'APPROVED') return;
+            if (department && !departmentRecord) return;
+            if (departmentRecord && !departmentUserIds.has(payload.requestorId)) {
+              return;
+            }
+
+            const date = new Date(payload.createdAt || request.createdAt);
             const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
             if (!monthlySpending[monthKey]) monthlySpending[monthKey] = 0;
 
-            if (order.payload.items) {
-              order.payload.items.forEach(item => {
-                monthlySpending[monthKey] += parseFloat(item.totalPrice || 0);
-              });
-            }
+            const items = Array.isArray(payload.lineItems)
+              ? payload.lineItems
+              : (Array.isArray(payload.items) ? payload.items : []);
+
+            items.forEach(item => {
+              const quantity = Number(item.quantity);
+              const unitPrice = Number(item.unitPrice);
+              const amountAfterTax = Number(item.amountAfterTax);
+              const totalPrice = Number(item.totalPrice);
+              // Match getHistoricalSpending(): PR forecasts use quantity *
+              // unitPrice, with legacy amount fields as compatibility fallbacks.
+              const lineTotal = Number.isFinite(quantity) && Number.isFinite(unitPrice)
+                ? quantity * unitPrice
+                : Number.isFinite(amountAfterTax)
+                  ? amountAfterTax
+                  : totalPrice;
+
+              if (Number.isFinite(lineTotal)) {
+                monthlySpending[monthKey] += lineTotal;
+              }
+            });
           });
 
           // Convert to array with structure for outlier detection
@@ -673,6 +717,14 @@ class AnalyticsAgent extends BaseAgent {
           // 2. DATA CLEANING: Remove outliers
           const cleanedData = removeOutliers(historicalData, 3); // Z-score threshold = 3
           const outliersRemoved = historicalData.length - cleanedData.length;
+
+          if (cleanedData.length < 3) {
+            return {
+              department: department || 'All Departments',
+              error: 'Insufficient usable data',
+              recommendation: 'Need at least 3 valid historical months for prediction',
+            };
+          }
 
           // 3. MULTI-MODEL PREDICTION
           const spendingValues = cleanedData.map(d => d.totalAmount);

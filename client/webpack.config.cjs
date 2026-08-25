@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const dotenv = require('dotenv');
 
 const envFile = dotenv.config({ path: path.resolve(__dirname, '.env') }).parsed || {};
+const devServerPort = Number(process.env.PORT || envFile.PORT || 3000);
 const reactAppEnv = Object.fromEntries(
   Object.entries(envFile).filter(([key]) => key.startsWith('REACT_APP_')),
 );
@@ -100,7 +101,7 @@ module.exports = {
   devtool: 'eval-source-map',
   devServer: {
     host: '0.0.0.0',
-    port: 3000,
+    port: devServerPort,
     historyApiFallback: true,
     hot: false,
     liveReload: true,
@@ -112,6 +113,9 @@ module.exports = {
       },
     ],
     client: {
+      // Follow the page host/port when the dev server is started on 3001, etc.
+      // This avoids stale ws://localhost:3000/ws URLs after a port override.
+      webSocketURL: 'auto://0.0.0.0:0/ws',
       overlay: true,
     },
   },

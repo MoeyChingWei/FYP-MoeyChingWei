@@ -337,6 +337,20 @@ exports.Prisma.Supplier_grn_recordsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.Supplier_invoice_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_payment_recordsScalarFieldEnum = {
+  localId: 'localId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.Supplier_inventory_itemsScalarFieldEnum = {
   id: 'id',
   supplierId: 'supplierId',
@@ -429,6 +443,8 @@ exports.Prisma.ModelName = {
   sources: 'sources',
   supplier_delivery_records: 'supplier_delivery_records',
   supplier_grn_records: 'supplier_grn_records',
+  supplier_invoice_records: 'supplier_invoice_records',
+  supplier_payment_records: 'supplier_payment_records',
   supplier_inventory_items: 'supplier_inventory_items',
   supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
   users: 'users'

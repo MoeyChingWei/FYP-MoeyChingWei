@@ -180,9 +180,11 @@ export async function applyGmailLabelToMessage({
   }
 
   let messages = [];
-  // Gmail may take a moment to index the sent/received copy. Retry briefly
-  // before reporting that this mailbox could not be labelled.
-  for (let attempt = 0; attempt < 3 && !messages.length; attempt += 1) {
+  // Gmail may take a moment to index the sent/received copy. Use a bounded
+  // exponential backoff so delayed indexing is tolerated without hanging the
+  // notification workflow indefinitely.
+  const labelRetryDelays = [500, 1000, 2000, 4000];
+  for (let attempt = 0; attempt <= labelRetryDelays.length && !messages.length; attempt += 1) {
     for (const q of queries) {
       const response = await gmail.users.messages.list({
         userId: "me",
@@ -192,8 +194,8 @@ export async function applyGmailLabelToMessage({
       messages = response.data.messages || [];
       if (messages.length) break;
     }
-    if (!messages.length && attempt < 2) {
-      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+    if (!messages.length && attempt < labelRetryDelays.length) {
+      await new Promise((resolve) => setTimeout(resolve, labelRetryDelays[attempt]));
     }
   }
   if (!messages.length) {

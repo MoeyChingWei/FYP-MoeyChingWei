@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Typography, message, Row, Col, Card, Table, Tag } from "antd";
+import { Typography, message, Row, Col, Card, Table, Tag, Button } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { AdjustmentRequestForm, type AdjustmentFormValues } from "../components/budget/AdjustmentRequestForm";
 import { getDepartments, toBudgetNumber, type Department } from "../shared/api/departmentBudget";
 import axios from "axios";
@@ -24,6 +26,7 @@ interface AdjustmentRequest {
 }
 
 const BudgetAdjustmentRequest: React.FC = () => {
+  const navigate = useNavigate();
   const sessionUser = getSessionUser();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [myRequests, setMyRequests] = useState<AdjustmentRequest[]>([]);
@@ -141,6 +144,14 @@ const BudgetAdjustmentRequest: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
+      <Button
+        type="link"
+        icon={<ArrowLeftOutlined />}
+        onClick={() => navigate("/budget/department-overview")}
+        style={{ paddingLeft: 0, marginBottom: 4 }}
+      >
+        Back
+      </Button>
       <Title level={2}>Budget Adjustment Request</Title>
 
       <Row gutter={[16, 16]}>

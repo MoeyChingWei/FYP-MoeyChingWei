@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Row, Col, Card, Statistic, Select, Space, Button, Modal, message } from "antd";
+import { Typography, Row, Col, Card, Statistic, Select, Space, Button, Modal, message, Table, Tag } from "antd";
 import { ReloadOutlined, DollarOutlined, WarningOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { DepartmentBudgetTable } from "../components/budget/DepartmentBudgetTable";
 import { BudgetUsageChart } from "../components/budget/BudgetUsageChart";
@@ -10,6 +10,10 @@ import {
   type MonthlyBudget,
   type HistoricalComparison
 } from "../shared/api/departmentBudget";
+import { getPredictions, toBudgetNumber, type BudgetPrediction } from "../shared/api/departmentBudget";
+import axios from "axios";
+import { API_ROOT } from "../shared/api/base";
+import { getSessionUser } from "../shared/auth/session";
 
 const { Title } = Typography;
 
@@ -23,6 +27,7 @@ const FinanceBudgetDashboard: React.FC = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<MonthlyBudget | null>(null);
   const [historicalData, setHistoricalData] = useState<HistoricalComparison | null>(null);
+  const [submissions, setSubmissions] = useState<Array<any>>([]);
 
   useEffect(() => {
     loadData();
@@ -39,6 +44,26 @@ const FinanceBudgetDashboard: React.FC = () => {
       const budgetResults = await Promise.all(budgetPromises);
       const allBudgets = budgetResults.flat();
       setBudgets(allBudgets);
+      const user = getSessionUser();
+      const submissionResults = await Promise.all(depts.map(async department => {
+        const [adjustmentsResponse, predictions] = await Promise.all([
+          axios.get(`${API_ROOT}/department-budget/adjustments`, {
+            params: { departmentId: department.id, targetYear: selectedYear, targetMonth: selectedMonth, userId: user?.id, email: user?.email }
+          }),
+          getPredictions(department.id, { year: selectedYear, month: selectedMonth, limit: 1 })
+        ]);
+        const submissionsForPeriod = (adjustmentsResponse.data.success ? adjustmentsResponse.data.data : [])
+          .filter((item: any) => item.requestType === "next_month_submission");
+        const latest = submissionsForPeriod[0];
+        if (!latest) return null;
+        return {
+          ...latest,
+          departmentName: department.name,
+          aiSuggested: predictions[0]?.predictedAmount,
+          requestedAmount: toBudgetNumber(latest.requestedAmount),
+        };
+      }));
+      setSubmissions(submissionResults.filter(Boolean));
     } catch (error) {
       console.error("Load data error:", error);
       message.error("Failed to load budget data. Please try again.");
@@ -168,6 +193,22 @@ const FinanceBudgetDashboard: React.FC = () => {
           budgets={budgets}
           loading={loading}
           onViewDetails={handleViewDetails}
+        />
+      </Card>
+
+      <Card title={`Next Month Budget Submissions - ${selectedYear}-${String(selectedMonth).padStart(2, "0")}`} style={{ marginTop: 24 }}>
+        <Table
+          rowKey="id"
+          dataSource={submissions}
+          pagination={{ pageSize: 10 }}
+          locale={{ emptyText: "No department submission for this period" }}
+          columns={[
+            { title: "Department", dataIndex: "departmentName" },
+            { title: "AI Suggested", dataIndex: "aiSuggested", render: (value: unknown) => value === undefined ? "-" : `RM ${toBudgetNumber(value).toFixed(2)}` },
+            { title: "Proposed Budget", dataIndex: "requestedAmount", render: (value: unknown) => `RM ${toBudgetNumber(value).toFixed(2)}` },
+            { title: "Reason", dataIndex: "reason", ellipsis: true },
+            { title: "Status", dataIndex: "status", render: (value: string) => <Tag color={value === "approved" ? "green" : value === "rejected" ? "red" : "orange"}>{value.toUpperCase()}</Tag> },
+          ]}
         />
       </Card>
 

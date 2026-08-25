@@ -35,7 +35,7 @@ import {
   getSessionUser,
   type SessionUser,
 } from "./shared/auth/session";
-import { isFinanceRole, UserRole } from "./shared/types/roles";
+import { canApproveSupplierInvoices, isFinanceRole, UserRole } from "./shared/types/roles";
 import NotificationBell from "./components/shared/NotificationBell";
 import BreadcrumbNav from "./components/shared/BreadcrumbNav";
 import ChatBotWidget from "./components/ChatBot/ChatBotWidget";
@@ -144,12 +144,17 @@ const DepartmentBudgetOverview = lazy(() => import("./pages/DepartmentBudgetOver
 const BudgetAdjustmentRequest = lazy(() => import("./pages/BudgetAdjustmentRequest"));
 const FinanceBudgetDashboard = lazy(() => import("./pages/FinanceBudgetDashboard"));
 const BudgetApprovalQueue = lazy(() => import("./pages/BudgetApprovalQueue"));
+const NextMonthBudgetSubmission = lazy(() => import("./pages/NextMonthBudgetSubmission"));
+const FinanceInvoiceApproval = lazy(() => import("./pages/FinanceInvoiceApproval"));
+const FinancePaymentProcessing = lazy(() => import("./pages/FinancePaymentProcessing"));
+const FinanceHome = lazy(() => import("./pages/FinanceHome"));
 
 type MenuKey =
   | "overview"
   | "users-access"
   | "purchasing"
   | "budget-management"
+  | "finance"
   | "supplier-overview"
   | "tracking-item"
   | "chatbot"
@@ -164,6 +169,7 @@ function useMenuKeyFromPath(pathname: string): MenuKey {
   ) {
     return "budget-management";
   }
+  if (pathname.startsWith("/finance")) return "finance";
   if (pathname.startsWith("/supplier-overview")) return "supplier-overview";
   if (pathname.startsWith("/tracking-item")) return "tracking-item";
   if (pathname.startsWith("/chatbot")) return "chatbot";
@@ -265,7 +271,18 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/purchasing/creation")) return true;
       if (pathname.startsWith("/purchasing/review")) return true;
       if (pathname.startsWith("/purchasing/goods-received-note")) return true;
-      if (pathname.startsWith("/budget-management")) return isFinanceRole(role);
+      if (pathname.startsWith("/supplier-overview/invoice")) return isFinanceRole(role);
+      if (
+        pathname.startsWith("/budget-management") ||
+        pathname === "/budget" ||
+        pathname.startsWith("/budget/")
+      ) {
+        return role === UserRole.EMPLOYEE
+          ? pathname === "/budget-management" || pathname === "/budget/department-overview"
+          : isFinanceRole(role);
+      }
+      if (pathname.startsWith("/finance/invoice-approval")) return canApproveSupplierInvoices(role);
+      if (pathname.startsWith("/finance")) return isFinanceRole(role);
       if (pathname.startsWith("/tracking-item")) return true;
       if (pathname.startsWith("/chatbot")) return true;
       if (pathname.startsWith("/ai-agents")) return true;
@@ -277,6 +294,7 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/supplier-overview")) return true;
       if (pathname.startsWith("/profile")) return true;
       if (pathname.startsWith("/notifications")) return true;
+      if (pathname.startsWith("/budget-management") || pathname === "/budget" || pathname.startsWith("/budget/")) return true;
       if (pathname.startsWith("/chatbot")) return true;
       if (pathname.startsWith("/ai-agents")) return true;
       if (pathname.startsWith("/settings/ai-assistant")) return false;
@@ -303,6 +321,7 @@ function MainLayout(): React.ReactElement {
       "users-access": "#6366f1",
       purchasing: "#22c55e",
       "budget-management": "#f59e0b",
+      finance: "#0f766e",
       "supplier-overview": "#14b8a6",
       "tracking-item": "#ec4899",
       chatbot: "#f59e0b",
@@ -315,6 +334,7 @@ function MainLayout(): React.ReactElement {
     "users-access": "/users-access",
     purchasing: "/purchasing",
     "budget-management": "/budget-management",
+    finance: "/finance",
     "supplier-overview": "/supplier-overview",
     "tracking-item": "/tracking-item",
     chatbot: "/chatbot",
@@ -340,14 +360,15 @@ function MainLayout(): React.ReactElement {
       return (
         key === "overview" ||
         key === "purchasing" ||
-        (key === "budget-management" && isFinanceRole(role)) ||
+        (key === "budget-management" && (isFinanceRole(role) || role === UserRole.EMPLOYEE)) ||
+        (key === "finance" && isFinanceRole(role)) ||
         key === "tracking-item" ||
         key === "chatbot" ||
         key === "settings"
       );
     }
     if (role === UserRole.SUPPLIER) {
-      return key === "supplier-overview" || key === "chatbot" || key === "settings";
+      return key === "budget-management" || key === "supplier-overview" || key === "chatbot" || key === "settings";
     }
     return true;
   };
@@ -357,6 +378,7 @@ function MainLayout(): React.ReactElement {
     { key: "users-access", icon: <TeamOutlined />, label: t("sidebar.userAccess") },
     { key: "purchasing", icon: <ShoppingCartOutlined />, label: t("sidebar.purchasing") },
     { key: "budget-management", icon: <DollarOutlined />, label: t("sidebar.budgetManagement") },
+    { key: "finance", icon: <DollarOutlined />, label: "Finance" },
     { key: "tracking-item", icon: <InboxOutlined />, label: t("sidebar.trackingItem") },
     { key: "supplier-overview", icon: <ShopOutlined />, label: t("sidebar.supplierOverview") },
     { key: "chatbot", icon: <CommentOutlined />, label: t("sidebar.chatbot") },
@@ -637,10 +659,16 @@ function MainLayout(): React.ReactElement {
           />
           <Route path="/purchasing/*" element={<Navigate to="/purchasing" replace />} />
           <Route path="/budget-management" element={<BudgetManagementHome />} />
+          <Route path="/budget" element={<Navigate to="/budget-management" replace />} />
           <Route path="/budget/department-overview" element={<DepartmentBudgetOverview />} />
           <Route path="/budget/adjustment-request" element={<BudgetAdjustmentRequest />} />
+          <Route path="/budget/next-month-submission" element={<NextMonthBudgetSubmission />} />
           <Route path="/budget/finance-dashboard" element={<FinanceBudgetDashboard />} />
           <Route path="/budget/approval-queue" element={<BudgetApprovalQueue />} />
+          <Route path="/finance" element={<FinanceHome />} />
+          <Route path="/finance/invoice-approval" element={<FinanceInvoiceApproval />} />
+          <Route path="/finance/payment-processing" element={<FinancePaymentProcessing />} />
+          <Route path="/budget/*" element={<Navigate to="/budget-management" replace />} />
           <Route
             path="/budget-management/*"
             element={<Navigate to="/budget-management" replace />}

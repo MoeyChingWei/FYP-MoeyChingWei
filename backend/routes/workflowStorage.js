@@ -29,6 +29,14 @@ const STORES = {
     model: prisma.supplierGrnRecordStore,
     field: "localId",
   },
+  "supplier-invoices": {
+    model: prisma.supplierInvoiceRecordStore,
+    field: "localId",
+  },
+  "supplier-payments": {
+    model: prisma.supplierPaymentRecordStore,
+    field: "localId",
+  },
 };
 
 function getStoreConfig(key) {

@@ -21,6 +21,10 @@ export function isFinanceRole(role?: string | null): role is UserRole {
   return FINANCE_ROLES.includes(role as UserRole);
 }
 
+export function canApproveSupplierInvoices(role?: string | null): boolean {
+  return role === UserRole.TREASURY_FINANCE_OFFICER || role === UserRole.ADMIN;
+}
+
 export interface AppUser {
   id: string;
   displayName: string;

@@ -14,7 +14,12 @@ import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
 const { Paragraph, Title } = Typography;
 
 function currencyLabel(currency: string, amount: number): string { return `${currency} ${amount.toFixed(2)}`; }
-function statusColor(status: SupplierInvoiceRecord["status"]): string { return status === "SUBMITTED" ? "blue" : "orange"; }
+function statusColor(status: SupplierInvoiceRecord["status"]): string {
+  if (status === "SUBMITTED") return "blue";
+  if (status === "APPROVED") return "green";
+  if (status === "REJECTED") return "red";
+  return "orange";
+}
 
 function ItemRow({ item, currency }: { item: DraftLineItem; currency: string }): React.ReactElement {
   return <div className={styles.itemCard}>
@@ -53,7 +58,12 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
 
   const onSubmit = (): void => {
     if (!row) return;
-    updateSupplierInvoice(row.localId, (draft) => ({ ...draft, status: "SUBMITTED", submittedDate: new Date().toISOString().slice(0, 10) }));
+    if (row.status !== "DRAFT" && row.status !== "REJECTED") return;
+    if (!row.grnLocalId || !row.poNumber || !row.supplierEmail || !row.items.length || !Number.isFinite(row.grandTotal) || row.grandTotal <= 0) {
+      message.error("This invoice is missing required supplier, PO/GRN, item or amount information");
+      return;
+    }
+    updateSupplierInvoice(row.localId, (draft) => ({ ...draft, status: "SUBMITTED", submittedDate: new Date().toISOString(), reviewedDate: undefined, reviewedBy: undefined, rejectionReason: undefined }));
     message.success(t("invoice.messages.submitted"));
     navigate("/supplier-overview/invoice");
   };
@@ -73,8 +83,9 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
         <Descriptions.Item label={t("invoice.fields.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoice.fields.subtotal")}>{currencyLabel(row.currency, row.subtotal)}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.taxTotal")}>{currencyLabel(row.currency, row.taxTotal)}</Descriptions.Item>
       </Descriptions></div>
+      {row.status === "REJECTED" ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.rejectionTitle")}</h3><Paragraph type="danger">{row.rejectionReason || t("invoice.detail.noRejectionReason")}</Paragraph></div> : null}
       <div className={styles.itemsCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.items")}</h3><Paragraph type="secondary">{t("invoice.detail.itemsHint")}</Paragraph><div className={styles.itemList}>{row.items.map((item) => <ItemRow key={item.tempId} item={item} currency={row.currency} />)}</div></div>
-      {row.status === "DRAFT" ? <div className={styles.actionRow}><Button type="primary" icon={<CheckOutlined />} onClick={onSubmit}>{t("invoice.actions.submit")}</Button></div> : null}
+      {row.status === "DRAFT" || row.status === "REJECTED" ? <div className={styles.actionRow}><Button type="primary" icon={<CheckOutlined />} onClick={onSubmit}>{row.status === "REJECTED" ? t("invoice.actions.resubmit") : t("invoice.actions.submit")}</Button></div> : null}
     </div></Card>;
   }
 

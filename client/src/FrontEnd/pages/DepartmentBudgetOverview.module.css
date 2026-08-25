@@ -1,5 +1,14 @@
 .page {
-  padding: 24px;
+  padding: 20px 24px 32px;
+  background: #f7f9fc;
+}
+
+.backRow {
+  margin-bottom: 4px;
+}
+
+.backButton {
+  padding-left: 0;
 }
 
 .toolbar {
@@ -7,7 +16,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  padding: 4px 0 12px;
   flex-wrap: wrap;
 }
 
@@ -16,6 +26,26 @@
   min-width: 280px;
   margin: 0 !important;
   white-space: nowrap;
+  font-size: 24px !important;
+}
+
+.headingBlock {
+  min-width: 280px;
+}
+
+.eyebrow,
+.sectionEyebrow {
+  color: #667085;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: #667085;
+  font-size: 13px;
 }
 
 .controls {
@@ -31,6 +61,72 @@
   justify-content: flex-end;
 }
 
+.departmentSelect {
+  width: 180px;
+}
+
+.viewBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 4px 0 10px;
+  padding: 0 2px;
+}
+
+.sectionTitle {
+  margin-top: 2px;
+  color: #101828;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.mutedValue {
+  color: #98a2b3;
+}
+
+.emptyState {
+  padding: 32px 16px;
+  color: #667085;
+  text-align: center;
+}
+
+:global(.budgetUsageCard) {
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+:global(.budgetUsageCard .ant-card-head) {
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+:global(.budgetUsageCard .ant-card-body) {
+  padding: 16px 18px 14px;
+}
+
+:global(.budgetUsageCard .ant-statistic-title) {
+  margin-bottom: 2px;
+  color: #667085;
+  font-size: 12px;
+}
+
+:global(.budgetUsageCard .ant-statistic-content) {
+  font-size: 22px;
+}
+
+:global(.budgetUsageCard .ant-progress) {
+  margin-bottom: 0;
+}
+
+.predictionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 620px), 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
 @media (max-width: 767px) {
   .page {
     padding: 16px;
@@ -40,6 +136,11 @@
     flex-basis: 100%;
     min-width: 0;
     white-space: normal;
+    font-size: 22px !important;
+  }
+
+  .subtitle {
+    display: none;
   }
 
   .controls {
@@ -49,5 +150,18 @@
 
   .controls :global(.ant-space) {
     justify-content: flex-start;
+  }
+
+  .predictionGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .viewBar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .departmentSelect {
+    width: 160px;
   }
 }

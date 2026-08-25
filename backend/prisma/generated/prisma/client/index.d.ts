@@ -114,6 +114,16 @@ export type supplier_delivery_records = $Result.DefaultSelection<Prisma.$supplie
  */
 export type supplier_grn_records = $Result.DefaultSelection<Prisma.$supplier_grn_recordsPayload>
 /**
+ * Model supplier_invoice_records
+ * 
+ */
+export type supplier_invoice_records = $Result.DefaultSelection<Prisma.$supplier_invoice_recordsPayload>
+/**
+ * Model supplier_payment_records
+ * 
+ */
+export type supplier_payment_records = $Result.DefaultSelection<Prisma.$supplier_payment_recordsPayload>
+/**
  * Model supplier_inventory_items
  * 
  */
@@ -463,6 +473,26 @@ export class PrismaClient<
     * ```
     */
   get supplier_grn_records(): Prisma.supplier_grn_recordsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supplier_invoice_records`: Exposes CRUD operations for the **supplier_invoice_records** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Supplier_invoice_records
+    * const supplier_invoice_records = await prisma.supplier_invoice_records.findMany()
+    * ```
+    */
+  get supplier_invoice_records(): Prisma.supplier_invoice_recordsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supplier_payment_records`: Exposes CRUD operations for the **supplier_payment_records** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Supplier_payment_records
+    * const supplier_payment_records = await prisma.supplier_payment_records.findMany()
+    * ```
+    */
+  get supplier_payment_records(): Prisma.supplier_payment_recordsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.supplier_inventory_items`: Exposes CRUD operations for the **supplier_inventory_items** model.
@@ -947,6 +977,8 @@ export namespace Prisma {
     sources: 'sources',
     supplier_delivery_records: 'supplier_delivery_records',
     supplier_grn_records: 'supplier_grn_records',
+    supplier_invoice_records: 'supplier_invoice_records',
+    supplier_payment_records: 'supplier_payment_records',
     supplier_inventory_items: 'supplier_inventory_items',
     supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
     users: 'users'
@@ -965,7 +997,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users"
+      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2449,6 +2481,154 @@ export namespace Prisma {
           }
         }
       }
+      supplier_invoice_records: {
+        payload: Prisma.$supplier_invoice_recordsPayload<ExtArgs>
+        fields: Prisma.supplier_invoice_recordsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.supplier_invoice_recordsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.supplier_invoice_recordsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>
+          }
+          findFirst: {
+            args: Prisma.supplier_invoice_recordsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.supplier_invoice_recordsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>
+          }
+          findMany: {
+            args: Prisma.supplier_invoice_recordsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>[]
+          }
+          create: {
+            args: Prisma.supplier_invoice_recordsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>
+          }
+          createMany: {
+            args: Prisma.supplier_invoice_recordsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.supplier_invoice_recordsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>[]
+          }
+          delete: {
+            args: Prisma.supplier_invoice_recordsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>
+          }
+          update: {
+            args: Prisma.supplier_invoice_recordsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>
+          }
+          deleteMany: {
+            args: Prisma.supplier_invoice_recordsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.supplier_invoice_recordsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.supplier_invoice_recordsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>[]
+          }
+          upsert: {
+            args: Prisma.supplier_invoice_recordsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_invoice_recordsPayload>
+          }
+          aggregate: {
+            args: Prisma.Supplier_invoice_recordsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupplier_invoice_records>
+          }
+          groupBy: {
+            args: Prisma.supplier_invoice_recordsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_invoice_recordsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.supplier_invoice_recordsCountArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_invoice_recordsCountAggregateOutputType> | number
+          }
+        }
+      }
+      supplier_payment_records: {
+        payload: Prisma.$supplier_payment_recordsPayload<ExtArgs>
+        fields: Prisma.supplier_payment_recordsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.supplier_payment_recordsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.supplier_payment_recordsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>
+          }
+          findFirst: {
+            args: Prisma.supplier_payment_recordsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.supplier_payment_recordsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>
+          }
+          findMany: {
+            args: Prisma.supplier_payment_recordsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>[]
+          }
+          create: {
+            args: Prisma.supplier_payment_recordsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>
+          }
+          createMany: {
+            args: Prisma.supplier_payment_recordsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.supplier_payment_recordsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>[]
+          }
+          delete: {
+            args: Prisma.supplier_payment_recordsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>
+          }
+          update: {
+            args: Prisma.supplier_payment_recordsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>
+          }
+          deleteMany: {
+            args: Prisma.supplier_payment_recordsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.supplier_payment_recordsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.supplier_payment_recordsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>[]
+          }
+          upsert: {
+            args: Prisma.supplier_payment_recordsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_payment_recordsPayload>
+          }
+          aggregate: {
+            args: Prisma.Supplier_payment_recordsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupplier_payment_records>
+          }
+          groupBy: {
+            args: Prisma.supplier_payment_recordsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_payment_recordsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.supplier_payment_recordsCountArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_payment_recordsCountAggregateOutputType> | number
+          }
+        }
+      }
       supplier_inventory_items: {
         payload: Prisma.$supplier_inventory_itemsPayload<ExtArgs>
         fields: Prisma.supplier_inventory_itemsFieldRefs
@@ -2783,6 +2963,8 @@ export namespace Prisma {
     sources?: sourcesOmit
     supplier_delivery_records?: supplier_delivery_recordsOmit
     supplier_grn_records?: supplier_grn_recordsOmit
+    supplier_invoice_records?: supplier_invoice_recordsOmit
+    supplier_payment_records?: supplier_payment_recordsOmit
     supplier_inventory_items?: supplier_inventory_itemsOmit
     supplier_order_acknowledgement_records?: supplier_order_acknowledgement_recordsOmit
     users?: usersOmit
@@ -25491,6 +25673,1962 @@ export namespace Prisma {
 
 
   /**
+   * Model supplier_invoice_records
+   */
+
+  export type AggregateSupplier_invoice_records = {
+    _count: Supplier_invoice_recordsCountAggregateOutputType | null
+    _min: Supplier_invoice_recordsMinAggregateOutputType | null
+    _max: Supplier_invoice_recordsMaxAggregateOutputType | null
+  }
+
+  export type Supplier_invoice_recordsMinAggregateOutputType = {
+    localId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_invoice_recordsMaxAggregateOutputType = {
+    localId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_invoice_recordsCountAggregateOutputType = {
+    localId: number
+    payload: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type Supplier_invoice_recordsMinAggregateInputType = {
+    localId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_invoice_recordsMaxAggregateInputType = {
+    localId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_invoice_recordsCountAggregateInputType = {
+    localId?: true
+    payload?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type Supplier_invoice_recordsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_invoice_records to aggregate.
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_invoice_records to fetch.
+     */
+    orderBy?: supplier_invoice_recordsOrderByWithRelationInput | supplier_invoice_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: supplier_invoice_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_invoice_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_invoice_records.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned supplier_invoice_records
+    **/
+    _count?: true | Supplier_invoice_recordsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Supplier_invoice_recordsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Supplier_invoice_recordsMaxAggregateInputType
+  }
+
+  export type GetSupplier_invoice_recordsAggregateType<T extends Supplier_invoice_recordsAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupplier_invoice_records]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupplier_invoice_records[P]>
+      : GetScalarType<T[P], AggregateSupplier_invoice_records[P]>
+  }
+
+
+
+
+  export type supplier_invoice_recordsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: supplier_invoice_recordsWhereInput
+    orderBy?: supplier_invoice_recordsOrderByWithAggregationInput | supplier_invoice_recordsOrderByWithAggregationInput[]
+    by: Supplier_invoice_recordsScalarFieldEnum[] | Supplier_invoice_recordsScalarFieldEnum
+    having?: supplier_invoice_recordsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Supplier_invoice_recordsCountAggregateInputType | true
+    _min?: Supplier_invoice_recordsMinAggregateInputType
+    _max?: Supplier_invoice_recordsMaxAggregateInputType
+  }
+
+  export type Supplier_invoice_recordsGroupByOutputType = {
+    localId: string
+    payload: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: Supplier_invoice_recordsCountAggregateOutputType | null
+    _min: Supplier_invoice_recordsMinAggregateOutputType | null
+    _max: Supplier_invoice_recordsMaxAggregateOutputType | null
+  }
+
+  type GetSupplier_invoice_recordsGroupByPayload<T extends supplier_invoice_recordsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Supplier_invoice_recordsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Supplier_invoice_recordsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Supplier_invoice_recordsGroupByOutputType[P]>
+            : GetScalarType<T[P], Supplier_invoice_recordsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type supplier_invoice_recordsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supplier_invoice_records"]>
+
+  export type supplier_invoice_recordsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supplier_invoice_records"]>
+
+  export type supplier_invoice_recordsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supplier_invoice_records"]>
+
+  export type supplier_invoice_recordsSelectScalar = {
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type supplier_invoice_recordsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"localId" | "payload" | "createdAt" | "updatedAt", ExtArgs["result"]["supplier_invoice_records"]>
+
+  export type $supplier_invoice_recordsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "supplier_invoice_records"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      localId: string
+      payload: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["supplier_invoice_records"]>
+    composites: {}
+  }
+
+  type supplier_invoice_recordsGetPayload<S extends boolean | null | undefined | supplier_invoice_recordsDefaultArgs> = $Result.GetResult<Prisma.$supplier_invoice_recordsPayload, S>
+
+  type supplier_invoice_recordsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<supplier_invoice_recordsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Supplier_invoice_recordsCountAggregateInputType | true
+    }
+
+  export interface supplier_invoice_recordsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['supplier_invoice_records'], meta: { name: 'supplier_invoice_records' } }
+    /**
+     * Find zero or one Supplier_invoice_records that matches the filter.
+     * @param {supplier_invoice_recordsFindUniqueArgs} args - Arguments to find a Supplier_invoice_records
+     * @example
+     * // Get one Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends supplier_invoice_recordsFindUniqueArgs>(args: SelectSubset<T, supplier_invoice_recordsFindUniqueArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Supplier_invoice_records that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {supplier_invoice_recordsFindUniqueOrThrowArgs} args - Arguments to find a Supplier_invoice_records
+     * @example
+     * // Get one Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends supplier_invoice_recordsFindUniqueOrThrowArgs>(args: SelectSubset<T, supplier_invoice_recordsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_invoice_records that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_invoice_recordsFindFirstArgs} args - Arguments to find a Supplier_invoice_records
+     * @example
+     * // Get one Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends supplier_invoice_recordsFindFirstArgs>(args?: SelectSubset<T, supplier_invoice_recordsFindFirstArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_invoice_records that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_invoice_recordsFindFirstOrThrowArgs} args - Arguments to find a Supplier_invoice_records
+     * @example
+     * // Get one Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends supplier_invoice_recordsFindFirstOrThrowArgs>(args?: SelectSubset<T, supplier_invoice_recordsFindFirstOrThrowArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Supplier_invoice_records that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_invoice_recordsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.findMany()
+     * 
+     * // Get first 10 Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.findMany({ take: 10 })
+     * 
+     * // Only select the `localId`
+     * const supplier_invoice_recordsWithLocalIdOnly = await prisma.supplier_invoice_records.findMany({ select: { localId: true } })
+     * 
+     */
+    findMany<T extends supplier_invoice_recordsFindManyArgs>(args?: SelectSubset<T, supplier_invoice_recordsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Supplier_invoice_records.
+     * @param {supplier_invoice_recordsCreateArgs} args - Arguments to create a Supplier_invoice_records.
+     * @example
+     * // Create one Supplier_invoice_records
+     * const Supplier_invoice_records = await prisma.supplier_invoice_records.create({
+     *   data: {
+     *     // ... data to create a Supplier_invoice_records
+     *   }
+     * })
+     * 
+     */
+    create<T extends supplier_invoice_recordsCreateArgs>(args: SelectSubset<T, supplier_invoice_recordsCreateArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Supplier_invoice_records.
+     * @param {supplier_invoice_recordsCreateManyArgs} args - Arguments to create many Supplier_invoice_records.
+     * @example
+     * // Create many Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends supplier_invoice_recordsCreateManyArgs>(args?: SelectSubset<T, supplier_invoice_recordsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Supplier_invoice_records and returns the data saved in the database.
+     * @param {supplier_invoice_recordsCreateManyAndReturnArgs} args - Arguments to create many Supplier_invoice_records.
+     * @example
+     * // Create many Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Supplier_invoice_records and only return the `localId`
+     * const supplier_invoice_recordsWithLocalIdOnly = await prisma.supplier_invoice_records.createManyAndReturn({
+     *   select: { localId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends supplier_invoice_recordsCreateManyAndReturnArgs>(args?: SelectSubset<T, supplier_invoice_recordsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Supplier_invoice_records.
+     * @param {supplier_invoice_recordsDeleteArgs} args - Arguments to delete one Supplier_invoice_records.
+     * @example
+     * // Delete one Supplier_invoice_records
+     * const Supplier_invoice_records = await prisma.supplier_invoice_records.delete({
+     *   where: {
+     *     // ... filter to delete one Supplier_invoice_records
+     *   }
+     * })
+     * 
+     */
+    delete<T extends supplier_invoice_recordsDeleteArgs>(args: SelectSubset<T, supplier_invoice_recordsDeleteArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Supplier_invoice_records.
+     * @param {supplier_invoice_recordsUpdateArgs} args - Arguments to update one Supplier_invoice_records.
+     * @example
+     * // Update one Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends supplier_invoice_recordsUpdateArgs>(args: SelectSubset<T, supplier_invoice_recordsUpdateArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Supplier_invoice_records.
+     * @param {supplier_invoice_recordsDeleteManyArgs} args - Arguments to filter Supplier_invoice_records to delete.
+     * @example
+     * // Delete a few Supplier_invoice_records
+     * const { count } = await prisma.supplier_invoice_records.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends supplier_invoice_recordsDeleteManyArgs>(args?: SelectSubset<T, supplier_invoice_recordsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_invoice_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_invoice_recordsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends supplier_invoice_recordsUpdateManyArgs>(args: SelectSubset<T, supplier_invoice_recordsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_invoice_records and returns the data updated in the database.
+     * @param {supplier_invoice_recordsUpdateManyAndReturnArgs} args - Arguments to update many Supplier_invoice_records.
+     * @example
+     * // Update many Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Supplier_invoice_records and only return the `localId`
+     * const supplier_invoice_recordsWithLocalIdOnly = await prisma.supplier_invoice_records.updateManyAndReturn({
+     *   select: { localId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends supplier_invoice_recordsUpdateManyAndReturnArgs>(args: SelectSubset<T, supplier_invoice_recordsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Supplier_invoice_records.
+     * @param {supplier_invoice_recordsUpsertArgs} args - Arguments to update or create a Supplier_invoice_records.
+     * @example
+     * // Update or create a Supplier_invoice_records
+     * const supplier_invoice_records = await prisma.supplier_invoice_records.upsert({
+     *   create: {
+     *     // ... data to create a Supplier_invoice_records
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Supplier_invoice_records we want to update
+     *   }
+     * })
+     */
+    upsert<T extends supplier_invoice_recordsUpsertArgs>(args: SelectSubset<T, supplier_invoice_recordsUpsertArgs<ExtArgs>>): Prisma__supplier_invoice_recordsClient<$Result.GetResult<Prisma.$supplier_invoice_recordsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Supplier_invoice_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_invoice_recordsCountArgs} args - Arguments to filter Supplier_invoice_records to count.
+     * @example
+     * // Count the number of Supplier_invoice_records
+     * const count = await prisma.supplier_invoice_records.count({
+     *   where: {
+     *     // ... the filter for the Supplier_invoice_records we want to count
+     *   }
+     * })
+    **/
+    count<T extends supplier_invoice_recordsCountArgs>(
+      args?: Subset<T, supplier_invoice_recordsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Supplier_invoice_recordsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Supplier_invoice_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Supplier_invoice_recordsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Supplier_invoice_recordsAggregateArgs>(args: Subset<T, Supplier_invoice_recordsAggregateArgs>): Prisma.PrismaPromise<GetSupplier_invoice_recordsAggregateType<T>>
+
+    /**
+     * Group by Supplier_invoice_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_invoice_recordsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends supplier_invoice_recordsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: supplier_invoice_recordsGroupByArgs['orderBy'] }
+        : { orderBy?: supplier_invoice_recordsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, supplier_invoice_recordsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupplier_invoice_recordsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the supplier_invoice_records model
+   */
+  readonly fields: supplier_invoice_recordsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for supplier_invoice_records.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__supplier_invoice_recordsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the supplier_invoice_records model
+   */
+  interface supplier_invoice_recordsFieldRefs {
+    readonly localId: FieldRef<"supplier_invoice_records", 'String'>
+    readonly payload: FieldRef<"supplier_invoice_records", 'Json'>
+    readonly createdAt: FieldRef<"supplier_invoice_records", 'DateTime'>
+    readonly updatedAt: FieldRef<"supplier_invoice_records", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * supplier_invoice_records findUnique
+   */
+  export type supplier_invoice_recordsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_invoice_records to fetch.
+     */
+    where: supplier_invoice_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_invoice_records findUniqueOrThrow
+   */
+  export type supplier_invoice_recordsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_invoice_records to fetch.
+     */
+    where: supplier_invoice_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_invoice_records findFirst
+   */
+  export type supplier_invoice_recordsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_invoice_records to fetch.
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_invoice_records to fetch.
+     */
+    orderBy?: supplier_invoice_recordsOrderByWithRelationInput | supplier_invoice_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_invoice_records.
+     */
+    cursor?: supplier_invoice_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_invoice_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_invoice_records.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_invoice_records.
+     */
+    distinct?: Supplier_invoice_recordsScalarFieldEnum | Supplier_invoice_recordsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_invoice_records findFirstOrThrow
+   */
+  export type supplier_invoice_recordsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_invoice_records to fetch.
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_invoice_records to fetch.
+     */
+    orderBy?: supplier_invoice_recordsOrderByWithRelationInput | supplier_invoice_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_invoice_records.
+     */
+    cursor?: supplier_invoice_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_invoice_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_invoice_records.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_invoice_records.
+     */
+    distinct?: Supplier_invoice_recordsScalarFieldEnum | Supplier_invoice_recordsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_invoice_records findMany
+   */
+  export type supplier_invoice_recordsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_invoice_records to fetch.
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_invoice_records to fetch.
+     */
+    orderBy?: supplier_invoice_recordsOrderByWithRelationInput | supplier_invoice_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing supplier_invoice_records.
+     */
+    cursor?: supplier_invoice_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_invoice_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_invoice_records.
+     */
+    skip?: number
+    distinct?: Supplier_invoice_recordsScalarFieldEnum | Supplier_invoice_recordsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_invoice_records create
+   */
+  export type supplier_invoice_recordsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a supplier_invoice_records.
+     */
+    data: XOR<supplier_invoice_recordsCreateInput, supplier_invoice_recordsUncheckedCreateInput>
+  }
+
+  /**
+   * supplier_invoice_records createMany
+   */
+  export type supplier_invoice_recordsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many supplier_invoice_records.
+     */
+    data: supplier_invoice_recordsCreateManyInput | supplier_invoice_recordsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * supplier_invoice_records createManyAndReturn
+   */
+  export type supplier_invoice_recordsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * The data used to create many supplier_invoice_records.
+     */
+    data: supplier_invoice_recordsCreateManyInput | supplier_invoice_recordsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * supplier_invoice_records update
+   */
+  export type supplier_invoice_recordsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a supplier_invoice_records.
+     */
+    data: XOR<supplier_invoice_recordsUpdateInput, supplier_invoice_recordsUncheckedUpdateInput>
+    /**
+     * Choose, which supplier_invoice_records to update.
+     */
+    where: supplier_invoice_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_invoice_records updateMany
+   */
+  export type supplier_invoice_recordsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update supplier_invoice_records.
+     */
+    data: XOR<supplier_invoice_recordsUpdateManyMutationInput, supplier_invoice_recordsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_invoice_records to update
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * Limit how many supplier_invoice_records to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_invoice_records updateManyAndReturn
+   */
+  export type supplier_invoice_recordsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * The data used to update supplier_invoice_records.
+     */
+    data: XOR<supplier_invoice_recordsUpdateManyMutationInput, supplier_invoice_recordsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_invoice_records to update
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * Limit how many supplier_invoice_records to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_invoice_records upsert
+   */
+  export type supplier_invoice_recordsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the supplier_invoice_records to update in case it exists.
+     */
+    where: supplier_invoice_recordsWhereUniqueInput
+    /**
+     * In case the supplier_invoice_records found by the `where` argument doesn't exist, create a new supplier_invoice_records with this data.
+     */
+    create: XOR<supplier_invoice_recordsCreateInput, supplier_invoice_recordsUncheckedCreateInput>
+    /**
+     * In case the supplier_invoice_records was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<supplier_invoice_recordsUpdateInput, supplier_invoice_recordsUncheckedUpdateInput>
+  }
+
+  /**
+   * supplier_invoice_records delete
+   */
+  export type supplier_invoice_recordsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+    /**
+     * Filter which supplier_invoice_records to delete.
+     */
+    where: supplier_invoice_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_invoice_records deleteMany
+   */
+  export type supplier_invoice_recordsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_invoice_records to delete
+     */
+    where?: supplier_invoice_recordsWhereInput
+    /**
+     * Limit how many supplier_invoice_records to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_invoice_records without action
+   */
+  export type supplier_invoice_recordsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_invoice_records
+     */
+    select?: supplier_invoice_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_invoice_records
+     */
+    omit?: supplier_invoice_recordsOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model supplier_payment_records
+   */
+
+  export type AggregateSupplier_payment_records = {
+    _count: Supplier_payment_recordsCountAggregateOutputType | null
+    _min: Supplier_payment_recordsMinAggregateOutputType | null
+    _max: Supplier_payment_recordsMaxAggregateOutputType | null
+  }
+
+  export type Supplier_payment_recordsMinAggregateOutputType = {
+    localId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_payment_recordsMaxAggregateOutputType = {
+    localId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_payment_recordsCountAggregateOutputType = {
+    localId: number
+    payload: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type Supplier_payment_recordsMinAggregateInputType = {
+    localId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_payment_recordsMaxAggregateInputType = {
+    localId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_payment_recordsCountAggregateInputType = {
+    localId?: true
+    payload?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type Supplier_payment_recordsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_payment_records to aggregate.
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_payment_records to fetch.
+     */
+    orderBy?: supplier_payment_recordsOrderByWithRelationInput | supplier_payment_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: supplier_payment_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_payment_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_payment_records.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned supplier_payment_records
+    **/
+    _count?: true | Supplier_payment_recordsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Supplier_payment_recordsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Supplier_payment_recordsMaxAggregateInputType
+  }
+
+  export type GetSupplier_payment_recordsAggregateType<T extends Supplier_payment_recordsAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupplier_payment_records]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupplier_payment_records[P]>
+      : GetScalarType<T[P], AggregateSupplier_payment_records[P]>
+  }
+
+
+
+
+  export type supplier_payment_recordsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: supplier_payment_recordsWhereInput
+    orderBy?: supplier_payment_recordsOrderByWithAggregationInput | supplier_payment_recordsOrderByWithAggregationInput[]
+    by: Supplier_payment_recordsScalarFieldEnum[] | Supplier_payment_recordsScalarFieldEnum
+    having?: supplier_payment_recordsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Supplier_payment_recordsCountAggregateInputType | true
+    _min?: Supplier_payment_recordsMinAggregateInputType
+    _max?: Supplier_payment_recordsMaxAggregateInputType
+  }
+
+  export type Supplier_payment_recordsGroupByOutputType = {
+    localId: string
+    payload: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: Supplier_payment_recordsCountAggregateOutputType | null
+    _min: Supplier_payment_recordsMinAggregateOutputType | null
+    _max: Supplier_payment_recordsMaxAggregateOutputType | null
+  }
+
+  type GetSupplier_payment_recordsGroupByPayload<T extends supplier_payment_recordsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Supplier_payment_recordsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Supplier_payment_recordsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Supplier_payment_recordsGroupByOutputType[P]>
+            : GetScalarType<T[P], Supplier_payment_recordsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type supplier_payment_recordsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supplier_payment_records"]>
+
+  export type supplier_payment_recordsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supplier_payment_records"]>
+
+  export type supplier_payment_recordsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["supplier_payment_records"]>
+
+  export type supplier_payment_recordsSelectScalar = {
+    localId?: boolean
+    payload?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type supplier_payment_recordsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"localId" | "payload" | "createdAt" | "updatedAt", ExtArgs["result"]["supplier_payment_records"]>
+
+  export type $supplier_payment_recordsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "supplier_payment_records"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      localId: string
+      payload: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["supplier_payment_records"]>
+    composites: {}
+  }
+
+  type supplier_payment_recordsGetPayload<S extends boolean | null | undefined | supplier_payment_recordsDefaultArgs> = $Result.GetResult<Prisma.$supplier_payment_recordsPayload, S>
+
+  type supplier_payment_recordsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<supplier_payment_recordsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Supplier_payment_recordsCountAggregateInputType | true
+    }
+
+  export interface supplier_payment_recordsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['supplier_payment_records'], meta: { name: 'supplier_payment_records' } }
+    /**
+     * Find zero or one Supplier_payment_records that matches the filter.
+     * @param {supplier_payment_recordsFindUniqueArgs} args - Arguments to find a Supplier_payment_records
+     * @example
+     * // Get one Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends supplier_payment_recordsFindUniqueArgs>(args: SelectSubset<T, supplier_payment_recordsFindUniqueArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Supplier_payment_records that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {supplier_payment_recordsFindUniqueOrThrowArgs} args - Arguments to find a Supplier_payment_records
+     * @example
+     * // Get one Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends supplier_payment_recordsFindUniqueOrThrowArgs>(args: SelectSubset<T, supplier_payment_recordsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_payment_records that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_payment_recordsFindFirstArgs} args - Arguments to find a Supplier_payment_records
+     * @example
+     * // Get one Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends supplier_payment_recordsFindFirstArgs>(args?: SelectSubset<T, supplier_payment_recordsFindFirstArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_payment_records that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_payment_recordsFindFirstOrThrowArgs} args - Arguments to find a Supplier_payment_records
+     * @example
+     * // Get one Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends supplier_payment_recordsFindFirstOrThrowArgs>(args?: SelectSubset<T, supplier_payment_recordsFindFirstOrThrowArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Supplier_payment_records that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_payment_recordsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.findMany()
+     * 
+     * // Get first 10 Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.findMany({ take: 10 })
+     * 
+     * // Only select the `localId`
+     * const supplier_payment_recordsWithLocalIdOnly = await prisma.supplier_payment_records.findMany({ select: { localId: true } })
+     * 
+     */
+    findMany<T extends supplier_payment_recordsFindManyArgs>(args?: SelectSubset<T, supplier_payment_recordsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Supplier_payment_records.
+     * @param {supplier_payment_recordsCreateArgs} args - Arguments to create a Supplier_payment_records.
+     * @example
+     * // Create one Supplier_payment_records
+     * const Supplier_payment_records = await prisma.supplier_payment_records.create({
+     *   data: {
+     *     // ... data to create a Supplier_payment_records
+     *   }
+     * })
+     * 
+     */
+    create<T extends supplier_payment_recordsCreateArgs>(args: SelectSubset<T, supplier_payment_recordsCreateArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Supplier_payment_records.
+     * @param {supplier_payment_recordsCreateManyArgs} args - Arguments to create many Supplier_payment_records.
+     * @example
+     * // Create many Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends supplier_payment_recordsCreateManyArgs>(args?: SelectSubset<T, supplier_payment_recordsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Supplier_payment_records and returns the data saved in the database.
+     * @param {supplier_payment_recordsCreateManyAndReturnArgs} args - Arguments to create many Supplier_payment_records.
+     * @example
+     * // Create many Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Supplier_payment_records and only return the `localId`
+     * const supplier_payment_recordsWithLocalIdOnly = await prisma.supplier_payment_records.createManyAndReturn({
+     *   select: { localId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends supplier_payment_recordsCreateManyAndReturnArgs>(args?: SelectSubset<T, supplier_payment_recordsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Supplier_payment_records.
+     * @param {supplier_payment_recordsDeleteArgs} args - Arguments to delete one Supplier_payment_records.
+     * @example
+     * // Delete one Supplier_payment_records
+     * const Supplier_payment_records = await prisma.supplier_payment_records.delete({
+     *   where: {
+     *     // ... filter to delete one Supplier_payment_records
+     *   }
+     * })
+     * 
+     */
+    delete<T extends supplier_payment_recordsDeleteArgs>(args: SelectSubset<T, supplier_payment_recordsDeleteArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Supplier_payment_records.
+     * @param {supplier_payment_recordsUpdateArgs} args - Arguments to update one Supplier_payment_records.
+     * @example
+     * // Update one Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends supplier_payment_recordsUpdateArgs>(args: SelectSubset<T, supplier_payment_recordsUpdateArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Supplier_payment_records.
+     * @param {supplier_payment_recordsDeleteManyArgs} args - Arguments to filter Supplier_payment_records to delete.
+     * @example
+     * // Delete a few Supplier_payment_records
+     * const { count } = await prisma.supplier_payment_records.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends supplier_payment_recordsDeleteManyArgs>(args?: SelectSubset<T, supplier_payment_recordsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_payment_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_payment_recordsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends supplier_payment_recordsUpdateManyArgs>(args: SelectSubset<T, supplier_payment_recordsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_payment_records and returns the data updated in the database.
+     * @param {supplier_payment_recordsUpdateManyAndReturnArgs} args - Arguments to update many Supplier_payment_records.
+     * @example
+     * // Update many Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Supplier_payment_records and only return the `localId`
+     * const supplier_payment_recordsWithLocalIdOnly = await prisma.supplier_payment_records.updateManyAndReturn({
+     *   select: { localId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends supplier_payment_recordsUpdateManyAndReturnArgs>(args: SelectSubset<T, supplier_payment_recordsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Supplier_payment_records.
+     * @param {supplier_payment_recordsUpsertArgs} args - Arguments to update or create a Supplier_payment_records.
+     * @example
+     * // Update or create a Supplier_payment_records
+     * const supplier_payment_records = await prisma.supplier_payment_records.upsert({
+     *   create: {
+     *     // ... data to create a Supplier_payment_records
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Supplier_payment_records we want to update
+     *   }
+     * })
+     */
+    upsert<T extends supplier_payment_recordsUpsertArgs>(args: SelectSubset<T, supplier_payment_recordsUpsertArgs<ExtArgs>>): Prisma__supplier_payment_recordsClient<$Result.GetResult<Prisma.$supplier_payment_recordsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Supplier_payment_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_payment_recordsCountArgs} args - Arguments to filter Supplier_payment_records to count.
+     * @example
+     * // Count the number of Supplier_payment_records
+     * const count = await prisma.supplier_payment_records.count({
+     *   where: {
+     *     // ... the filter for the Supplier_payment_records we want to count
+     *   }
+     * })
+    **/
+    count<T extends supplier_payment_recordsCountArgs>(
+      args?: Subset<T, supplier_payment_recordsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Supplier_payment_recordsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Supplier_payment_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Supplier_payment_recordsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Supplier_payment_recordsAggregateArgs>(args: Subset<T, Supplier_payment_recordsAggregateArgs>): Prisma.PrismaPromise<GetSupplier_payment_recordsAggregateType<T>>
+
+    /**
+     * Group by Supplier_payment_records.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_payment_recordsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends supplier_payment_recordsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: supplier_payment_recordsGroupByArgs['orderBy'] }
+        : { orderBy?: supplier_payment_recordsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, supplier_payment_recordsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupplier_payment_recordsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the supplier_payment_records model
+   */
+  readonly fields: supplier_payment_recordsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for supplier_payment_records.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__supplier_payment_recordsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the supplier_payment_records model
+   */
+  interface supplier_payment_recordsFieldRefs {
+    readonly localId: FieldRef<"supplier_payment_records", 'String'>
+    readonly payload: FieldRef<"supplier_payment_records", 'Json'>
+    readonly createdAt: FieldRef<"supplier_payment_records", 'DateTime'>
+    readonly updatedAt: FieldRef<"supplier_payment_records", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * supplier_payment_records findUnique
+   */
+  export type supplier_payment_recordsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_payment_records to fetch.
+     */
+    where: supplier_payment_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_payment_records findUniqueOrThrow
+   */
+  export type supplier_payment_recordsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_payment_records to fetch.
+     */
+    where: supplier_payment_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_payment_records findFirst
+   */
+  export type supplier_payment_recordsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_payment_records to fetch.
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_payment_records to fetch.
+     */
+    orderBy?: supplier_payment_recordsOrderByWithRelationInput | supplier_payment_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_payment_records.
+     */
+    cursor?: supplier_payment_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_payment_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_payment_records.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_payment_records.
+     */
+    distinct?: Supplier_payment_recordsScalarFieldEnum | Supplier_payment_recordsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_payment_records findFirstOrThrow
+   */
+  export type supplier_payment_recordsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_payment_records to fetch.
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_payment_records to fetch.
+     */
+    orderBy?: supplier_payment_recordsOrderByWithRelationInput | supplier_payment_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_payment_records.
+     */
+    cursor?: supplier_payment_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_payment_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_payment_records.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_payment_records.
+     */
+    distinct?: Supplier_payment_recordsScalarFieldEnum | Supplier_payment_recordsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_payment_records findMany
+   */
+  export type supplier_payment_recordsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * Filter, which supplier_payment_records to fetch.
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_payment_records to fetch.
+     */
+    orderBy?: supplier_payment_recordsOrderByWithRelationInput | supplier_payment_recordsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing supplier_payment_records.
+     */
+    cursor?: supplier_payment_recordsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_payment_records from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_payment_records.
+     */
+    skip?: number
+    distinct?: Supplier_payment_recordsScalarFieldEnum | Supplier_payment_recordsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_payment_records create
+   */
+  export type supplier_payment_recordsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a supplier_payment_records.
+     */
+    data: XOR<supplier_payment_recordsCreateInput, supplier_payment_recordsUncheckedCreateInput>
+  }
+
+  /**
+   * supplier_payment_records createMany
+   */
+  export type supplier_payment_recordsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many supplier_payment_records.
+     */
+    data: supplier_payment_recordsCreateManyInput | supplier_payment_recordsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * supplier_payment_records createManyAndReturn
+   */
+  export type supplier_payment_recordsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * The data used to create many supplier_payment_records.
+     */
+    data: supplier_payment_recordsCreateManyInput | supplier_payment_recordsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * supplier_payment_records update
+   */
+  export type supplier_payment_recordsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a supplier_payment_records.
+     */
+    data: XOR<supplier_payment_recordsUpdateInput, supplier_payment_recordsUncheckedUpdateInput>
+    /**
+     * Choose, which supplier_payment_records to update.
+     */
+    where: supplier_payment_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_payment_records updateMany
+   */
+  export type supplier_payment_recordsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update supplier_payment_records.
+     */
+    data: XOR<supplier_payment_recordsUpdateManyMutationInput, supplier_payment_recordsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_payment_records to update
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * Limit how many supplier_payment_records to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_payment_records updateManyAndReturn
+   */
+  export type supplier_payment_recordsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * The data used to update supplier_payment_records.
+     */
+    data: XOR<supplier_payment_recordsUpdateManyMutationInput, supplier_payment_recordsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_payment_records to update
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * Limit how many supplier_payment_records to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_payment_records upsert
+   */
+  export type supplier_payment_recordsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the supplier_payment_records to update in case it exists.
+     */
+    where: supplier_payment_recordsWhereUniqueInput
+    /**
+     * In case the supplier_payment_records found by the `where` argument doesn't exist, create a new supplier_payment_records with this data.
+     */
+    create: XOR<supplier_payment_recordsCreateInput, supplier_payment_recordsUncheckedCreateInput>
+    /**
+     * In case the supplier_payment_records was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<supplier_payment_recordsUpdateInput, supplier_payment_recordsUncheckedUpdateInput>
+  }
+
+  /**
+   * supplier_payment_records delete
+   */
+  export type supplier_payment_recordsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+    /**
+     * Filter which supplier_payment_records to delete.
+     */
+    where: supplier_payment_recordsWhereUniqueInput
+  }
+
+  /**
+   * supplier_payment_records deleteMany
+   */
+  export type supplier_payment_recordsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_payment_records to delete
+     */
+    where?: supplier_payment_recordsWhereInput
+    /**
+     * Limit how many supplier_payment_records to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_payment_records without action
+   */
+  export type supplier_payment_recordsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_payment_records
+     */
+    select?: supplier_payment_recordsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_payment_records
+     */
+    omit?: supplier_payment_recordsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model supplier_inventory_items
    */
 
@@ -29396,6 +31534,26 @@ export namespace Prisma {
   export type Supplier_grn_recordsScalarFieldEnum = (typeof Supplier_grn_recordsScalarFieldEnum)[keyof typeof Supplier_grn_recordsScalarFieldEnum]
 
 
+  export const Supplier_invoice_recordsScalarFieldEnum: {
+    localId: 'localId',
+    payload: 'payload',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type Supplier_invoice_recordsScalarFieldEnum = (typeof Supplier_invoice_recordsScalarFieldEnum)[keyof typeof Supplier_invoice_recordsScalarFieldEnum]
+
+
+  export const Supplier_payment_recordsScalarFieldEnum: {
+    localId: 'localId',
+    payload: 'payload',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type Supplier_payment_recordsScalarFieldEnum = (typeof Supplier_payment_recordsScalarFieldEnum)[keyof typeof Supplier_payment_recordsScalarFieldEnum]
+
+
   export const Supplier_inventory_itemsScalarFieldEnum: {
     id: 'id',
     supplierId: 'supplierId',
@@ -31042,6 +33200,100 @@ export namespace Prisma {
     payload?: JsonWithAggregatesFilter<"supplier_grn_records">
     createdAt?: DateTimeWithAggregatesFilter<"supplier_grn_records"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"supplier_grn_records"> | Date | string
+  }
+
+  export type supplier_invoice_recordsWhereInput = {
+    AND?: supplier_invoice_recordsWhereInput | supplier_invoice_recordsWhereInput[]
+    OR?: supplier_invoice_recordsWhereInput[]
+    NOT?: supplier_invoice_recordsWhereInput | supplier_invoice_recordsWhereInput[]
+    localId?: StringFilter<"supplier_invoice_records"> | string
+    payload?: JsonFilter<"supplier_invoice_records">
+    createdAt?: DateTimeFilter<"supplier_invoice_records"> | Date | string
+    updatedAt?: DateTimeFilter<"supplier_invoice_records"> | Date | string
+  }
+
+  export type supplier_invoice_recordsOrderByWithRelationInput = {
+    localId?: SortOrder
+    payload?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_invoice_recordsWhereUniqueInput = Prisma.AtLeast<{
+    localId?: string
+    AND?: supplier_invoice_recordsWhereInput | supplier_invoice_recordsWhereInput[]
+    OR?: supplier_invoice_recordsWhereInput[]
+    NOT?: supplier_invoice_recordsWhereInput | supplier_invoice_recordsWhereInput[]
+    payload?: JsonFilter<"supplier_invoice_records">
+    createdAt?: DateTimeFilter<"supplier_invoice_records"> | Date | string
+    updatedAt?: DateTimeFilter<"supplier_invoice_records"> | Date | string
+  }, "localId">
+
+  export type supplier_invoice_recordsOrderByWithAggregationInput = {
+    localId?: SortOrder
+    payload?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: supplier_invoice_recordsCountOrderByAggregateInput
+    _max?: supplier_invoice_recordsMaxOrderByAggregateInput
+    _min?: supplier_invoice_recordsMinOrderByAggregateInput
+  }
+
+  export type supplier_invoice_recordsScalarWhereWithAggregatesInput = {
+    AND?: supplier_invoice_recordsScalarWhereWithAggregatesInput | supplier_invoice_recordsScalarWhereWithAggregatesInput[]
+    OR?: supplier_invoice_recordsScalarWhereWithAggregatesInput[]
+    NOT?: supplier_invoice_recordsScalarWhereWithAggregatesInput | supplier_invoice_recordsScalarWhereWithAggregatesInput[]
+    localId?: StringWithAggregatesFilter<"supplier_invoice_records"> | string
+    payload?: JsonWithAggregatesFilter<"supplier_invoice_records">
+    createdAt?: DateTimeWithAggregatesFilter<"supplier_invoice_records"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"supplier_invoice_records"> | Date | string
+  }
+
+  export type supplier_payment_recordsWhereInput = {
+    AND?: supplier_payment_recordsWhereInput | supplier_payment_recordsWhereInput[]
+    OR?: supplier_payment_recordsWhereInput[]
+    NOT?: supplier_payment_recordsWhereInput | supplier_payment_recordsWhereInput[]
+    localId?: StringFilter<"supplier_payment_records"> | string
+    payload?: JsonFilter<"supplier_payment_records">
+    createdAt?: DateTimeFilter<"supplier_payment_records"> | Date | string
+    updatedAt?: DateTimeFilter<"supplier_payment_records"> | Date | string
+  }
+
+  export type supplier_payment_recordsOrderByWithRelationInput = {
+    localId?: SortOrder
+    payload?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_payment_recordsWhereUniqueInput = Prisma.AtLeast<{
+    localId?: string
+    AND?: supplier_payment_recordsWhereInput | supplier_payment_recordsWhereInput[]
+    OR?: supplier_payment_recordsWhereInput[]
+    NOT?: supplier_payment_recordsWhereInput | supplier_payment_recordsWhereInput[]
+    payload?: JsonFilter<"supplier_payment_records">
+    createdAt?: DateTimeFilter<"supplier_payment_records"> | Date | string
+    updatedAt?: DateTimeFilter<"supplier_payment_records"> | Date | string
+  }, "localId">
+
+  export type supplier_payment_recordsOrderByWithAggregationInput = {
+    localId?: SortOrder
+    payload?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: supplier_payment_recordsCountOrderByAggregateInput
+    _max?: supplier_payment_recordsMaxOrderByAggregateInput
+    _min?: supplier_payment_recordsMinOrderByAggregateInput
+  }
+
+  export type supplier_payment_recordsScalarWhereWithAggregatesInput = {
+    AND?: supplier_payment_recordsScalarWhereWithAggregatesInput | supplier_payment_recordsScalarWhereWithAggregatesInput[]
+    OR?: supplier_payment_recordsScalarWhereWithAggregatesInput[]
+    NOT?: supplier_payment_recordsScalarWhereWithAggregatesInput | supplier_payment_recordsScalarWhereWithAggregatesInput[]
+    localId?: StringWithAggregatesFilter<"supplier_payment_records"> | string
+    payload?: JsonWithAggregatesFilter<"supplier_payment_records">
+    createdAt?: DateTimeWithAggregatesFilter<"supplier_payment_records"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"supplier_payment_records"> | Date | string
   }
 
   export type supplier_inventory_itemsWhereInput = {
@@ -32792,6 +35044,104 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type supplier_invoice_recordsCreateInput = {
+    localId: string
+    payload: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt: Date | string
+  }
+
+  export type supplier_invoice_recordsUncheckedCreateInput = {
+    localId: string
+    payload: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt: Date | string
+  }
+
+  export type supplier_invoice_recordsUpdateInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_invoice_recordsUncheckedUpdateInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_invoice_recordsCreateManyInput = {
+    localId: string
+    payload: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt: Date | string
+  }
+
+  export type supplier_invoice_recordsUpdateManyMutationInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_invoice_recordsUncheckedUpdateManyInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_payment_recordsCreateInput = {
+    localId: string
+    payload: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt: Date | string
+  }
+
+  export type supplier_payment_recordsUncheckedCreateInput = {
+    localId: string
+    payload: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt: Date | string
+  }
+
+  export type supplier_payment_recordsUpdateInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_payment_recordsUncheckedUpdateInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_payment_recordsCreateManyInput = {
+    localId: string
+    payload: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt: Date | string
+  }
+
+  export type supplier_payment_recordsUpdateManyMutationInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_payment_recordsUncheckedUpdateManyInput = {
+    localId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type supplier_inventory_itemsCreateInput = {
     id: string
     itemName: string
@@ -34347,6 +36697,44 @@ export namespace Prisma {
   }
 
   export type supplier_grn_recordsMinOrderByAggregateInput = {
+    localId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_invoice_recordsCountOrderByAggregateInput = {
+    localId?: SortOrder
+    payload?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_invoice_recordsMaxOrderByAggregateInput = {
+    localId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_invoice_recordsMinOrderByAggregateInput = {
+    localId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_payment_recordsCountOrderByAggregateInput = {
+    localId?: SortOrder
+    payload?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_payment_recordsMaxOrderByAggregateInput = {
+    localId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_payment_recordsMinOrderByAggregateInput = {
     localId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder

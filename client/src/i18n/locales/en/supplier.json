@@ -56,9 +56,10 @@
     "actions": {
       "back": "Back",
       "view": "View",
-      "submit": "Submit invoice"
+      "submit": "Submit invoice",
+      "resubmit": "Resubmit invoice"
     },
-    "status": { "draft": "Draft", "submitted": "Submitted" },
+    "status": { "draft": "Draft", "submitted": "Submitted", "approved": "Approved", "rejected": "Rejected" },
     "labels": { "pending": "Pending invoice" },
     "fields": {
       "invoiceNumber": "Invoice number",
@@ -77,6 +78,8 @@
     "detail": {
       "title": "Supplier Invoice Details",
       "information": "Invoice information",
+      "rejectionTitle": "Finance review",
+      "noRejectionReason": "No reason provided.",
       "items": "Invoice items",
       "itemsHint": "Review the received items and enter the supplier invoice details before submitting.",
       "submitInformation": "Submit invoice"

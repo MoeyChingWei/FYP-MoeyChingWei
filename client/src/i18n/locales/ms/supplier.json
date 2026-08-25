@@ -54,9 +54,10 @@
     "actions": {
       "back": "Kembali",
       "view": "Lihat",
-      "submit": "Hantar invois"
+      "submit": "Hantar invois",
+      "resubmit": "Hantar semula invois"
     },
-    "status": { "draft": "Draf", "submitted": "Dihantar" },
+    "status": { "draft": "Draf", "submitted": "Dihantar", "approved": "Diluluskan", "rejected": "Ditolak" },
     "labels": { "pending": "Invois belum lengkap" },
     "fields": {
       "invoiceNumber": "Nombor invois",
@@ -75,6 +76,8 @@
     "detail": {
       "title": "Butiran Invois Pembekal",
       "information": "Maklumat invois",
+      "rejectionTitle": "Ulasan Finance",
+      "noRejectionReason": "Tiada sebab diberikan.",
       "items": "Item invois",
       "itemsHint": "Semak item yang telah diterima dan masukkan maklumat invois pembekal sebelum menghantar.",
       "submitInformation": "Hantar invois"

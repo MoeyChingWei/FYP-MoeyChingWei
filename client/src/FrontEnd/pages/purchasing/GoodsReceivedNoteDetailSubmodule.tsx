@@ -178,6 +178,11 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
 
   const onReceived = (): void => {
     if (!row) return;
+    if (row.status !== "PENDING_GRN") return;
+    if (!row.poNumber || !row.deliveryLocalId || !row.items.length) {
+      message.error("This GRN is missing the purchase order, delivery link or received items");
+      return;
+    }
     const completedRow: SupplierGrnRecord = {
       ...row,
       status: "RECEIVED",

@@ -34,6 +34,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
 
   return (
     <Card
+      className="budgetUsageCard"
       title={
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>Budget Usage - {usage.department.name}</span>
@@ -45,7 +46,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
       loading={loading}
     >
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={6}>
           <Statistic
             title="Allocated"
             value={usage.allocatedAmount}
@@ -53,7 +54,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
             prefix="$"
           />
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Statistic
             title="Spent"
             value={usage.spentAmount}
@@ -62,7 +63,16 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
             styles={{ content: { color: usage.status === "exceeded" ? "#ff4d4f" : undefined } }}
           />
         </Col>
-        <Col span={8}>
+        <Col span={6}>
+          <Statistic
+            title="Reserved"
+            value={usage.reservedAmount}
+            precision={2}
+            prefix="$"
+            styles={{ content: { color: "#fa8c16" } }}
+          />
+        </Col>
+        <Col span={6}>
           <Statistic
             title="Remaining"
             value={usage.remainingAmount}

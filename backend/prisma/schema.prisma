@@ -314,6 +314,26 @@ model supplier_grn_records {
   @@index([updatedAt])
 }
 
+model supplier_invoice_records {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model supplier_payment_records {
+  localId   String   @id
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
 model supplier_inventory_items {
   id           String   @id
   supplierId   Int

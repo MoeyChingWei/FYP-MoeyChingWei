@@ -56,9 +56,10 @@
     "actions": {
       "back": "返回",
       "view": "查看",
-      "submit": "提交发票"
+      "submit": "提交发票",
+      "resubmit": "重新提交发票"
     },
-    "status": { "draft": "草稿", "submitted": "已提交" },
+    "status": { "draft": "草稿", "submitted": "已提交", "approved": "已批准", "rejected": "已拒绝" },
     "labels": { "pending": "待填写发票" },
     "fields": {
       "invoiceNumber": "发票号码",
@@ -77,6 +78,8 @@
     "detail": {
       "title": "供应商发票详情",
       "information": "发票信息",
+      "rejectionTitle": "Finance 审核意见",
+      "noRejectionReason": "未提供原因。",
       "items": "发票物品",
       "itemsHint": "请确认已收货物品，并填写供应商发票资料后提交。",
       "submitInformation": "提交发票"

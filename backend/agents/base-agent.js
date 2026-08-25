@@ -57,7 +57,16 @@ class BaseAgent {
   /**
    * Standard chat interface (with logging and error handling)
    */
-  async chat({ userId, message, sessionId, systemPromptAddition = '', availableTools, maxTokens, temperature }) {
+  async chat({
+    userId,
+    message,
+    sessionId,
+    systemPromptAddition = '',
+    availableTools,
+    maxTokens,
+    temperature,
+    persistHistory = true,
+  }) {
     const startTime = Date.now();
 
     try {
@@ -78,11 +87,12 @@ class BaseAgent {
         };
       }
 
-      // 2. Ensure the session exists
-      await this.ensureSession(sessionId, userId);
-
-      // 3. Load session history (with token limit)
-      const history = await this.loadSessionHistory(sessionId);
+      // Internal agent calls can run without creating a user-visible chat session.
+      let history = [];
+      if (persistHistory) {
+        await this.ensureSession(sessionId, userId);
+        history = await this.loadSessionHistory(sessionId);
+      }
 
       // 4. Build the system prompt
       const systemPrompt = `${this.buildSystemPrompt(user)}${systemPromptAddition}`;
@@ -107,20 +117,22 @@ class BaseAgent {
         ...(temperature !== undefined ? { temperature } : {}),
       });
 
-      // 7. Save chat history
-      await this.saveMessage(sessionId, 'user', message);
+      if (persistHistory) {
+        // Save user-visible chat history only for regular conversations.
+        await this.saveMessage(sessionId, 'user', message);
 
-      if (response.success) {
-        await this.saveMessage(sessionId, 'assistant', response.content);
-      }
+        if (response.success) {
+          await this.saveMessage(sessionId, 'assistant', response.content);
+        }
 
-      // 8. Auto-generate a title if this is the first message
-      if (history.length === 0) {
-        try {
-          await this.generateSessionTitle(sessionId, message);
-        } catch (error) {
-          // Title generation failure doesn't affect the main flow
-          logger.warn('TitleGeneration', `Failed for session ${sessionId}: ${error.message}`);
+        // Auto-generate a title if this is the first message.
+        if (history.length === 0) {
+          try {
+            await this.generateSessionTitle(sessionId, message);
+          } catch (error) {
+            // Title generation failure doesn't affect the main flow
+            logger.warn('TitleGeneration', `Failed for session ${sessionId}: ${error.message}`);
+          }
         }
       }
 

@@ -5,6 +5,7 @@ import {
   CheckOutlined,
   CloseOutlined,
   DownOutlined,
+  ExpandOutlined,
   FileExcelOutlined,
   FilePdfOutlined,
   FileTextOutlined,
@@ -50,6 +51,11 @@ interface AgentSession {
   _count?: { messages: number };
 }
 
+interface ChatBotPageProps {
+  embedded?: boolean;
+  onClose?: () => void;
+}
+
 const AGENT_COLORS: Record<string, string> = {
   chatbot: '#1677ff',
   purchase: '#389e0d',
@@ -59,7 +65,7 @@ const AGENT_COLORS: Record<string, string> = {
   document: '#db2777',
 };
 
-const ChatBotPage: React.FC = () => {
+const ChatBotPage: React.FC<ChatBotPageProps> = ({ embedded = false, onClose }) => {
   const sessionUser = getSessionUser();
   const userId = sessionUser?.id;
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -443,7 +449,7 @@ const ChatBotPage: React.FC = () => {
 
   if (!userId) {
     return (
-      <div className="assistant-hub assistant-hub-status">
+      <div className={`assistant-hub assistant-hub-status${embedded ? ' assistant-hub-embedded' : ''}`}>
         <Alert type="warning" showIcon message="Sign in to start an AI conversation" />
       </div>
     );
@@ -608,9 +614,76 @@ const ChatBotPage: React.FC = () => {
     </div>
   ) : null;
 
+  if (embedded) {
+    const popupMessages = messages.length > 0
+      ? messages
+      : [{ role: 'assistant' as const, content: "Hello! I'm OptiMind AI Assistant. How can I help you today?", timestamp: new Date() }];
+
+    return (
+      <div className="assistant-popup-layout">
+        <header className="assistant-popup-header">
+          <strong><RobotOutlined /> OptiMind AI Assistant</strong>
+          <div className="assistant-popup-header-actions">
+            <Button type="text" icon={<PlusOutlined />} onClick={handleNewChat}>New Chat</Button>
+            <Button type="text" icon={<ExpandOutlined />} onClick={() => window.location.assign('/chatbot')} aria-label="Open full chat" />
+            <Button type="text" icon={<CloseOutlined />} onClick={onClose} aria-label="Close chat" />
+          </div>
+        </header>
+        <div className="assistant-popup-messages">
+          <MessageList messages={popupMessages} onOptionClick={(option) => void sendMessage(option)} />
+          <div ref={messagesEndRef} />
+        </div>
+        <div className="assistant-popup-composer">
+          {loading && <div className="assistant-thinking"><Spin size="small" /> {agentName} is thinking...</div>}
+          {uploadingFiles && <div className="assistant-thinking"><Spin size="small" /> Uploading files...</div>}
+          {queuedFiles}
+          <div
+            className={`assistant-popup-input-row${isDraggingFiles ? ' assistant-drag-over' : ''}`}
+            onDragEnter={handleFileDragEnter}
+            onDragOver={handleFileDragOver}
+            onDragLeave={handleFileDragLeave}
+            onDrop={handleFileDrop}
+          >
+            <Button
+              type="text"
+              shape="circle"
+              icon={<PaperClipOutlined />}
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Attach files"
+            />
+            {composerTools}
+            <Input.TextArea
+              value={inputValue}
+              onChange={(event) => setInputValue(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault();
+                  void sendMessage();
+                }
+              }}
+              placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              disabled={loading || uploadingFiles}
+              variant="borderless"
+            />
+            <VoiceInput onTranscript={(text) => setInputValue((current) => current ? `${current} ${text}` : text)} disabled={loading || uploadingFiles} />
+            <Button
+              type="primary"
+              icon={loading ? <Spin size="small" /> : <SendOutlined />}
+              onClick={() => void sendMessage()}
+              disabled={(!inputValue.trim() && selectedFiles.length === 0) || loading || uploadingFiles}
+              aria-label="Send message"
+            />
+          </div>
+          {agentModePanelRow}
+        </div>
+      </div>
+    );
+  }
+
   if (!currentSessionId) {
     return (
-      <div className="assistant-hub">
+      <div className={`assistant-hub${embedded ? ' assistant-hub-embedded' : ''}`}>
         <div className="assistant-hub-welcome">
           <div className="assistant-hub-title">
             <RobotOutlined />
@@ -760,7 +833,7 @@ const ChatBotPage: React.FC = () => {
   }
 
   return (
-    <div className="assistant-hub assistant-conversation-page">
+    <div className={`assistant-hub assistant-conversation-page${embedded ? ' assistant-hub-embedded' : ''}`}>
       <aside className="assistant-session-sidebar">
         <Button icon={<PlusOutlined />} type="primary" block onClick={handleNewChat}>
           New chat
