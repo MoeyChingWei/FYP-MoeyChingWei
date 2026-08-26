@@ -5,6 +5,8 @@ import {
   Card,
   Descriptions,
   Flex,
+  Form,
+  Input,
   Space,
   Spin,
   Typography,
@@ -20,6 +22,8 @@ import {
   type SessionUser,
 } from "../shared/auth/session";
 import { API_ROOT } from "../shared/api/base";
+import { getSupplierBankDetails, saveSupplierBankDetails, type SupplierBankDetails } from "../shared/api/supplierFinance";
+import { UserRole } from "../shared/types/roles";
 import styles from "./Profile.module.css";
 
 const { Title, Text } = Typography;
@@ -53,6 +57,8 @@ export default function Profile(): React.ReactElement {
   const [user, setUser] = useState<SessionUser | null>(() => getSessionUser());
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [savingBankDetails, setSavingBankDetails] = useState(false);
+  const [bankForm] = Form.useForm<SupplierBankDetails>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchProfileFromServer = async () => {
@@ -87,6 +93,25 @@ export default function Profile(): React.ReactElement {
     void fetchProfileFromServer();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (user?.role !== UserRole.SUPPLIER) return;
+    void getSupplierBankDetails().then((details) => bankForm.setFieldsValue(details)).catch(() => {
+      // A missing bank-information migration should not prevent profile use.
+    });
+  }, [bankForm, user?.role]);
+
+  const onSaveBankDetails = async (values: SupplierBankDetails): Promise<void> => {
+    setSavingBankDetails(true);
+    try {
+      await saveSupplierBankDetails(values);
+      message.success("Bank details updated");
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Unable to save bank details");
+    } finally {
+      setSavingBankDetails(false);
+    }
+  };
 
   const displayName = user?.name ?? user?.email ?? "User";
   const avatarSrc =
@@ -190,6 +215,14 @@ export default function Profile(): React.ReactElement {
             </div>
           </Space>
         </Card>
+        {user?.role === UserRole.SUPPLIER ? <Card title="Bank information">
+          <Form form={bankForm} layout="vertical" onFinish={(values) => void onSaveBankDetails(values)}>
+            <Form.Item name="bankName" label="Bank name"><Input maxLength={120} /></Form.Item>
+            <Form.Item name="accountName" label="Account name"><Input maxLength={120} /></Form.Item>
+            <Form.Item name="accountNumber" label="Account number" rules={[{ pattern: /^[A-Za-z0-9 -]*$/, message: "Use letters, numbers, spaces or hyphens only" }]}><Input maxLength={50} /></Form.Item>
+            <Button type="primary" htmlType="submit" loading={savingBankDetails}>Save bank information</Button>
+          </Form>
+        </Card> : null}
       </Flex>
     </Spin>
   );

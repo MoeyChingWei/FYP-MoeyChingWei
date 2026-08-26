@@ -9,6 +9,7 @@ import {
   isWorkflowSyncEnabled,
   queueWorkflowRowsSave,
 } from "../../shared/api/workflowStorage";
+import { loadSupplierFinanceInvoices, loadSupplierFinancePayments } from "../../shared/api/supplierFinance";
 
 export type OrderAcknowledgementStatus =
   | "PENDING_ORDER_ACKNOWLEDGE"
@@ -125,11 +126,13 @@ export interface SupplierInvoiceRecord {
   supplierId?: number;
   supplierName?: string;
   supplierCompanyName?: string;
+  supplierLogo?: string;
   supplierEmail?: string;
   supplierAddress?: string;
   currency: string;
   paymentTerms?: string;
   companyName?: string;
+  companyLogo?: string;
   companyAddress: string;
   status: SupplierInvoiceStatus;
   items: DraftLineItem[];
@@ -143,6 +146,13 @@ export interface SupplierInvoiceRecord {
   reviewedDate?: string;
   reviewedBy?: string;
   rejectionReason?: string;
+  rejectedDate?: string;
+  rejectedBy?: string;
+  approvedDate?: string;
+  approvedBy?: string;
+  bankDetails?: { bankName?: string; accountName?: string; accountNumber?: string };
+  approvalHistory?: Array<{ action: string; by: string; role?: string; date: string; reason?: string }>;
+  invoicePdf?: { filename: string; path: string };
 }
 
 export interface SupplierPaymentRecord {
@@ -169,6 +179,9 @@ export interface SupplierPaymentRecord {
   attachmentName?: string;
   attachmentType?: string;
   attachmentDataUrl?: string;
+  bankDetails?: { bankName?: string; accountName?: string; accountNumber?: string };
+  paymentHistory?: Array<{ action: string; by: string; date: string; transactionReference?: string }>;
+  paymentAdvicePdf?: { filename: string; path: string };
 }
 
 const ORDER_ACKS_KEY = "erp_supplier_order_acks_v1";
@@ -179,8 +192,6 @@ const PAYMENTS_KEY = "erp_supplier_payments_v1";
 const ORDER_ACKS_STORE = "supplier-order-acks";
 const DELIVERIES_STORE = "deliveries";
 const GRNS_STORE = "grns";
-const INVOICES_STORE = "supplier-invoices";
-const PAYMENTS_STORE = "supplier-payments";
 let supplierOrderAcknowledgementCache: SupplierOrderAcknowledgementRecord[] = [];
 let supplierDeliveryCache: SupplierDeliveryRecord[] = [];
 let supplierGrnCache: SupplierGrnRecord[] = [];
@@ -201,6 +212,38 @@ function mergeByLocalId<T extends { localId: string }>(localRows: T[], remoteRow
   for (const row of localRows) {
     merged.set(row.localId, row);
   }
+  return Array.from(merged.values());
+}
+
+// Payment status is changed transactionally on the server. Prefer that value
+// during hydration so an old localStorage snapshot cannot move a paid payment
+// back into the pending list. Local-only rows are retained for first sync.
+function mergePaymentsByLocalId(
+  localRows: SupplierPaymentRecord[],
+  remoteRows: SupplierPaymentRecord[],
+): SupplierPaymentRecord[] {
+  if (!localRows.length) return [...remoteRows];
+  if (!remoteRows.length) return [...localRows];
+
+  const merged = new Map<string, SupplierPaymentRecord>();
+  for (const row of localRows) merged.set(row.localId, row);
+  for (const row of remoteRows) merged.set(row.localId, row);
+  return Array.from(merged.values());
+}
+
+// Invoice approval is performed transactionally on the server. Prefer the
+// server row during hydration so an old localStorage snapshot cannot show an
+// already-approved invoice as SUBMITTED and offer a duplicate approval.
+function mergeInvoicesByLocalId(
+  localRows: SupplierInvoiceRecord[],
+  remoteRows: SupplierInvoiceRecord[],
+): SupplierInvoiceRecord[] {
+  if (!localRows.length) return [...remoteRows];
+  if (!remoteRows.length) return [...localRows];
+
+  const merged = new Map<string, SupplierInvoiceRecord>();
+  for (const row of localRows) merged.set(row.localId, row);
+  for (const row of remoteRows) merged.set(row.localId, row);
   return Array.from(merged.values());
 }
 
@@ -454,9 +497,6 @@ export function loadSupplierInvoices(): SupplierInvoiceRecord[] {
 
 export function saveSupplierInvoices(rows: SupplierInvoiceRecord[]): void {
   saveStoredArray(INVOICES_KEY, "erp-supplier-invoices", rows);
-  queueWorkflowRowsSave(INVOICES_STORE, rows, () => {
-    window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", { detail: { store: INVOICES_STORE } }));
-  });
 }
 
 export function appendSupplierInvoice(row: SupplierInvoiceRecord): void {
@@ -479,9 +519,6 @@ export function loadSupplierPayments(): SupplierPaymentRecord[] {
 
 export function saveSupplierPayments(rows: SupplierPaymentRecord[]): void {
   saveStoredArray(PAYMENTS_KEY, "erp-supplier-payments", rows);
-  queueWorkflowRowsSave(PAYMENTS_STORE, rows, () => {
-    window.dispatchEvent(new CustomEvent("erp-workflow-sync-error", { detail: { store: PAYMENTS_STORE } }));
-  });
 }
 
 export function updateSupplierPayment(
@@ -513,11 +550,13 @@ export function createSupplierInvoiceFromGrn(row: SupplierGrnRecord): SupplierIn
     supplierId: row.supplierId,
     supplierName: row.supplierName,
     supplierCompanyName: row.supplierCompanyName,
+    supplierLogo: row.supplierLogo,
     supplierEmail: row.supplierEmail,
     supplierAddress: row.supplierAddress,
     currency: row.currency,
     paymentTerms: row.paymentTerms,
     companyName: row.companyName,
+    companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
     status: "DRAFT",
     items: row.items.map((item) => ({ ...item })),
@@ -733,11 +772,8 @@ export async function hydrateSupplierInvoices(): Promise<SupplierInvoiceRecord[]
   const localRows = readLocalRows<SupplierInvoiceRecord>(INVOICES_KEY);
   if (localRows.length) supplierInvoiceCache = [...localRows];
   try {
-    const remoteRows = localRows.length
-      ? await fetchWorkflowRows<SupplierInvoiceRecord>(INVOICES_STORE, 200)
-      : await fetchWorkflowRowsForRecovery<SupplierInvoiceRecord>(INVOICES_STORE);
-    const pendingRows = getPendingWorkflowRows<SupplierInvoiceRecord>(INVOICES_STORE);
-    const rows = pendingRows ?? (isWorkflowSyncEnabled() ? remoteRows : mergeByLocalId(localRows, remoteRows));
+    const remoteRows = await loadSupplierFinanceInvoices();
+    const rows = mergeInvoicesByLocalId(localRows, remoteRows);
     supplierInvoiceCache = rows;
     try { window.localStorage.setItem(INVOICES_KEY, JSON.stringify(rows)); } catch { /* best effort */ }
     return rows;
@@ -750,11 +786,8 @@ export async function hydrateSupplierPayments(): Promise<SupplierPaymentRecord[]
   const localRows = readLocalRows<SupplierPaymentRecord>(PAYMENTS_KEY);
   if (localRows.length) supplierPaymentCache = [...localRows];
   try {
-    const remoteRows = localRows.length
-      ? await fetchWorkflowRows<SupplierPaymentRecord>(PAYMENTS_STORE, 200)
-      : await fetchWorkflowRowsForRecovery<SupplierPaymentRecord>(PAYMENTS_STORE);
-    const pendingRows = getPendingWorkflowRows<SupplierPaymentRecord>(PAYMENTS_STORE);
-    const rows = pendingRows ?? (isWorkflowSyncEnabled() ? remoteRows : mergeByLocalId(localRows, remoteRows));
+    const remoteRows = await loadSupplierFinancePayments();
+    const rows = mergePaymentsByLocalId(localRows, remoteRows);
     supplierPaymentCache = rows;
     try { window.localStorage.setItem(PAYMENTS_KEY, JSON.stringify(rows)); } catch { /* best effort */ }
     return rows;

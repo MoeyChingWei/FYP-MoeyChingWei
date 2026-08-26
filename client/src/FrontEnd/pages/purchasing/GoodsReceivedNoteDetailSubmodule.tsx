@@ -32,6 +32,7 @@ import {
   type SupplierGrnRecord,
   updateSupplierGrn,
 } from "../../modules/supplierFulfillment/workflow";
+import { createSupplierInvoiceFromReceivedGrn } from "../../shared/api/supplierFinance";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
@@ -176,7 +177,7 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
 
   const row = useMemo(() => rows.find((item) => item.localId === localId), [localId, rows]);
 
-  const onReceived = (): void => {
+  const onReceived = async (): Promise<void> => {
     if (!row) return;
     if (row.status !== "PENDING_GRN") return;
     if (!row.poNumber || !row.deliveryLocalId || !row.items.length) {
@@ -190,7 +191,13 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
       discrepancyReason: undefined,
     };
     if (!loadSupplierInvoices().some((invoice) => invoice.grnLocalId === row.localId)) {
-      appendSupplierInvoice(createSupplierInvoiceFromGrn(completedRow));
+      try {
+        appendSupplierInvoice(await createSupplierInvoiceFromReceivedGrn(completedRow));
+      } catch (error) {
+        // Retain the offline workflow fallback; a later received-GRN attempt is idempotent on the server.
+        appendSupplierInvoice(createSupplierInvoiceFromGrn(completedRow));
+        message.warning(error instanceof Error ? `${error.message}. The draft will sync when the server is available.` : "The invoice draft will sync when the server is available.");
+      }
     }
     updateSupplierGrn(row.localId, (draft) => ({
       ...completedRow,
@@ -320,7 +327,7 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
             <Button danger icon={<CloseOutlined />} onClick={onDiscrepancy}>
               {t('grn.detail.actions.discrepancy')}
             </Button>
-            <Button type="primary" icon={<CheckOutlined />} onClick={onReceived}>
+            <Button type="primary" icon={<CheckOutlined />} onClick={() => void onReceived()}>
               {t('grn.detail.actions.received')}
             </Button>
           </div>

@@ -386,6 +386,16 @@ model users {
   role_change_audits                                                       role_change_audits[]
   sources                                                                  sources[]
   supplier_inventory_items                                                 supplier_inventory_items[]
+  supplier_bank_details                                                    supplier_bank_details?
+}
+
+model supplier_bank_details {
+  supplierId    Int      @id
+  bankName      String?
+  accountName   String?
+  accountNumber String?
+  updatedAt     DateTime @default(now())
+  users         users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 }
 
 enum Language {

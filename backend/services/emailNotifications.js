@@ -67,6 +67,43 @@ function normalizeItems(record = {}) {
     : (Array.isArray(record.lineItems) ? record.lineItems : []);
 }
 
+/** Convert remote item images to data URLs so email clients can render them. */
+async function hydrateEmailItemImages(record = {}) {
+  const items = normalizeItems(record);
+  if (!items.length || typeof fetch !== "function") return record;
+
+  const hydratedItems = await Promise.all(items.map(async (item) => {
+    const source = item.itemImageUrl || item.imageUrl || item.image || item.imageDataUrl;
+    if (!/^https?:\/\//i.test(String(source || ""))) return item;
+    try {
+      const signal = typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function"
+        ? AbortSignal.timeout(8000)
+        : undefined;
+      const response = await fetch(source, signal ? { signal } : undefined);
+      const contentType = String(response.headers.get("content-type") || "").split(";", 1)[0];
+      if (!response.ok || !/^image\//i.test(contentType)) return item;
+      const buffer = Buffer.from(await response.arrayBuffer());
+      if (!buffer.length || buffer.length > 8_000_000) return item;
+      return { ...item, itemImageUrl: `data:${contentType};base64,${buffer.toString("base64")}` };
+    } catch {
+      return item;
+    }
+  }));
+
+  const field = Array.isArray(record.items) ? "items" : (Array.isArray(record.lineItems) ? "lineItems" : null);
+  return field ? { ...record, [field]: hydratedItems } : record;
+}
+
+async function prepareEmailRecord(record = {}) {
+  let hydrated = record;
+  try {
+    hydrated = await hydrateWorkflowItemImages(record);
+  } catch (error) {
+    console.error("Workflow email item image hydration failed:", error?.message || error);
+  }
+  return hydrateEmailItemImages(hydrated);
+}
+
 function parseInlineImage(source, index, attachments) {
   const value = String(source || "");
   const match = value.match(/^data:([^;]+);base64,(.+)$/i);
@@ -93,7 +130,7 @@ function renderItems(record, currency = "MYR") {
     const unitPrice = formatMoney(item.unitPrice, currency);
     const tax = item.taxAmount != null ? formatMoney(item.taxAmount, currency) : "-";
     const amount = formatMoney(
-      item.amountAfterTax ?? item.amount ?? Number(item.quantity || 0) * Number(item.unitPrice || 0),
+      item.amountAfterTax ?? item.amount ?? item.lineTotal ?? Number(item.quantity || 0) * Number(item.unitPrice || 0),
       currency,
     );
     textLines.push(
@@ -118,7 +155,7 @@ function renderDetails(rows) {
   };
 }
 
-function renderEmailDocument({ title, intro, details = [], itemsRecord, total, action, footer = "Regards,\nOptiMind System" }) {
+export function renderEmailDocument({ title, intro, details = [], itemsRecord, total, action, footer = "Regards,\nOptiMind System" }) {
   const detailMarkup = renderDetails(details);
   const itemMarkup = itemsRecord ? renderItems(itemsRecord, itemsRecord.currency || "MYR") : { html: "", text: "", attachments: [] };
   const totalMarkup = total != null
@@ -285,6 +322,9 @@ export async function sendDetailedSupplierPendingOrderEmail(args) {
     companyName: record.companyName || "OptiMind",
     items: normalizeItems(record),
   };
+  // Legacy order records may only persist the linked inventory item id. Resolve
+  // the image before rendering the email body so it matches the PDF attachment.
+  const hydratedDocumentRecord = await prepareEmailRecord(documentRecord);
   const subject = `OptiMind - New Purchase Order Acknowledgement Request (${orderNo})`;
   const rendered = renderEmailDocument({
     title: subject,
@@ -300,7 +340,7 @@ export async function sendDetailedSupplierPendingOrderEmail(args) {
       ["Company", record.companyName || "OptiMind"],
       ["Company Address", record.companyAddress],
     ],
-    itemsRecord: documentRecord,
+    itemsRecord: hydratedDocumentRecord,
     total: record.totalAmount ?? record.total,
     action: "Please sign in to OptiMind to review and acknowledge this order.",
   });
@@ -313,7 +353,7 @@ export async function sendDetailedSupplierPendingOrderEmail(args) {
     attachments: rendered.attachments,
     document: {
       workflowType: "acknowledgement",
-      record: documentRecord,
+      record: hydratedDocumentRecord,
       pageTitle: "Order Acknowledgement",
       filename: `Purchase-Order-${orderNo}.pdf`,
     },
@@ -342,6 +382,7 @@ export async function sendDetailedSupplierDiscrepancyEmail(args) {
     discrepancyReason,
     items: normalizeItems(record),
   };
+  const hydratedDocumentRecord = await prepareEmailRecord(documentRecord);
   const subject = `OptiMind - Discrepancy Reported (${orderNo})`;
   const rendered = renderEmailDocument({
     title: subject,
@@ -353,7 +394,7 @@ export async function sendDetailedSupplierDiscrepancyEmail(args) {
       ["Supplier", supplierName],
       ["Description", discrepancyReason],
     ],
-    itemsRecord: documentRecord,
+    itemsRecord: hydratedDocumentRecord,
     action: "Please sign in to OptiMind to review this case and take the necessary follow-up action.",
   });
 
@@ -365,7 +406,7 @@ export async function sendDetailedSupplierDiscrepancyEmail(args) {
     attachments: rendered.attachments,
     document: {
       workflowType: "grn",
-      record: documentRecord,
+      record: hydratedDocumentRecord,
       pageTitle: "Discrepancy Report",
       filename: `Discrepancy-Report-${orderNo}.pdf`,
     },
@@ -457,35 +498,36 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
     requestDate: record.requestDate || record.createdDate,
     status: event,
   };
-  const config = purchaseStatusContent(kind, event, normalizedRecord);
+  const hydratedRecord = await prepareEmailRecord(normalizedRecord);
+  const config = purchaseStatusContent(kind, event, hydratedRecord);
   const isRequest = kind === "purchase-request";
-  const number = isRequest ? normalizedRecord.prNumber || "PR" : normalizedRecord.poNumber || "PO";
+  const number = isRequest ? hydratedRecord.prNumber || "PR" : hydratedRecord.poNumber || "PO";
   const details = isRequest
     ? [
         ["PR Number", number],
-        ["Requester", normalizedRecord.requesterName || normalizedRecord.requestBy || normalizedRecord.createdBy || normalizedRecord.sourceRequester],
-        ["Department", normalizedRecord.department],
-        ["Submitted Date", normalizedRecord.requestDate || normalizedRecord.createdDate],
-        ["Currency", normalizedRecord.currency],
+        ["Requester", hydratedRecord.requesterName || hydratedRecord.requestBy || hydratedRecord.createdBy || hydratedRecord.sourceRequester],
+        ["Department", hydratedRecord.department],
+        ["Submitted Date", hydratedRecord.requestDate || hydratedRecord.createdDate],
+        ["Currency", hydratedRecord.currency],
       ]
     : [
         ["PO Number", number],
-        ["Source PR Number", normalizedRecord.sourcePrNumber],
-        ["Requester", normalizedRecord.sourceRequester || normalizedRecord.requesterName],
-        ["Department", normalizedRecord.department],
-        ["Created Date", normalizedRecord.createdDate],
-        ["Currency", normalizedRecord.currency],
-        ["Payment Terms", normalizedRecord.paymentTerms],
-        ["Supplier", normalizedRecord.supplierCompanyName || normalizedRecord.supplierName],
-        ["Supplier Email", normalizedRecord.supplierEmail],
-        ["Supplier Address", normalizedRecord.supplierAddress],
+        ["Source PR Number", hydratedRecord.sourcePrNumber],
+        ["Requester", hydratedRecord.sourceRequester || hydratedRecord.requesterName],
+        ["Department", hydratedRecord.department],
+        ["Created Date", hydratedRecord.createdDate],
+        ["Currency", hydratedRecord.currency],
+        ["Payment Terms", hydratedRecord.paymentTerms],
+        ["Supplier", hydratedRecord.supplierCompanyName || hydratedRecord.supplierName],
+        ["Supplier Email", hydratedRecord.supplierEmail],
+        ["Supplier Address", hydratedRecord.supplierAddress],
       ];
   const rendered = renderEmailDocument({
     title: config.subject,
     intro: config.intro,
     details,
-    itemsRecord: config.includeItems ? normalizedRecord : null,
-    total: normalizedRecord.totalAmount ?? normalizedRecord.total ?? calculateItemsTotal(normalizedRecord),
+    itemsRecord: config.includeItems ? hydratedRecord : null,
+    total: hydratedRecord.totalAmount ?? hydratedRecord.total ?? calculateItemsTotal(hydratedRecord),
     action: config.action,
   });
 
@@ -498,7 +540,7 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
     document: config.attachPdf
       ? {
           workflowType: kind,
-          record: normalizedRecord,
+          record: hydratedRecord,
           pageTitle: isRequest ? "Purchase Request" : "Purchase Order",
           filename: `${isRequest ? "Purchase-Request" : "Purchase-Order"}-${number}.pdf`,
         }

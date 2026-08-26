@@ -138,6 +138,11 @@ export type supplier_order_acknowledgement_records = $Result.DefaultSelection<Pr
  * 
  */
 export type users = $Result.DefaultSelection<Prisma.$usersPayload>
+/**
+ * Model supplier_bank_details
+ * 
+ */
+export type supplier_bank_details = $Result.DefaultSelection<Prisma.$supplier_bank_detailsPayload>
 
 /**
  * Enums
@@ -523,6 +528,16 @@ export class PrismaClient<
     * ```
     */
   get users(): Prisma.usersDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supplier_bank_details`: Exposes CRUD operations for the **supplier_bank_details** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Supplier_bank_details
+    * const supplier_bank_details = await prisma.supplier_bank_details.findMany()
+    * ```
+    */
+  get supplier_bank_details(): Prisma.supplier_bank_detailsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -981,7 +996,8 @@ export namespace Prisma {
     supplier_payment_records: 'supplier_payment_records',
     supplier_inventory_items: 'supplier_inventory_items',
     supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
-    users: 'users'
+    users: 'users',
+    supplier_bank_details: 'supplier_bank_details'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -997,7 +1013,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users"
+      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users" | "supplier_bank_details"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2851,6 +2867,80 @@ export namespace Prisma {
           }
         }
       }
+      supplier_bank_details: {
+        payload: Prisma.$supplier_bank_detailsPayload<ExtArgs>
+        fields: Prisma.supplier_bank_detailsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.supplier_bank_detailsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.supplier_bank_detailsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>
+          }
+          findFirst: {
+            args: Prisma.supplier_bank_detailsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.supplier_bank_detailsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>
+          }
+          findMany: {
+            args: Prisma.supplier_bank_detailsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>[]
+          }
+          create: {
+            args: Prisma.supplier_bank_detailsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>
+          }
+          createMany: {
+            args: Prisma.supplier_bank_detailsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.supplier_bank_detailsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>[]
+          }
+          delete: {
+            args: Prisma.supplier_bank_detailsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>
+          }
+          update: {
+            args: Prisma.supplier_bank_detailsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>
+          }
+          deleteMany: {
+            args: Prisma.supplier_bank_detailsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.supplier_bank_detailsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.supplier_bank_detailsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>[]
+          }
+          upsert: {
+            args: Prisma.supplier_bank_detailsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_bank_detailsPayload>
+          }
+          aggregate: {
+            args: Prisma.Supplier_bank_detailsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupplier_bank_details>
+          }
+          groupBy: {
+            args: Prisma.supplier_bank_detailsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_bank_detailsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.supplier_bank_detailsCountArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_bank_detailsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2968,6 +3058,7 @@ export namespace Prisma {
     supplier_inventory_items?: supplier_inventory_itemsOmit
     supplier_order_acknowledgement_records?: supplier_order_acknowledgement_recordsOmit
     users?: usersOmit
+    supplier_bank_details?: supplier_bank_detailsOmit
   }
 
   /* Types for Logging */
@@ -30075,6 +30166,7 @@ export namespace Prisma {
     role_change_audits?: boolean | users$role_change_auditsArgs<ExtArgs>
     sources?: boolean | users$sourcesArgs<ExtArgs>
     supplier_inventory_items?: boolean | users$supplier_inventory_itemsArgs<ExtArgs>
+    supplier_bank_details?: boolean | users$supplier_bank_detailsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
 
@@ -30126,6 +30218,7 @@ export namespace Prisma {
     role_change_audits?: boolean | users$role_change_auditsArgs<ExtArgs>
     sources?: boolean | users$sourcesArgs<ExtArgs>
     supplier_inventory_items?: boolean | users$supplier_inventory_itemsArgs<ExtArgs>
+    supplier_bank_details?: boolean | users$supplier_bank_detailsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type usersIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -30144,6 +30237,7 @@ export namespace Prisma {
       role_change_audits: Prisma.$role_change_auditsPayload<ExtArgs>[]
       sources: Prisma.$sourcesPayload<ExtArgs>[]
       supplier_inventory_items: Prisma.$supplier_inventory_itemsPayload<ExtArgs>[]
+      supplier_bank_details: Prisma.$supplier_bank_detailsPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -30559,6 +30653,7 @@ export namespace Prisma {
     role_change_audits<T extends users$role_change_auditsArgs<ExtArgs> = {}>(args?: Subset<T, users$role_change_auditsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$role_change_auditsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sources<T extends users$sourcesArgs<ExtArgs> = {}>(args?: Subset<T, users$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$sourcesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supplier_inventory_items<T extends users$supplier_inventory_itemsArgs<ExtArgs> = {}>(args?: Subset<T, users$supplier_inventory_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_inventory_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supplier_bank_details<T extends users$supplier_bank_detailsArgs<ExtArgs> = {}>(args?: Subset<T, users$supplier_bank_detailsArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31225,6 +31320,25 @@ export namespace Prisma {
   }
 
   /**
+   * users.supplier_bank_details
+   */
+  export type users$supplier_bank_detailsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    where?: supplier_bank_detailsWhereInput
+  }
+
+  /**
    * users without action
    */
   export type usersDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -31240,6 +31354,1098 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: usersInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model supplier_bank_details
+   */
+
+  export type AggregateSupplier_bank_details = {
+    _count: Supplier_bank_detailsCountAggregateOutputType | null
+    _avg: Supplier_bank_detailsAvgAggregateOutputType | null
+    _sum: Supplier_bank_detailsSumAggregateOutputType | null
+    _min: Supplier_bank_detailsMinAggregateOutputType | null
+    _max: Supplier_bank_detailsMaxAggregateOutputType | null
+  }
+
+  export type Supplier_bank_detailsAvgAggregateOutputType = {
+    supplierId: number | null
+  }
+
+  export type Supplier_bank_detailsSumAggregateOutputType = {
+    supplierId: number | null
+  }
+
+  export type Supplier_bank_detailsMinAggregateOutputType = {
+    supplierId: number | null
+    bankName: string | null
+    accountName: string | null
+    accountNumber: string | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_bank_detailsMaxAggregateOutputType = {
+    supplierId: number | null
+    bankName: string | null
+    accountName: string | null
+    accountNumber: string | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_bank_detailsCountAggregateOutputType = {
+    supplierId: number
+    bankName: number
+    accountName: number
+    accountNumber: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type Supplier_bank_detailsAvgAggregateInputType = {
+    supplierId?: true
+  }
+
+  export type Supplier_bank_detailsSumAggregateInputType = {
+    supplierId?: true
+  }
+
+  export type Supplier_bank_detailsMinAggregateInputType = {
+    supplierId?: true
+    bankName?: true
+    accountName?: true
+    accountNumber?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_bank_detailsMaxAggregateInputType = {
+    supplierId?: true
+    bankName?: true
+    accountName?: true
+    accountNumber?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_bank_detailsCountAggregateInputType = {
+    supplierId?: true
+    bankName?: true
+    accountName?: true
+    accountNumber?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type Supplier_bank_detailsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_bank_details to aggregate.
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_bank_details to fetch.
+     */
+    orderBy?: supplier_bank_detailsOrderByWithRelationInput | supplier_bank_detailsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: supplier_bank_detailsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_bank_details from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_bank_details.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned supplier_bank_details
+    **/
+    _count?: true | Supplier_bank_detailsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Supplier_bank_detailsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Supplier_bank_detailsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Supplier_bank_detailsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Supplier_bank_detailsMaxAggregateInputType
+  }
+
+  export type GetSupplier_bank_detailsAggregateType<T extends Supplier_bank_detailsAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupplier_bank_details]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupplier_bank_details[P]>
+      : GetScalarType<T[P], AggregateSupplier_bank_details[P]>
+  }
+
+
+
+
+  export type supplier_bank_detailsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: supplier_bank_detailsWhereInput
+    orderBy?: supplier_bank_detailsOrderByWithAggregationInput | supplier_bank_detailsOrderByWithAggregationInput[]
+    by: Supplier_bank_detailsScalarFieldEnum[] | Supplier_bank_detailsScalarFieldEnum
+    having?: supplier_bank_detailsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Supplier_bank_detailsCountAggregateInputType | true
+    _avg?: Supplier_bank_detailsAvgAggregateInputType
+    _sum?: Supplier_bank_detailsSumAggregateInputType
+    _min?: Supplier_bank_detailsMinAggregateInputType
+    _max?: Supplier_bank_detailsMaxAggregateInputType
+  }
+
+  export type Supplier_bank_detailsGroupByOutputType = {
+    supplierId: number
+    bankName: string | null
+    accountName: string | null
+    accountNumber: string | null
+    updatedAt: Date
+    _count: Supplier_bank_detailsCountAggregateOutputType | null
+    _avg: Supplier_bank_detailsAvgAggregateOutputType | null
+    _sum: Supplier_bank_detailsSumAggregateOutputType | null
+    _min: Supplier_bank_detailsMinAggregateOutputType | null
+    _max: Supplier_bank_detailsMaxAggregateOutputType | null
+  }
+
+  type GetSupplier_bank_detailsGroupByPayload<T extends supplier_bank_detailsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Supplier_bank_detailsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Supplier_bank_detailsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Supplier_bank_detailsGroupByOutputType[P]>
+            : GetScalarType<T[P], Supplier_bank_detailsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type supplier_bank_detailsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    supplierId?: boolean
+    bankName?: boolean
+    accountName?: boolean
+    accountNumber?: boolean
+    updatedAt?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplier_bank_details"]>
+
+  export type supplier_bank_detailsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    supplierId?: boolean
+    bankName?: boolean
+    accountName?: boolean
+    accountNumber?: boolean
+    updatedAt?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplier_bank_details"]>
+
+  export type supplier_bank_detailsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    supplierId?: boolean
+    bankName?: boolean
+    accountName?: boolean
+    accountNumber?: boolean
+    updatedAt?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplier_bank_details"]>
+
+  export type supplier_bank_detailsSelectScalar = {
+    supplierId?: boolean
+    bankName?: boolean
+    accountName?: boolean
+    accountNumber?: boolean
+    updatedAt?: boolean
+  }
+
+  export type supplier_bank_detailsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"supplierId" | "bankName" | "accountName" | "accountNumber" | "updatedAt", ExtArgs["result"]["supplier_bank_details"]>
+  export type supplier_bank_detailsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type supplier_bank_detailsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type supplier_bank_detailsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $supplier_bank_detailsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "supplier_bank_details"
+    objects: {
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      supplierId: number
+      bankName: string | null
+      accountName: string | null
+      accountNumber: string | null
+      updatedAt: Date
+    }, ExtArgs["result"]["supplier_bank_details"]>
+    composites: {}
+  }
+
+  type supplier_bank_detailsGetPayload<S extends boolean | null | undefined | supplier_bank_detailsDefaultArgs> = $Result.GetResult<Prisma.$supplier_bank_detailsPayload, S>
+
+  type supplier_bank_detailsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<supplier_bank_detailsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Supplier_bank_detailsCountAggregateInputType | true
+    }
+
+  export interface supplier_bank_detailsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['supplier_bank_details'], meta: { name: 'supplier_bank_details' } }
+    /**
+     * Find zero or one Supplier_bank_details that matches the filter.
+     * @param {supplier_bank_detailsFindUniqueArgs} args - Arguments to find a Supplier_bank_details
+     * @example
+     * // Get one Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends supplier_bank_detailsFindUniqueArgs>(args: SelectSubset<T, supplier_bank_detailsFindUniqueArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Supplier_bank_details that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {supplier_bank_detailsFindUniqueOrThrowArgs} args - Arguments to find a Supplier_bank_details
+     * @example
+     * // Get one Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends supplier_bank_detailsFindUniqueOrThrowArgs>(args: SelectSubset<T, supplier_bank_detailsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_bank_details that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_bank_detailsFindFirstArgs} args - Arguments to find a Supplier_bank_details
+     * @example
+     * // Get one Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends supplier_bank_detailsFindFirstArgs>(args?: SelectSubset<T, supplier_bank_detailsFindFirstArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_bank_details that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_bank_detailsFindFirstOrThrowArgs} args - Arguments to find a Supplier_bank_details
+     * @example
+     * // Get one Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends supplier_bank_detailsFindFirstOrThrowArgs>(args?: SelectSubset<T, supplier_bank_detailsFindFirstOrThrowArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Supplier_bank_details that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_bank_detailsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.findMany()
+     * 
+     * // Get first 10 Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.findMany({ take: 10 })
+     * 
+     * // Only select the `supplierId`
+     * const supplier_bank_detailsWithSupplierIdOnly = await prisma.supplier_bank_details.findMany({ select: { supplierId: true } })
+     * 
+     */
+    findMany<T extends supplier_bank_detailsFindManyArgs>(args?: SelectSubset<T, supplier_bank_detailsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Supplier_bank_details.
+     * @param {supplier_bank_detailsCreateArgs} args - Arguments to create a Supplier_bank_details.
+     * @example
+     * // Create one Supplier_bank_details
+     * const Supplier_bank_details = await prisma.supplier_bank_details.create({
+     *   data: {
+     *     // ... data to create a Supplier_bank_details
+     *   }
+     * })
+     * 
+     */
+    create<T extends supplier_bank_detailsCreateArgs>(args: SelectSubset<T, supplier_bank_detailsCreateArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Supplier_bank_details.
+     * @param {supplier_bank_detailsCreateManyArgs} args - Arguments to create many Supplier_bank_details.
+     * @example
+     * // Create many Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends supplier_bank_detailsCreateManyArgs>(args?: SelectSubset<T, supplier_bank_detailsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Supplier_bank_details and returns the data saved in the database.
+     * @param {supplier_bank_detailsCreateManyAndReturnArgs} args - Arguments to create many Supplier_bank_details.
+     * @example
+     * // Create many Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Supplier_bank_details and only return the `supplierId`
+     * const supplier_bank_detailsWithSupplierIdOnly = await prisma.supplier_bank_details.createManyAndReturn({
+     *   select: { supplierId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends supplier_bank_detailsCreateManyAndReturnArgs>(args?: SelectSubset<T, supplier_bank_detailsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Supplier_bank_details.
+     * @param {supplier_bank_detailsDeleteArgs} args - Arguments to delete one Supplier_bank_details.
+     * @example
+     * // Delete one Supplier_bank_details
+     * const Supplier_bank_details = await prisma.supplier_bank_details.delete({
+     *   where: {
+     *     // ... filter to delete one Supplier_bank_details
+     *   }
+     * })
+     * 
+     */
+    delete<T extends supplier_bank_detailsDeleteArgs>(args: SelectSubset<T, supplier_bank_detailsDeleteArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Supplier_bank_details.
+     * @param {supplier_bank_detailsUpdateArgs} args - Arguments to update one Supplier_bank_details.
+     * @example
+     * // Update one Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends supplier_bank_detailsUpdateArgs>(args: SelectSubset<T, supplier_bank_detailsUpdateArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Supplier_bank_details.
+     * @param {supplier_bank_detailsDeleteManyArgs} args - Arguments to filter Supplier_bank_details to delete.
+     * @example
+     * // Delete a few Supplier_bank_details
+     * const { count } = await prisma.supplier_bank_details.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends supplier_bank_detailsDeleteManyArgs>(args?: SelectSubset<T, supplier_bank_detailsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_bank_details.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_bank_detailsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends supplier_bank_detailsUpdateManyArgs>(args: SelectSubset<T, supplier_bank_detailsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_bank_details and returns the data updated in the database.
+     * @param {supplier_bank_detailsUpdateManyAndReturnArgs} args - Arguments to update many Supplier_bank_details.
+     * @example
+     * // Update many Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Supplier_bank_details and only return the `supplierId`
+     * const supplier_bank_detailsWithSupplierIdOnly = await prisma.supplier_bank_details.updateManyAndReturn({
+     *   select: { supplierId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends supplier_bank_detailsUpdateManyAndReturnArgs>(args: SelectSubset<T, supplier_bank_detailsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Supplier_bank_details.
+     * @param {supplier_bank_detailsUpsertArgs} args - Arguments to update or create a Supplier_bank_details.
+     * @example
+     * // Update or create a Supplier_bank_details
+     * const supplier_bank_details = await prisma.supplier_bank_details.upsert({
+     *   create: {
+     *     // ... data to create a Supplier_bank_details
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Supplier_bank_details we want to update
+     *   }
+     * })
+     */
+    upsert<T extends supplier_bank_detailsUpsertArgs>(args: SelectSubset<T, supplier_bank_detailsUpsertArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Supplier_bank_details.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_bank_detailsCountArgs} args - Arguments to filter Supplier_bank_details to count.
+     * @example
+     * // Count the number of Supplier_bank_details
+     * const count = await prisma.supplier_bank_details.count({
+     *   where: {
+     *     // ... the filter for the Supplier_bank_details we want to count
+     *   }
+     * })
+    **/
+    count<T extends supplier_bank_detailsCountArgs>(
+      args?: Subset<T, supplier_bank_detailsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Supplier_bank_detailsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Supplier_bank_details.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Supplier_bank_detailsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Supplier_bank_detailsAggregateArgs>(args: Subset<T, Supplier_bank_detailsAggregateArgs>): Prisma.PrismaPromise<GetSupplier_bank_detailsAggregateType<T>>
+
+    /**
+     * Group by Supplier_bank_details.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_bank_detailsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends supplier_bank_detailsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: supplier_bank_detailsGroupByArgs['orderBy'] }
+        : { orderBy?: supplier_bank_detailsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, supplier_bank_detailsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupplier_bank_detailsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the supplier_bank_details model
+   */
+  readonly fields: supplier_bank_detailsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for supplier_bank_details.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__supplier_bank_detailsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the supplier_bank_details model
+   */
+  interface supplier_bank_detailsFieldRefs {
+    readonly supplierId: FieldRef<"supplier_bank_details", 'Int'>
+    readonly bankName: FieldRef<"supplier_bank_details", 'String'>
+    readonly accountName: FieldRef<"supplier_bank_details", 'String'>
+    readonly accountNumber: FieldRef<"supplier_bank_details", 'String'>
+    readonly updatedAt: FieldRef<"supplier_bank_details", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * supplier_bank_details findUnique
+   */
+  export type supplier_bank_detailsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_bank_details to fetch.
+     */
+    where: supplier_bank_detailsWhereUniqueInput
+  }
+
+  /**
+   * supplier_bank_details findUniqueOrThrow
+   */
+  export type supplier_bank_detailsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_bank_details to fetch.
+     */
+    where: supplier_bank_detailsWhereUniqueInput
+  }
+
+  /**
+   * supplier_bank_details findFirst
+   */
+  export type supplier_bank_detailsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_bank_details to fetch.
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_bank_details to fetch.
+     */
+    orderBy?: supplier_bank_detailsOrderByWithRelationInput | supplier_bank_detailsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_bank_details.
+     */
+    cursor?: supplier_bank_detailsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_bank_details from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_bank_details.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_bank_details.
+     */
+    distinct?: Supplier_bank_detailsScalarFieldEnum | Supplier_bank_detailsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_bank_details findFirstOrThrow
+   */
+  export type supplier_bank_detailsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_bank_details to fetch.
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_bank_details to fetch.
+     */
+    orderBy?: supplier_bank_detailsOrderByWithRelationInput | supplier_bank_detailsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_bank_details.
+     */
+    cursor?: supplier_bank_detailsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_bank_details from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_bank_details.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_bank_details.
+     */
+    distinct?: Supplier_bank_detailsScalarFieldEnum | Supplier_bank_detailsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_bank_details findMany
+   */
+  export type supplier_bank_detailsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_bank_details to fetch.
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_bank_details to fetch.
+     */
+    orderBy?: supplier_bank_detailsOrderByWithRelationInput | supplier_bank_detailsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing supplier_bank_details.
+     */
+    cursor?: supplier_bank_detailsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_bank_details from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_bank_details.
+     */
+    skip?: number
+    distinct?: Supplier_bank_detailsScalarFieldEnum | Supplier_bank_detailsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_bank_details create
+   */
+  export type supplier_bank_detailsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a supplier_bank_details.
+     */
+    data: XOR<supplier_bank_detailsCreateInput, supplier_bank_detailsUncheckedCreateInput>
+  }
+
+  /**
+   * supplier_bank_details createMany
+   */
+  export type supplier_bank_detailsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many supplier_bank_details.
+     */
+    data: supplier_bank_detailsCreateManyInput | supplier_bank_detailsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * supplier_bank_details createManyAndReturn
+   */
+  export type supplier_bank_detailsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * The data used to create many supplier_bank_details.
+     */
+    data: supplier_bank_detailsCreateManyInput | supplier_bank_detailsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * supplier_bank_details update
+   */
+  export type supplier_bank_detailsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a supplier_bank_details.
+     */
+    data: XOR<supplier_bank_detailsUpdateInput, supplier_bank_detailsUncheckedUpdateInput>
+    /**
+     * Choose, which supplier_bank_details to update.
+     */
+    where: supplier_bank_detailsWhereUniqueInput
+  }
+
+  /**
+   * supplier_bank_details updateMany
+   */
+  export type supplier_bank_detailsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update supplier_bank_details.
+     */
+    data: XOR<supplier_bank_detailsUpdateManyMutationInput, supplier_bank_detailsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_bank_details to update
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * Limit how many supplier_bank_details to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_bank_details updateManyAndReturn
+   */
+  export type supplier_bank_detailsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * The data used to update supplier_bank_details.
+     */
+    data: XOR<supplier_bank_detailsUpdateManyMutationInput, supplier_bank_detailsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_bank_details to update
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * Limit how many supplier_bank_details to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * supplier_bank_details upsert
+   */
+  export type supplier_bank_detailsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the supplier_bank_details to update in case it exists.
+     */
+    where: supplier_bank_detailsWhereUniqueInput
+    /**
+     * In case the supplier_bank_details found by the `where` argument doesn't exist, create a new supplier_bank_details with this data.
+     */
+    create: XOR<supplier_bank_detailsCreateInput, supplier_bank_detailsUncheckedCreateInput>
+    /**
+     * In case the supplier_bank_details was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<supplier_bank_detailsUpdateInput, supplier_bank_detailsUncheckedUpdateInput>
+  }
+
+  /**
+   * supplier_bank_details delete
+   */
+  export type supplier_bank_detailsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
+    /**
+     * Filter which supplier_bank_details to delete.
+     */
+    where: supplier_bank_detailsWhereUniqueInput
+  }
+
+  /**
+   * supplier_bank_details deleteMany
+   */
+  export type supplier_bank_detailsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_bank_details to delete
+     */
+    where?: supplier_bank_detailsWhereInput
+    /**
+     * Limit how many supplier_bank_details to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_bank_details without action
+   */
+  export type supplier_bank_detailsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_bank_details
+     */
+    select?: supplier_bank_detailsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_bank_details
+     */
+    omit?: supplier_bank_detailsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_bank_detailsInclude<ExtArgs> | null
   }
 
 
@@ -31597,6 +32803,17 @@ export namespace Prisma {
   };
 
   export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
+
+
+  export const Supplier_bank_detailsScalarFieldEnum: {
+    supplierId: 'supplierId',
+    bankName: 'bankName',
+    accountName: 'accountName',
+    accountNumber: 'accountNumber',
+    updatedAt: 'updatedAt'
+  };
+
+  export type Supplier_bank_detailsScalarFieldEnum = (typeof Supplier_bank_detailsScalarFieldEnum)[keyof typeof Supplier_bank_detailsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -33468,6 +34685,7 @@ export namespace Prisma {
     role_change_audits?: Role_change_auditsListRelationFilter
     sources?: SourcesListRelationFilter
     supplier_inventory_items?: Supplier_inventory_itemsListRelationFilter
+    supplier_bank_details?: XOR<Supplier_bank_detailsNullableScalarRelationFilter, supplier_bank_detailsWhereInput> | null
   }
 
   export type usersOrderByWithRelationInput = {
@@ -33490,6 +34708,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsOrderByRelationAggregateInput
     sources?: sourcesOrderByRelationAggregateInput
     supplier_inventory_items?: supplier_inventory_itemsOrderByRelationAggregateInput
+    supplier_bank_details?: supplier_bank_detailsOrderByWithRelationInput
   }
 
   export type usersWhereUniqueInput = Prisma.AtLeast<{
@@ -33515,6 +34734,7 @@ export namespace Prisma {
     role_change_audits?: Role_change_auditsListRelationFilter
     sources?: SourcesListRelationFilter
     supplier_inventory_items?: Supplier_inventory_itemsListRelationFilter
+    supplier_bank_details?: XOR<Supplier_bank_detailsNullableScalarRelationFilter, supplier_bank_detailsWhereInput> | null
   }, "id" | "email">
 
   export type usersOrderByWithAggregationInput = {
@@ -33547,6 +34767,63 @@ export namespace Prisma {
     department?: StringNullableWithAggregatesFilter<"users"> | string | null
     isActive?: BoolWithAggregatesFilter<"users"> | boolean
     preferredLanguage?: EnumLanguageWithAggregatesFilter<"users"> | $Enums.Language
+  }
+
+  export type supplier_bank_detailsWhereInput = {
+    AND?: supplier_bank_detailsWhereInput | supplier_bank_detailsWhereInput[]
+    OR?: supplier_bank_detailsWhereInput[]
+    NOT?: supplier_bank_detailsWhereInput | supplier_bank_detailsWhereInput[]
+    supplierId?: IntFilter<"supplier_bank_details"> | number
+    bankName?: StringNullableFilter<"supplier_bank_details"> | string | null
+    accountName?: StringNullableFilter<"supplier_bank_details"> | string | null
+    accountNumber?: StringNullableFilter<"supplier_bank_details"> | string | null
+    updatedAt?: DateTimeFilter<"supplier_bank_details"> | Date | string
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }
+
+  export type supplier_bank_detailsOrderByWithRelationInput = {
+    supplierId?: SortOrder
+    bankName?: SortOrderInput | SortOrder
+    accountName?: SortOrderInput | SortOrder
+    accountNumber?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type supplier_bank_detailsWhereUniqueInput = Prisma.AtLeast<{
+    supplierId?: number
+    AND?: supplier_bank_detailsWhereInput | supplier_bank_detailsWhereInput[]
+    OR?: supplier_bank_detailsWhereInput[]
+    NOT?: supplier_bank_detailsWhereInput | supplier_bank_detailsWhereInput[]
+    bankName?: StringNullableFilter<"supplier_bank_details"> | string | null
+    accountName?: StringNullableFilter<"supplier_bank_details"> | string | null
+    accountNumber?: StringNullableFilter<"supplier_bank_details"> | string | null
+    updatedAt?: DateTimeFilter<"supplier_bank_details"> | Date | string
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }, "supplierId">
+
+  export type supplier_bank_detailsOrderByWithAggregationInput = {
+    supplierId?: SortOrder
+    bankName?: SortOrderInput | SortOrder
+    accountName?: SortOrderInput | SortOrder
+    accountNumber?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: supplier_bank_detailsCountOrderByAggregateInput
+    _avg?: supplier_bank_detailsAvgOrderByAggregateInput
+    _max?: supplier_bank_detailsMaxOrderByAggregateInput
+    _min?: supplier_bank_detailsMinOrderByAggregateInput
+    _sum?: supplier_bank_detailsSumOrderByAggregateInput
+  }
+
+  export type supplier_bank_detailsScalarWhereWithAggregatesInput = {
+    AND?: supplier_bank_detailsScalarWhereWithAggregatesInput | supplier_bank_detailsScalarWhereWithAggregatesInput[]
+    OR?: supplier_bank_detailsScalarWhereWithAggregatesInput[]
+    NOT?: supplier_bank_detailsScalarWhereWithAggregatesInput | supplier_bank_detailsScalarWhereWithAggregatesInput[]
+    supplierId?: IntWithAggregatesFilter<"supplier_bank_details"> | number
+    bankName?: StringNullableWithAggregatesFilter<"supplier_bank_details"> | string | null
+    accountName?: StringNullableWithAggregatesFilter<"supplier_bank_details"> | string | null
+    accountNumber?: StringNullableWithAggregatesFilter<"supplier_bank_details"> | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"supplier_bank_details"> | Date | string
   }
 
   export type audit_logsCreateInput = {
@@ -35328,6 +36605,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateInput = {
@@ -35350,6 +36628,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersUpdateInput = {
@@ -35371,6 +36650,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateInput = {
@@ -35393,6 +36673,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateManyInput = {
@@ -35428,6 +36709,61 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+  }
+
+  export type supplier_bank_detailsCreateInput = {
+    bankName?: string | null
+    accountName?: string | null
+    accountNumber?: string | null
+    updatedAt?: Date | string
+    users: usersCreateNestedOneWithoutSupplier_bank_detailsInput
+  }
+
+  export type supplier_bank_detailsUncheckedCreateInput = {
+    supplierId: number
+    bankName?: string | null
+    accountName?: string | null
+    accountNumber?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type supplier_bank_detailsUpdateInput = {
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneRequiredWithoutSupplier_bank_detailsNestedInput
+  }
+
+  export type supplier_bank_detailsUncheckedUpdateInput = {
+    supplierId?: IntFieldUpdateOperationsInput | number
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_bank_detailsCreateManyInput = {
+    supplierId: number
+    bankName?: string | null
+    accountName?: string | null
+    accountNumber?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type supplier_bank_detailsUpdateManyMutationInput = {
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_bank_detailsUncheckedUpdateManyInput = {
+    supplierId?: IntFieldUpdateOperationsInput | number
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -36898,6 +38234,11 @@ export namespace Prisma {
     none?: supplier_inventory_itemsWhereInput
   }
 
+  export type Supplier_bank_detailsNullableScalarRelationFilter = {
+    is?: supplier_bank_detailsWhereInput | null
+    isNot?: supplier_bank_detailsWhereInput | null
+  }
+
   export type chat_sessionsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -36974,6 +38315,38 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumLanguageFilter<$PrismaModel>
     _max?: NestedEnumLanguageFilter<$PrismaModel>
+  }
+
+  export type supplier_bank_detailsCountOrderByAggregateInput = {
+    supplierId?: SortOrder
+    bankName?: SortOrder
+    accountName?: SortOrder
+    accountNumber?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_bank_detailsAvgOrderByAggregateInput = {
+    supplierId?: SortOrder
+  }
+
+  export type supplier_bank_detailsMaxOrderByAggregateInput = {
+    supplierId?: SortOrder
+    bankName?: SortOrder
+    accountName?: SortOrder
+    accountNumber?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_bank_detailsMinOrderByAggregateInput = {
+    supplierId?: SortOrder
+    bankName?: SortOrder
+    accountName?: SortOrder
+    accountNumber?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_bank_detailsSumOrderByAggregateInput = {
+    supplierId?: SortOrder
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -37646,6 +39019,12 @@ export namespace Prisma {
     connect?: supplier_inventory_itemsWhereUniqueInput | supplier_inventory_itemsWhereUniqueInput[]
   }
 
+  export type supplier_bank_detailsCreateNestedOneWithoutUsersInput = {
+    create?: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_bank_detailsCreateOrConnectWithoutUsersInput
+    connect?: supplier_bank_detailsWhereUniqueInput
+  }
+
   export type budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput = {
     create?: XOR<budget_adjustment_requestsCreateWithoutRequesterInput, budget_adjustment_requestsUncheckedCreateWithoutRequesterInput> | budget_adjustment_requestsCreateWithoutRequesterInput[] | budget_adjustment_requestsUncheckedCreateWithoutRequesterInput[]
     connectOrCreate?: budget_adjustment_requestsCreateOrConnectWithoutRequesterInput | budget_adjustment_requestsCreateOrConnectWithoutRequesterInput[]
@@ -37714,6 +39093,12 @@ export namespace Prisma {
     connectOrCreate?: supplier_inventory_itemsCreateOrConnectWithoutUsersInput | supplier_inventory_itemsCreateOrConnectWithoutUsersInput[]
     createMany?: supplier_inventory_itemsCreateManyUsersInputEnvelope
     connect?: supplier_inventory_itemsWhereUniqueInput | supplier_inventory_itemsWhereUniqueInput[]
+  }
+
+  export type supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput = {
+    create?: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_bank_detailsCreateOrConnectWithoutUsersInput
+    connect?: supplier_bank_detailsWhereUniqueInput
   }
 
   export type EnumLanguageFieldUpdateOperationsInput = {
@@ -37860,6 +39245,16 @@ export namespace Prisma {
     deleteMany?: supplier_inventory_itemsScalarWhereInput | supplier_inventory_itemsScalarWhereInput[]
   }
 
+  export type supplier_bank_detailsUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_bank_detailsCreateOrConnectWithoutUsersInput
+    upsert?: supplier_bank_detailsUpsertWithoutUsersInput
+    disconnect?: supplier_bank_detailsWhereInput | boolean
+    delete?: supplier_bank_detailsWhereInput | boolean
+    connect?: supplier_bank_detailsWhereUniqueInput
+    update?: XOR<XOR<supplier_bank_detailsUpdateToOneWithWhereWithoutUsersInput, supplier_bank_detailsUpdateWithoutUsersInput>, supplier_bank_detailsUncheckedUpdateWithoutUsersInput>
+  }
+
   export type budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput = {
     create?: XOR<budget_adjustment_requestsCreateWithoutRequesterInput, budget_adjustment_requestsUncheckedCreateWithoutRequesterInput> | budget_adjustment_requestsCreateWithoutRequesterInput[] | budget_adjustment_requestsUncheckedCreateWithoutRequesterInput[]
     connectOrCreate?: budget_adjustment_requestsCreateOrConnectWithoutRequesterInput | budget_adjustment_requestsCreateOrConnectWithoutRequesterInput[]
@@ -37998,6 +39393,30 @@ export namespace Prisma {
     update?: supplier_inventory_itemsUpdateWithWhereUniqueWithoutUsersInput | supplier_inventory_itemsUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: supplier_inventory_itemsUpdateManyWithWhereWithoutUsersInput | supplier_inventory_itemsUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: supplier_inventory_itemsScalarWhereInput | supplier_inventory_itemsScalarWhereInput[]
+  }
+
+  export type supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_bank_detailsCreateOrConnectWithoutUsersInput
+    upsert?: supplier_bank_detailsUpsertWithoutUsersInput
+    disconnect?: supplier_bank_detailsWhereInput | boolean
+    delete?: supplier_bank_detailsWhereInput | boolean
+    connect?: supplier_bank_detailsWhereUniqueInput
+    update?: XOR<XOR<supplier_bank_detailsUpdateToOneWithWhereWithoutUsersInput, supplier_bank_detailsUpdateWithoutUsersInput>, supplier_bank_detailsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type usersCreateNestedOneWithoutSupplier_bank_detailsInput = {
+    create?: XOR<usersCreateWithoutSupplier_bank_detailsInput, usersUncheckedCreateWithoutSupplier_bank_detailsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutSupplier_bank_detailsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type usersUpdateOneRequiredWithoutSupplier_bank_detailsNestedInput = {
+    create?: XOR<usersCreateWithoutSupplier_bank_detailsInput, usersUncheckedCreateWithoutSupplier_bank_detailsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutSupplier_bank_detailsInput
+    upsert?: usersUpsertWithoutSupplier_bank_detailsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutSupplier_bank_detailsInput, usersUpdateWithoutSupplier_bank_detailsInput>, usersUncheckedUpdateWithoutSupplier_bank_detailsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -38380,6 +39799,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersInput = {
@@ -38401,6 +39821,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersInput = {
@@ -38426,6 +39847,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -38447,6 +39869,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -38517,6 +39940,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersInput = {
@@ -38538,6 +39962,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUpsertWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -38569,6 +39994,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -38590,6 +40016,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type departmentsCreateWithoutBudget_predictionsInput = {
@@ -38638,6 +40065,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutBudget_predictionsInput = {
@@ -38659,6 +40087,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutBudget_predictionsInput = {
@@ -38729,6 +40158,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutBudget_predictionsInput = {
@@ -38750,6 +40180,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type chat_sessionsCreateWithoutChat_messagesInput = {
@@ -38918,6 +40349,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutChat_sessionsInput = {
@@ -38939,6 +40371,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutChat_sessionsInput = {
@@ -39035,6 +40468,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutChat_sessionsInput = {
@@ -39056,6 +40490,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type sourcesUpsertWithWhereUniqueWithoutChat_sessionsInput = {
@@ -39322,6 +40757,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutFeedbacksInput = {
@@ -39343,6 +40779,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutFeedbacksInput = {
@@ -39379,6 +40816,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutFeedbacksInput = {
@@ -39400,6 +40838,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type chat_messagesCreateWithoutMessage_attachmentsInput = {
@@ -39532,6 +40971,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutNotificationsInput = {
@@ -39553,6 +40993,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutNotificationsInput = {
@@ -39589,6 +41030,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutNotificationsInput = {
@@ -39610,6 +41052,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutPassword_reset_codesInput = {
@@ -39630,6 +41073,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutPassword_reset_codesInput = {
@@ -39651,6 +41095,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutPassword_reset_codesInput = {
@@ -39687,6 +41132,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutPassword_reset_codesInput = {
@@ -39708,6 +41154,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutRole_change_auditsInput = {
@@ -39728,6 +41175,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRole_change_auditsInput = {
@@ -39749,6 +41197,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRole_change_auditsInput = {
@@ -39785,6 +41234,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRole_change_auditsInput = {
@@ -39806,6 +41256,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type sourcesCreateWithoutSource_chunksInput = {
@@ -39931,6 +41382,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSourcesInput = {
@@ -39952,6 +41404,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSourcesInput = {
@@ -40043,6 +41496,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSourcesInput = {
@@ -40064,6 +41518,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutSupplier_inventory_itemsInput = {
@@ -40084,6 +41539,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSupplier_inventory_itemsInput = {
@@ -40105,6 +41561,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSupplier_inventory_itemsInput = {
@@ -40141,6 +41598,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSupplier_inventory_itemsInput = {
@@ -40162,6 +41620,7 @@ export namespace Prisma {
     password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type budget_adjustment_requestsCreateWithoutRequesterInput = {
@@ -40505,6 +41964,25 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type supplier_bank_detailsCreateWithoutUsersInput = {
+    bankName?: string | null
+    accountName?: string | null
+    accountNumber?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type supplier_bank_detailsUncheckedCreateWithoutUsersInput = {
+    bankName?: string | null
+    accountName?: string | null
+    accountNumber?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type supplier_bank_detailsCreateOrConnectWithoutUsersInput = {
+    where: supplier_bank_detailsWhereUniqueInput
+    create: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+  }
+
   export type budget_adjustment_requestsUpsertWithWhereUniqueWithoutRequesterInput = {
     where: budget_adjustment_requestsWhereUniqueInput
     update: XOR<budget_adjustment_requestsUpdateWithoutRequesterInput, budget_adjustment_requestsUncheckedUpdateWithoutRequesterInput>
@@ -40753,6 +42231,133 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
     taxType?: StringFilter<"supplier_inventory_items"> | string
     taxRate?: FloatFilter<"supplier_inventory_items"> | number
+  }
+
+  export type supplier_bank_detailsUpsertWithoutUsersInput = {
+    update: XOR<supplier_bank_detailsUpdateWithoutUsersInput, supplier_bank_detailsUncheckedUpdateWithoutUsersInput>
+    create: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+    where?: supplier_bank_detailsWhereInput
+  }
+
+  export type supplier_bank_detailsUpdateToOneWithWhereWithoutUsersInput = {
+    where?: supplier_bank_detailsWhereInput
+    data: XOR<supplier_bank_detailsUpdateWithoutUsersInput, supplier_bank_detailsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type supplier_bank_detailsUpdateWithoutUsersInput = {
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_bank_detailsUncheckedUpdateWithoutUsersInput = {
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type usersCreateWithoutSupplier_bank_detailsInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    avatarUrl?: string | null
+    department?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
+    budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
+    feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
+    role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
+    sources?: sourcesCreateNestedManyWithoutUsersInput
+    supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutSupplier_bank_detailsInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    avatarUrl?: string | null
+    department?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
+    budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
+    feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
+    role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
+    sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
+    supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutSupplier_bank_detailsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutSupplier_bank_detailsInput, usersUncheckedCreateWithoutSupplier_bank_detailsInput>
+  }
+
+  export type usersUpsertWithoutSupplier_bank_detailsInput = {
+    update: XOR<usersUpdateWithoutSupplier_bank_detailsInput, usersUncheckedUpdateWithoutSupplier_bank_detailsInput>
+    create: XOR<usersCreateWithoutSupplier_bank_detailsInput, usersUncheckedCreateWithoutSupplier_bank_detailsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutSupplier_bank_detailsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutSupplier_bank_detailsInput, usersUncheckedUpdateWithoutSupplier_bank_detailsInput>
+  }
+
+  export type usersUpdateWithoutSupplier_bank_detailsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
+    budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
+    feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
+    role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
+    sources?: sourcesUpdateManyWithoutUsersNestedInput
+    supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutSupplier_bank_detailsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
+    budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+    feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
+    role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
+    sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type message_attachmentsCreateManyChat_messagesInput = {

@@ -54,8 +54,10 @@ export class PDFGenerator {
       page = await browser.newPage();
 
       // Set HTML content
+      // Remote product/logo images are best-effort and must not block PDF generation.
       await page.setContent(html, {
-        waitUntil: 'networkidle0'
+        waitUntil: 'domcontentloaded',
+        timeout: 15000,
       });
 
       // Merge default options with custom options

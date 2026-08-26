@@ -43,7 +43,16 @@ function getStoreConfig(key) {
   return STORES[key] ?? null;
 }
 
+// These records contain protected finance state and must use the role-checked
+// supplier-finance API rather than the generic snapshot store.
+function isSupplierFinanceStore(store) {
+  return store === "supplier-invoices" || store === "supplier-payments";
+}
+
 router.get("/:store", async (req, res) => {
+  if (isSupplierFinanceStore(req.params.store)) {
+    return res.status(410).json({ success: false, message: "Use the supplier finance API for this store" });
+  }
   console.log(`🔵 [DEBUG] GET /api/workflow/${req.params.store} - request received`);
 
   const config = getStoreConfig(req.params.store);
@@ -80,6 +89,9 @@ router.get("/:store", async (req, res) => {
 });
 
 router.put("/:store", async (req, res) => {
+  if (isSupplierFinanceStore(req.params.store)) {
+    return res.status(410).json({ success: false, message: "Use the supplier finance API for this store" });
+  }
   console.log(`🔵 [DEBUG] PUT /api/workflow/${req.params.store} - received request with ${req.body?.rows?.length ?? 0} rows`);
   addDebugLog("WORKFLOW", `PUT request received for store: ${req.params.store}`, {
     rowCount: req.body?.rows?.length ?? 0,

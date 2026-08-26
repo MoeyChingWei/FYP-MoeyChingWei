@@ -17,8 +17,8 @@ export function authenticateRequest(req, res, next) {
     return next();
   }
 
-  const userId = req.query.userId || req.body.userId;
-  const email = req.query.email || req.body.email;
+  const userId = req.query.userId || req.body?.userId;
+  const email = req.query.email || req.body?.email;
 
   if (!userId || !email) {
     return res.status(401).json({

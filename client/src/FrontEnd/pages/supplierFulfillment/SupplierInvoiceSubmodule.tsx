@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Card, Descriptions, Empty, Flex, Table, Tag, Typography, message } from "antd";
-import { ArrowLeftOutlined, CheckOutlined, EyeOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CheckOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { getSessionUser } from "../../shared/auth/session";
 import { UserRole } from "../../shared/types/roles";
 import { hydrateSupplierInvoices, loadSupplierInvoices, updateSupplierInvoice, type SupplierInvoiceRecord } from "../../modules/supplierFulfillment/workflow";
+import { submitSupplierInvoice, supplierFinancePdfUrl } from "../../shared/api/supplierFinance";
 import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
@@ -56,16 +57,21 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
   }), [rows, sessionUser]);
   const row = useMemo(() => visibleRows.find((item) => item.localId === localId), [localId, visibleRows]);
 
-  const onSubmit = (): void => {
+  const onSubmit = async (): Promise<void> => {
     if (!row) return;
     if (row.status !== "DRAFT" && row.status !== "REJECTED") return;
     if (!row.grnLocalId || !row.poNumber || !row.supplierEmail || !row.items.length || !Number.isFinite(row.grandTotal) || row.grandTotal <= 0) {
       message.error("This invoice is missing required supplier, PO/GRN, item or amount information");
       return;
     }
-    updateSupplierInvoice(row.localId, (draft) => ({ ...draft, status: "SUBMITTED", submittedDate: new Date().toISOString(), reviewedDate: undefined, reviewedBy: undefined, rejectionReason: undefined }));
-    message.success(t("invoice.messages.submitted"));
-    navigate("/supplier-overview/invoice");
+    try {
+      const invoice = await submitSupplierInvoice(row.localId);
+      updateSupplierInvoice(row.localId, () => invoice);
+      message.success(t("invoice.messages.submitted"));
+      navigate("/supplier-overview/invoice");
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Unable to submit supplier invoice");
+    }
   };
 
   if (localId) {
@@ -83,9 +89,10 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
         <Descriptions.Item label={t("invoice.fields.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoice.fields.subtotal")}>{currencyLabel(row.currency, row.subtotal)}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.taxTotal")}>{currencyLabel(row.currency, row.taxTotal)}</Descriptions.Item>
       </Descriptions></div>
-      {row.status === "REJECTED" ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.rejectionTitle")}</h3><Paragraph type="danger">{row.rejectionReason || t("invoice.detail.noRejectionReason")}</Paragraph></div> : null}
+      {row.status === "REJECTED" ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.rejectionTitle")}</h3><Paragraph type="danger">{row.rejectionReason || t("invoice.detail.noRejectionReason")}</Paragraph><Paragraph>Rejected by: {row.rejectedBy || row.reviewedBy || "-"}<br/>Rejected date: {row.rejectedDate || row.reviewedDate || "-"}</Paragraph></div> : null}
+      {row.approvalHistory?.length ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>Approval history</h3>{row.approvalHistory.map((entry) => <Paragraph key={`${entry.action}-${entry.date}`}>{entry.action} by {entry.by} on {new Date(entry.date).toLocaleString()}{entry.reason ? `: ${entry.reason}` : ""}</Paragraph>)}</div> : null}
       <div className={styles.itemsCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.items")}</h3><Paragraph type="secondary">{t("invoice.detail.itemsHint")}</Paragraph><div className={styles.itemList}>{row.items.map((item) => <ItemRow key={item.tempId} item={item} currency={row.currency} />)}</div></div>
-      {row.status === "DRAFT" || row.status === "REJECTED" ? <div className={styles.actionRow}><Button type="primary" icon={<CheckOutlined />} onClick={onSubmit}>{row.status === "REJECTED" ? t("invoice.actions.resubmit") : t("invoice.actions.submit")}</Button></div> : null}
+      <div className={styles.actionRow}>{row.status === "DRAFT" || row.status === "REJECTED" ? <Button type="primary" icon={<CheckOutlined />} onClick={() => void onSubmit()}>{row.status === "REJECTED" ? t("invoice.actions.resubmit") : t("invoice.actions.submit")}</Button> : null}<Button icon={<DownloadOutlined />} onClick={() => window.open(supplierFinancePdfUrl("invoices", row.localId), "_blank", "noopener,noreferrer")}>Download Invoice PDF</Button></div>
     </div></Card>;
   }
 

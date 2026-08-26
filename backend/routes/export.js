@@ -22,6 +22,11 @@ const WORKFLOW_TYPES = {
   grn: "Goods Received Note",
 };
 
+// Finance documents use the same renderer internally for supplier-finance
+// emails and downloads, but are intentionally not exposed through the generic
+// /api/export/workflow endpoints because they contain sensitive payment data.
+const FINANCE_WORKFLOW_TYPES = new Set(["supplier-invoice", "payment-advice"]);
+
 const htmlEscape = (value) => String(value ?? "-")
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   .replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
@@ -33,9 +38,13 @@ const logoMarkup = (source, alt) => {
 };
 
 export function workflowHtml(workflowType, record = {}, pageTitle) {
-  const title = pageTitle || WORKFLOW_TYPES[workflowType];
+  const title = pageTitle || WORKFLOW_TYPES[workflowType] || (workflowType === "supplier-invoice"
+    ? "Supplier Invoice Approval Summary"
+    : workflowType === "payment-advice" ? "Payment Advice" : "Workflow Document");
   const items = Array.isArray(record.items) ? record.items : (record.lineItems || []);
-  const number = record.prNumber || record.poNumber || record.deliveryNo || record.localId;
+  const number = FINANCE_WORKFLOW_TYPES.has(workflowType)
+    ? (workflowType === "supplier-invoice" ? record.invoiceNumber : record.paymentNumber) || record.poNumber || record.localId
+    : record.prNumber || record.poNumber || record.deliveryNo || record.localId;
   const status = record.status || "-";
   const companyName = record.companyName || "OptiMind";
   const companyContact = record.sourceRequester || record.createdBy || companyName;
@@ -43,10 +52,11 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
   const supplierName = record.supplierCompanyName || record.supplierName || "-";
   const companyLogo = record.companyLogo || "";
   const supplierLogo = record.supplierLogo || "";
-  const isPartyDocument = ["acknowledgement", "delivery", "grn"].includes(workflowType);
+  const isFinanceDocument = FINANCE_WORKFLOW_TYPES.has(workflowType);
+  const isPartyDocument = ["acknowledgement", "delivery", "grn"].includes(workflowType) || isFinanceDocument;
   const currency = record.currency || "MYR";
-  const totalAmount = record.totalAmount ?? record.total ?? items.reduce((sum, item) => {
-    const amount = item.amountAfterTax ?? item.amount ?? Number(item.quantity || 0) * Number(item.unitPrice || 0);
+  const totalAmount = record.totalAmount ?? record.total ?? record.grandTotal ?? record.amount ?? items.reduce((sum, item) => {
+    const amount = item.amountAfterTax ?? item.amount ?? item.lineTotal ?? Number(item.quantity || 0) * Number(item.unitPrice || 0);
     return sum + (Number(amount) || 0);
   }, 0);
   const rows = items.map((item, index) => {
@@ -54,14 +64,21 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
     const image = imageUrl
       ? `<img src="${htmlEscape(imageUrl)}" alt="${htmlEscape(item.itemName)}" style="width:42px;height:42px;object-fit:contain;display:block" />`
       : "-";
-    return `<tr><td>${index + 1}</td><td>${image}</td><td>${htmlEscape(item.itemName)}</td><td>${htmlEscape(item.itemDescription)}</td><td>${htmlEscape(item.quantity)}</td><td>${htmlEscape(item.unitOfMeasurement || item.unit)}</td><td>${htmlEscape(item.unitPrice)}</td><td>${htmlEscape(item.taxAmount ?? "-")}</td><td>${htmlEscape(item.amountAfterTax ?? item.amount ?? (Number(item.quantity || 0) * Number(item.unitPrice || 0)))}</td></tr>`;
+    return `<tr><td>${index + 1}</td><td>${image}</td><td>${htmlEscape(item.itemName)}</td><td>${htmlEscape(item.itemDescription)}</td><td>${htmlEscape(item.quantity)}</td><td>${htmlEscape(item.unitOfMeasurement || item.unit)}</td><td>${htmlEscape(item.unitPrice)}</td><td>${htmlEscape(item.taxAmount ?? "-")}</td><td>${htmlEscape(item.amountAfterTax ?? item.amount ?? item.lineTotal ?? (Number(item.quantity || 0) * Number(item.unitPrice || 0)))}</td></tr>`;
   }).join("");
+  const maskAccount = (value) => {
+    const account = String(value || "").trim();
+    return account ? `****${account.slice(-4)}` : "Not provided";
+  };
+  const bank = record.bankDetails || {};
   const extra = {
     "purchase-request": [["Requester", record.requestBy], ["Department", record.department], ["Request date", record.requestDate], ["Currency", currency]],
     "purchase-order": [["Source PR", record.sourcePrNumber], ["Requester", record.sourceRequester], ["Department", record.department], ["Currency", currency], ["Payment terms", record.paymentTerms]],
     acknowledgement: [["Sender (Company)", companyContact], ["Sender company", companyName], ["Sender address", record.companyAddress], ["Receiver (Supplier)", supplierName], ["Receiver email", record.supplierEmail], ["Receiver address", supplierAddress], ["Department", record.department]],
     delivery: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
     grn: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
+    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Supplier", supplierName], ["Supplier email", record.supplierEmail], ["Payment terms", record.paymentTerms], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Currency", currency]],
+    "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Supplier", record.supplierName || supplierName], ["Supplier email", record.supplierEmail], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Payment proof", record.attachmentName || "Not provided"], ["Currency", currency]],
   }[workflowType] || [];
   const partyInfo = isPartyDocument
     ? (workflowType === "acknowledgement"
@@ -71,6 +88,20 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
           senderLogo: companyLogo,
           receiverLogo: supplierLogo,
         }
+      : isFinanceDocument
+      ? (workflowType === "supplier-invoice"
+        ? {
+            sender: [["Supplier", supplierName || record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+            receiver: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
+            senderLogo: supplierLogo,
+            receiverLogo: companyLogo,
+          }
+        : {
+            sender: [["Company", companyName], ["Address", record.companyAddress]],
+            receiver: [["Supplier", supplierName || record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
+            senderLogo: companyLogo,
+            receiverLogo: supplierLogo,
+          })
       : {
           sender: [["Supplier", supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
           receiver: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
@@ -86,13 +117,21 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
     acknowledgement: [["Department", record.department], ["Purchase order", record.poNumber], ["Source PR", record.sourcePrNumber]],
     delivery: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
     grn: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
+    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Approval status", status], ["Payment terms", record.paymentTerms], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)]],
+    "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Payment status", status], ["Amount", `${currency} ${Number(record.amount || record.totalAmount || 0).toFixed(2)}`], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Payment proof", record.attachmentName || "Not provided"]],
   }[workflowType] || [];
   const generalMarkup = isPartyDocument
     ? `<div class="meta secondary-meta">${documentDetails.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span>`).join("")}</div>`
     : `<div class="meta">${extra.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${htmlEscape(value)}</span>`).join("")}</div>`;
+  const historyMarkup = isFinanceDocument && Array.isArray(record.approvalHistory) && record.approvalHistory.length
+    ? `<h2>${workflowType === "payment-advice" ? "Payment history" : "Approval history"}</h2><table><thead><tr><th>Action</th><th>By</th><th>Date</th><th>Reason / reference</th></tr></thead><tbody>${record.approvalHistory.map((entry) => `<tr><td>${htmlEscape(entry.action)}</td><td>${htmlEscape(entry.by)}</td><td>${htmlEscape(entry.date)}</td><td>${htmlEscape(entry.reason || entry.transactionReference || "-")}</td></tr>`).join("")}</tbody></table>`
+    : (isFinanceDocument && record.rejectionReason ? `<h2>Rejection details</h2><div class="meta"><b>Rejected by</b><span>${htmlEscape(record.rejectedBy)}</span><b>Rejected date</b><span>${htmlEscape(record.rejectedDate)}</span><b>Reason</b><span>${htmlEscape(record.rejectionReason)}</span></div>` : "");
+  const itemsMarkup = workflowType === "payment-advice" && !items.length
+    ? ""
+    : `<h2>Items</h2><table><thead><tr><th>No.</th><th>Image</th><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price</th><th>Tax</th><th>Amount</th></tr></thead><tbody>${rows || '<tr><td colspan="9">No items</td></tr>'}</tbody></table>`;
   return `<!doctype html><html><head><meta charset="utf-8"><title>${htmlEscape(title)}</title><style>
     @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}.document-heading{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:start;gap:24px;min-height:100px}.document-heading-copy{min-width:0;padding-top:3px}.header-brand{display:flex;justify-content:flex-end;align-items:flex-start;min-height:100px}.header-logo{width:150px;height:100px;object-fit:contain;display:block}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-logo{width:52px;height:40px;object-fit:contain;display:block;margin-bottom:7px}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}.footer{margin-top:24px;color:#667085;font-size:10px}
-  </style></head><body><div class="document-heading"><div class="document-heading-copy"><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${htmlEscape(status)}</div></div><div class="header-brand">${logoMarkup(companyLogo, "Company logo").replace('class="party-logo"', 'class="header-logo"')}</div></div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}<h2>Items</h2><table><thead><tr><th>No.</th><th>Image</th><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price</th><th>Tax</th><th>Amount</th></tr></thead><tbody>${rows || '<tr><td colspan="9">No items</td></tr>'}</tbody></table><div class="total"><b>Total Amount: ${htmlEscape(currency)} ${htmlEscape(Number(totalAmount || 0).toFixed(2))}</b></div><div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;
+  </style></head><body><div class="document-heading"><div class="document-heading-copy"><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${htmlEscape(status)}</div></div><div class="header-brand">${logoMarkup(companyLogo, "Company logo").replace('class="party-logo"', 'class="header-logo"')}</div></div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}${itemsMarkup}${historyMarkup}<div class="total"><b>Total Amount: ${htmlEscape(currency)} ${htmlEscape(Number(totalAmount || 0).toFixed(2))}</b></div><div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;
 }
 
 /**

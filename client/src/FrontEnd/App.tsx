@@ -282,6 +282,7 @@ function MainLayout(): React.ReactElement {
           : isFinanceRole(role);
       }
       if (pathname.startsWith("/finance/invoice-approval")) return canApproveSupplierInvoices(role);
+      if (pathname.startsWith("/finance/payment-processing")) return role === UserRole.PAYMENT_TEAM || role === UserRole.ADMIN;
       if (pathname.startsWith("/finance")) return isFinanceRole(role);
       if (pathname.startsWith("/tracking-item")) return true;
       if (pathname.startsWith("/chatbot")) return true;

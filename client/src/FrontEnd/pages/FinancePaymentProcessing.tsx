@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Empty, Input, Modal, Select, Table, Tag, Typography, Upload, message } from "antd";
-import { CreditCardOutlined, PaperClipOutlined } from "@ant-design/icons";
+import { Button, Card, Empty, Input, Modal, Select, Table, Tabs, Tag, Typography, Upload, message } from "antd";
+import { ArrowLeftOutlined, CreditCardOutlined, DownloadOutlined, PaperClipOutlined } from "@ant-design/icons";
 import type { RcFile } from "antd/es/upload/interface";
 import { useNavigate } from "react-router-dom";
 import { getSessionUser } from "../shared/auth/session";
@@ -11,6 +11,7 @@ import {
   updateSupplierPayment,
   type SupplierPaymentRecord,
 } from "../modules/supplierFulfillment/workflow";
+import { processSupplierPayment, supplierFinancePdfUrl } from "../shared/api/supplierFinance";
 import styles from "./purchasing/ApprovalDetailSubmodule.module.css";
 
 const { Title, Text } = Typography;
@@ -60,6 +61,7 @@ export default function FinancePaymentProcessing(): React.ReactElement {
   }, [navigate, user]);
 
   const pending = useMemo(() => rows.filter((row) => row.status === "PENDING_PAYMENT"), [rows]);
+  const paid = useMemo(() => rows.filter((row) => row.status === "PAID"), [rows]);
 
   const openPayment = (row: SupplierPaymentRecord): void => {
     setSelected(row);
@@ -91,28 +93,32 @@ export default function FinancePaymentProcessing(): React.ReactElement {
     return false;
   };
 
-  const processPayment = (): void => {
-    if (!selected || !transactionReference.trim() || !paidDate || !attachment?.attachmentDataUrl) return;
+  const processPayment = async (): Promise<void> => {
+    if (!selected || !paymentMethod || !transactionReference.trim() || !paidDate || !attachment?.attachmentDataUrl) return;
     const currentPayment = loadSupplierPayments().find((row) => row.localId === selected.localId);
     if (!currentPayment || currentPayment.status !== "PENDING_PAYMENT") {
       message.warning("This payment is no longer pending processing");
       setSelected(null);
       return;
     }
-    const currentUser = user?.name || user?.email || "Payment Team";
-    updateSupplierPayment(selected.localId, (current) => ({
-      ...current,
-      status: "PAID",
-      paymentMethod,
-      paidDate,
-      processedBy: currentUser,
-      transactionReference: transactionReference.trim(),
-      remarks: remarks.trim() || undefined,
-      ...attachment,
-    }));
-    setSelected(null);
-    message.success("Payment marked as paid");
-    void sync();
+    try {
+      const payment = await processSupplierPayment(selected.localId, {
+        paymentMethod,
+        paidDate,
+        transactionReference: transactionReference.trim(),
+        remarks: remarks.trim() || undefined,
+        attachment,
+      });
+      updateSupplierPayment(selected.localId, () => payment);
+      setSelected(null);
+      message.success("Payment marked as paid and Payment Advice generated");
+      void sync();
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Unable to process payment");
+      // Reconcile stale localStorage after a server-side conflict (for example,
+      // when another tab or an earlier attempt already marked it as paid).
+      void sync();
+    }
   };
 
   if (!user || (user.role !== UserRole.PAYMENT_TEAM && user.role !== UserRole.ADMIN)) {
@@ -121,24 +127,42 @@ export default function FinancePaymentProcessing(): React.ReactElement {
 
   return <div className={styles.page}>
     <div className={styles.header}>
-      <Title level={3} style={{ margin: 0 }}>Payment Processing</Title>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/finance")} aria-label="Back to Finance" title="Back to Finance" />
+        <Title level={3} style={{ margin: 0 }}>Payment Processing</Title>
+      </div>
       <Tag color="blue">{pending.length} pending</Tag>
     </div>
     <Card>
-      <Table
-        rowKey="localId"
-        dataSource={pending}
-        pagination={{ pageSize: 10 }}
-        scroll={{ x: 980 }}
-        locale={{ emptyText: <Empty description="No payments pending processing" /> }}
-        columns={[
-          { title: "Payment", dataIndex: "paymentNumber" },
-          { title: "Invoice", dataIndex: "invoiceNumber", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.invoiceLocalId },
-          { title: "Supplier", dataIndex: "supplierName", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.supplierEmail || "-" },
-          { title: "Amount", key: "amount", render: (_: unknown, row: SupplierPaymentRecord) => `${row.currency} ${Number(row.amount || 0).toFixed(2)}` },
-          { title: "Payment Terms", dataIndex: "paymentTerms", render: (value: string | undefined) => value || "-" },
-          { title: "Status", dataIndex: "status", render: (value: string) => <Tag color="orange">{value}</Tag> },
-          { title: "Action", key: "action", render: (_: unknown, row: SupplierPaymentRecord) => <Button type="primary" icon={<CreditCardOutlined />} onClick={() => openPayment(row)}>Process Payment</Button> },
+      <Tabs
+        items={[
+          {
+            key: "pending",
+            label: `Pending (${pending.length})`,
+            children: <Table rowKey="localId" dataSource={pending} pagination={{ pageSize: 10 }} scroll={{ x: 980 }} locale={{ emptyText: <Empty description="No payments pending processing" /> }} columns={[
+              { title: "Payment", dataIndex: "paymentNumber" },
+              { title: "Invoice", dataIndex: "invoiceNumber", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.invoiceLocalId },
+              { title: "Supplier", dataIndex: "supplierName", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.supplierEmail || "-" },
+              { title: "Amount", key: "amount", render: (_: unknown, row: SupplierPaymentRecord) => `${row.currency} ${Number(row.amount || 0).toFixed(2)}` },
+              { title: "Payment Terms", dataIndex: "paymentTerms", render: (value: string | undefined) => value || "-" },
+              { title: "Status", dataIndex: "status", render: (value: string) => <Tag color="orange">{value}</Tag> },
+              { title: "Action", key: "action", render: (_: unknown, row: SupplierPaymentRecord) => <Button type="primary" icon={<CreditCardOutlined />} onClick={() => openPayment(row)}>Process Payment</Button> },
+            ]} />,
+          },
+          {
+            key: "paid",
+            label: `Paid (${paid.length})`,
+            children: <Table rowKey="localId" dataSource={paid} pagination={{ pageSize: 10 }} scroll={{ x: 980 }} locale={{ emptyText: <Empty description="No completed payments" /> }} columns={[
+              { title: "Payment", dataIndex: "paymentNumber" },
+              { title: "Invoice", dataIndex: "invoiceNumber", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.invoiceLocalId },
+              { title: "Amount", key: "amount", render: (_: unknown, row: SupplierPaymentRecord) => `${row.currency} ${Number(row.amount || 0).toFixed(2)}` },
+              { title: "Paid date", dataIndex: "paidDate", render: (value: string | undefined) => value || "-" },
+              { title: "Reference", dataIndex: "transactionReference", render: (value: string | undefined) => value || "-" },
+              { title: "Proof", dataIndex: "attachmentName", render: (value: string | undefined) => value || "-" },
+              { title: "Status", dataIndex: "status", render: (value: string) => <Tag color="green">{value}</Tag> },
+              { title: "Action", key: "action", render: (_: unknown, row: SupplierPaymentRecord) => <Button icon={<DownloadOutlined />} disabled={!row.paymentAdvicePdf} onClick={() => window.open(supplierFinancePdfUrl("payments", row.localId), "_blank", "noopener,noreferrer")}>Download Advice</Button> },
+            ]} />,
+          },
         ]}
       />
     </Card>
@@ -148,7 +172,7 @@ export default function FinancePaymentProcessing(): React.ReactElement {
       okText="Mark as Paid"
       okButtonProps={{ disabled: !transactionReference.trim() || !paidDate || !attachment?.attachmentDataUrl }}
       onCancel={() => setSelected(null)}
-      onOk={processPayment}
+      onOk={() => void processPayment()}
       destroyOnHidden
     >
       {selected ? <>

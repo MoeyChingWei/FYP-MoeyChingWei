@@ -387,6 +387,14 @@ exports.Prisma.UsersScalarFieldEnum = {
   preferredLanguage: 'preferredLanguage'
 };
 
+exports.Prisma.Supplier_bank_detailsScalarFieldEnum = {
+  supplierId: 'supplierId',
+  bankName: 'bankName',
+  accountName: 'accountName',
+  accountNumber: 'accountNumber',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -447,7 +455,8 @@ exports.Prisma.ModelName = {
   supplier_payment_records: 'supplier_payment_records',
   supplier_inventory_items: 'supplier_inventory_items',
   supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
-  users: 'users'
+  users: 'users',
+  supplier_bank_details: 'supplier_bank_details'
 };
 
 /**
