@@ -5,7 +5,7 @@ import { notifyBudgetPredictionReady } from './notification-service.js';
 import crypto from 'crypto';
 
 // Constants for budget prediction thresholds
-// Default budget for new departments with no historical data (MYR)
+// Default budget for new departments with no historical data (RM)
 const DEFAULT_NEW_DEPARTMENT_BUDGET = 50000;
 
 // Confidence thresholds based on historical data points
@@ -15,7 +15,7 @@ const DEFAULT_NEW_DEPARTMENT_BUDGET = 50000;
 const CONFIDENCE_THRESHOLD_HIGH = 12;
 const CONFIDENCE_THRESHOLD_MEDIUM = 6;
 
-// Default fallback budget when no data exists (MYR)
+// Default fallback budget when no data exists (RM)
 const DEFAULT_FALLBACK_BUDGET = 100000;
 
 async function savePredictionForPeriod(departmentId, targetYear, targetMonth, data) {

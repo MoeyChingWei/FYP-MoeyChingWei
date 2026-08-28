@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MainAgent } from '../../../modules/aiAssistant/mainAgents';
 import styles from './MainAgentCard.module.css';
 
@@ -8,6 +9,7 @@ interface MainAgentCardProps {
 }
 
 export default function MainAgentCard({ agent }: MainAgentCardProps): React.ReactElement {
+  const { t } = useTranslation('settings');
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -28,7 +30,7 @@ export default function MainAgentCard({ agent }: MainAgentCardProps): React.Reac
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
-      aria-label={`View ${agent.name} agents`}
+      aria-label={t('aiAssistant.viewAgents', { name: agent.name })}
       style={{ '--category-color': agent.color } as React.CSSProperties}
     >
       <div className={styles.icon}>{agent.icon}</div>
@@ -36,7 +38,7 @@ export default function MainAgentCard({ agent }: MainAgentCardProps): React.Reac
       <p className={styles.subtitle}>{agent.subtitle}</p>
 
       <div className={styles.badge}>
-        {agent.subAgentCount} Sub Agents
+        {t('aiAssistant.subAgents', { count: agent.subAgentCount })}
       </div>
 
       <div className={styles.previewRow}>

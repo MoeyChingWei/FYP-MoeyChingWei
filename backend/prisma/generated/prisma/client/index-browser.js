@@ -363,9 +363,7 @@ exports.Prisma.Supplier_inventory_itemsScalarFieldEnum = {
   unitPrice: 'unitPrice',
   imageDataUrl: 'imageDataUrl',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  taxType: 'taxType',
-  taxRate: 'taxRate'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.Supplier_order_acknowledgement_recordsScalarFieldEnum = {
@@ -392,6 +390,15 @@ exports.Prisma.Supplier_bank_detailsScalarFieldEnum = {
   bankName: 'bankName',
   accountName: 'accountName',
   accountNumber: 'accountNumber',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Supplier_tax_settingsScalarFieldEnum = {
+  supplierId: 'supplierId',
+  taxApplies: 'taxApplies',
+  taxType: 'taxType',
+  taxRate: 'taxRate',
+  taxRules: 'taxRules',
   updatedAt: 'updatedAt'
 };
 
@@ -456,7 +463,8 @@ exports.Prisma.ModelName = {
   supplier_inventory_items: 'supplier_inventory_items',
   supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
   users: 'users',
-  supplier_bank_details: 'supplier_bank_details'
+  supplier_bank_details: 'supplier_bank_details',
+  supplier_tax_settings: 'supplier_tax_settings'
 };
 
 /**

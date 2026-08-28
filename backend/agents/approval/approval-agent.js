@@ -392,19 +392,19 @@ For every approval request evaluation:
 
 🔍 RISK ASSESSMENT:
 Overall Risk Level: 🟡 MEDIUM
-- Financial: MYR 15,000 (85% of monthly IT budget)
+- Financial: RM 15,000 (85% of monthly IT budget)
 - Compliance: Minor - missing delivery timeline
 - Operational: Low - standard equipment
 
 📋 POLICY COMPLIANCE:
 - Budget Status: Within allocation (85% utilized)
-- Authority Level: Requires Manager approval (amount > MYR 10,000)
+- Authority Level: Requires Manager approval (amount > RM 10,000)
 - Documentation: 90% complete (delivery date needed)
 - Policy Violations: None
 
 📊 HISTORICAL CONTEXT:
 - 12 similar laptop requests in past 6 months
-- Average price: MYR 4,200 (this request: MYR 4,500, +7%)
+- Average price: RM 4,200 (this request: RM 4,500, +7%)
 - Approval rate: 92%
 - Pattern: Normal procurement cycle
 
@@ -1153,7 +1153,7 @@ class ApprovalAgent extends BaseAgent {
 
         if (totalAmount > 50000) {
           decision = 'REVIEW';
-          conditions.push('Requires executive approval (amount > MYR 50,000)');
+          conditions.push('Requires executive approval (amount > RM 50,000)');
           reasoning.push('High value request exceeds standard approval threshold');
         }
 

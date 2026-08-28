@@ -2,11 +2,13 @@ import React from "react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Card, Flex } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import LookupKindTable from "./LookupKindTable";
 
 export default function PaymentTermsPage(): React.ReactElement {
   const navigate = useNavigate();
+  const { t } = useTranslation("lookupTable");
 
   return (
     <Card
@@ -17,9 +19,9 @@ export default function PaymentTermsPage(): React.ReactElement {
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/category-selection")}
             style={{ paddingInline: 0 }}
-            aria-label="Back to Category Management"
+            aria-label={t("page.back")}
           />
-          <span>Payment terms</span>
+          <span>{t("page.paymentTerms")}</span>
         </Flex>
       }
     >

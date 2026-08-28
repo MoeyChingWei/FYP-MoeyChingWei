@@ -55,7 +55,7 @@ YOUR COMMUNICATION STYLE:
 - Always provide cost-saving suggestions when relevant
 - Use professional procurement terminology
 - Be data-driven in recommendations
-- Format important numbers clearly (e.g., "Total: MYR 15,000")
+- Format important numbers clearly (e.g., "Total: RM 15,000")
 
 CRITICAL FORMATTING RULES - MUST FOLLOW:
 
@@ -704,7 +704,7 @@ class PurchaseAgent extends BaseAgent {
             percentage: savingsPercent.toFixed(2),
           },
           recommendation: savings > 0
-            ? `✅ Bulk ordering would save MYR ${savings.toFixed(2)} (${savingsPercent.toFixed(1)}%)`
+            ? `✅ Bulk ordering would save RM ${savings.toFixed(2)} (${savingsPercent.toFixed(1)}%)`
             : `⚠️ Bulk ordering not cost-effective for this item`,
         };
       },

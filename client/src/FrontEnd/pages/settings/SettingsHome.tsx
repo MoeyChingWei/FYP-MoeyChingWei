@@ -8,6 +8,8 @@ import EnvironmentOutlined from "@ant-design/icons/EnvironmentOutlined";
 import MessageOutlined from "@ant-design/icons/MessageOutlined";
 import RobotOutlined from "@ant-design/icons/RobotOutlined";
 import MailOutlined from "@ant-design/icons/MailOutlined";
+import DollarOutlined from "@ant-design/icons/DollarOutlined";
+import BankOutlined from "@ant-design/icons/BankOutlined";
 import { Button } from "antd";
 import { useTranslation } from "react-i18next";
 
@@ -33,7 +35,7 @@ export default function SettingsHome(): React.ReactElement {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("gmail") !== "connected") return;
-    message.success("Gmail connected to OptiMind");
+    message.success(t("gmail.connectedMessage"));
     navigate(location.pathname, { replace: true });
   }, [location.pathname, location.search, navigate]);
 
@@ -64,9 +66,10 @@ export default function SettingsHome(): React.ReactElement {
 
   return (
     <Flex vertical gap={20} className={styles.wrap}>
-      <Title level={4} className={styles.pageTitle}>
-        {t("title")}
-      </Title>
+      <div className={styles.settingsHero}>
+        <Title level={3} className={styles.pageTitle}>{t("title")}</Title>
+        <Text type="secondary" className={styles.pageDescription}>{t("description")}</Text>
+      </div>
 
       <Flex wrap="wrap" gap={20} className={styles.tilesGrid}>
         <Card
@@ -81,7 +84,7 @@ export default function SettingsHome(): React.ReactElement {
               navigate("/category-selection");
             }
           }}
-          aria-label="Open category of selection"
+          aria-label={t("sections.categorySelection")}
         >
           <Flex vertical align="center" gap={14} className={styles.tileInner}>
             <div className={styles.iconWrap} aria-hidden>
@@ -106,17 +109,17 @@ export default function SettingsHome(): React.ReactElement {
             </div>
             <div className={styles.tileTextBlock}>
               <Text strong className={styles.tileTitle}>
-                Connect Gmail
+                {t("gmail.title")}
               </Text>
               <Text type="secondary" style={{ display: "block", marginTop: 6 }}>
-                Automatically organise OptiMind emails with a Gmail label.
+                {t("gmail.description")}
               </Text>
               {gmailConnected !== null && (
                 <Tag
                   color={gmailConnected ? "cyan" : "red"}
                   style={{ marginTop: 12, fontWeight: 600 }}
                 >
-                  {gmailConnected ? "Connected" : "Disconnected"}
+                  {gmailConnected ? t("gmail.connected") : t("gmail.disconnected")}
                 </Tag>
               )}
               {gmailConnected === false && (
@@ -129,12 +132,60 @@ export default function SettingsHome(): React.ReactElement {
                     window.location.assign(`${API_ROOT}/gmail/oauth/start?email=${email}`);
                   }}
                 >
-                  Connect Gmail
+                  {t("gmail.title")}
                 </Button>
               )}
             </div>
           </Flex>
         </Card>
+
+        {isSupplier && <Card
+          hoverable
+          className={styles.tile}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/settings/tax-information")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate("/settings/tax-information");
+            }
+          }}
+          aria-label={t("taxInformation.title")}
+        >
+          <Flex vertical align="center" gap={14} className={styles.tileInner}>
+            <div className={styles.iconWrap} aria-hidden><DollarOutlined className={styles.tileIcon} /></div>
+            <div className={styles.tileTextBlock}>
+              <Text strong className={styles.tileTitle}>{t("taxInformation.title")}</Text>
+              <Text type="secondary" style={{ display: "block", marginTop: 6 }}>{t("taxInformation.tileDescription")}</Text>
+              <Flex align="center" gap={6} className={styles.tileAction}><Text type="secondary">{t("actions.open")}</Text><RightOutlined className={styles.tileChevron} /></Flex>
+            </div>
+          </Flex>
+        </Card>}
+
+        {isSupplier && <Card
+          hoverable
+          className={styles.tile}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/settings/payment-details")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate("/settings/payment-details");
+            }
+          }}
+          aria-label={t("paymentDetails.title")}
+        >
+          <Flex vertical align="center" gap={14} className={styles.tileInner}>
+            <div className={styles.iconWrap} aria-hidden><BankOutlined className={styles.tileIcon} /></div>
+            <div className={styles.tileTextBlock}>
+              <Text strong className={styles.tileTitle}>{t("paymentDetails.title")}</Text>
+              <Text type="secondary" style={{ display: "block", marginTop: 6 }}>{t("paymentDetails.tileDescription")}</Text>
+              <Flex align="center" gap={6} className={styles.tileAction}><Text type="secondary">{t("actions.open")}</Text><RightOutlined className={styles.tileChevron} /></Flex>
+            </div>
+          </Flex>
+        </Card>}
 
         <Card
           hoverable
@@ -148,7 +199,7 @@ export default function SettingsHome(): React.ReactElement {
               navigate("/settings/company-address");
             }
           }}
-          aria-label="Open company address"
+          aria-label={companyAddressTitle}
         >
           <Flex vertical align="center" gap={14} className={styles.tileInner}>
             <div className={styles.iconWrap} aria-hidden>
@@ -178,7 +229,7 @@ export default function SettingsHome(): React.ReactElement {
               navigate("/settings/feedback");
             }
           }}
-          aria-label="Open feedback"
+          aria-label={t("sections.feedback")}
         >
           <Flex vertical align="center" gap={14} className={styles.tileInner}>
             <div className={styles.iconWrap} aria-hidden>
@@ -198,7 +249,7 @@ export default function SettingsHome(): React.ReactElement {
 
         {!isSupplier && <Card
           hoverable
-          className={styles.tile}
+          className={`${styles.tile} ${styles.aiAssistantTile}`}
           role="button"
           tabIndex={0}
           onClick={() => navigate("/settings/ai-assistant")}
@@ -208,11 +259,11 @@ export default function SettingsHome(): React.ReactElement {
               navigate("/settings/ai-assistant");
             }
           }}
-          aria-label="Manage AI Assistant"
+          aria-label={t("sections.aiAssistant")}
         >
           <Flex vertical align="center" gap={14} className={styles.tileInner}>
-            <div className={styles.iconWrap} aria-hidden>
-              <RobotOutlined className={styles.tileIcon} />
+            <div className={`${styles.iconWrap} ${styles.aiAssistantIconWrap}`} aria-hidden>
+              <RobotOutlined className={`${styles.tileIcon} ${styles.aiAssistantIcon}`} />
             </div>
             <div className={styles.tileTextBlock}>
               <Text strong className={styles.tileTitle}>
@@ -220,7 +271,7 @@ export default function SettingsHome(): React.ReactElement {
               </Text>
               <Flex align="center" gap={6} className={styles.tileAction}>
                 <Text type="secondary">{t("actions.manage")}</Text>
-                <RightOutlined className={styles.tileChevron} />
+                <RightOutlined className={`${styles.tileChevron} ${styles.aiAssistantChevron}`} />
               </Flex>
             </div>
           </Flex>

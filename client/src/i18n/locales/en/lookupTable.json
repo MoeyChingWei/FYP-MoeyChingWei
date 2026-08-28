@@ -1,4 +1,15 @@
 {
+  "page": {
+    "title": "Category of Selection",
+    "back": "Back to Category Management",
+    "backToSettings": "Back to Settings",
+    "open": "Open",
+    "itemCategories": "Item categories",
+    "departments": "Departments",
+    "roles": "Roles",
+    "unitsOfMeasurement": "Units of measurement",
+    "paymentTerms": "Payment terms"
+  },
   "newValuePlaceholder": "New value",
   "source": {
     "builtin": "Built-in",

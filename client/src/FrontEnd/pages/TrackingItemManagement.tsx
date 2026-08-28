@@ -1076,7 +1076,7 @@ export default function TrackingItemManagement(): React.ReactElement {
                       {selectedRow.itemQuantity} {selectedRow.itemUnit}
                     </span>
                     <span>
-                      {selectedRow.sourceRequest.currency} {selectedRow.itemUnitPrice.toFixed(2)}
+                      {selectedRow.sourceRequest.currency === "MYR" ? "RM" : selectedRow.sourceRequest.currency} {selectedRow.itemUnitPrice.toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -1101,7 +1101,7 @@ export default function TrackingItemManagement(): React.ReactElement {
                             {item.quantity} {item.unitOfMeasurement}
                           </span>
                           <span>
-                            {selectedRow.sourceRequest.currency} {item.unitPrice.toFixed(2)}
+                            {selectedRow.sourceRequest.currency === "MYR" ? "RM" : selectedRow.sourceRequest.currency} {item.unitPrice.toFixed(2)}
                           </span>
                         </div>
                       </div>

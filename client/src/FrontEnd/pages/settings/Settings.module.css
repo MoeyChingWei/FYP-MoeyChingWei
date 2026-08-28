@@ -4,7 +4,7 @@
   --accentSoft: rgba(var(--accentRgb), 0.16);
   --accentSofter: rgba(var(--accentRgb), 0.08);
   width: 100%;
-  max-width: 980px;
+  max-width: 1040px;
   margin-inline: auto;
   box-sizing: border-box;
 }
@@ -18,19 +18,30 @@
 
 .pageTitle {
   margin: 0 !important;
-  align-self: stretch;
 }
+
+.settingsHero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 4px 2px 8px;
+}
+
+.pageDescription { max-width: 440px; text-align: right; }
 
 .tilesGrid {
   width: 100%;
-  justify-content: flex-start;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px !important;
 }
 
 .tile {
-  width: calc(33.333% - 14px);
-  min-width: 240px;
-  max-width: 300px;
-  border-radius: 16px !important;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  border-radius: 14px !important;
   border: 1px solid rgba(var(--accentRgb), 0.12) !important;
   transition:
     transform 200ms ease,
@@ -55,17 +66,21 @@
 }
 
 .tile :global(.ant-card-body) {
-  padding: 24px 18px !important;
+  padding: 18px 20px !important;
 }
 
 .tileInner {
-  text-align: center;
+  min-height: 82px;
+  text-align: left;
+  align-items: flex-start !important;
+  flex-direction: row !important;
 }
 
 .iconWrap {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,25 +93,57 @@
 }
 
 .tileIcon {
-  font-size: 30px;
+  font-size: 22px;
   color: var(--accent);
+}
+
+/* Keep the AI Assistant visually distinct from the other settings tiles. */
+.aiAssistantTile {
+  border-color: rgba(245, 158, 11, 0.28) !important;
+}
+
+.aiAssistantTile:hover,
+.aiAssistantTile:focus-visible {
+  border-color: rgba(245, 158, 11, 0.62) !important;
+  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.14);
+}
+
+.aiAssistantTile:focus-visible {
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.22);
+}
+
+.aiAssistantIconWrap {
+  background: linear-gradient(
+    145deg,
+    rgba(245, 158, 11, 0.1) 0%,
+    rgba(245, 158, 11, 0.22) 100%
+  );
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.aiAssistantIcon,
+.aiAssistantChevron {
+  color: #d97706;
 }
 
 .tileTextBlock {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
 }
 
 .tileTitle {
-  font-size: 1.06rem;
+  font-size: 1rem;
   font-weight: 700;
   color: rgba(0, 0, 0, 0.88);
 }
 
 .tileAction {
   font-size: 0.875rem;
+  margin-top: 4px;
 }
 
 .tileChevron {
@@ -118,48 +165,32 @@
   padding: 24px !important;
 }
 
-/* AI Assistant card styling (5th card) */
-.tile:nth-child(5) {
-  --accent: #f59e0b;
-  --accentRgb: 245, 158, 11;
+
+.taxPreview {
+  display: grid;
+  margin-top: 8px;
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.tile:nth-child(5) .iconWrap {
-  background: linear-gradient(
-    145deg,
-    rgba(245, 158, 11, 0.08) 0%,
-    rgba(245, 158, 11, 0.16) 100%
-  );
-  border: 1px solid rgba(245, 158, 11, 0.12);
+.taxPreview span {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #dbe3ec;
 }
 
-.tile:nth-child(5):hover,
-.tile:nth-child(5):focus-visible {
-  border-color: rgba(245, 158, 11, 0.35) !important;
-  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.1);
-}
-
-.tile:nth-child(5):focus-visible {
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.16);
-}
-
-.tile:nth-child(5) .tileIcon {
-  color: #f59e0b;
-}
-
-.tile:nth-child(5) .tileChevron {
-  color: #f59e0b;
-}
+.taxPreview span:last-child { border-bottom: 0; }
+.taxPreviewTotal { background: #edfafa; font-weight: 700; }
 
 @media (max-width: 900px) {
   .wrap {
     max-width: 640px;
   }
 
-  .tile {
-    width: calc(50% - 10px);
-    max-width: none;
-  }
+  .tilesGrid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 620px) {
@@ -167,9 +198,8 @@
     max-width: 400px;
   }
 
-  .tile {
-    width: 100%;
-  }
+  .settingsHero { align-items: flex-start; flex-direction: column; }
+  .pageDescription { text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {

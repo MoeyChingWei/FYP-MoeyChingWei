@@ -31,7 +31,10 @@ import type {
   PurchaseRequestDraft,
 } from "../../modules/purchasing/requestCreation/types";
 import { getSessionUser } from "../../shared/auth/session";
-import { taxLabelForCodes } from "../../modules/purchasing/requestCreation/constants";
+import {
+  computeTaxBreakdown,
+  taxLabelForCodes,
+} from "../../modules/purchasing/requestCreation/constants";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { deductBudgetForPR, releaseBudgetForPR } from "../../shared/api/departmentBudget";
 import {
@@ -46,7 +49,7 @@ import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentAct
 const { Paragraph, Title } = Typography;
 
 function currencyLabel(currency: string, amount: number): string {
-  return `${currency} ${amount.toFixed(2)}`;
+  return `${currency === "MYR" ? "RM" : currency} ${amount.toFixed(2)}`;
 }
 
 function ItemDetailCard({
@@ -314,13 +317,16 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     );
   }
 
-  const total = request.lineItems.reduce(
+  const total = request.amountAfterTax ?? request.lineItems.reduce(
     (sum, item) => sum + (item.amountAfterTax ?? item.quantity * item.unitPrice + (item.taxAmount ?? item.quantity * item.unitPrice * (item.taxRate ?? 0) / 100)),
     0,
   );
   const supplierCount = new Set(
     request.lineItems.map((item) => item.supplierEmail || item.supplierName).filter(Boolean),
   ).size;
+  const orderSubtotal = request.subtotal ?? request.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const orderRules = request.supplierTaxRules?.length ? request.supplierTaxRules : (request.supplierTaxApplies && request.supplierTaxType ? [{ taxType: request.supplierTaxType, taxRate: request.supplierTaxRate ?? 0 }] : []);
+  const orderTaxBreakdown = computeTaxBreakdown(orderSubtotal, orderRules);
 
   return (
     <Card>
@@ -386,6 +392,18 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
             <Descriptions.Item label={t('purchaseRequest.detail.info.matchedSuppliers')}>
               {supplierCount || 0}
             </Descriptions.Item>
+            <Descriptions.Item label={t('purchaseOrder.detail.info.currency')}>
+              {request.currency === "MYR" ? "RM" : request.currency}
+            </Descriptions.Item>
+          </Descriptions>
+        </div>
+
+        <div className={styles.sectionCard}>
+          <h3 className={styles.sectionTitle}>Calculation summary</h3>
+          <Descriptions column={1} bordered size="middle">
+            <Descriptions.Item label="Items subtotal">{currencyLabel(request.currency, orderSubtotal)}</Descriptions.Item>
+            {orderRules.map((rule, index) => <Descriptions.Item key={`${rule.taxType}-${index}`} label={`${({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[rule.taxType] ?? "Tax"} (${Number(rule.taxRate ?? 0).toFixed(2)}%)`}>{currencyLabel(request.currency, orderTaxBreakdown.amounts[index] ?? 0)}</Descriptions.Item>)}
+            <Descriptions.Item label="Total payable">{currencyLabel(request.currency, total)}</Descriptions.Item>
           </Descriptions>
         </div>
 

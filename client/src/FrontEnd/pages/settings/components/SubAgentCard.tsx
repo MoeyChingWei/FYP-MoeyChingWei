@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AIAgent } from '../../../modules/aiAssistant/types';
 import styles from './SubAgentCard.module.css';
 
@@ -8,6 +9,7 @@ interface SubAgentCardProps {
 }
 
 export default function SubAgentCard({ agent }: SubAgentCardProps): React.ReactElement {
+  const { t } = useTranslation('settings');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const handleViewDetails = () => {
@@ -34,9 +36,9 @@ export default function SubAgentCard({ agent }: SubAgentCardProps): React.ReactE
         className={styles.button}
         onClick={handleViewDetails}
         onKeyDown={handleKeyDown}
-        aria-label={`View details for ${agent.name}`}
+        aria-label={t('aiAssistant.viewDetailsFor', { name: agent.name })}
       >
-        View Details
+        {t('aiAssistant.viewDetails')}
       </button>
     </div>
   );

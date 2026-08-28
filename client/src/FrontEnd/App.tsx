@@ -132,6 +132,8 @@ const NotificationsPage = lazy(() => import("./pages/Notifications"));
 const TrackingItemManagement = lazy(() => import("./pages/TrackingItemManagement"));
 const SettingsHome = lazy(() => import("./pages/settings/SettingsHome"));
 const CompanyAddressSubmodule = lazy(() => import("./pages/settings/CompanyAddressSubmodule"));
+const SupplierTaxInformationSubmodule = lazy(() => import("./pages/settings/SupplierTaxInformationSubmodule"));
+const SupplierPaymentDetailsSubmodule = lazy(() => import("./pages/settings/SupplierPaymentDetailsSubmodule"));
 const FeedbackSubmodule = lazy(() => import("./pages/settings/FeedbackSubmodule"));
 const AIAssistantSubmodule = lazy(() => import("./pages/settings/AIAssistantSubmodule"));
 const AIAssistantRedesign = lazy(() => import("./pages/settings/AIAssistantRedesign"));
@@ -189,7 +191,7 @@ function MainLayout(): React.ReactElement {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const contentBg = "#f3f6ff";
+  const contentBg = "#f4f7fb";
   const { t } = useTranslation('navigation');
 
   const selectedKey = useMenuKeyFromPath(location.pathname);
@@ -295,9 +297,6 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/supplier-overview")) return true;
       if (pathname.startsWith("/profile")) return true;
       if (pathname.startsWith("/notifications")) return true;
-      if (pathname.startsWith("/budget-management") || pathname === "/budget" || pathname.startsWith("/budget/")) return true;
-      if (pathname.startsWith("/chatbot")) return true;
-      if (pathname.startsWith("/ai-agents")) return true;
       if (pathname.startsWith("/settings/ai-assistant")) return false;
       if (pathname.startsWith("/settings")) return true;
       if (pathname.startsWith("/category-selection")) return true;
@@ -369,7 +368,7 @@ function MainLayout(): React.ReactElement {
       );
     }
     if (role === UserRole.SUPPLIER) {
-      return key === "budget-management" || key === "supplier-overview" || key === "chatbot" || key === "settings";
+      return key === "supplier-overview" || key === "settings";
     }
     return true;
   };
@@ -501,10 +500,10 @@ function MainLayout(): React.ReactElement {
 
       <Layout style={{ background: contentBg }}>
         <div style={{
-          minHeight: 72,
-          padding: "0 24px",
+          minHeight: 68,
+          padding: "0 clamp(18px, 2.4vw, 32px)",
           background: colorBgContainer,
-          borderBottom: "1px solid #e5e7eb",
+          borderBottom: "1px solid var(--app-line)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -541,8 +540,8 @@ function MainLayout(): React.ReactElement {
           id="main-content"
           className={`${appStyles.contentRoot} ${isChatbotPage ? appStyles.chatbotContentRoot : ""}`}
           style={{
-            margin: isChatbotPage ? 0 : '0 24px 24px 24px',
-            padding: isChatbotPage ? 0 : '18px 24px 24px 24px',
+            margin: isChatbotPage ? 0 : '0 clamp(12px, 1.8vw, 24px) 24px',
+            padding: isChatbotPage ? 0 : '24px clamp(14px, 2.4vw, 32px) 32px',
             background: contentBg,
             borderRadius: isChatbotPage ? 0 : 8,
             overflow: isChatbotPage ? 'hidden' : 'auto',
@@ -733,6 +732,11 @@ function MainLayout(): React.ReactElement {
             element={<CompanyAddressSubmodule />}
           />
           <Route
+            path="/settings/tax-information"
+            element={<SupplierTaxInformationSubmodule />}
+          />
+          <Route path="/settings/payment-details" element={<SupplierPaymentDetailsSubmodule />} />
+          <Route
             path="/settings/feedback"
             element={<FeedbackSubmodule />}
           />
@@ -756,7 +760,9 @@ function MainLayout(): React.ReactElement {
       </Layout>
 
       {/* ChatBot Widget - Global floating chatbot */}
-      {sessionUser && !isChatbotPage && <ChatBotWidget userId={sessionUser.id} />}
+      {sessionUser && role !== UserRole.SUPPLIER && !isChatbotPage && (
+        <ChatBotWidget userId={sessionUser.id} />
+      )}
 
       {/* Scroll Buttons - Only show on specific pages */}
       {(location.pathname.startsWith('/users-access') ||

@@ -10,6 +10,7 @@ import { ROLES } from "../constants/roles.js";
 import { PDFGenerator } from "../services/pdf-generator.js";
 import { renderEmailDocument, sendSystemNotificationEmail } from "../services/emailNotifications.js";
 import { hydrateWorkflowCompanyLogo, hydrateWorkflowItemImages, workflowHtml } from "./export.js";
+import { formatCurrency } from "../utils/currency.js";
 
 const router = express.Router();
 // Resolve storage from this module's location. The backend is commonly started
@@ -23,8 +24,8 @@ const MAX_PROOF_BYTES = 5 * 1024 * 1024;
 
 router.use(authenticateRequest);
 
-function money(value, currency = "MYR") {
-  return `${currency} ${Number(value || 0).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+function money(value, currency = "RM") {
+  return formatCurrency(value, currency);
 }
 
 function maskAccount(value) {
@@ -32,7 +33,7 @@ function maskAccount(value) {
   return account ? `****${account.slice(-4)}` : "Not provided";
 }
 
-function calculateTotals(items) {
+function calculateTotals(items, orderTax = {}) {
   if (!Array.isArray(items) || !items.length) throw new Error("Invoice must contain at least one item");
   let subtotal = 0;
   let taxTotal = 0;
@@ -49,6 +50,26 @@ function calculateTotals(items) {
     taxTotal += taxAmount;
     return { ...item, quantity, unitPrice, taxRate, taxAmount, lineTotal: lineSubtotal + taxAmount };
   });
+  const supplierTaxApplies = Boolean(orderTax?.supplierTaxApplies);
+  const configuredTaxRules = Array.isArray(orderTax?.supplierTaxRules)
+    ? orderTax.supplierTaxRules.map((rule) => ({
+      taxType: String(rule?.taxType ?? rule?.code ?? "TAX").trim().toUpperCase(),
+      taxRate: Number(rule?.taxRate ?? rule?.rate ?? 0),
+    })).filter((rule) => Number.isFinite(rule.taxRate) && rule.taxRate >= 0)
+    : [];
+  const legacyTaxRules = [{
+    taxType: String(orderTax?.supplierTaxType ?? "TAX").trim().toUpperCase(),
+    taxRate: Number(orderTax?.supplierTaxRate ?? 0),
+  }];
+  if (supplierTaxApplies) {
+    const taxRules = configuredTaxRules.length ? configuredTaxRules : legacyTaxRules;
+    taxTotal = taxRules.reduce((sum, rule) => sum + Math.round(subtotal * rule.taxRate) / 100, 0);
+    normalizedItems.forEach((item) => {
+      item.taxRate = 0;
+      item.taxAmount = 0;
+      item.lineTotal = Number((item.quantity * item.unitPrice).toFixed(2));
+    });
+  }
   return {
     items: normalizedItems,
     subtotal: Number(subtotal.toFixed(2)),
@@ -230,9 +251,9 @@ router.post("/invoices/from-grn", requireRoles([ROLES.ADMIN, ROLES.EMPLOYEE, ROL
     const candidates = await prisma.supplierInvoiceRecordStore.findMany({ select: { payload: true } });
     const existing = candidates.map((row) => row.payload).find((row) => row?.grnLocalId === grn.localId);
     if (existing) return res.json({ success: true, invoice: await hydrateWorkflowSupplierLogo(existing), created: false });
-    const totals = calculateTotals(grn.items);
+    const totals = calculateTotals(grn.items, grn);
     const today = new Date();
-    const invoice = { localId: invoiceIdForGrn(grn.localId), invoiceNumber: `INV-${today.toISOString().slice(0, 10).replace(/-/g, "")}-${String(today.getTime()).slice(-5)}`, invoiceDate: grn.completedDate || grn.createdDate, grnLocalId: grn.localId, deliveryNo: grn.deliveryNo, poLocalId: grn.poLocalId, poNumber: grn.poNumber, sourcePrNumber: grn.sourcePrNumber, sourceRequester: grn.sourceRequester, createdDate: today.toISOString(), supplierId: grn.supplierId, supplierName: grn.supplierName, supplierCompanyName: grn.supplierCompanyName, supplierLogo: grn.supplierLogo, supplierEmail: grn.supplierEmail, supplierAddress: grn.supplierAddress, currency: grn.currency || "MYR", paymentTerms: grn.paymentTerms, companyName: grn.companyName || "OptiMind ERP", companyLogo: grn.companyLogo, companyAddress: grn.companyAddress, status: "DRAFT", ...totals, approvalHistory: [] };
+    const invoice = { localId: invoiceIdForGrn(grn.localId), invoiceNumber: `INV-${today.toISOString().slice(0, 10).replace(/-/g, "")}-${String(today.getTime()).slice(-5)}`, invoiceDate: grn.completedDate || grn.createdDate, grnLocalId: grn.localId, deliveryNo: grn.deliveryNo, poLocalId: grn.poLocalId, poNumber: grn.poNumber, sourcePrNumber: grn.sourcePrNumber, sourceRequester: grn.sourceRequester, createdDate: today.toISOString(), supplierId: grn.supplierId, supplierName: grn.supplierName, supplierCompanyName: grn.supplierCompanyName, supplierLogo: grn.supplierLogo, supplierEmail: grn.supplierEmail, supplierAddress: grn.supplierAddress, currency: grn.currency || "MYR", paymentTerms: grn.paymentTerms, supplierTaxApplies: grn.supplierTaxApplies, supplierTaxType: grn.supplierTaxType, supplierTaxRate: grn.supplierTaxRate, supplierTaxRules: grn.supplierTaxRules, companyName: grn.companyName || "OptiMind ERP", companyLogo: grn.companyLogo, companyAddress: grn.companyAddress, status: "DRAFT", ...totals, amountAfterTax: totals.grandTotal, approvalHistory: [] };
     try {
       await prisma.supplierInvoiceRecordStore.create({ data: { localId: invoice.localId, payload: invoice, updatedAt: today } });
       return res.status(201).json({ success: true, invoice, created: true });
@@ -255,7 +276,7 @@ router.post("/invoices/:localId/submit", requireRoles([ROLES.SUPPLIER, ROLES.ADM
     if (req.user.role === ROLES.SUPPLIER && !isOwnInvoice(invoice, req.user)) return res.status(403).json({ success: false, message: "You can only submit your own invoice" });
     if (!["DRAFT", "REJECTED"].includes(invoice.status)) return res.status(409).json({ success: false, message: "Only draft or rejected invoices can be submitted" });
     const bankRows = await prisma.$queryRaw`SELECT "bankName", "accountName", "accountNumber" FROM "supplier_bank_details" WHERE "supplierId" = ${Number(invoice.supplierId || req.user.id)}`;
-    const totals = calculateTotals(invoice.items);
+    const totals = calculateTotals(invoice.items, invoice);
     const now = new Date().toISOString();
     Object.assign(invoice, totals, { status: "SUBMITTED", submittedDate: now, reviewedDate: undefined, reviewedBy: undefined, rejectionReason: undefined, rejectedDate: undefined, rejectedBy: undefined, bankDetails: bankRows[0] || {}, approvalHistory: appendHistory(invoice, invoice.status === "REJECTED" ? "RESUBMITTED" : "SUBMITTED", req.user) });
     await saveInvoice(invoice);
@@ -273,7 +294,7 @@ router.post("/invoices/:localId/approve", requireRoles(FINANCE_ROLES), async (re
     const invoice = await getInvoice(req.params.localId);
     if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found" });
     if (invoice.status !== "SUBMITTED") return res.status(409).json({ success: false, message: "Only submitted invoices can be approved" });
-    const totals = calculateTotals(invoice.items);
+    const totals = calculateTotals(invoice.items, invoice);
     const now = new Date();
     const paymentLocalId = `payment-${invoice.localId}`;
     const paymentNumber = `PAY-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${invoice.localId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase()}`;
@@ -303,7 +324,7 @@ router.post("/invoices/:localId/reject", requireRoles(FINANCE_ROLES), async (req
     const invoice = await getInvoice(req.params.localId);
     if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found" });
     if (invoice.status !== "SUBMITTED") return res.status(409).json({ success: false, message: "Only submitted invoices can be rejected" });
-    Object.assign(invoice, calculateTotals(invoice.items), { status: "REJECTED", reviewedDate: new Date().toISOString(), rejectedDate: new Date().toISOString(), reviewedBy: req.user.name || req.user.email, rejectedBy: req.user.name || req.user.email, rejectionReason: reason, approvalHistory: appendHistory(invoice, "REJECTED", req.user, reason) });
+    Object.assign(invoice, calculateTotals(invoice.items, invoice), { status: "REJECTED", reviewedDate: new Date().toISOString(), rejectedDate: new Date().toISOString(), reviewedBy: req.user.name || req.user.email, rejectedBy: req.user.name || req.user.email, rejectionReason: reason, approvalHistory: appendHistory(invoice, "REJECTED", req.user, reason) });
     await saveInvoice(invoice);
     const pdf = await bestEffortInvoicePdf(invoice);
     const supplier = invoice.supplierEmail ? await prisma.user.findFirst({ where: { email: { equals: invoice.supplierEmail, mode: "insensitive" }, isActive: true }, select: { id: true, email: true } }) : null;
@@ -358,14 +379,11 @@ async function downloadPdf(req, res, kind) {
       if (!relative || relative.startsWith("..") || path.isAbsolute(relative)) return null;
       return diskPath;
     };
+    // Regenerate on download so exported documents reflect the latest workflow
+    // details, including logos recovered from their linked GRN records.
+    record[field] = await generatePdf(kind, record);
+    await (kind === "invoice" ? saveInvoice(record) : savePayment(record));
     let diskPath = resolvePdfPath(record[field]);
-    // Records created before a restart may contain a path whose file was
-    // removed. Regenerate on demand so the download action remains usable.
-    if (!diskPath) {
-      record[field] = await generatePdf(kind, record);
-      await (kind === "invoice" ? saveInvoice(record) : savePayment(record));
-      diskPath = resolvePdfPath(record[field]);
-    }
     if (!diskPath) return res.status(400).json({ success: false, message: "Invalid PDF path" });
     try {
       await fs.access(diskPath);

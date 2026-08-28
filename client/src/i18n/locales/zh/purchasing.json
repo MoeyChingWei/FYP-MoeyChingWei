@@ -46,6 +46,7 @@
     "approval": {
       "title": "采购申请批准",
       "hint": "批准采购申请",
+      "selfApproval": "自行审批",
       "table": {
         "prNo": "采购申请编号",
         "status": "状态",

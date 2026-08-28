@@ -270,14 +270,14 @@ export default function PurchaseOrderReview(): React.ReactElement {
       key: "total",
       align: "right" as const,
       render: (_: unknown, order: PurchaseOrderDraft) => {
-        const total = order.lineItems.reduce(
+        const total = order.amountAfterTax ?? order.lineItems.reduce(
           (sum, item) => sum + computeDraftLineAmountAfterTax(item),
           0,
         );
 
         return (
           <Text strong>
-            {order.currency} {total.toFixed(2)}
+            {order.currency === "MYR" ? "RM" : order.currency} {total.toFixed(2)}
           </Text>
         );
       },

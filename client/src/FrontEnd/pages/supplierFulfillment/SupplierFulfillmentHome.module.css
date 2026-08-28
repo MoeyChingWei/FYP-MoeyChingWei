@@ -1,7 +1,7 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .headerRow {
@@ -20,8 +20,8 @@
 
 .content {
   display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
 }
 
@@ -32,56 +32,56 @@
 .mainColumn {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .statusGrid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .statusCard {
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid rgba(2, 6, 23, 0.08);
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(6px);
   user-select: none;
-  min-height: 138px;
+  min-height: 112px;
 }
 
 .statusLabel {
   font-size: 12px;
   color: rgba(15, 23, 42, 0.7);
   line-height: 1.4;
-  min-height: 38px;
+  min-height: 34px;
 }
 
 .statusValue {
-  margin-top: 6px;
-  font-size: 28px;
+  margin-top: 4px;
+  font-size: 26px;
   font-weight: 700;
   color: #0f172a;
   line-height: 1.1;
 }
 
 .statusAccent {
-  height: 6px;
+  height: 4px;
   border-radius: 999px;
-  margin-top: 12px;
+  margin-top: 10px;
   opacity: 0.9;
 }
 
 .notifications {
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid rgba(2, 6, 23, 0.08);
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(6px);
-  min-height: 620px;
+  min-height: 540px;
 }
 
 .notificationsBody {
-  height: 620px;
+  height: 540px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -135,9 +135,9 @@
   align-items: center;
   gap: 8px;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 10px 12px !important;
-  margin-bottom: 8px;
+  border-radius: 9px;
+  padding: 9px 10px !important;
+  margin-bottom: 7px;
 }
 
 .notificationUnread {
@@ -173,12 +173,12 @@
 .moduleGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 12px;
   align-items: start;
 }
 
 .tile {
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid rgba(2, 6, 23, 0.08);
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(6px);
@@ -193,30 +193,33 @@
 
 .tileInner {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 22px 16px;
-  text-align: center;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  text-align: left;
   user-select: none;
-  min-height: 190px;
+  min-height: 104px;
 }
 
 .iconWrap {
-  width: 74px;
-  height: 74px;
-  border-radius: 18px;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   color: white;
   background: linear-gradient(135deg, #14b8a6, #0f766e);
-  box-shadow: 0 10px 22px rgba(2, 6, 23, 0.18);
+  box-shadow: 0 7px 16px rgba(2, 6, 23, 0.16);
 }
+
+.moduleCopy { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 
 .label {
   font-weight: 700;
   color: #0f172a;
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .hint {
@@ -246,7 +249,7 @@
 
   .notificationsBody {
     height: auto;
-    max-height: 620px;
+    max-height: 540px;
   }
 }
 

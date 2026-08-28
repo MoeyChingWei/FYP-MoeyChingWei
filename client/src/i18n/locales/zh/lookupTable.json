@@ -1,4 +1,15 @@
 {
+  "page": {
+    "title": "选择类别",
+    "back": "返回类别管理",
+    "backToSettings": "返回设置",
+    "open": "打开",
+    "itemCategories": "物品类别",
+    "departments": "部门",
+    "roles": "角色",
+    "unitsOfMeasurement": "计量单位",
+    "paymentTerms": "付款条款"
+  },
   "newValuePlaceholder": "新值",
   "source": {
     "builtin": "内置",

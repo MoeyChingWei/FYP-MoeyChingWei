@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Badge, Card, Col, Row, Typography } from "antd";
 import { CreditCardOutlined, FileTextOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../shared/auth/session";
 import { canApproveSupplierInvoices, isFinanceRole, UserRole } from "../shared/types/roles";
 import { hydrateSupplierInvoices, hydrateSupplierPayments, loadSupplierInvoices, loadSupplierPayments } from "../modules/supplierFulfillment/workflow";
@@ -11,6 +12,7 @@ const { Title, Paragraph } = Typography;
 
 export default function FinanceHome(): React.ReactElement {
   const navigate = useNavigate();
+  const { t } = useTranslation("finance");
   const user = getSessionUser();
   const [pendingInvoices, setPendingInvoices] = useState(0);
   const [pendingPayments, setPendingPayments] = useState(0);
@@ -36,19 +38,19 @@ export default function FinanceHome(): React.ReactElement {
   }, [user?.role]);
 
   if (!user || !(isFinanceRole(user.role) || user.role === UserRole.ADMIN)) {
-    return <div className={styles.container}><Title level={3}>Finance</Title><Paragraph>Finance access required.</Paragraph></div>;
+    return <div className={styles.container}><Title level={3}>{t("home.title")}</Title><Paragraph>{t("home.accessRequired")}</Paragraph></div>;
   }
 
   return <div className={styles.container}>
-    <Title level={2} className={styles.title}>Finance</Title>
-    <Paragraph type="secondary" className={styles.subtitle}>Finance operations and approval workflows</Paragraph>
+    <Title level={2} className={styles.title}>{t("home.title")}</Title>
+    <Paragraph type="secondary" className={styles.subtitle}>{t("home.subtitle")}</Paragraph>
     <Row gutter={[20, 20]}>
       {canApproveSupplierInvoices(user.role) ? <Col xs={24} sm={12} lg={8} xl={6}>
         <Card hoverable className={styles.moduleCard} onClick={() => navigate("/finance/invoice-approval")}>
           <div className={styles.cardContent}>
             <div className={styles.iconWrap}><FileTextOutlined /></div>
-            <Title level={4} className={styles.cardTitle}>Supplier Invoice Approval <Badge count={pendingInvoices} overflowCount={99} /></Title>
-            <Paragraph type="secondary" className={styles.cardDescription}>Review and process supplier invoices submitted for Finance approval.</Paragraph>
+            <Title level={4} className={styles.cardTitle}>{t("home.invoiceTitle")} <Badge count={pendingInvoices} overflowCount={99} /></Title>
+            <Paragraph type="secondary" className={styles.cardDescription}>{t("home.invoiceDescription")}</Paragraph>
           </div>
         </Card>
       </Col> : null}
@@ -56,8 +58,8 @@ export default function FinanceHome(): React.ReactElement {
         <Card hoverable className={styles.moduleCard} onClick={() => navigate("/finance/payment-processing")}>
           <div className={styles.cardContent}>
             <div className={styles.paymentIconWrap}><CreditCardOutlined /></div>
-            <Title level={4} className={styles.cardTitle}>Payment Processing <Badge count={pendingPayments} overflowCount={99} /></Title>
-            <Paragraph type="secondary" className={styles.cardDescription}>View approved supplier invoices ready for Payment Team processing.</Paragraph>
+            <Title level={4} className={styles.cardTitle}>{t("home.paymentTitle")} <Badge count={pendingPayments} overflowCount={99} /></Title>
+            <Paragraph type="secondary" className={styles.cardDescription}>{t("home.paymentDescription")}</Paragraph>
           </div>
         </Card>
       </Col> : null}

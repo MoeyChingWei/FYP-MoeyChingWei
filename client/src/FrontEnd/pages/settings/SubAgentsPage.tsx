@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Breadcrumb from './components/Breadcrumb';
 import SubAgentCard from './components/SubAgentCard';
 import AgentDetailModal from './components/AgentDetailModal';
@@ -8,6 +9,7 @@ import { AIAgent } from '../../modules/aiAssistant/types';
 import styles from './SubAgentsPage.module.css';
 
 export default function SubAgentsPage(): React.ReactElement {
+  const { t } = useTranslation('settings');
   const { slug } = useParams<{ slug: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedAgent, setSelectedAgent] = useState<AIAgent | null>(null);
@@ -37,16 +39,16 @@ export default function SubAgentsPage(): React.ReactElement {
       <div className={styles.container}>
         <Breadcrumb
           items={[
-            { label: 'Settings', path: '/settings' },
-            { label: 'AI Assistant', path: '/settings/ai-assistant' },
-            { label: 'Not Found' },
+            { label: t('aiAssistant.settings'), path: '/settings' },
+            { label: t('aiAssistant.title'), path: '/settings/ai-assistant' },
+            { label: t('aiAssistant.notFound') },
           ]}
         />
         <div className={styles.errorState}>
           <div className={styles.errorIcon}>❌</div>
-          <h2 className={styles.errorTitle}>Main Agent Not Found</h2>
+          <h2 className={styles.errorTitle}>{t('aiAssistant.mainAgentNotFound')}</h2>
           <p className={styles.errorMessage}>
-            The requested agent category could not be found.
+            {t('aiAssistant.mainAgentNotFoundDescription')}
           </p>
         </div>
       </div>
@@ -59,8 +61,8 @@ export default function SubAgentsPage(): React.ReactElement {
       <div className={styles.container}>
         <Breadcrumb
           items={[
-            { label: 'Settings', path: '/settings' },
-            { label: 'AI Assistant', path: '/settings/ai-assistant' },
+            { label: t('aiAssistant.settings'), path: '/settings' },
+            { label: t('aiAssistant.title'), path: '/settings/ai-assistant' },
             { label: mainAgent.name },
           ]}
         />
@@ -73,9 +75,9 @@ export default function SubAgentsPage(): React.ReactElement {
         </header>
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>📭</div>
-          <h2 className={styles.emptyTitle}>No Sub-Agents Available</h2>
+          <h2 className={styles.emptyTitle}>{t('aiAssistant.noSubAgents')}</h2>
           <p className={styles.emptyMessage}>
-            There are currently no sub-agents configured for this category.
+            {t('aiAssistant.noSubAgentsDescription')}
           </p>
         </div>
       </div>
@@ -87,8 +89,8 @@ export default function SubAgentsPage(): React.ReactElement {
     <div className={styles.container}>
       <Breadcrumb
         items={[
-          { label: 'Settings', path: '/settings' },
-          { label: 'AI Assistant', path: '/settings/ai-assistant' },
+          { label: t('aiAssistant.settings'), path: '/settings' },
+          { label: t('aiAssistant.title'), path: '/settings/ai-assistant' },
           { label: mainAgent.name },
         ]}
       />

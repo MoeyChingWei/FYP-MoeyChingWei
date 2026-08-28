@@ -30,6 +30,7 @@ import {
 } from "antd";
 import type { TableProps } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../../shared/auth/session";
 import {
   fetchPurchasingLookups,
@@ -45,19 +46,11 @@ import {
   updateSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
-import {
-  computeAmountAfterTax,
-  MALAYSIAN_TAXES,
-  normalizeTaxCodes,
-  taxRateForCodes,
-} from "../../modules/purchasing/requestCreation/constants";
 import styles from "./SupplierInventorySubmodule.module.css";
 
 const { Text, Title } = Typography;
 
-type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "reservedQuantity" | "imageDataUrl" | "taxType" | "taxRate"> & {
-  taxType?: string[];
-};
+type InventoryFormValues = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "reservedQuantity" | "imageDataUrl">;
 
 const EMPTY_FORM: InventoryFormValues = {
   itemName: "",
@@ -66,11 +59,9 @@ const EMPTY_FORM: InventoryFormValues = {
   reorderLevel: 0,
   unit: "pcs",
   unitPrice: 0,
-  taxType: ["TAX"],
-  taxRate: 10,
 };
 
-function readImageFile(file: File): Promise<string> {
+function readImageFile(file: File): Promise<{ preview: string; file: File }> {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
       reject(new Error("Please select an image file"));
@@ -100,7 +91,14 @@ function readImageFile(file: File): Promise<string> {
         context.fillStyle = "#ffffff";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.82));
+        const preview = canvas.toDataURL("image/jpeg", 0.82);
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("Image could not be processed"));
+            return;
+          }
+          resolve({ preview, file: new File([blob], "inventory-image.jpg", { type: "image/jpeg" }) });
+        }, "image/jpeg", 0.82);
       };
       image.src = String(reader.result);
     };
@@ -112,11 +110,11 @@ function availableQuantity(row: SupplierInventoryItem): number {
   return Math.max(0, row.quantity - Number(row.reservedQuantity ?? 0));
 }
 
-function stockStatus(row: SupplierInventoryItem): "Healthy" | "Low stock" | "Out of stock" {
+function stockStatus(row: SupplierInventoryItem): "In stock" | "Low stock" | "Out of stock" {
   const available = availableQuantity(row);
   if (available <= 0) return "Out of stock";
   if (available <= row.reorderLevel) return "Low stock";
-  return "Healthy";
+  return "In stock";
 }
 
 function formatCurrency(amount: number): string {
@@ -128,6 +126,7 @@ function formatCurrency(amount: number): string {
 
 export default function SupplierInventorySubmodule(): React.ReactElement {
   const navigate = useNavigate();
+  const { t } = useTranslation("supplier");
   const sessionUser = useMemo(() => getSessionUser(), []);
   const supplierId = sessionUser?.id;
   const [rows, setRows] = useState<SupplierInventoryItem[]>(() => seedSampleSupplierInventory(supplierId));
@@ -136,6 +135,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<SupplierInventoryItem | null>(null);
   const [itemImage, setItemImage] = useState<string | undefined>();
+  const [itemImageFile, setItemImageFile] = useState<File | undefined>();
   const [categoryOptions, setCategoryOptions] = useState<string[]>(() => mergePurchasingOptions("ITEM_CATEGORY", []));
   const [unitOptions, setUnitOptions] = useState<string[]>(() => mergePurchasingOptions("UNIT_OF_MEASURE", []));
   const [form] = Form.useForm<InventoryFormValues>();
@@ -196,12 +196,18 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   }, [rows, searchValue, statusFilter]);
 
   const totalUnits = rows.reduce((sum, row) => sum + availableQuantity(row), 0);
-  const lowStockCount = rows.filter((row) => stockStatus(row) !== "Healthy").length;
+  const lowStockCount = rows.filter((row) => stockStatus(row) !== "In stock").length;
   const inventoryValue = rows.reduce((sum, row) => sum + row.quantity * row.unitPrice, 0);
+  const statusLabel = (status: ReturnType<typeof stockStatus>): string => {
+    if (status === "In stock") return t("inventory.inStock");
+    if (status === "Low stock") return t("inventory.lowStock");
+    return t("inventory.outOfStock");
+  };
 
   const openCreate = () => {
     setEditingRow(null);
     setItemImage(undefined);
+    setItemImageFile(undefined);
     form.setFieldsValue(EMPTY_FORM);
     setModalOpen(true);
   };
@@ -209,6 +215,7 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   const openEdit = (row: SupplierInventoryItem) => {
     setEditingRow(row);
     setItemImage(row.imageDataUrl);
+    setItemImageFile(undefined);
     form.setFieldsValue({
       itemName: row.itemName,
       category: row.category,
@@ -216,8 +223,6 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       reorderLevel: row.reorderLevel,
       unit: row.unit,
       unitPrice: row.unitPrice,
-      taxType: normalizeTaxCodes(row.taxType),
-      taxRate: taxRateForCodes(row.taxType),
     });
     setModalOpen(true);
   };
@@ -234,39 +239,37 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       ...values,
       itemName: values.itemName.trim(),
       category: values.category.trim() || "Uncategorized",
-      imageDataUrl: itemImage,
-      taxType: normalizeTaxCodes(values.taxType).join(","),
-      taxRate: taxRateForCodes(values.taxType),
+      imageDataUrl: itemImageFile ? undefined : itemImage,
     };
     try {
       if (editingRow) {
-        const updated = await updateSupplierInventory({ ...editingRow, ...normalized });
+        const updated = await updateSupplierInventory({ ...editingRow, ...normalized }, itemImageFile);
         persistRows(rows.map((row) => row.id === editingRow.id ? updated : row));
-        message.success("Inventory item updated");
+        message.success(t("inventory.updated"));
       } else {
-        const created = await createSupplierInventory({ supplierId, ...normalized });
+        const created = await createSupplierInventory({ supplierId, ...normalized }, itemImageFile);
         persistRows([...rows, created]);
-        message.success("Inventory item added");
+        message.success(t("inventory.added"));
       }
       setModalOpen(false);
     } catch (error) {
-      message.error(error instanceof Error ? error.message : "Inventory could not be saved");
+      message.error(error instanceof Error ? error.message : t("inventory.saveError"));
     }
   };
 
   const removeRow = (row: SupplierInventoryItem) => {
     Modal.confirm({
-      title: `Delete ${row.itemName}?`,
-      content: "This inventory record will be removed from your supplier stock list.",
-      okText: "Delete",
+      title: t("inventory.deleteTitle", { itemName: row.itemName }),
+      content: t("inventory.deleteDescription"),
+      okText: t("common.delete"),
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
           await deleteSupplierInventory(row.id);
           persistRows(rows.filter((item) => item.id !== row.id));
-          message.success("Inventory item deleted");
+          message.success(t("inventory.deleted"));
         } catch (error) {
-          message.error(error instanceof Error ? error.message : "Inventory item could not be deleted");
+          message.error(error instanceof Error ? error.message : t("inventory.deleteError"));
         }
       },
     });
@@ -274,25 +277,25 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
 
   const columns: TableProps<SupplierInventoryItem>["columns"] = [
     {
-      title: "Item",
+      title: t("inventory.items"),
       key: "item",
       render: (_, row) => <div className={styles.itemCell}>{row.imageDataUrl ? <img src={row.imageDataUrl} alt="" className={styles.itemThumbnail} /> : <span className={styles.itemThumbnailPlaceholder}><PictureOutlined /></span>}<span className={styles.itemCopy}><strong>{row.itemName}</strong><Text type="secondary">{row.category}</Text></span></div>,
     },
-    { title: "Category", dataIndex: "category", key: "category" },
+    { title: t("inventory.category"), dataIndex: "category", key: "category" },
     {
-      title: "Available",
+      title: t("inventory.available"),
       key: "available",
       sorter: (a, b) => availableQuantity(a) - availableQuantity(b),
       render: (_, row) => <strong>{availableQuantity(row).toLocaleString()} {row.unit}</strong>,
     },
     {
-      title: "Reserved",
+      title: t("inventory.reserved"),
       key: "reserved",
       sorter: (a, b) => Number(a.reservedQuantity ?? 0) - Number(b.reservedQuantity ?? 0),
       render: (_, row) => <Text type={row.reservedQuantity ? "warning" : "secondary"}>{Number(row.reservedQuantity ?? 0).toLocaleString()} {row.unit}</Text>,
     },
     {
-      title: "Value",
+      title: t("inventory.unitPrice"),
       dataIndex: "unitPrice",
       key: "unitPrice",
       align: "right",
@@ -300,29 +303,25 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
       render: (value) => formatCurrency(value),
     },
     {
-      title: "After tax value",
-      key: "afterTaxValue",
+      title: t("inventory.totalValue"),
+      key: "totalValue",
       align: "right",
-      sorter: (a, b) =>
-        computeAmountAfterTax(1, a.unitPrice, a.taxRate) -
-        computeAmountAfterTax(1, b.unitPrice, b.taxRate),
-      render: (_, row) => (
-        <strong>{formatCurrency(computeAmountAfterTax(1, row.unitPrice, row.taxRate))}</strong>
-      ),
+      sorter: (a, b) => a.quantity * a.unitPrice - b.quantity * b.unitPrice,
+      render: (_, row) => formatCurrency(row.quantity * row.unitPrice),
     },
     {
-      title: "Status",
+      title: t("inventory.status"),
       key: "status",
       render: (_, row) => {
         const status = stockStatus(row);
-        return <Tag color={status === "Healthy" ? "green" : status === "Low stock" ? "orange" : "red"}>{status}</Tag>;
+        return <Tag color={status === "In stock" ? "green" : status === "Low stock" ? "orange" : "red"}>{statusLabel(status)}</Tag>;
       },
     },
     {
-      title: "Actions",
+      title: t("inventory.actions"),
       key: "actions",
       align: "right",
-      render: (_, row) => <Flex justify="flex-end" gap={4}><Button type="text" icon={<EditOutlined />} aria-label={`Edit ${row.itemName}`} onClick={() => openEdit(row)} /><Button type="text" danger icon={<DeleteOutlined />} aria-label={`Delete ${row.itemName}`} onClick={() => removeRow(row)} /></Flex>,
+      render: (_, row) => <Flex justify="flex-end" gap={4}><Button type="text" icon={<EditOutlined />} aria-label={`${t("inventory.edit")} ${row.itemName}`} onClick={() => openEdit(row)} /><Button type="text" danger icon={<DeleteOutlined />} aria-label={`${t("common.delete")} ${row.itemName}`} onClick={() => removeRow(row)} /></Flex>,
     },
   ];
 
@@ -330,67 +329,64 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
     <div className={styles.page}>
       <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
         <div>
-          <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview")} className={styles.backButton}>Supplier Overview</Button>
-          <Title level={3} className={styles.title}>My Inventory</Title>
-          <Text type="secondary">Track stock available for incoming orders and deliveries.</Text>
+          <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview")} className={styles.backButton}>{t("inventory.back")}</Button>
+          <Title level={3} className={styles.title}>{t("inventory.title")}</Title>
+          <Text type="secondary">{t("inventory.description")}</Text>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>Add inventory item</Button>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>{t("inventory.add")}</Button>
       </Flex>
 
       <Row gutter={[14, 14]}>
-        <Col xs={24} sm={12} lg={6}><Card className={styles.metricCard}><Statistic title="Items" value={rows.length} /></Card></Col>
-        <Col xs={24} sm={12} lg={6}><Card className={styles.metricCard}><Statistic title="Units on hand" value={totalUnits} prefix={<InboxOutlined />} /></Card></Col>
-        <Col xs={24} sm={12} lg={6}><Card className={styles.metricCard}><Statistic title="Inventory value" value={inventoryValue} precision={2} prefix="$" /></Card></Col>
-        <Col xs={24} sm={12} lg={6}><Card className={`${styles.metricCard} ${lowStockCount ? styles.warningMetric : ""}`}><Statistic title="Low stock items" value={lowStockCount} prefix={<WarningOutlined />} /></Card></Col>
+        <Col xs={24} sm={12} lg={6}><Card className={styles.metricCard}><Statistic title={t("inventory.items")} value={rows.length} /></Card></Col>
+        <Col xs={24} sm={12} lg={6}><Card className={styles.metricCard}><Statistic title={t("inventory.unitsOnHand")} value={totalUnits} prefix={<InboxOutlined />} /></Card></Col>
+        <Col xs={24} sm={12} lg={6}><Card className={styles.metricCard}><Statistic title={t("inventory.inventoryValue")} value={inventoryValue} precision={2} prefix="RM " /></Card></Col>
+        <Col xs={24} sm={12} lg={6}><Card className={`${styles.metricCard} ${lowStockCount ? styles.warningMetric : ""}`}><Statistic title={t("inventory.lowStockItems")} value={lowStockCount} prefix={<WarningOutlined />} /></Card></Col>
       </Row>
 
       <Card className={styles.tableCard} bordered={false}>
         <Flex justify="space-between" align="center" wrap="wrap" gap={12} className={styles.tableToolbar}>
-          <Input allowClear prefix={<SearchOutlined />} placeholder="Search item or category" value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className={styles.search} />
-          <Select value={statusFilter} onChange={setStatusFilter} options={[{ value: "ALL", label: "All statuses" }, { value: "Healthy", label: "Healthy" }, { value: "Low stock", label: "Low stock" }, { value: "Out of stock", label: "Out of stock" }]} />
+          <Input allowClear prefix={<SearchOutlined />} placeholder={t("inventory.searchPlaceholder")} value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className={styles.search} />
+        <Select value={statusFilter} onChange={setStatusFilter} options={[{ value: "ALL", label: t("inventory.allStatuses") }, { value: "In stock", label: t("inventory.inStock") }, { value: "Low stock", label: t("inventory.lowStock") }, { value: "Out of stock", label: t("inventory.outOfStock") }]} />
         </Flex>
-        {filteredRows.length ? <Table rowKey="id" columns={columns} dataSource={filteredRows} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 1180 }} /> : <Empty description={rows.length ? "No matching inventory items" : "No inventory items yet"} className={styles.empty} />}
+        {filteredRows.length ? <Table rowKey="id" columns={columns} dataSource={filteredRows} pagination={{ pageSize: 8, showSizeChanger: false }} scroll={{ x: 1160 }} /> : <Empty description={rows.length ? t("inventory.noMatching") : t("inventory.noItems")} className={styles.empty} />}
       </Card>
 
-      <Modal title={editingRow ? "Edit inventory item" : "Add inventory item"} open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} okText={editingRow ? "Save changes" : "Add item"} destroyOnHidden>
+      <Modal title={editingRow ? t("inventory.edit") : t("inventory.add")} open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} okText={editingRow ? t("inventory.saveChanges") : t("inventory.add")} destroyOnHidden>
         <Form form={form} layout="vertical" initialValues={EMPTY_FORM} onFinish={handleSubmit}>
-          <Form.Item label="Item image">
+          <Form.Item label={t("inventory.itemImage")}>
             <div className={styles.imageField}>
               <Upload
                 accept="image/png,image/jpeg,image/webp"
                 showUploadList={false}
                 beforeUpload={(file) => {
                   void readImageFile(file)
-                    .then(setItemImage)
+                    .then(({ preview, file: compressedFile }) => {
+                      setItemImage(preview);
+                      setItemImageFile(compressedFile);
+                    })
                     .catch((error: Error) => message.error(error.message));
                   return false;
                 }}
               >
                 <button type="button" className={styles.imageUploadButton}>
-                  {itemImage ? <img src={itemImage} alt="Item preview" /> : <><PictureOutlined /><span>Upload image</span><small>PNG, JPG or WebP</small></>}
+                  {itemImage ? <img src={itemImage} alt={t("inventory.itemPreview")} /> : <><PictureOutlined /><span>{t("inventory.uploadImage")}</span><small>{t("inventory.imageFormats")}</small></>}
                 </button>
               </Upload>
-              {itemImage && <Button type="text" danger icon={<DeleteOutlined />} onClick={() => setItemImage(undefined)}>Remove image</Button>}
+              {itemImage && <Button type="text" danger icon={<DeleteOutlined />} onClick={() => { setItemImage(undefined); setItemImageFile(undefined); }}>{t("inventory.removeImage")}</Button>}
             </div>
           </Form.Item>
           <Row gutter={12}>
-            <Col span={24}><Form.Item name="itemName" label="Item name" rules={[{ required: true, message: "Enter an item name" }]}><Input placeholder="Product or material name" /></Form.Item></Col>
+            <Col span={24}><Form.Item name="itemName" label={t("inventory.itemName")} rules={[{ required: true, message: t("inventory.enterItemName") }]}><Input placeholder={t("inventory.itemNamePlaceholder")} /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
-            <Col span={12}><Form.Item name="category" label="Category" rules={[{ required: true, message: "Select a category" }]}><Select showSearch placeholder="Select category" optionFilterProp="label" options={categoryOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
-            <Col span={12}><Form.Item name="unit" label="Unit" rules={[{ required: true }]}><Select showSearch optionFilterProp="label" options={unitOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="category" label={t("inventory.category")} rules={[{ required: true, message: t("inventory.selectCategory") }]}><Select showSearch placeholder={t("inventory.categoryPlaceholder")} optionFilterProp="label" options={categoryOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="unit" label={t("inventory.unit")} rules={[{ required: true }]}><Select showSearch optionFilterProp="label" options={unitOptions.map((value) => ({ value, label: value }))} /></Form.Item></Col>
           </Row>
           <Row gutter={12}>
-            <Col span={12}><Form.Item name="quantity" label="Quantity" rules={[{ required: true }]}><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>
-            <Col span={12}><Form.Item name="reorderLevel" label="Reorder level"><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="quantity" label={t("inventory.quantity")} rules={[{ required: true }]}><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="reorderLevel" label={t("inventory.reorderLevel")}><InputNumber min={0} style={{ width: "100%" }} /></Form.Item></Col>
           </Row>
-          <Row gutter={12}>
-            <Col span={12}><Form.Item name="unitPrice" label="Unit price"><InputNumber min={0} precision={2} style={{ width: "100%" }} /></Form.Item></Col>
-            <Col span={12}><Form.Item name="taxType" label="Applicable taxes"><Select mode="multiple" allowClear placeholder="No tax" options={Object.entries(MALAYSIAN_TAXES).map(([value, tax]) => ({ value, label: `${tax.label} (${tax.rate}%)` }))} /></Form.Item></Col>
-          </Row>
-          <Form.Item noStyle shouldUpdate={(prev, next) => prev.taxType !== next.taxType}>
-            {({ getFieldValue }) => <Form.Item label="Tax rate (%)"><InputNumber readOnly value={taxRateForCodes(getFieldValue("taxType"))} precision={2} style={{ width: "100%" }} /></Form.Item>}
-          </Form.Item>
+          <Form.Item name="unitPrice" label={t("inventory.unitPrice")}><InputNumber min={0} precision={2} style={{ width: "100%" }} /></Form.Item>
         </Form>
       </Modal>
     </div>

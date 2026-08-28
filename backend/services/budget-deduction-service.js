@@ -16,6 +16,10 @@ function isRejectedStatus(status) {
 }
 
 function calculatePRTotal(payload) {
+  const documentTotal = payload?.amountAfterTax ?? payload?.grandTotal ?? payload?.totalAmount;
+  if (documentTotal != null && Number.isFinite(Number(documentTotal))) {
+    return new Decimal(documentTotal);
+  }
   const items = Array.isArray(payload?.lineItems) ? payload.lineItems : (Array.isArray(payload?.items) ? payload.items : []);
   return items.reduce((sum, item) => {
     const quantity = new Decimal(item.quantity || 0);

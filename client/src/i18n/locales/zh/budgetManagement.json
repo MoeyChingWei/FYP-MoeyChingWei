@@ -1,6 +1,8 @@
 {
   "budgetManagement": "预算管理",
   "departmentBudgetForecasting": "部门预算预测",
+  "financeBudgetDashboard": "财务预算仪表板",
+  "financeDashboardDescription": "查看预算分配和部门支出",
   "departmentForecastingDescription": "查看部门预算、AI 预测和预算调整申请",
   "homeDescription": "有效管理和预测您组织的预算",
   "period": "期间",
@@ -24,5 +26,8 @@
   "categoryBreakdown": "类别细分",
   "forecastPredictions": "预测预估",
   "department": "部门",
-  "allDepartments": "所有部门"
+  "allDepartments": "所有部门",
+  "allocated": "已分配", "spent": "已支出", "reserved": "已预留", "remaining": "剩余", "usage": "使用率", "status": "状态", "action": "操作", "details": "详情",
+  "onTrack": "正常", "warning": "警告", "exceeded": "超出预算", "exceededBy": "超出 RM {{amount}}", "budgetUsage": "预算使用情况 - {{department}}", "periodLabel": "期间：{{period}}",
+  "budgetUsageTrend": "预算使用趋势", "historicalBudget": "历史预算", "actualPurchasingSpend": "实际采购支出", "averageUsage": "平均使用率（{{count}} 个月有预算）", "noHistoricalData": "没有历史数据"
 }

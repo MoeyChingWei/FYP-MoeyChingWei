@@ -33,6 +33,14 @@ export interface PurchaseRequestDraft {
   currency: string;
   status: PurchaseOrderStatus;
   lineItems: DraftLineItem[];
+  /** Supplier-level tax, applied once to the total purchase request. */
+  subtotal?: number;
+  supplierTaxApplies?: boolean;
+  supplierTaxType?: string;
+  supplierTaxRate?: number;
+  supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
+  taxAmount?: number;
+  amountAfterTax?: number;
   /** Payment terms selected for the whole purchase request. */
   paymentTerms?: string;
   notes?: string;

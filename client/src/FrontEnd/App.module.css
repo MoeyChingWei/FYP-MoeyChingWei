@@ -5,6 +5,12 @@
   color: #0f172a;
 }
 
+.contentRoot:not(.chatbotContentRoot) > :global(*) {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+
 .chatbotContentRoot {
   display: flex;
   flex-direction: column;

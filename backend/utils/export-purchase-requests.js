@@ -1,4 +1,5 @@
 import { Parser } from 'json2csv';
+import { displayCurrency } from './currency.js';
 
 /**
  * Export purchase requests to CSV format
@@ -19,7 +20,7 @@ export function exportPurchaseRequestsToCSV(requests) {
       requestBy: request.requestBy || 'N/A',
       requestDate: request.requestDate || 'N/A',
       createdByEmail: request.createdByEmail || 'N/A',
-      currency: request.currency || 'MYR',
+      currency: displayCurrency(request.currency),
       urgency: request.urgency || 'normal',
       procurementNotes: request.procurementNotes || '',
     };

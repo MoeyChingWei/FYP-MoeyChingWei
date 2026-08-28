@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button, Card, Col, Flex, Row, Typography } from "antd";
 import {
   AppstoreOutlined,
@@ -17,6 +18,7 @@ const { Text } = Typography;
 
 export default function CategorySelectionManagement(): React.ReactElement {
   const navigate = useNavigate();
+  const { t } = useTranslation("lookupTable");
 
   return (
     <Flex vertical gap={20} className={styles.wrap}>
@@ -26,10 +28,10 @@ export default function CategorySelectionManagement(): React.ReactElement {
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate("/settings")}
           style={{ paddingInline: 0 }}
-          aria-label="Back to Settings"
+          aria-label={t("page.backToSettings")}
         />
         <Text strong className={styles.pageHeading}>
-          Category of Selection
+          {t("page.title")}
         </Text>
       </Flex>
       <Row gutter={[20, 20]} className={styles.grid}>
@@ -46,7 +48,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
                 navigate("/category-selection/item-categories");
               }
             }}
-            aria-label="Open item categories"
+            aria-label={t("page.itemCategories")}
           >
             <Flex vertical align="center" gap={14} className={styles.tileInner}>
               <div className={styles.iconWrap} aria-hidden>
@@ -54,10 +56,10 @@ export default function CategorySelectionManagement(): React.ReactElement {
               </div>
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
-                  Item categories
+                  {t("page.itemCategories")}
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
-                  <Text type="secondary">Open</Text>
+                  <Text type="secondary">{t("page.open")}</Text>
                   <RightOutlined className={styles.tileChevron} />
                 </Flex>
               </div>
@@ -77,7 +79,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
                 navigate("/category-selection/units-of-measurement");
               }
             }}
-            aria-label="Open units of measurement"
+            aria-label={t("page.unitsOfMeasurement")}
           >
             <Flex vertical align="center" gap={14} className={styles.tileInner}>
               <div className={styles.iconWrap} aria-hidden>
@@ -85,10 +87,10 @@ export default function CategorySelectionManagement(): React.ReactElement {
               </div>
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
-                  Units of measurement
+                  {t("page.unitsOfMeasurement")}
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
-                  <Text type="secondary">Open</Text>
+                  <Text type="secondary">{t("page.open")}</Text>
                   <RightOutlined className={styles.tileChevron} />
                 </Flex>
               </div>
@@ -108,7 +110,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
                 navigate("/category-selection/payment-terms");
               }
             }}
-            aria-label="Open payment terms"
+            aria-label={t("page.paymentTerms")}
           >
             <Flex vertical align="center" gap={14} className={styles.tileInner}>
               <div className={styles.iconWrap} aria-hidden>
@@ -116,10 +118,10 @@ export default function CategorySelectionManagement(): React.ReactElement {
               </div>
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
-                  Payment terms
+                  {t("page.paymentTerms")}
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
-                  <Text type="secondary">Open</Text>
+                  <Text type="secondary">{t("page.open")}</Text>
                   <RightOutlined className={styles.tileChevron} />
                 </Flex>
               </div>
@@ -139,7 +141,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
                 navigate("/category-selection/departments");
               }
             }}
-            aria-label="Open departments"
+            aria-label={t("page.departments")}
           >
             <Flex vertical align="center" gap={14} className={styles.tileInner}>
               <div className={styles.iconWrap} aria-hidden>
@@ -147,10 +149,10 @@ export default function CategorySelectionManagement(): React.ReactElement {
               </div>
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
-                  Departments
+                  {t("page.departments")}
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
-                  <Text type="secondary">Open</Text>
+                  <Text type="secondary">{t("page.open")}</Text>
                   <RightOutlined className={styles.tileChevron} />
                 </Flex>
               </div>
@@ -170,7 +172,7 @@ export default function CategorySelectionManagement(): React.ReactElement {
                 navigate("/category-selection/roles");
               }
             }}
-            aria-label="Open roles"
+            aria-label={t("page.roles")}
           >
             <Flex vertical align="center" gap={14} className={styles.tileInner}>
               <div className={styles.iconWrap} aria-hidden>
@@ -178,10 +180,10 @@ export default function CategorySelectionManagement(): React.ReactElement {
               </div>
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
-                  Roles
+                  {t("page.roles")}
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
-                  <Text type="secondary">Open</Text>
+                  <Text type="secondary">{t("page.open")}</Text>
                   <RightOutlined className={styles.tileChevron} />
                 </Flex>
               </div>

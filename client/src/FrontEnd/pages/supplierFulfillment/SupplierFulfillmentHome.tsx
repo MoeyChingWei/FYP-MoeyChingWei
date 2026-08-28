@@ -525,8 +525,10 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
                   <div className={styles.iconWrap}>
                     {item.icon}
                   </div>
-                  <div className={styles.label}>{item.title}</div>
-                  <div className={styles.hint}>{item.hint}</div>
+                  <div className={styles.moduleCopy}>
+                    <div className={styles.label}>{item.title}</div>
+                    <div className={styles.hint}>{item.hint}</div>
+                  </div>
                 </div>
               </Card>
             ))}

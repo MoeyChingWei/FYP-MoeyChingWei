@@ -9,7 +9,8 @@
   },
   "actions": {
     "open": "Open",
-    "manage": "Manage"
+    "manage": "Manage",
+    "cancel": "Cancel"
   },
   "description": "Manage your system preferences and configurations",
   "companyAddress": {
@@ -29,6 +30,50 @@
     "placeholder": "Enter company address",
     "supplierPlaceholder": "Enter your supplier company address",
     "saveButton": "Save Details"
+  },
+  "gmail": {
+    "title": "Connect Gmail",
+    "description": "Automatically organise OptiMind emails with a Gmail label.",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connectedMessage": "Gmail connected to OptiMind"
+  },
+  "taxInformation": {
+    "title": "Tax information",
+    "tileDescription": "Set the default taxes used for your purchase orders.",
+    "backLabel": "Back to Settings",
+    "notice": "This setting applies once to the total of each purchase order, not to individual inventory items.",
+    "defaultOrderTax": "Default order taxes",
+    "description": "These settings are saved separately and used when a purchaser selects one of your inventory items.",
+    "taxApplies": "Tax applies to my purchase orders",
+    "taxes": "Taxes",
+    "addTax": "Add tax",
+    "removeTax": "Remove tax",
+    "yes": "Yes",
+    "no": "No",
+    "taxType": "Tax type",
+    "taxRate": "Tax rate (%)",
+    "selectTaxType": "Select tax type",
+    "selectTaxTypeError": "Select a tax type",
+    "taxRateError": "Enter a tax rate",
+    "salesTax": "Sales tax",
+    "serviceTax": "Service tax",
+    "otherTax": "Other tax",
+    "noTax": "No tax",
+    "preview": "Preview",
+    "orderSubtotal": "Order subtotal",
+    "totalPayable": "Total payable",
+    "newRequestsOnly": "Changes affect new purchase requests only.",
+    "save": "Save tax settings",
+    "saved": "Tax settings saved",
+    "loadError": "Unable to load tax settings",
+    "saveError": "Unable to save tax settings"
+  },
+  "paymentDetails": {
+    "title": "Payment details", "tileDescription": "Manage the bank account used to receive supplier payments.", "backLabel": "Back to Settings", "description": "These details are shared with Finance only for approved supplier payments.", "bankName": "Bank name", "accountName": "Account holder name", "accountNumber": "Account number", "accountNumberRule": "Use letters, numbers, spaces or hyphens only", "save": "Save payment details", "saved": "Payment details updated", "loadError": "Unable to load payment details", "saveError": "Unable to save payment details"
+  },
+  "aiAssistant": {
+    "configuration": "AI Assistant Configuration", "description": "Configure and manage AI assistants to automate procurement tasks", "tip": "Tip:", "tipDescription": "Click any Main Agent card to view all its Sub Agents", "settings": "Settings", "title": "AI Assistant", "notFound": "Not Found", "mainAgentNotFound": "Main Agent Not Found", "mainAgentNotFoundDescription": "The requested agent category could not be found.", "noSubAgents": "No Sub-Agents Available", "noSubAgentsDescription": "There are currently no sub-agents configured for this category.", "viewDetails": "View Details", "viewDetailsFor": "View details for {{name}}", "viewAgents": "View {{name}} agents", "subAgents": "{{count}} Sub Agents", "clickForDetails": "Click to view details", "breadcrumb": "Breadcrumb", "goBack": "Go back"
   },
   "feedback": {
     "title": "Feedback",

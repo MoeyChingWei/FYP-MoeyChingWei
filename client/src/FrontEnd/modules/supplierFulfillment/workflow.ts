@@ -10,6 +10,7 @@ import {
   queueWorkflowRowsSave,
 } from "../../shared/api/workflowStorage";
 import { loadSupplierFinanceInvoices, loadSupplierFinancePayments } from "../../shared/api/supplierFinance";
+import { computeTaxBreakdown } from "../purchasing/requestCreation/constants";
 
 export type OrderAcknowledgementStatus =
   | "PENDING_ORDER_ACKNOWLEDGE"
@@ -40,6 +41,13 @@ export interface SupplierOrderAcknowledgementRecord {
   department?: string;
   currency: string;
   paymentTerms?: string;
+  subtotal?: number;
+  supplierTaxApplies?: boolean;
+  supplierTaxType?: string;
+  supplierTaxRate?: number;
+  supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
+  taxAmount?: number;
+  amountAfterTax?: number;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -69,6 +77,13 @@ export interface SupplierDeliveryRecord {
   department?: string;
   currency: string;
   paymentTerms?: string;
+  subtotal?: number;
+  supplierTaxApplies?: boolean;
+  supplierTaxType?: string;
+  supplierTaxRate?: number;
+  supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
+  taxAmount?: number;
+  amountAfterTax?: number;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -97,6 +112,13 @@ export interface SupplierGrnRecord {
   department?: string;
   currency: string;
   paymentTerms?: string;
+  subtotal?: number;
+  supplierTaxApplies?: boolean;
+  supplierTaxType?: string;
+  supplierTaxRate?: number;
+  supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
+  taxAmount?: number;
+  amountAfterTax?: number;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -131,6 +153,12 @@ export interface SupplierInvoiceRecord {
   supplierAddress?: string;
   currency: string;
   paymentTerms?: string;
+  supplierTaxApplies?: boolean;
+  supplierTaxType?: string;
+  supplierTaxRate?: number;
+  supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
+  taxAmount?: number;
+  amountAfterTax?: number;
   companyName?: string;
   companyLogo?: string;
   companyAddress: string;
@@ -528,14 +556,22 @@ export function updateSupplierPayment(
   saveSupplierPayments(loadSupplierPayments().map((row) => row.localId === localId ? updater(row) : row));
 }
 
-function invoiceTotals(items: DraftLineItem[]): { subtotal: number; taxTotal: number; grandTotal: number } {
+function invoiceTotals(items: DraftLineItem[], orderTax?: { supplierTaxApplies?: boolean; supplierTaxType?: string; supplierTaxRate?: number; supplierTaxRules?: Array<{ taxType: string; taxRate: number }> }): { subtotal: number; taxTotal: number; grandTotal: number } {
   const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const taxTotal = items.reduce((sum, item) => sum + (item.taxAmount ?? item.quantity * item.unitPrice * (item.taxRate ?? 0) / 100), 0);
-  return { subtotal, taxTotal, grandTotal: subtotal + taxTotal };
+  const legacyRules = Number.isFinite(Number(orderTax?.supplierTaxRate))
+    ? [{ taxType: String(orderTax?.supplierTaxType ?? "TAX"), taxRate: Number(orderTax?.supplierTaxRate ?? 0) }]
+    : [];
+  const orderRules = orderTax?.supplierTaxRules?.length ? orderTax.supplierTaxRules : legacyRules;
+  const taxTotal = orderTax?.supplierTaxApplies && orderRules.length
+    ? computeTaxBreakdown(subtotal, orderRules).total
+    : items.reduce((sum, item) => sum + (item.taxAmount ?? item.quantity * item.unitPrice * (item.taxRate ?? 0) / 100), 0);
+  const roundedSubtotal = Math.round(subtotal * 100) / 100;
+  const roundedTax = Math.round(taxTotal * 100) / 100;
+  return { subtotal: roundedSubtotal, taxTotal: roundedTax, grandTotal: Math.round((roundedSubtotal + roundedTax) * 100) / 100 };
 }
 
 export function createSupplierInvoiceFromGrn(row: SupplierGrnRecord): SupplierInvoiceRecord {
-  const totals = invoiceTotals(row.items);
+  const totals = invoiceTotals(row.items, row);
   return {
     localId: newTempId(),
     invoiceNumber: generateInvoiceNumber(),
@@ -555,6 +591,13 @@ export function createSupplierInvoiceFromGrn(row: SupplierGrnRecord): SupplierIn
     supplierAddress: row.supplierAddress,
     currency: row.currency,
     paymentTerms: row.paymentTerms,
+    subtotal: row.subtotal,
+    supplierTaxApplies: row.supplierTaxApplies,
+    supplierTaxType: row.supplierTaxType,
+    supplierTaxRate: row.supplierTaxRate,
+    supplierTaxRules: row.supplierTaxRules,
+    taxAmount: row.taxAmount,
+    amountAfterTax: row.amountAfterTax,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
@@ -580,6 +623,13 @@ export function createOrderAcknowledgementRecordsFromPurchaseOrder(
     department: order.department,
     currency: order.currency,
     paymentTerms: order.paymentTerms,
+    subtotal: order.subtotal,
+    supplierTaxApplies: order.supplierTaxApplies,
+    supplierTaxType: order.supplierTaxType,
+    supplierTaxRate: order.supplierTaxRate,
+    supplierTaxRules: order.supplierTaxRules,
+    taxAmount: order.taxAmount,
+    amountAfterTax: order.amountAfterTax,
     companyName: getCompanyName(),
     companyLogo: getCompanyLogo(),
     companyAddress,
@@ -611,6 +661,13 @@ export function createDeliveryFromAcknowledgement(
     department: row.department,
     currency: row.currency,
     paymentTerms: row.paymentTerms,
+    subtotal: row.subtotal,
+    supplierTaxApplies: row.supplierTaxApplies,
+    supplierTaxType: row.supplierTaxType,
+    supplierTaxRate: row.supplierTaxRate,
+    supplierTaxRules: row.supplierTaxRules,
+    taxAmount: row.taxAmount,
+    amountAfterTax: row.amountAfterTax,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
@@ -642,6 +699,13 @@ export function createGrnFromDelivery(
     department: row.department,
     currency: row.currency,
     paymentTerms: row.paymentTerms,
+    subtotal: row.subtotal,
+    supplierTaxApplies: row.supplierTaxApplies,
+    supplierTaxType: row.supplierTaxType,
+    supplierTaxRate: row.supplierTaxRate,
+    supplierTaxRules: row.supplierTaxRules,
+    taxAmount: row.taxAmount,
+    amountAfterTax: row.amountAfterTax,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,
@@ -674,6 +738,13 @@ export function createDeliveryFromGrnDiscrepancy(
     department: row.department,
     currency: row.currency,
     paymentTerms: row.paymentTerms,
+    subtotal: row.subtotal,
+    supplierTaxApplies: row.supplierTaxApplies,
+    supplierTaxType: row.supplierTaxType,
+    supplierTaxRate: row.supplierTaxRate,
+    supplierTaxRules: row.supplierTaxRules,
+    taxAmount: row.taxAmount,
+    amountAfterTax: row.amountAfterTax,
     companyName: row.companyName,
     companyLogo: row.companyLogo,
     companyAddress: row.companyAddress,

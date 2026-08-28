@@ -22,6 +22,7 @@ import type { PurchaseOrderDraft } from "../../modules/purchasing/purchaseOrder/
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import type { PurchaseOrderStatus } from "../../modules/purchasing/types";
 import {
+  computeTaxBreakdown,
   computeDraftLineAmountAfterTax,
   taxLabelForDraftLine,
 } from "../../modules/purchasing/requestCreation/constants";
@@ -52,7 +53,7 @@ function statusColor(status: PurchaseOrderStatus): string {
 }
 
 function currencyLabel(currency: string, amount: number): string {
-  return `${currency} ${amount.toFixed(2)}`;
+  return `${currency === "MYR" ? "RM" : currency} ${amount.toFixed(2)}`;
 }
 
 function ItemDetailCard({
@@ -200,13 +201,16 @@ export default function PurchaseOrderReviewDetail(): React.ReactElement {
     );
   }
 
-  const total = order.lineItems.reduce(
+  const total = order.amountAfterTax ?? order.lineItems.reduce(
     (sum, item) => sum + computeDraftLineAmountAfterTax(item),
     0,
   );
   const supplierCount = new Set(
     order.lineItems.map((item) => item.supplierEmail || item.supplierName).filter(Boolean),
   ).size;
+  const orderSubtotal = order.subtotal ?? order.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const orderRules = order.supplierTaxRules?.length ? order.supplierTaxRules : (order.supplierTaxApplies && order.supplierTaxType ? [{ taxType: order.supplierTaxType, taxRate: order.supplierTaxRate ?? 0 }] : []);
+  const taxBreakdown = computeTaxBreakdown(orderSubtotal, orderRules);
 
   return (
     <Card>
@@ -285,8 +289,17 @@ export default function PurchaseOrderReviewDetail(): React.ReactElement {
               {supplierCount || 0}
             </Descriptions.Item>
             <Descriptions.Item label={t('purchaseOrder.detail.info.currency')}>
-              {order.currency}
+              {order.currency === "MYR" ? "RM" : order.currency}
             </Descriptions.Item>
+          </Descriptions>
+        </div>
+
+        <div className={styles.sectionCard}>
+          <h3 className={styles.sectionTitle}>Calculation summary</h3>
+          <Descriptions column={1} bordered size="middle">
+            <Descriptions.Item label="Items subtotal">{currencyLabel(order.currency, orderSubtotal)}</Descriptions.Item>
+            {orderRules.map((rule, index) => <Descriptions.Item key={`${rule.taxType}-${index}`} label={`${({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[rule.taxType] ?? "Tax"} (${Number(rule.taxRate ?? 0).toFixed(2)}%)`}>{currencyLabel(order.currency, taxBreakdown.amounts[index] ?? 0)}</Descriptions.Item>)}
+            <Descriptions.Item label="Total payable">{currencyLabel(order.currency, total)}</Descriptions.Item>
           </Descriptions>
         </div>
 

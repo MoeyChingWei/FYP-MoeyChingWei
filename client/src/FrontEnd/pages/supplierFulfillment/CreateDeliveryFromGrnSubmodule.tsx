@@ -43,7 +43,7 @@ type DeliveryFormValues = {
 };
 
 function currencyLabel(currency: string, amount: number): string {
-  return `${currency} ${amount.toFixed(2)}`;
+  return `${currency === "MYR" ? "RM" : currency} ${amount.toFixed(2)}`;
 }
 
 export default function CreateDeliveryFromGrnSubmodule(): React.ReactElement {
@@ -252,7 +252,7 @@ export default function CreateDeliveryFromGrnSubmodule(): React.ReactElement {
                       <Input />
                     </Form.Item>
                     <Form.Item
-                      label={t("grnStatus.createDelivery.items.fields.unitPrice", { currency: row.currency })}
+                      label={t("grnStatus.createDelivery.items.fields.unitPrice", { currency: row.currency === "MYR" ? "RM" : row.currency })}
                       name={["items", index, "unitPrice"]}
                       rules={[{ required: true, message: t("grnStatus.createDelivery.items.validation.unitPriceRequired") }]}
                       style={{ minWidth: 200 }}

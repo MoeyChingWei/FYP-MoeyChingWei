@@ -143,6 +143,11 @@ export type users = $Result.DefaultSelection<Prisma.$usersPayload>
  * 
  */
 export type supplier_bank_details = $Result.DefaultSelection<Prisma.$supplier_bank_detailsPayload>
+/**
+ * Model supplier_tax_settings
+ * 
+ */
+export type supplier_tax_settings = $Result.DefaultSelection<Prisma.$supplier_tax_settingsPayload>
 
 /**
  * Enums
@@ -538,6 +543,16 @@ export class PrismaClient<
     * ```
     */
   get supplier_bank_details(): Prisma.supplier_bank_detailsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supplier_tax_settings`: Exposes CRUD operations for the **supplier_tax_settings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Supplier_tax_settings
+    * const supplier_tax_settings = await prisma.supplier_tax_settings.findMany()
+    * ```
+    */
+  get supplier_tax_settings(): Prisma.supplier_tax_settingsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -997,7 +1012,8 @@ export namespace Prisma {
     supplier_inventory_items: 'supplier_inventory_items',
     supplier_order_acknowledgement_records: 'supplier_order_acknowledgement_records',
     users: 'users',
-    supplier_bank_details: 'supplier_bank_details'
+    supplier_bank_details: 'supplier_bank_details',
+    supplier_tax_settings: 'supplier_tax_settings'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1013,7 +1029,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users" | "supplier_bank_details"
+      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users" | "supplier_bank_details" | "supplier_tax_settings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2941,6 +2957,80 @@ export namespace Prisma {
           }
         }
       }
+      supplier_tax_settings: {
+        payload: Prisma.$supplier_tax_settingsPayload<ExtArgs>
+        fields: Prisma.supplier_tax_settingsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.supplier_tax_settingsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.supplier_tax_settingsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>
+          }
+          findFirst: {
+            args: Prisma.supplier_tax_settingsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.supplier_tax_settingsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>
+          }
+          findMany: {
+            args: Prisma.supplier_tax_settingsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>[]
+          }
+          create: {
+            args: Prisma.supplier_tax_settingsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>
+          }
+          createMany: {
+            args: Prisma.supplier_tax_settingsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.supplier_tax_settingsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>[]
+          }
+          delete: {
+            args: Prisma.supplier_tax_settingsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>
+          }
+          update: {
+            args: Prisma.supplier_tax_settingsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>
+          }
+          deleteMany: {
+            args: Prisma.supplier_tax_settingsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.supplier_tax_settingsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.supplier_tax_settingsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>[]
+          }
+          upsert: {
+            args: Prisma.supplier_tax_settingsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$supplier_tax_settingsPayload>
+          }
+          aggregate: {
+            args: Prisma.Supplier_tax_settingsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupplier_tax_settings>
+          }
+          groupBy: {
+            args: Prisma.supplier_tax_settingsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_tax_settingsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.supplier_tax_settingsCountArgs<ExtArgs>
+            result: $Utils.Optional<Supplier_tax_settingsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3059,6 +3149,7 @@ export namespace Prisma {
     supplier_order_acknowledgement_records?: supplier_order_acknowledgement_recordsOmit
     users?: usersOmit
     supplier_bank_details?: supplier_bank_detailsOmit
+    supplier_tax_settings?: supplier_tax_settingsOmit
   }
 
   /* Types for Logging */
@@ -27737,7 +27828,6 @@ export namespace Prisma {
     reservedQuantity: number | null
     reorderLevel: number | null
     unitPrice: number | null
-    taxRate: number | null
   }
 
   export type Supplier_inventory_itemsSumAggregateOutputType = {
@@ -27746,7 +27836,6 @@ export namespace Prisma {
     reservedQuantity: number | null
     reorderLevel: number | null
     unitPrice: number | null
-    taxRate: number | null
   }
 
   export type Supplier_inventory_itemsMinAggregateOutputType = {
@@ -27762,8 +27851,6 @@ export namespace Prisma {
     imageDataUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    taxType: string | null
-    taxRate: number | null
   }
 
   export type Supplier_inventory_itemsMaxAggregateOutputType = {
@@ -27779,8 +27866,6 @@ export namespace Prisma {
     imageDataUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    taxType: string | null
-    taxRate: number | null
   }
 
   export type Supplier_inventory_itemsCountAggregateOutputType = {
@@ -27796,8 +27881,6 @@ export namespace Prisma {
     imageDataUrl: number
     createdAt: number
     updatedAt: number
-    taxType: number
-    taxRate: number
     _all: number
   }
 
@@ -27808,7 +27891,6 @@ export namespace Prisma {
     reservedQuantity?: true
     reorderLevel?: true
     unitPrice?: true
-    taxRate?: true
   }
 
   export type Supplier_inventory_itemsSumAggregateInputType = {
@@ -27817,7 +27899,6 @@ export namespace Prisma {
     reservedQuantity?: true
     reorderLevel?: true
     unitPrice?: true
-    taxRate?: true
   }
 
   export type Supplier_inventory_itemsMinAggregateInputType = {
@@ -27833,8 +27914,6 @@ export namespace Prisma {
     imageDataUrl?: true
     createdAt?: true
     updatedAt?: true
-    taxType?: true
-    taxRate?: true
   }
 
   export type Supplier_inventory_itemsMaxAggregateInputType = {
@@ -27850,8 +27929,6 @@ export namespace Prisma {
     imageDataUrl?: true
     createdAt?: true
     updatedAt?: true
-    taxType?: true
-    taxRate?: true
   }
 
   export type Supplier_inventory_itemsCountAggregateInputType = {
@@ -27867,8 +27944,6 @@ export namespace Prisma {
     imageDataUrl?: true
     createdAt?: true
     updatedAt?: true
-    taxType?: true
-    taxRate?: true
     _all?: true
   }
 
@@ -27971,8 +28046,6 @@ export namespace Prisma {
     imageDataUrl: string | null
     createdAt: Date
     updatedAt: Date
-    taxType: string
-    taxRate: number
     _count: Supplier_inventory_itemsCountAggregateOutputType | null
     _avg: Supplier_inventory_itemsAvgAggregateOutputType | null
     _sum: Supplier_inventory_itemsSumAggregateOutputType | null
@@ -28007,8 +28080,6 @@ export namespace Prisma {
     imageDataUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    taxType?: boolean
-    taxRate?: boolean
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["supplier_inventory_items"]>
 
@@ -28025,8 +28096,6 @@ export namespace Prisma {
     imageDataUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    taxType?: boolean
-    taxRate?: boolean
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["supplier_inventory_items"]>
 
@@ -28043,8 +28112,6 @@ export namespace Prisma {
     imageDataUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    taxType?: boolean
-    taxRate?: boolean
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["supplier_inventory_items"]>
 
@@ -28061,11 +28128,9 @@ export namespace Prisma {
     imageDataUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    taxType?: boolean
-    taxRate?: boolean
   }
 
-  export type supplier_inventory_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supplierId" | "itemName" | "category" | "quantity" | "reservedQuantity" | "reorderLevel" | "unit" | "unitPrice" | "imageDataUrl" | "createdAt" | "updatedAt" | "taxType" | "taxRate", ExtArgs["result"]["supplier_inventory_items"]>
+  export type supplier_inventory_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supplierId" | "itemName" | "category" | "quantity" | "reservedQuantity" | "reorderLevel" | "unit" | "unitPrice" | "imageDataUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["supplier_inventory_items"]>
   export type supplier_inventory_itemsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -28094,8 +28159,6 @@ export namespace Prisma {
       imageDataUrl: string | null
       createdAt: Date
       updatedAt: Date
-      taxType: string
-      taxRate: number
     }, ExtArgs["result"]["supplier_inventory_items"]>
     composites: {}
   }
@@ -28532,8 +28595,6 @@ export namespace Prisma {
     readonly imageDataUrl: FieldRef<"supplier_inventory_items", 'String'>
     readonly createdAt: FieldRef<"supplier_inventory_items", 'DateTime'>
     readonly updatedAt: FieldRef<"supplier_inventory_items", 'DateTime'>
-    readonly taxType: FieldRef<"supplier_inventory_items", 'String'>
-    readonly taxRate: FieldRef<"supplier_inventory_items", 'Float'>
   }
     
 
@@ -30167,6 +30228,7 @@ export namespace Prisma {
     sources?: boolean | users$sourcesArgs<ExtArgs>
     supplier_inventory_items?: boolean | users$supplier_inventory_itemsArgs<ExtArgs>
     supplier_bank_details?: boolean | users$supplier_bank_detailsArgs<ExtArgs>
+    supplier_tax_settings?: boolean | users$supplier_tax_settingsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
 
@@ -30219,6 +30281,7 @@ export namespace Prisma {
     sources?: boolean | users$sourcesArgs<ExtArgs>
     supplier_inventory_items?: boolean | users$supplier_inventory_itemsArgs<ExtArgs>
     supplier_bank_details?: boolean | users$supplier_bank_detailsArgs<ExtArgs>
+    supplier_tax_settings?: boolean | users$supplier_tax_settingsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type usersIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -30238,6 +30301,7 @@ export namespace Prisma {
       sources: Prisma.$sourcesPayload<ExtArgs>[]
       supplier_inventory_items: Prisma.$supplier_inventory_itemsPayload<ExtArgs>[]
       supplier_bank_details: Prisma.$supplier_bank_detailsPayload<ExtArgs> | null
+      supplier_tax_settings: Prisma.$supplier_tax_settingsPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -30654,6 +30718,7 @@ export namespace Prisma {
     sources<T extends users$sourcesArgs<ExtArgs> = {}>(args?: Subset<T, users$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$sourcesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supplier_inventory_items<T extends users$supplier_inventory_itemsArgs<ExtArgs> = {}>(args?: Subset<T, users$supplier_inventory_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_inventory_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supplier_bank_details<T extends users$supplier_bank_detailsArgs<ExtArgs> = {}>(args?: Subset<T, users$supplier_bank_detailsArgs<ExtArgs>>): Prisma__supplier_bank_detailsClient<$Result.GetResult<Prisma.$supplier_bank_detailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    supplier_tax_settings<T extends users$supplier_tax_settingsArgs<ExtArgs> = {}>(args?: Subset<T, users$supplier_tax_settingsArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31336,6 +31401,25 @@ export namespace Prisma {
      */
     include?: supplier_bank_detailsInclude<ExtArgs> | null
     where?: supplier_bank_detailsWhereInput
+  }
+
+  /**
+   * users.supplier_tax_settings
+   */
+  export type users$supplier_tax_settingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    where?: supplier_tax_settingsWhereInput
   }
 
   /**
@@ -32450,6 +32534,1111 @@ export namespace Prisma {
 
 
   /**
+   * Model supplier_tax_settings
+   */
+
+  export type AggregateSupplier_tax_settings = {
+    _count: Supplier_tax_settingsCountAggregateOutputType | null
+    _avg: Supplier_tax_settingsAvgAggregateOutputType | null
+    _sum: Supplier_tax_settingsSumAggregateOutputType | null
+    _min: Supplier_tax_settingsMinAggregateOutputType | null
+    _max: Supplier_tax_settingsMaxAggregateOutputType | null
+  }
+
+  export type Supplier_tax_settingsAvgAggregateOutputType = {
+    supplierId: number | null
+    taxRate: number | null
+  }
+
+  export type Supplier_tax_settingsSumAggregateOutputType = {
+    supplierId: number | null
+    taxRate: number | null
+  }
+
+  export type Supplier_tax_settingsMinAggregateOutputType = {
+    supplierId: number | null
+    taxApplies: boolean | null
+    taxType: string | null
+    taxRate: number | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_tax_settingsMaxAggregateOutputType = {
+    supplierId: number | null
+    taxApplies: boolean | null
+    taxType: string | null
+    taxRate: number | null
+    updatedAt: Date | null
+  }
+
+  export type Supplier_tax_settingsCountAggregateOutputType = {
+    supplierId: number
+    taxApplies: number
+    taxType: number
+    taxRate: number
+    taxRules: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type Supplier_tax_settingsAvgAggregateInputType = {
+    supplierId?: true
+    taxRate?: true
+  }
+
+  export type Supplier_tax_settingsSumAggregateInputType = {
+    supplierId?: true
+    taxRate?: true
+  }
+
+  export type Supplier_tax_settingsMinAggregateInputType = {
+    supplierId?: true
+    taxApplies?: true
+    taxType?: true
+    taxRate?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_tax_settingsMaxAggregateInputType = {
+    supplierId?: true
+    taxApplies?: true
+    taxType?: true
+    taxRate?: true
+    updatedAt?: true
+  }
+
+  export type Supplier_tax_settingsCountAggregateInputType = {
+    supplierId?: true
+    taxApplies?: true
+    taxType?: true
+    taxRate?: true
+    taxRules?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type Supplier_tax_settingsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_tax_settings to aggregate.
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_tax_settings to fetch.
+     */
+    orderBy?: supplier_tax_settingsOrderByWithRelationInput | supplier_tax_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: supplier_tax_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_tax_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_tax_settings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned supplier_tax_settings
+    **/
+    _count?: true | Supplier_tax_settingsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Supplier_tax_settingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Supplier_tax_settingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Supplier_tax_settingsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Supplier_tax_settingsMaxAggregateInputType
+  }
+
+  export type GetSupplier_tax_settingsAggregateType<T extends Supplier_tax_settingsAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupplier_tax_settings]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupplier_tax_settings[P]>
+      : GetScalarType<T[P], AggregateSupplier_tax_settings[P]>
+  }
+
+
+
+
+  export type supplier_tax_settingsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: supplier_tax_settingsWhereInput
+    orderBy?: supplier_tax_settingsOrderByWithAggregationInput | supplier_tax_settingsOrderByWithAggregationInput[]
+    by: Supplier_tax_settingsScalarFieldEnum[] | Supplier_tax_settingsScalarFieldEnum
+    having?: supplier_tax_settingsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Supplier_tax_settingsCountAggregateInputType | true
+    _avg?: Supplier_tax_settingsAvgAggregateInputType
+    _sum?: Supplier_tax_settingsSumAggregateInputType
+    _min?: Supplier_tax_settingsMinAggregateInputType
+    _max?: Supplier_tax_settingsMaxAggregateInputType
+  }
+
+  export type Supplier_tax_settingsGroupByOutputType = {
+    supplierId: number
+    taxApplies: boolean
+    taxType: string
+    taxRate: number
+    taxRules: JsonValue | null
+    updatedAt: Date
+    _count: Supplier_tax_settingsCountAggregateOutputType | null
+    _avg: Supplier_tax_settingsAvgAggregateOutputType | null
+    _sum: Supplier_tax_settingsSumAggregateOutputType | null
+    _min: Supplier_tax_settingsMinAggregateOutputType | null
+    _max: Supplier_tax_settingsMaxAggregateOutputType | null
+  }
+
+  type GetSupplier_tax_settingsGroupByPayload<T extends supplier_tax_settingsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Supplier_tax_settingsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Supplier_tax_settingsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Supplier_tax_settingsGroupByOutputType[P]>
+            : GetScalarType<T[P], Supplier_tax_settingsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type supplier_tax_settingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    supplierId?: boolean
+    taxApplies?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    taxRules?: boolean
+    updatedAt?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplier_tax_settings"]>
+
+  export type supplier_tax_settingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    supplierId?: boolean
+    taxApplies?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    taxRules?: boolean
+    updatedAt?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplier_tax_settings"]>
+
+  export type supplier_tax_settingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    supplierId?: boolean
+    taxApplies?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    taxRules?: boolean
+    updatedAt?: boolean
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["supplier_tax_settings"]>
+
+  export type supplier_tax_settingsSelectScalar = {
+    supplierId?: boolean
+    taxApplies?: boolean
+    taxType?: boolean
+    taxRate?: boolean
+    taxRules?: boolean
+    updatedAt?: boolean
+  }
+
+  export type supplier_tax_settingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"supplierId" | "taxApplies" | "taxType" | "taxRate" | "taxRules" | "updatedAt", ExtArgs["result"]["supplier_tax_settings"]>
+  export type supplier_tax_settingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type supplier_tax_settingsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type supplier_tax_settingsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $supplier_tax_settingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "supplier_tax_settings"
+    objects: {
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      supplierId: number
+      taxApplies: boolean
+      taxType: string
+      taxRate: number
+      taxRules: Prisma.JsonValue | null
+      updatedAt: Date
+    }, ExtArgs["result"]["supplier_tax_settings"]>
+    composites: {}
+  }
+
+  type supplier_tax_settingsGetPayload<S extends boolean | null | undefined | supplier_tax_settingsDefaultArgs> = $Result.GetResult<Prisma.$supplier_tax_settingsPayload, S>
+
+  type supplier_tax_settingsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<supplier_tax_settingsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Supplier_tax_settingsCountAggregateInputType | true
+    }
+
+  export interface supplier_tax_settingsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['supplier_tax_settings'], meta: { name: 'supplier_tax_settings' } }
+    /**
+     * Find zero or one Supplier_tax_settings that matches the filter.
+     * @param {supplier_tax_settingsFindUniqueArgs} args - Arguments to find a Supplier_tax_settings
+     * @example
+     * // Get one Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends supplier_tax_settingsFindUniqueArgs>(args: SelectSubset<T, supplier_tax_settingsFindUniqueArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Supplier_tax_settings that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {supplier_tax_settingsFindUniqueOrThrowArgs} args - Arguments to find a Supplier_tax_settings
+     * @example
+     * // Get one Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends supplier_tax_settingsFindUniqueOrThrowArgs>(args: SelectSubset<T, supplier_tax_settingsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_tax_settings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_tax_settingsFindFirstArgs} args - Arguments to find a Supplier_tax_settings
+     * @example
+     * // Get one Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends supplier_tax_settingsFindFirstArgs>(args?: SelectSubset<T, supplier_tax_settingsFindFirstArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Supplier_tax_settings that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_tax_settingsFindFirstOrThrowArgs} args - Arguments to find a Supplier_tax_settings
+     * @example
+     * // Get one Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends supplier_tax_settingsFindFirstOrThrowArgs>(args?: SelectSubset<T, supplier_tax_settingsFindFirstOrThrowArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Supplier_tax_settings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_tax_settingsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.findMany()
+     * 
+     * // Get first 10 Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.findMany({ take: 10 })
+     * 
+     * // Only select the `supplierId`
+     * const supplier_tax_settingsWithSupplierIdOnly = await prisma.supplier_tax_settings.findMany({ select: { supplierId: true } })
+     * 
+     */
+    findMany<T extends supplier_tax_settingsFindManyArgs>(args?: SelectSubset<T, supplier_tax_settingsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Supplier_tax_settings.
+     * @param {supplier_tax_settingsCreateArgs} args - Arguments to create a Supplier_tax_settings.
+     * @example
+     * // Create one Supplier_tax_settings
+     * const Supplier_tax_settings = await prisma.supplier_tax_settings.create({
+     *   data: {
+     *     // ... data to create a Supplier_tax_settings
+     *   }
+     * })
+     * 
+     */
+    create<T extends supplier_tax_settingsCreateArgs>(args: SelectSubset<T, supplier_tax_settingsCreateArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Supplier_tax_settings.
+     * @param {supplier_tax_settingsCreateManyArgs} args - Arguments to create many Supplier_tax_settings.
+     * @example
+     * // Create many Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends supplier_tax_settingsCreateManyArgs>(args?: SelectSubset<T, supplier_tax_settingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Supplier_tax_settings and returns the data saved in the database.
+     * @param {supplier_tax_settingsCreateManyAndReturnArgs} args - Arguments to create many Supplier_tax_settings.
+     * @example
+     * // Create many Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Supplier_tax_settings and only return the `supplierId`
+     * const supplier_tax_settingsWithSupplierIdOnly = await prisma.supplier_tax_settings.createManyAndReturn({
+     *   select: { supplierId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends supplier_tax_settingsCreateManyAndReturnArgs>(args?: SelectSubset<T, supplier_tax_settingsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Supplier_tax_settings.
+     * @param {supplier_tax_settingsDeleteArgs} args - Arguments to delete one Supplier_tax_settings.
+     * @example
+     * // Delete one Supplier_tax_settings
+     * const Supplier_tax_settings = await prisma.supplier_tax_settings.delete({
+     *   where: {
+     *     // ... filter to delete one Supplier_tax_settings
+     *   }
+     * })
+     * 
+     */
+    delete<T extends supplier_tax_settingsDeleteArgs>(args: SelectSubset<T, supplier_tax_settingsDeleteArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Supplier_tax_settings.
+     * @param {supplier_tax_settingsUpdateArgs} args - Arguments to update one Supplier_tax_settings.
+     * @example
+     * // Update one Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends supplier_tax_settingsUpdateArgs>(args: SelectSubset<T, supplier_tax_settingsUpdateArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Supplier_tax_settings.
+     * @param {supplier_tax_settingsDeleteManyArgs} args - Arguments to filter Supplier_tax_settings to delete.
+     * @example
+     * // Delete a few Supplier_tax_settings
+     * const { count } = await prisma.supplier_tax_settings.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends supplier_tax_settingsDeleteManyArgs>(args?: SelectSubset<T, supplier_tax_settingsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_tax_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_tax_settingsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends supplier_tax_settingsUpdateManyArgs>(args: SelectSubset<T, supplier_tax_settingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Supplier_tax_settings and returns the data updated in the database.
+     * @param {supplier_tax_settingsUpdateManyAndReturnArgs} args - Arguments to update many Supplier_tax_settings.
+     * @example
+     * // Update many Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Supplier_tax_settings and only return the `supplierId`
+     * const supplier_tax_settingsWithSupplierIdOnly = await prisma.supplier_tax_settings.updateManyAndReturn({
+     *   select: { supplierId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends supplier_tax_settingsUpdateManyAndReturnArgs>(args: SelectSubset<T, supplier_tax_settingsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Supplier_tax_settings.
+     * @param {supplier_tax_settingsUpsertArgs} args - Arguments to update or create a Supplier_tax_settings.
+     * @example
+     * // Update or create a Supplier_tax_settings
+     * const supplier_tax_settings = await prisma.supplier_tax_settings.upsert({
+     *   create: {
+     *     // ... data to create a Supplier_tax_settings
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Supplier_tax_settings we want to update
+     *   }
+     * })
+     */
+    upsert<T extends supplier_tax_settingsUpsertArgs>(args: SelectSubset<T, supplier_tax_settingsUpsertArgs<ExtArgs>>): Prisma__supplier_tax_settingsClient<$Result.GetResult<Prisma.$supplier_tax_settingsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Supplier_tax_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_tax_settingsCountArgs} args - Arguments to filter Supplier_tax_settings to count.
+     * @example
+     * // Count the number of Supplier_tax_settings
+     * const count = await prisma.supplier_tax_settings.count({
+     *   where: {
+     *     // ... the filter for the Supplier_tax_settings we want to count
+     *   }
+     * })
+    **/
+    count<T extends supplier_tax_settingsCountArgs>(
+      args?: Subset<T, supplier_tax_settingsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Supplier_tax_settingsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Supplier_tax_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Supplier_tax_settingsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Supplier_tax_settingsAggregateArgs>(args: Subset<T, Supplier_tax_settingsAggregateArgs>): Prisma.PrismaPromise<GetSupplier_tax_settingsAggregateType<T>>
+
+    /**
+     * Group by Supplier_tax_settings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {supplier_tax_settingsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends supplier_tax_settingsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: supplier_tax_settingsGroupByArgs['orderBy'] }
+        : { orderBy?: supplier_tax_settingsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, supplier_tax_settingsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupplier_tax_settingsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the supplier_tax_settings model
+   */
+  readonly fields: supplier_tax_settingsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for supplier_tax_settings.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__supplier_tax_settingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the supplier_tax_settings model
+   */
+  interface supplier_tax_settingsFieldRefs {
+    readonly supplierId: FieldRef<"supplier_tax_settings", 'Int'>
+    readonly taxApplies: FieldRef<"supplier_tax_settings", 'Boolean'>
+    readonly taxType: FieldRef<"supplier_tax_settings", 'String'>
+    readonly taxRate: FieldRef<"supplier_tax_settings", 'Float'>
+    readonly taxRules: FieldRef<"supplier_tax_settings", 'Json'>
+    readonly updatedAt: FieldRef<"supplier_tax_settings", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * supplier_tax_settings findUnique
+   */
+  export type supplier_tax_settingsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_tax_settings to fetch.
+     */
+    where: supplier_tax_settingsWhereUniqueInput
+  }
+
+  /**
+   * supplier_tax_settings findUniqueOrThrow
+   */
+  export type supplier_tax_settingsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_tax_settings to fetch.
+     */
+    where: supplier_tax_settingsWhereUniqueInput
+  }
+
+  /**
+   * supplier_tax_settings findFirst
+   */
+  export type supplier_tax_settingsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_tax_settings to fetch.
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_tax_settings to fetch.
+     */
+    orderBy?: supplier_tax_settingsOrderByWithRelationInput | supplier_tax_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_tax_settings.
+     */
+    cursor?: supplier_tax_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_tax_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_tax_settings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_tax_settings.
+     */
+    distinct?: Supplier_tax_settingsScalarFieldEnum | Supplier_tax_settingsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_tax_settings findFirstOrThrow
+   */
+  export type supplier_tax_settingsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_tax_settings to fetch.
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_tax_settings to fetch.
+     */
+    orderBy?: supplier_tax_settingsOrderByWithRelationInput | supplier_tax_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for supplier_tax_settings.
+     */
+    cursor?: supplier_tax_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_tax_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_tax_settings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of supplier_tax_settings.
+     */
+    distinct?: Supplier_tax_settingsScalarFieldEnum | Supplier_tax_settingsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_tax_settings findMany
+   */
+  export type supplier_tax_settingsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * Filter, which supplier_tax_settings to fetch.
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of supplier_tax_settings to fetch.
+     */
+    orderBy?: supplier_tax_settingsOrderByWithRelationInput | supplier_tax_settingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing supplier_tax_settings.
+     */
+    cursor?: supplier_tax_settingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` supplier_tax_settings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` supplier_tax_settings.
+     */
+    skip?: number
+    distinct?: Supplier_tax_settingsScalarFieldEnum | Supplier_tax_settingsScalarFieldEnum[]
+  }
+
+  /**
+   * supplier_tax_settings create
+   */
+  export type supplier_tax_settingsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a supplier_tax_settings.
+     */
+    data: XOR<supplier_tax_settingsCreateInput, supplier_tax_settingsUncheckedCreateInput>
+  }
+
+  /**
+   * supplier_tax_settings createMany
+   */
+  export type supplier_tax_settingsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many supplier_tax_settings.
+     */
+    data: supplier_tax_settingsCreateManyInput | supplier_tax_settingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * supplier_tax_settings createManyAndReturn
+   */
+  export type supplier_tax_settingsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * The data used to create many supplier_tax_settings.
+     */
+    data: supplier_tax_settingsCreateManyInput | supplier_tax_settingsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * supplier_tax_settings update
+   */
+  export type supplier_tax_settingsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a supplier_tax_settings.
+     */
+    data: XOR<supplier_tax_settingsUpdateInput, supplier_tax_settingsUncheckedUpdateInput>
+    /**
+     * Choose, which supplier_tax_settings to update.
+     */
+    where: supplier_tax_settingsWhereUniqueInput
+  }
+
+  /**
+   * supplier_tax_settings updateMany
+   */
+  export type supplier_tax_settingsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update supplier_tax_settings.
+     */
+    data: XOR<supplier_tax_settingsUpdateManyMutationInput, supplier_tax_settingsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_tax_settings to update
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * Limit how many supplier_tax_settings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_tax_settings updateManyAndReturn
+   */
+  export type supplier_tax_settingsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * The data used to update supplier_tax_settings.
+     */
+    data: XOR<supplier_tax_settingsUpdateManyMutationInput, supplier_tax_settingsUncheckedUpdateManyInput>
+    /**
+     * Filter which supplier_tax_settings to update
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * Limit how many supplier_tax_settings to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * supplier_tax_settings upsert
+   */
+  export type supplier_tax_settingsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the supplier_tax_settings to update in case it exists.
+     */
+    where: supplier_tax_settingsWhereUniqueInput
+    /**
+     * In case the supplier_tax_settings found by the `where` argument doesn't exist, create a new supplier_tax_settings with this data.
+     */
+    create: XOR<supplier_tax_settingsCreateInput, supplier_tax_settingsUncheckedCreateInput>
+    /**
+     * In case the supplier_tax_settings was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<supplier_tax_settingsUpdateInput, supplier_tax_settingsUncheckedUpdateInput>
+  }
+
+  /**
+   * supplier_tax_settings delete
+   */
+  export type supplier_tax_settingsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+    /**
+     * Filter which supplier_tax_settings to delete.
+     */
+    where: supplier_tax_settingsWhereUniqueInput
+  }
+
+  /**
+   * supplier_tax_settings deleteMany
+   */
+  export type supplier_tax_settingsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which supplier_tax_settings to delete
+     */
+    where?: supplier_tax_settingsWhereInput
+    /**
+     * Limit how many supplier_tax_settings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * supplier_tax_settings without action
+   */
+  export type supplier_tax_settingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the supplier_tax_settings
+     */
+    select?: supplier_tax_settingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the supplier_tax_settings
+     */
+    omit?: supplier_tax_settingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: supplier_tax_settingsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -32772,9 +33961,7 @@ export namespace Prisma {
     unitPrice: 'unitPrice',
     imageDataUrl: 'imageDataUrl',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    taxType: 'taxType',
-    taxRate: 'taxRate'
+    updatedAt: 'updatedAt'
   };
 
   export type Supplier_inventory_itemsScalarFieldEnum = (typeof Supplier_inventory_itemsScalarFieldEnum)[keyof typeof Supplier_inventory_itemsScalarFieldEnum]
@@ -32814,6 +34001,18 @@ export namespace Prisma {
   };
 
   export type Supplier_bank_detailsScalarFieldEnum = (typeof Supplier_bank_detailsScalarFieldEnum)[keyof typeof Supplier_bank_detailsScalarFieldEnum]
+
+
+  export const Supplier_tax_settingsScalarFieldEnum: {
+    supplierId: 'supplierId',
+    taxApplies: 'taxApplies',
+    taxType: 'taxType',
+    taxRate: 'taxRate',
+    taxRules: 'taxRules',
+    updatedAt: 'updatedAt'
+  };
+
+  export type Supplier_tax_settingsScalarFieldEnum = (typeof Supplier_tax_settingsScalarFieldEnum)[keyof typeof Supplier_tax_settingsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -34529,8 +35728,6 @@ export namespace Prisma {
     imageDataUrl?: StringNullableFilter<"supplier_inventory_items"> | string | null
     createdAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
     updatedAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
-    taxType?: StringFilter<"supplier_inventory_items"> | string
-    taxRate?: FloatFilter<"supplier_inventory_items"> | number
     users?: XOR<UsersScalarRelationFilter, usersWhereInput>
   }
 
@@ -34547,8 +35744,6 @@ export namespace Prisma {
     imageDataUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    taxType?: SortOrder
-    taxRate?: SortOrder
     users?: usersOrderByWithRelationInput
   }
 
@@ -34568,8 +35763,6 @@ export namespace Prisma {
     imageDataUrl?: StringNullableFilter<"supplier_inventory_items"> | string | null
     createdAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
     updatedAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
-    taxType?: StringFilter<"supplier_inventory_items"> | string
-    taxRate?: FloatFilter<"supplier_inventory_items"> | number
     users?: XOR<UsersScalarRelationFilter, usersWhereInput>
   }, "id">
 
@@ -34586,8 +35779,6 @@ export namespace Prisma {
     imageDataUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    taxType?: SortOrder
-    taxRate?: SortOrder
     _count?: supplier_inventory_itemsCountOrderByAggregateInput
     _avg?: supplier_inventory_itemsAvgOrderByAggregateInput
     _max?: supplier_inventory_itemsMaxOrderByAggregateInput
@@ -34611,8 +35802,6 @@ export namespace Prisma {
     imageDataUrl?: StringNullableWithAggregatesFilter<"supplier_inventory_items"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"supplier_inventory_items"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"supplier_inventory_items"> | Date | string
-    taxType?: StringWithAggregatesFilter<"supplier_inventory_items"> | string
-    taxRate?: FloatWithAggregatesFilter<"supplier_inventory_items"> | number
   }
 
   export type supplier_order_acknowledgement_recordsWhereInput = {
@@ -34686,6 +35875,7 @@ export namespace Prisma {
     sources?: SourcesListRelationFilter
     supplier_inventory_items?: Supplier_inventory_itemsListRelationFilter
     supplier_bank_details?: XOR<Supplier_bank_detailsNullableScalarRelationFilter, supplier_bank_detailsWhereInput> | null
+    supplier_tax_settings?: XOR<Supplier_tax_settingsNullableScalarRelationFilter, supplier_tax_settingsWhereInput> | null
   }
 
   export type usersOrderByWithRelationInput = {
@@ -34709,6 +35899,7 @@ export namespace Prisma {
     sources?: sourcesOrderByRelationAggregateInput
     supplier_inventory_items?: supplier_inventory_itemsOrderByRelationAggregateInput
     supplier_bank_details?: supplier_bank_detailsOrderByWithRelationInput
+    supplier_tax_settings?: supplier_tax_settingsOrderByWithRelationInput
   }
 
   export type usersWhereUniqueInput = Prisma.AtLeast<{
@@ -34735,6 +35926,7 @@ export namespace Prisma {
     sources?: SourcesListRelationFilter
     supplier_inventory_items?: Supplier_inventory_itemsListRelationFilter
     supplier_bank_details?: XOR<Supplier_bank_detailsNullableScalarRelationFilter, supplier_bank_detailsWhereInput> | null
+    supplier_tax_settings?: XOR<Supplier_tax_settingsNullableScalarRelationFilter, supplier_tax_settingsWhereInput> | null
   }, "id" | "email">
 
   export type usersOrderByWithAggregationInput = {
@@ -34824,6 +36016,68 @@ export namespace Prisma {
     accountName?: StringNullableWithAggregatesFilter<"supplier_bank_details"> | string | null
     accountNumber?: StringNullableWithAggregatesFilter<"supplier_bank_details"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"supplier_bank_details"> | Date | string
+  }
+
+  export type supplier_tax_settingsWhereInput = {
+    AND?: supplier_tax_settingsWhereInput | supplier_tax_settingsWhereInput[]
+    OR?: supplier_tax_settingsWhereInput[]
+    NOT?: supplier_tax_settingsWhereInput | supplier_tax_settingsWhereInput[]
+    supplierId?: IntFilter<"supplier_tax_settings"> | number
+    taxApplies?: BoolFilter<"supplier_tax_settings"> | boolean
+    taxType?: StringFilter<"supplier_tax_settings"> | string
+    taxRate?: FloatFilter<"supplier_tax_settings"> | number
+    taxRules?: JsonNullableFilter<"supplier_tax_settings">
+    updatedAt?: DateTimeFilter<"supplier_tax_settings"> | Date | string
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }
+
+  export type supplier_tax_settingsOrderByWithRelationInput = {
+    supplierId?: SortOrder
+    taxApplies?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    taxRules?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type supplier_tax_settingsWhereUniqueInput = Prisma.AtLeast<{
+    supplierId?: number
+    AND?: supplier_tax_settingsWhereInput | supplier_tax_settingsWhereInput[]
+    OR?: supplier_tax_settingsWhereInput[]
+    NOT?: supplier_tax_settingsWhereInput | supplier_tax_settingsWhereInput[]
+    taxApplies?: BoolFilter<"supplier_tax_settings"> | boolean
+    taxType?: StringFilter<"supplier_tax_settings"> | string
+    taxRate?: FloatFilter<"supplier_tax_settings"> | number
+    taxRules?: JsonNullableFilter<"supplier_tax_settings">
+    updatedAt?: DateTimeFilter<"supplier_tax_settings"> | Date | string
+    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }, "supplierId">
+
+  export type supplier_tax_settingsOrderByWithAggregationInput = {
+    supplierId?: SortOrder
+    taxApplies?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    taxRules?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: supplier_tax_settingsCountOrderByAggregateInput
+    _avg?: supplier_tax_settingsAvgOrderByAggregateInput
+    _max?: supplier_tax_settingsMaxOrderByAggregateInput
+    _min?: supplier_tax_settingsMinOrderByAggregateInput
+    _sum?: supplier_tax_settingsSumOrderByAggregateInput
+  }
+
+  export type supplier_tax_settingsScalarWhereWithAggregatesInput = {
+    AND?: supplier_tax_settingsScalarWhereWithAggregatesInput | supplier_tax_settingsScalarWhereWithAggregatesInput[]
+    OR?: supplier_tax_settingsScalarWhereWithAggregatesInput[]
+    NOT?: supplier_tax_settingsScalarWhereWithAggregatesInput | supplier_tax_settingsScalarWhereWithAggregatesInput[]
+    supplierId?: IntWithAggregatesFilter<"supplier_tax_settings"> | number
+    taxApplies?: BoolWithAggregatesFilter<"supplier_tax_settings"> | boolean
+    taxType?: StringWithAggregatesFilter<"supplier_tax_settings"> | string
+    taxRate?: FloatWithAggregatesFilter<"supplier_tax_settings"> | number
+    taxRules?: JsonNullableWithAggregatesFilter<"supplier_tax_settings">
+    updatedAt?: DateTimeWithAggregatesFilter<"supplier_tax_settings"> | Date | string
   }
 
   export type audit_logsCreateInput = {
@@ -36431,8 +37685,6 @@ export namespace Prisma {
     imageDataUrl?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
-    taxType?: string
-    taxRate?: number
     users: usersCreateNestedOneWithoutSupplier_inventory_itemsInput
   }
 
@@ -36449,8 +37701,6 @@ export namespace Prisma {
     imageDataUrl?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
-    taxType?: string
-    taxRate?: number
   }
 
   export type supplier_inventory_itemsUpdateInput = {
@@ -36465,8 +37715,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
     users?: usersUpdateOneRequiredWithoutSupplier_inventory_itemsNestedInput
   }
 
@@ -36483,8 +37731,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
   }
 
   export type supplier_inventory_itemsCreateManyInput = {
@@ -36500,8 +37746,6 @@ export namespace Prisma {
     imageDataUrl?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
-    taxType?: string
-    taxRate?: number
   }
 
   export type supplier_inventory_itemsUpdateManyMutationInput = {
@@ -36516,8 +37760,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
   }
 
   export type supplier_inventory_itemsUncheckedUpdateManyInput = {
@@ -36533,8 +37775,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
   }
 
   export type supplier_order_acknowledgement_recordsCreateInput = {
@@ -36606,6 +37846,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateInput = {
@@ -36629,6 +37870,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersUpdateInput = {
@@ -36651,6 +37893,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateInput = {
@@ -36674,6 +37917,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateManyInput = {
@@ -36763,6 +38007,68 @@ export namespace Prisma {
     bankName?: NullableStringFieldUpdateOperationsInput | string | null
     accountName?: NullableStringFieldUpdateOperationsInput | string | null
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_tax_settingsCreateInput = {
+    taxApplies?: boolean
+    taxType?: string
+    taxRate?: number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+    users: usersCreateNestedOneWithoutSupplier_tax_settingsInput
+  }
+
+  export type supplier_tax_settingsUncheckedCreateInput = {
+    supplierId: number
+    taxApplies?: boolean
+    taxType?: string
+    taxRate?: number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type supplier_tax_settingsUpdateInput = {
+    taxApplies?: BoolFieldUpdateOperationsInput | boolean
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: usersUpdateOneRequiredWithoutSupplier_tax_settingsNestedInput
+  }
+
+  export type supplier_tax_settingsUncheckedUpdateInput = {
+    supplierId?: IntFieldUpdateOperationsInput | number
+    taxApplies?: BoolFieldUpdateOperationsInput | boolean
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_tax_settingsCreateManyInput = {
+    supplierId: number
+    taxApplies?: boolean
+    taxType?: string
+    taxRate?: number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type supplier_tax_settingsUpdateManyMutationInput = {
+    taxApplies?: BoolFieldUpdateOperationsInput | boolean
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_tax_settingsUncheckedUpdateManyInput = {
+    supplierId?: IntFieldUpdateOperationsInput | number
+    taxApplies?: BoolFieldUpdateOperationsInput | boolean
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -38100,8 +39406,6 @@ export namespace Prisma {
     imageDataUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    taxType?: SortOrder
-    taxRate?: SortOrder
   }
 
   export type supplier_inventory_itemsAvgOrderByAggregateInput = {
@@ -38110,7 +39414,6 @@ export namespace Prisma {
     reservedQuantity?: SortOrder
     reorderLevel?: SortOrder
     unitPrice?: SortOrder
-    taxRate?: SortOrder
   }
 
   export type supplier_inventory_itemsMaxOrderByAggregateInput = {
@@ -38126,8 +39429,6 @@ export namespace Prisma {
     imageDataUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    taxType?: SortOrder
-    taxRate?: SortOrder
   }
 
   export type supplier_inventory_itemsMinOrderByAggregateInput = {
@@ -38143,8 +39444,6 @@ export namespace Prisma {
     imageDataUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    taxType?: SortOrder
-    taxRate?: SortOrder
   }
 
   export type supplier_inventory_itemsSumOrderByAggregateInput = {
@@ -38153,7 +39452,6 @@ export namespace Prisma {
     reservedQuantity?: SortOrder
     reorderLevel?: SortOrder
     unitPrice?: SortOrder
-    taxRate?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -38237,6 +39535,11 @@ export namespace Prisma {
   export type Supplier_bank_detailsNullableScalarRelationFilter = {
     is?: supplier_bank_detailsWhereInput | null
     isNot?: supplier_bank_detailsWhereInput | null
+  }
+
+  export type Supplier_tax_settingsNullableScalarRelationFilter = {
+    is?: supplier_tax_settingsWhereInput | null
+    isNot?: supplier_tax_settingsWhereInput | null
   }
 
   export type chat_sessionsOrderByRelationAggregateInput = {
@@ -38347,6 +39650,41 @@ export namespace Prisma {
 
   export type supplier_bank_detailsSumOrderByAggregateInput = {
     supplierId?: SortOrder
+  }
+
+  export type supplier_tax_settingsCountOrderByAggregateInput = {
+    supplierId?: SortOrder
+    taxApplies?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    taxRules?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_tax_settingsAvgOrderByAggregateInput = {
+    supplierId?: SortOrder
+    taxRate?: SortOrder
+  }
+
+  export type supplier_tax_settingsMaxOrderByAggregateInput = {
+    supplierId?: SortOrder
+    taxApplies?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_tax_settingsMinOrderByAggregateInput = {
+    supplierId?: SortOrder
+    taxApplies?: SortOrder
+    taxType?: SortOrder
+    taxRate?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type supplier_tax_settingsSumOrderByAggregateInput = {
+    supplierId?: SortOrder
+    taxRate?: SortOrder
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -39025,6 +40363,12 @@ export namespace Prisma {
     connect?: supplier_bank_detailsWhereUniqueInput
   }
 
+  export type supplier_tax_settingsCreateNestedOneWithoutUsersInput = {
+    create?: XOR<supplier_tax_settingsCreateWithoutUsersInput, supplier_tax_settingsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_tax_settingsCreateOrConnectWithoutUsersInput
+    connect?: supplier_tax_settingsWhereUniqueInput
+  }
+
   export type budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput = {
     create?: XOR<budget_adjustment_requestsCreateWithoutRequesterInput, budget_adjustment_requestsUncheckedCreateWithoutRequesterInput> | budget_adjustment_requestsCreateWithoutRequesterInput[] | budget_adjustment_requestsUncheckedCreateWithoutRequesterInput[]
     connectOrCreate?: budget_adjustment_requestsCreateOrConnectWithoutRequesterInput | budget_adjustment_requestsCreateOrConnectWithoutRequesterInput[]
@@ -39099,6 +40443,12 @@ export namespace Prisma {
     create?: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
     connectOrCreate?: supplier_bank_detailsCreateOrConnectWithoutUsersInput
     connect?: supplier_bank_detailsWhereUniqueInput
+  }
+
+  export type supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput = {
+    create?: XOR<supplier_tax_settingsCreateWithoutUsersInput, supplier_tax_settingsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_tax_settingsCreateOrConnectWithoutUsersInput
+    connect?: supplier_tax_settingsWhereUniqueInput
   }
 
   export type EnumLanguageFieldUpdateOperationsInput = {
@@ -39255,6 +40605,16 @@ export namespace Prisma {
     update?: XOR<XOR<supplier_bank_detailsUpdateToOneWithWhereWithoutUsersInput, supplier_bank_detailsUpdateWithoutUsersInput>, supplier_bank_detailsUncheckedUpdateWithoutUsersInput>
   }
 
+  export type supplier_tax_settingsUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<supplier_tax_settingsCreateWithoutUsersInput, supplier_tax_settingsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_tax_settingsCreateOrConnectWithoutUsersInput
+    upsert?: supplier_tax_settingsUpsertWithoutUsersInput
+    disconnect?: supplier_tax_settingsWhereInput | boolean
+    delete?: supplier_tax_settingsWhereInput | boolean
+    connect?: supplier_tax_settingsWhereUniqueInput
+    update?: XOR<XOR<supplier_tax_settingsUpdateToOneWithWhereWithoutUsersInput, supplier_tax_settingsUpdateWithoutUsersInput>, supplier_tax_settingsUncheckedUpdateWithoutUsersInput>
+  }
+
   export type budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput = {
     create?: XOR<budget_adjustment_requestsCreateWithoutRequesterInput, budget_adjustment_requestsUncheckedCreateWithoutRequesterInput> | budget_adjustment_requestsCreateWithoutRequesterInput[] | budget_adjustment_requestsUncheckedCreateWithoutRequesterInput[]
     connectOrCreate?: budget_adjustment_requestsCreateOrConnectWithoutRequesterInput | budget_adjustment_requestsCreateOrConnectWithoutRequesterInput[]
@@ -39405,6 +40765,16 @@ export namespace Prisma {
     update?: XOR<XOR<supplier_bank_detailsUpdateToOneWithWhereWithoutUsersInput, supplier_bank_detailsUpdateWithoutUsersInput>, supplier_bank_detailsUncheckedUpdateWithoutUsersInput>
   }
 
+  export type supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<supplier_tax_settingsCreateWithoutUsersInput, supplier_tax_settingsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: supplier_tax_settingsCreateOrConnectWithoutUsersInput
+    upsert?: supplier_tax_settingsUpsertWithoutUsersInput
+    disconnect?: supplier_tax_settingsWhereInput | boolean
+    delete?: supplier_tax_settingsWhereInput | boolean
+    connect?: supplier_tax_settingsWhereUniqueInput
+    update?: XOR<XOR<supplier_tax_settingsUpdateToOneWithWhereWithoutUsersInput, supplier_tax_settingsUpdateWithoutUsersInput>, supplier_tax_settingsUncheckedUpdateWithoutUsersInput>
+  }
+
   export type usersCreateNestedOneWithoutSupplier_bank_detailsInput = {
     create?: XOR<usersCreateWithoutSupplier_bank_detailsInput, usersUncheckedCreateWithoutSupplier_bank_detailsInput>
     connectOrCreate?: usersCreateOrConnectWithoutSupplier_bank_detailsInput
@@ -39417,6 +40787,20 @@ export namespace Prisma {
     upsert?: usersUpsertWithoutSupplier_bank_detailsInput
     connect?: usersWhereUniqueInput
     update?: XOR<XOR<usersUpdateToOneWithWhereWithoutSupplier_bank_detailsInput, usersUpdateWithoutSupplier_bank_detailsInput>, usersUncheckedUpdateWithoutSupplier_bank_detailsInput>
+  }
+
+  export type usersCreateNestedOneWithoutSupplier_tax_settingsInput = {
+    create?: XOR<usersCreateWithoutSupplier_tax_settingsInput, usersUncheckedCreateWithoutSupplier_tax_settingsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutSupplier_tax_settingsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type usersUpdateOneRequiredWithoutSupplier_tax_settingsNestedInput = {
+    create?: XOR<usersCreateWithoutSupplier_tax_settingsInput, usersUncheckedCreateWithoutSupplier_tax_settingsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutSupplier_tax_settingsInput
+    upsert?: usersUpsertWithoutSupplier_tax_settingsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutSupplier_tax_settingsInput, usersUpdateWithoutSupplier_tax_settingsInput>, usersUncheckedUpdateWithoutSupplier_tax_settingsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -39800,6 +41184,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersInput = {
@@ -39822,6 +41207,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersInput = {
@@ -39848,6 +41234,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -39870,6 +41257,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -39941,6 +41329,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersInput = {
@@ -39963,6 +41352,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUpsertWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -39995,6 +41385,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersInput = {
@@ -40017,6 +41408,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type departmentsCreateWithoutBudget_predictionsInput = {
@@ -40066,6 +41458,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutBudget_predictionsInput = {
@@ -40088,6 +41481,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutBudget_predictionsInput = {
@@ -40159,6 +41553,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutBudget_predictionsInput = {
@@ -40181,6 +41576,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type chat_sessionsCreateWithoutChat_messagesInput = {
@@ -40350,6 +41746,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutChat_sessionsInput = {
@@ -40372,6 +41769,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutChat_sessionsInput = {
@@ -40469,6 +41867,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutChat_sessionsInput = {
@@ -40491,6 +41890,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type sourcesUpsertWithWhereUniqueWithoutChat_sessionsInput = {
@@ -40758,6 +42158,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutFeedbacksInput = {
@@ -40780,6 +42181,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutFeedbacksInput = {
@@ -40817,6 +42219,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutFeedbacksInput = {
@@ -40839,6 +42242,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type chat_messagesCreateWithoutMessage_attachmentsInput = {
@@ -40972,6 +42376,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutNotificationsInput = {
@@ -40994,6 +42399,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutNotificationsInput = {
@@ -41031,6 +42437,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutNotificationsInput = {
@@ -41053,6 +42460,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutPassword_reset_codesInput = {
@@ -41074,6 +42482,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutPassword_reset_codesInput = {
@@ -41096,6 +42505,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutPassword_reset_codesInput = {
@@ -41133,6 +42543,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutPassword_reset_codesInput = {
@@ -41155,6 +42566,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutRole_change_auditsInput = {
@@ -41176,6 +42588,7 @@ export namespace Prisma {
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutRole_change_auditsInput = {
@@ -41198,6 +42611,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutRole_change_auditsInput = {
@@ -41235,6 +42649,7 @@ export namespace Prisma {
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutRole_change_auditsInput = {
@@ -41257,6 +42672,7 @@ export namespace Prisma {
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type sourcesCreateWithoutSource_chunksInput = {
@@ -41383,6 +42799,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSourcesInput = {
@@ -41405,6 +42822,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSourcesInput = {
@@ -41497,6 +42915,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSourcesInput = {
@@ -41519,6 +42938,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type usersCreateWithoutSupplier_inventory_itemsInput = {
@@ -41540,6 +42960,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSupplier_inventory_itemsInput = {
@@ -41562,6 +42983,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSupplier_inventory_itemsInput = {
@@ -41599,6 +43021,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSupplier_inventory_itemsInput = {
@@ -41621,6 +43044,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type budget_adjustment_requestsCreateWithoutRequesterInput = {
@@ -41934,8 +43358,6 @@ export namespace Prisma {
     imageDataUrl?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
-    taxType?: string
-    taxRate?: number
   }
 
   export type supplier_inventory_itemsUncheckedCreateWithoutUsersInput = {
@@ -41950,8 +43372,6 @@ export namespace Prisma {
     imageDataUrl?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
-    taxType?: string
-    taxRate?: number
   }
 
   export type supplier_inventory_itemsCreateOrConnectWithoutUsersInput = {
@@ -41981,6 +43401,27 @@ export namespace Prisma {
   export type supplier_bank_detailsCreateOrConnectWithoutUsersInput = {
     where: supplier_bank_detailsWhereUniqueInput
     create: XOR<supplier_bank_detailsCreateWithoutUsersInput, supplier_bank_detailsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type supplier_tax_settingsCreateWithoutUsersInput = {
+    taxApplies?: boolean
+    taxType?: string
+    taxRate?: number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type supplier_tax_settingsUncheckedCreateWithoutUsersInput = {
+    taxApplies?: boolean
+    taxType?: string
+    taxRate?: number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type supplier_tax_settingsCreateOrConnectWithoutUsersInput = {
+    where: supplier_tax_settingsWhereUniqueInput
+    create: XOR<supplier_tax_settingsCreateWithoutUsersInput, supplier_tax_settingsUncheckedCreateWithoutUsersInput>
   }
 
   export type budget_adjustment_requestsUpsertWithWhereUniqueWithoutRequesterInput = {
@@ -42229,8 +43670,6 @@ export namespace Prisma {
     imageDataUrl?: StringNullableFilter<"supplier_inventory_items"> | string | null
     createdAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
     updatedAt?: DateTimeFilter<"supplier_inventory_items"> | Date | string
-    taxType?: StringFilter<"supplier_inventory_items"> | string
-    taxRate?: FloatFilter<"supplier_inventory_items"> | number
   }
 
   export type supplier_bank_detailsUpsertWithoutUsersInput = {
@@ -42258,6 +43697,33 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type supplier_tax_settingsUpsertWithoutUsersInput = {
+    update: XOR<supplier_tax_settingsUpdateWithoutUsersInput, supplier_tax_settingsUncheckedUpdateWithoutUsersInput>
+    create: XOR<supplier_tax_settingsCreateWithoutUsersInput, supplier_tax_settingsUncheckedCreateWithoutUsersInput>
+    where?: supplier_tax_settingsWhereInput
+  }
+
+  export type supplier_tax_settingsUpdateToOneWithWhereWithoutUsersInput = {
+    where?: supplier_tax_settingsWhereInput
+    data: XOR<supplier_tax_settingsUpdateWithoutUsersInput, supplier_tax_settingsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type supplier_tax_settingsUpdateWithoutUsersInput = {
+    taxApplies?: BoolFieldUpdateOperationsInput | boolean
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type supplier_tax_settingsUncheckedUpdateWithoutUsersInput = {
+    taxApplies?: BoolFieldUpdateOperationsInput | boolean
+    taxType?: StringFieldUpdateOperationsInput | string
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    taxRules?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type usersCreateWithoutSupplier_bank_detailsInput = {
     name?: string | null
     email: string
@@ -42277,6 +43743,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
     sources?: sourcesCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutSupplier_bank_detailsInput = {
@@ -42299,6 +43766,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
     sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutSupplier_bank_detailsInput = {
@@ -42336,6 +43804,7 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
     sources?: sourcesUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutSupplier_bank_detailsInput = {
@@ -42358,6 +43827,113 @@ export namespace Prisma {
     role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
     sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
     supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
+  }
+
+  export type usersCreateWithoutSupplier_tax_settingsInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    avatarUrl?: string | null
+    department?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
+    budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
+    feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
+    role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
+    sources?: sourcesCreateNestedManyWithoutUsersInput
+    supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutSupplier_tax_settingsInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    avatarUrl?: string | null
+    department?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
+    budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
+    feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
+    role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
+    sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
+    supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutSupplier_tax_settingsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutSupplier_tax_settingsInput, usersUncheckedCreateWithoutSupplier_tax_settingsInput>
+  }
+
+  export type usersUpsertWithoutSupplier_tax_settingsInput = {
+    update: XOR<usersUpdateWithoutSupplier_tax_settingsInput, usersUncheckedUpdateWithoutSupplier_tax_settingsInput>
+    create: XOR<usersCreateWithoutSupplier_tax_settingsInput, usersUncheckedCreateWithoutSupplier_tax_settingsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutSupplier_tax_settingsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutSupplier_tax_settingsInput, usersUncheckedUpdateWithoutSupplier_tax_settingsInput>
+  }
+
+  export type usersUpdateWithoutSupplier_tax_settingsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
+    budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
+    feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
+    role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
+    sources?: sourcesUpdateManyWithoutUsersNestedInput
+    supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutSupplier_tax_settingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
+    budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+    feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
+    role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
+    sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
   }
 
   export type message_attachmentsCreateManyChat_messagesInput = {
@@ -42797,8 +44373,6 @@ export namespace Prisma {
     imageDataUrl?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
-    taxType?: string
-    taxRate?: number
   }
 
   export type budget_adjustment_requestsUpdateWithoutRequesterInput = {
@@ -43127,8 +44701,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
   }
 
   export type supplier_inventory_itemsUncheckedUpdateWithoutUsersInput = {
@@ -43143,8 +44715,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
   }
 
   export type supplier_inventory_itemsUncheckedUpdateManyWithoutUsersInput = {
@@ -43159,8 +44729,6 @@ export namespace Prisma {
     imageDataUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taxType?: StringFieldUpdateOperationsInput | string
-    taxRate?: FloatFieldUpdateOperationsInput | number
   }
 
 

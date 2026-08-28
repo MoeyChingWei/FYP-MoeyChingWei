@@ -9,7 +9,8 @@
   },
   "actions": {
     "open": "打开",
-    "manage": "管理"
+    "manage": "管理",
+    "cancel": "取消"
   },
   "description": "管理您的系统偏好和配置",
   "companyAddress": {
@@ -29,6 +30,50 @@
     "placeholder": "输入公司地址",
     "supplierPlaceholder": "输入您的供应商公司地址",
     "saveButton": "保存资料"
+  },
+  "gmail": {
+    "title": "连接 Gmail",
+    "description": "使用 Gmail 标签自动整理 OptiMind 电邮。",
+    "connected": "已连接",
+    "disconnected": "未连接",
+    "connectedMessage": "Gmail 已连接至 OptiMind"
+  },
+  "taxInformation": {
+    "title": "税务资料",
+    "tileDescription": "设定采购订单使用的默认税项。",
+    "backLabel": "返回设置",
+    "notice": "此设定只会按每张采购订单总额计算一次，不会套用至个别库存物品。",
+    "defaultOrderTax": "默认订单税项",
+    "description": "此设定会独立保存；当采购员选择您的库存物品时，系统将使用该设定。",
+    "taxApplies": "我的采购订单适用税务",
+    "taxes": "税项",
+    "addTax": "添加税项",
+    "removeTax": "删除税项",
+    "yes": "是",
+    "no": "否",
+    "taxType": "税务类型",
+    "taxRate": "税率 (%)",
+    "selectTaxType": "选择税务类型",
+    "selectTaxTypeError": "请选择税务类型",
+    "taxRateError": "请输入税率",
+    "salesTax": "销售税",
+    "serviceTax": "服务税",
+    "otherTax": "其他税务",
+    "noTax": "免税",
+    "preview": "预览",
+    "orderSubtotal": "订单小计",
+    "totalPayable": "应付总额",
+    "newRequestsOnly": "更改只会影响新的采购申请。",
+    "save": "保存税务设定",
+    "saved": "税务设定已保存",
+    "loadError": "无法载入税务设定",
+    "saveError": "无法保存税务设定"
+  },
+  "paymentDetails": {
+    "title": "收款资料", "tileDescription": "管理用于接收供应商付款的银行账户。", "backLabel": "返回设置", "description": "这些资料只会提供给财务部门，用于已批准的供应商付款。", "bankName": "银行名称", "accountName": "账户持有人姓名", "accountNumber": "账户号码", "accountNumberRule": "只能使用字母、数字、空格或连字符", "save": "保存收款资料", "saved": "收款资料已更新", "loadError": "无法载入收款资料", "saveError": "无法保存收款资料"
+  },
+  "aiAssistant": {
+    "configuration": "AI 助手配置", "description": "配置和管理 AI 助手以自动化采购工作", "tip": "提示：", "tipDescription": "点击任何主助手卡片以查看其所有子助手", "settings": "设置", "title": "AI 助手", "notFound": "未找到", "mainAgentNotFound": "找不到主助手", "mainAgentNotFoundDescription": "找不到所请求的助手类别。", "noSubAgents": "没有可用的子助手", "noSubAgentsDescription": "此类别目前没有已配置的子助手。", "viewDetails": "查看详情", "viewDetailsFor": "查看 {{name}} 的详情", "viewAgents": "查看 {{name}} 助手", "subAgents": "{{count}} 个子助手", "clickForDetails": "点击查看详情", "breadcrumb": "面包屑导航", "goBack": "返回"
   },
   "feedback": {
     "title": "反馈",

@@ -1,6 +1,8 @@
 {
   "budgetManagement": "Pengurusan Bajet",
   "departmentBudgetForecasting": "Ramalan Bajet Jabatan",
+  "financeBudgetDashboard": "Papan Pemuka Bajet Kewangan",
+  "financeDashboardDescription": "Semak peruntukan bajet dan perbelanjaan jabatan",
   "departmentForecastingDescription": "Lihat bajet jabatan, ramalan AI dan permohonan pelarasan",
   "homeDescription": "Urus dan ramalkan bajet organisasi anda dengan berkesan",
   "period": "Tempoh",
@@ -24,5 +26,8 @@
   "categoryBreakdown": "Pecahan Kategori",
   "forecastPredictions": "Ramalan Anggaran",
   "department": "Jabatan",
-  "allDepartments": "Semua Jabatan"
+  "allDepartments": "Semua Jabatan",
+  "allocated": "Diperuntukkan", "spent": "Dibelanjakan", "reserved": "Diperuntukkan sementara", "remaining": "Baki", "usage": "Penggunaan", "status": "Status", "action": "Tindakan", "details": "Butiran",
+  "onTrack": "Mengikut Landasan", "warning": "Amaran", "exceeded": "Melebihi Bajet", "exceededBy": "Melebihi RM {{amount}}", "budgetUsage": "Penggunaan Bajet - {{department}}", "periodLabel": "Tempoh: {{period}}",
+  "budgetUsageTrend": "Trend Penggunaan Bajet", "historicalBudget": "Bajet Sejarah", "actualPurchasingSpend": "Perbelanjaan Pembelian Sebenar", "averageUsage": "Purata Penggunaan ({{count}} Bulan Dibajetkan)", "noHistoricalData": "Tiada data sejarah"
 }

@@ -87,6 +87,23 @@ export function computeAmountAfterTax(quantity: unknown, unitPrice: unknown, tax
   return Math.round((computeLineTotal(quantity, unitPrice) + computeTaxAmount(quantity, unitPrice, taxRate)) * 100) / 100;
 }
 
+export interface TaxRuleInput {
+  taxType?: string;
+  taxRate?: number;
+}
+
+/** Calculates each configured tax against the original subtotal. */
+export function computeTaxBreakdown(subtotal: number, rules: TaxRuleInput[]): { amounts: number[]; total: number } {
+  const amounts: number[] = [];
+  for (const rule of rules) {
+    const rate = Number(rule.taxRate ?? 0);
+    if (!Number.isFinite(rate) || rate <= 0) { amounts.push(0); continue; }
+    const amount = Math.round(subtotal * rate) / 100;
+    amounts.push(amount);
+  }
+  return { amounts, total: Math.round(amounts.reduce((sum, amount) => sum + amount, 0) * 100) / 100 };
+}
+
 export function computeDraftLineAmountAfterTax(item: {
   quantity: number;
   unitPrice: number;

@@ -32,12 +32,10 @@ import { useTranslation } from "react-i18next";
 
 import CreatableLookupSelect from "../../components/purchasing/CreatableLookupSelect";
 import { getSessionUser } from "../../shared/auth/session";
+import { displayCurrency } from "../../shared/utils/currency";
 import {
   computeLineTotal,
-  computeTaxAmount,
-  computeAmountAfterTax,
-  taxLabelForCodes,
-  taxRateForCodes,
+  computeTaxBreakdown,
   generatePrNumber,
   todayIsoDate,
 } from "../../modules/purchasing/requestCreation/constants";
@@ -72,6 +70,7 @@ import {
   seedSampleSupplierInventory,
   type SupplierInventoryItem,
 } from "../../modules/supplierFulfillment/inventory";
+import { fetchSupplierTaxSettings, type SupplierTaxRule, type SupplierTaxSettings } from "../../shared/api/supplierTaxSettings";
 
 import creationStyles from "./CreationSubmodule.module.css";
 
@@ -116,16 +115,34 @@ type LineItemFormRow = {
   quantity?: number;
   unitOfMeasurement?: string;
   estimatedUnitPrice?: number;
-  taxType?: string;
-  taxRate?: number;
+  supplierTaxApplies?: boolean;
+  supplierTaxType?: string;
+  supplierTaxRate?: number;
+  supplierTaxRules?: SupplierTaxRule[];
 };
+
+type OrderTax = { applies: boolean; type: string; rate: number; rules: SupplierTaxRule[] };
+
+function orderTaxForRows(rows: LineItemFormRow[] | undefined): OrderTax {
+  const source = rows?.find((row) => row.supplierId != null);
+  const legacy = source?.supplierTaxType && source.supplierTaxType !== "NO_TAX" ? [{ taxType: source.supplierTaxType as SupplierTaxRule["taxType"], taxRate: Number(source.supplierTaxRate ?? 0) }] : [];
+  const rules = source?.supplierTaxRules?.length ? source.supplierTaxRules : legacy;
+  const first = rules[0];
+  return { applies: Boolean(source?.supplierTaxApplies && rules.length), type: String(first?.taxType ?? "NO_TAX"), rate: Number(first?.taxRate ?? 0), rules };
+}
+
+function orderTaxLabel(type: string): string {
+  return ({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[type] ?? "Tax";
+}
 
 function InventoryProductPicker({
   index,
   supplierUsers,
+  supplierTaxSettings,
 }: {
   index: number;
   supplierUsers: ApiUser[];
+  supplierTaxSettings: SupplierTaxSettings[];
 }): React.ReactElement {
   const form = Form.useFormInstance();
   const category = Form.useWatch(["lineItems", index, "itemCategory"], form);
@@ -215,6 +232,7 @@ function InventoryProductPicker({
     const availableQuantity = Math.max(0, item.quantity - Number(item.reservedQuantity ?? 0));
     if (availableQuantity <= 0) return;
     const supplier = supplierUsers.find((user) => user.id === item.supplierId);
+    const taxSetting = supplierTaxSettings.find((setting) => setting.supplierId === item.supplierId);
     const rows = ([...(form.getFieldValue("lineItems") ?? [])] as LineItemFormRow[]);
     rows[index] = {
       ...rows[index],
@@ -230,8 +248,10 @@ function InventoryProductPicker({
       quantity: 1,
       unitOfMeasurement: item.unit,
       estimatedUnitPrice: item.unitPrice,
-      taxType: item.taxType ?? "",
-      taxRate: taxRateForCodes(item.taxType),
+      supplierTaxApplies: taxSetting?.taxApplies ?? false,
+      supplierTaxType: taxSetting?.taxType ?? "NO_TAX",
+      supplierTaxRate: Number(taxSetting?.taxRate ?? 0),
+      supplierTaxRules: taxSetting?.taxRules ?? [],
     } as LineItemFormRow;
     form.setFieldsValue({ lineItems: rows });
   };
@@ -265,6 +285,7 @@ function InventoryProductPicker({
         <div className={creationStyles.inventoryProductGrid}>
           {filteredProducts.map((item) => {
           const supplier = supplierUsers.find((user) => user.id === item.supplierId);
+          const taxSetting = supplierTaxSettings.find((setting) => setting.supplierId === item.supplierId);
           const selected = selectedId === item.id;
           const reservedQuantity = Number(item.reservedQuantity ?? 0);
           const availableQuantity = Math.max(0, item.quantity - reservedQuantity);
@@ -281,6 +302,7 @@ function InventoryProductPicker({
               <span className={creationStyles.inventoryProductCopy}>
                 <strong>{item.itemName}</strong>
                 <span>{supplier?.name ?? supplier?.email ?? "Supplier"}</span>
+                <span>{taxSetting?.taxApplies && taxSetting.taxRules?.length ? `Order tax: ${taxSetting.taxRules.map((rule) => `${orderTaxLabel(rule.taxType)} (${Number(rule.taxRate).toFixed(2)}%)`).join(" + ")}` : "No order tax"}</span>
                 <span>
                   {outOfStock
                     ? "Out of stock"
@@ -295,7 +317,7 @@ function InventoryProductPicker({
                   </span>
                 ) : null}
               </span>
-              <span className={creationStyles.inventoryProductPrice}>MYR {item.unitPrice.toFixed(2)}</span>
+              <span className={creationStyles.inventoryProductPrice}>{displayCurrency(DEFAULT_CURRENCY)} {item.unitPrice.toFixed(2)}</span>
             </button>
           );
           })}
@@ -330,23 +352,6 @@ function InventoryQuantityInput({
   );
 }
 
-function TaxSummary({ index }: { index: number }): React.ReactElement {
-  const form = Form.useFormInstance();
-  const quantity = Form.useWatch(["lineItems", index, "quantity"], form);
-  const unitPrice = Form.useWatch(["lineItems", index, "estimatedUnitPrice"], form);
-  const taxType = Form.useWatch(["lineItems", index, "taxType"], form);
-  const taxRate = Form.useWatch(["lineItems", index, "taxRate"], form);
-  const taxAmount = computeTaxAmount(quantity, unitPrice, taxRate);
-  const afterTax = computeAmountAfterTax(quantity, unitPrice, taxRate);
-  return (
-    <div className={creationStyles.taxSummary}>
-      <div><span>Applicable taxes</span><strong>{taxLabelForCodes(taxType)}</strong></div>
-      <div><span>Tax amount</span><strong>{DEFAULT_CURRENCY} {taxAmount.toFixed(2)}</strong></div>
-      <div><span>Amount after tax</span><strong>{DEFAULT_CURRENCY} {afterTax.toFixed(2)}</strong></div>
-    </div>
-  );
-}
-
 type FormValues = {
   paymentTerms?: string;
   lineItems: LineItemFormRow[];
@@ -364,14 +369,13 @@ function LineRowTotal({
   const form = Form.useFormInstance();
   const q = Form.useWatch(["lineItems", index, "quantity"], form);
   const p = Form.useWatch(["lineItems", index, "estimatedUnitPrice"], form);
-  const taxRate = Form.useWatch(["lineItems", index, "taxRate"], form);
-  const total = computeAmountAfterTax(q, p, taxRate);
+  const total = computeLineTotal(q, p);
 
   return (
     <InputNumber
       readOnly
       value={total}
-      prefix={DEFAULT_CURRENCY}
+      prefix={displayCurrency(DEFAULT_CURRENCY)}
       style={{
         width: "100%",
         backgroundColor: "var(--ant-color-fill-quaternary, #fafafa)",
@@ -472,6 +476,7 @@ export default function CreationSubmodule(): React.ReactElement {
   const [prNumber, setPrNumber] = useState(() => generatePrNumber());
   const [requestDate, setRequestDate] = useState(() => todayIsoDate());
   const [supplierUsers, setSupplierUsers] = useState<ApiUser[]>([]);
+  const [supplierTaxSettings, setSupplierTaxSettings] = useState<SupplierTaxSettings[]>([]);
   const [editingDraft, setEditingDraft] = useState<PurchaseRequestDraft | null>(null);
   const [departmentBudget, setDepartmentBudget] = useState<BudgetUsageSummary | null>(null);
   const [loadingDepartmentBudget, setLoadingDepartmentBudget] = useState(false);
@@ -570,8 +575,10 @@ export default function CreationSubmodule(): React.ReactElement {
         supplierName: item.supplierName,
         supplierEmail: item.supplierEmail,
         supplierDepartment: item.supplierDepartment,
-        taxType: item.taxType ?? "",
-        taxRate: taxRateForCodes(item.taxType),
+        supplierTaxApplies: foundDraft.supplierTaxApplies ?? false,
+        supplierTaxType: foundDraft.supplierTaxType ?? "NO_TAX",
+        supplierTaxRate: foundDraft.supplierTaxRate ?? 0,
+        supplierTaxRules: foundDraft.supplierTaxRules ?? [],
         quantity: item.quantity,
         unitOfMeasurement: item.unitOfMeasurement,
         estimatedUnitPrice: item.unitPrice,
@@ -587,11 +594,10 @@ export default function CreationSubmodule(): React.ReactElement {
         const usersRes = await axios.get(`${API}/admin/users`);
         if (!cancelled && usersRes.data?.success) {
           const users = (usersRes.data.users ?? []) as ApiUser[];
-          setSupplierUsers(
-            users.filter(
-              (user) => user.role === UserRole.SUPPLIER && Boolean(user.isActive),
-            ),
-          );
+          const suppliers = users.filter((user) => user.role === UserRole.SUPPLIER && Boolean(user.isActive));
+          setSupplierUsers(suppliers);
+          const taxSettings = await fetchSupplierTaxSettings(suppliers.map((supplier) => supplier.id));
+          if (!cancelled) setSupplierTaxSettings(taxSettings);
         }
       } catch {
         /* keep creation usable even when supplier lookup fails */
@@ -627,25 +633,23 @@ export default function CreationSubmodule(): React.ReactElement {
     | LineItemFormRow[]
     | undefined;
 
-  const requestTotal = useMemo(() => {
-    if (!lineItemsWatch?.length) return 0;
-    return lineItemsWatch.reduce((sum, row) => {
-      return (
-        sum + computeAmountAfterTax(row?.quantity, row?.estimatedUnitPrice, row?.taxRate)
-      );
-    }, 0);
-  }, [lineItemsWatch]);
+  const requestSubtotal = useMemo(() => (lineItemsWatch ?? []).reduce(
+    (sum, row) => sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice), 0,
+  ), [lineItemsWatch]);
+  const requestTax = useMemo(() => orderTaxForRows(lineItemsWatch), [lineItemsWatch]);
+  const requestTaxBreakdown = useMemo(() => computeTaxBreakdown(requestSubtotal, requestTax.rules), [requestSubtotal, requestTax]);
+  const requestTaxAmount = requestTax.applies ? requestTaxBreakdown.total : 0;
+  const requestTotal = Math.round((requestSubtotal + requestTaxAmount) * 100) / 100;
 
   const recalcRequestTotal = (): void => {
     const rows =
       (form.getFieldValue("lineItems") as LineItemFormRow[] | undefined) ?? [];
-    const total = rows.reduce(
-      (s, r) => s + computeAmountAfterTax(r?.quantity, r?.estimatedUnitPrice, r?.taxRate),
-      0,
-    );
+    const subtotal = rows.reduce((sum, row) => sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice), 0);
+    const tax = orderTaxForRows(rows);
+    const total = Math.round((subtotal + (tax.applies ? computeTaxBreakdown(subtotal, tax.rules).total : 0)) * 100) / 100;
     message.info(
       tMsg('info.totalCalculated', {
-        currency: DEFAULT_CURRENCY,
+        currency: displayCurrency(DEFAULT_CURRENCY),
         total: total.toFixed(2)
       }),
     );
@@ -660,6 +664,11 @@ export default function CreationSubmodule(): React.ReactElement {
       (form.getFieldValue("lineItems") as LineItemFormRow[] | undefined) ?? [];
     if (rows.length < 1) {
       message.warning(tMsg('warning.noSelection'));
+      return;
+    }
+    const supplierIds = Array.from(new Set(rows.map((row) => Number(row.supplierId)).filter((id) => Number.isInteger(id) && id > 0)));
+    if (supplierIds.length > 1) {
+      message.warning("A purchase request must contain inventory items from one supplier so one order tax can be applied.");
       return;
     }
     const lineItems: DraftLineItem[] = rows.map((row) => {
@@ -684,16 +693,10 @@ export default function CreationSubmodule(): React.ReactElement {
         quantity: Number(row.quantity),
         unitOfMeasurement: String(row.unitOfMeasurement ?? "").trim(),
         unitPrice: Number(row.estimatedUnitPrice),
-        taxType: String(row.taxType ?? ""),
-        taxRate: taxRateForCodes(row.taxType),
-        taxAmount: computeTaxAmount(row.quantity, row.estimatedUnitPrice, row.taxType),
-        amountAfterTax: computeAmountAfterTax(row.quantity, row.estimatedUnitPrice, row.taxType),
+        amountAfterTax: computeLineTotal(row.quantity, row.estimatedUnitPrice),
       };
     });
-    const requestAmount = lineItems.reduce(
-      (sum, item) => sum + (item.amountAfterTax ?? item.quantity * item.unitPrice),
-      0,
-    );
+    const requestAmount = requestTotal;
     const localId = editingDraft?.localId ?? newTempId();
 
     // A submitted request must fit the current department's available budget.
@@ -705,7 +708,7 @@ export default function CreationSubmodule(): React.ReactElement {
       }
       if (requestAmount > departmentBudget.remainingAmount + 0.005) {
         message.error(
-          `Request total ${DEFAULT_CURRENCY} ${requestAmount.toFixed(2)} exceeds the available budget of ${DEFAULT_CURRENCY} ${departmentBudget.remainingAmount.toFixed(2)}.`,
+          `Request total ${displayCurrency(DEFAULT_CURRENCY)} ${requestAmount.toFixed(2)} exceeds the available budget of ${displayCurrency(DEFAULT_CURRENCY)} ${departmentBudget.remainingAmount.toFixed(2)}.`,
         );
         return;
       }
@@ -722,6 +725,7 @@ export default function CreationSubmodule(): React.ReactElement {
         requestDate,
         department: department === "â€”" ? undefined : department,
         lineItems,
+        amountAfterTax: requestAmount,
       });
       if (!budgetResult.success) {
         message.error(budgetResult.reason ?? "Could not reserve department budget");
@@ -777,6 +781,13 @@ export default function CreationSubmodule(): React.ReactElement {
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,
+      subtotal: requestSubtotal,
+      supplierTaxApplies: requestTax.applies,
+      supplierTaxType: requestTax.applies ? requestTax.type : "NO_TAX",
+      supplierTaxRate: requestTax.applies ? requestTax.rate : 0,
+      supplierTaxRules: requestTax.applies ? requestTax.rules : [],
+      taxAmount: requestTaxAmount,
+      amountAfterTax: requestTotal,
       paymentTerms: String(form.getFieldValue("paymentTerms") ?? "").trim(),
       requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? UserRole.EMPLOYEE,
       inventoryReservationStatus:
@@ -968,10 +979,13 @@ export default function CreationSubmodule(): React.ReactElement {
                       <Form.Item name={[field.name, "supplierDepartment"]} hidden>
                         <Input />
                       </Form.Item>
-                      <Form.Item name={[field.name, "taxType"]} hidden>
+                      <Form.Item name={[field.name, "supplierTaxApplies"]} hidden>
                         <Input />
                       </Form.Item>
-                      <Form.Item name={[field.name, "taxRate"]} hidden>
+                      <Form.Item name={[field.name, "supplierTaxType"]} hidden>
+                        <Input />
+                      </Form.Item>
+                      <Form.Item name={[field.name, "supplierTaxRate"]} hidden>
                         <InputNumber />
                       </Form.Item>
                       <Col xs={24} lg={8}>
@@ -1008,7 +1022,7 @@ export default function CreationSubmodule(): React.ReactElement {
                         </Form.Item>
                       </Col>
                       <Col span={24}>
-                        <InventoryProductPicker index={index} supplierUsers={supplierUsers} />
+                        <InventoryProductPicker index={index} supplierUsers={supplierUsers} supplierTaxSettings={supplierTaxSettings} />
                       </Col>
                       <Col span={24}>
                         <Form.Item
@@ -1095,18 +1109,15 @@ export default function CreationSubmodule(): React.ReactElement {
                             readOnly
                             min={0}
                             step={0.01}
-                            prefix={DEFAULT_CURRENCY}
+                            prefix={displayCurrency(DEFAULT_CURRENCY)}
                             style={{ width: "100%", ...autoFieldStyle }}
                           />
                         </Form.Item>
                       </Col>
                       <Col xs={24} md={16}>
-                        <Form.Item label="Amount after tax">
+                        <Form.Item label="Line subtotal">
                           <LineRowTotal index={index} />
                         </Form.Item>
-                      </Col>
-                      <Col span={24}>
-                        <TaxSummary index={index} />
                       </Col>
                     </Row>
                   </Card>
@@ -1130,11 +1141,16 @@ export default function CreationSubmodule(): React.ReactElement {
             className={creationStyles.summarySection}
           >
             <Col xs={24} md={16}>
-              <Text strong>{t('purchaseRequest.creation.form.requestTotal')}</Text>
+              <Text strong>Order total (including supplier tax)</Text>
+              <div className={creationStyles.taxSummary}>
+                <div><span>Items subtotal</span><strong>{displayCurrency(DEFAULT_CURRENCY)} {requestSubtotal.toFixed(2)}</strong></div>
+                {requestTax.applies && requestTax.rules.length ? requestTax.rules.map((rule, index) => <div key={`${rule.taxType}-${index}`}><span>{orderTaxLabel(rule.taxType)} ({Number(rule.taxRate).toFixed(2)}%)</span><strong>{displayCurrency(DEFAULT_CURRENCY)} {(requestTaxBreakdown.amounts[index] ?? 0).toFixed(2)}</strong></div>) : <div><span>Supplier tax</span><strong>{displayCurrency(DEFAULT_CURRENCY)} 0.00</strong></div>}
+                <div><span>Amount to reserve</span><strong>{displayCurrency(DEFAULT_CURRENCY)} {requestTotal.toFixed(2)}</strong></div>
+              </div>
               <InputNumber
                 readOnly
                 value={requestTotal}
-                prefix={DEFAULT_CURRENCY}
+                prefix={displayCurrency(DEFAULT_CURRENCY)}
                 style={{
                   width: "100%",
                   marginTop: 8,
@@ -1181,7 +1197,7 @@ export default function CreationSubmodule(): React.ReactElement {
                     title="Allocated"
                     value={departmentBudget.allocatedAmount}
                     precision={2}
-                    prefix={DEFAULT_CURRENCY}
+                    prefix={displayCurrency(DEFAULT_CURRENCY)}
                   />
                 </Col>
                 <Col xs={24} sm={6}>
@@ -1189,7 +1205,7 @@ export default function CreationSubmodule(): React.ReactElement {
                     title="Spent"
                     value={departmentBudget.spentAmount}
                     precision={2}
-                    prefix={DEFAULT_CURRENCY}
+                    prefix={displayCurrency(DEFAULT_CURRENCY)}
                   />
                 </Col>
                 <Col xs={24} sm={6}>
@@ -1197,7 +1213,7 @@ export default function CreationSubmodule(): React.ReactElement {
                     title="Reserved"
                     value={departmentBudget.reservedAmount}
                     precision={2}
-                    prefix={DEFAULT_CURRENCY}
+                    prefix={displayCurrency(DEFAULT_CURRENCY)}
                     styles={{
                       content: { color: "#fa8c16" },
                     }}
@@ -1208,7 +1224,7 @@ export default function CreationSubmodule(): React.ReactElement {
                     title="Remaining"
                     value={departmentBudget.remainingAmount}
                     precision={2}
-                    prefix={DEFAULT_CURRENCY}
+                    prefix={displayCurrency(DEFAULT_CURRENCY)}
                     styles={{
                       content: {
                         color: departmentBudget.remainingAmount < 0 ? "#ff4d4f" : "#52c41a",

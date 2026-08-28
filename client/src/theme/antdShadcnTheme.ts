@@ -1,64 +1,64 @@
 import type { ThemeConfig } from "antd";
 
 /**
- * Ant Design theme tuned to feel closer to shadcn/ui:
- * zinc neutrals, subtle borders, soft shadows, system sans font.
+ * Shared OptiMind visual language: quiet operational surfaces, teal actions,
+ * crisp borders and restrained elevation.
  */
 export const antdShadcnTheme: ThemeConfig = {
   token: {
-    colorPrimary: "#18181b",
+    colorPrimary: "#0f766e",
     colorSuccess: "#22c55e",
     colorWarning: "#ca8a04",
     colorError: "#dc2626",
-    colorInfo: "#71717a",
+    colorInfo: "#0f766e",
 
     borderRadius: 6,
     borderRadiusLG: 8,
     borderRadiusSM: 4,
 
-    colorBgLayout: "#fafafa",
+    colorBgLayout: "#f4f7fb",
     colorBgContainer: "#ffffff",
     colorBgElevated: "#ffffff",
 
-    colorBorder: "#e4e4e7",
-    colorBorderSecondary: "#f4f4f5",
+    colorBorder: "#dce5ee",
+    colorBorderSecondary: "#edf2f6",
 
-    colorText: "#09090b",
-    colorTextSecondary: "#71717a",
-    colorTextTertiary: "#a1a1aa",
-    colorTextQuaternary: "#d4d4d8",
+    colorText: "#102033",
+    colorTextSecondary: "#66788a",
+    colorTextTertiary: "#8b9bad",
+    colorTextQuaternary: "#c2ced9",
 
     fontFamily:
       'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
 
     boxShadow:
-      "0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08)",
-    boxShadowSecondary: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      "0 1px 2px 0 rgb(16 32 51 / 0.05)",
+    boxShadowSecondary: "0 10px 26px rgb(16 32 51 / 0.08)",
   },
   components: {
     Button: {
       primaryShadow: "none",
       defaultShadow: "none",
       borderRadius: 6,
-      defaultBorderColor: "#e4e4e7",
-      defaultColor: "#18181b",
-      defaultHoverBg: "#fafafa",
-      defaultHoverColor: "#09090b",
-      defaultHoverBorderColor: "#d4d4d8",
+      defaultBorderColor: "#c8d5e1",
+      defaultColor: "#102033",
+      defaultHoverBg: "#f5fbfa",
+      defaultHoverColor: "#0f766e",
+      defaultHoverBorderColor: "#0f766e",
     },
     Card: {
       borderRadiusLG: 8,
     },
     Input: {
       borderRadius: 6,
-      hoverBorderColor: "#d4d4d8",
-      activeBorderColor: "#18181b",
+      hoverBorderColor: "#0f766e",
+      activeBorderColor: "#0f766e",
     },
     Layout: {
-      bodyBg: "#fafafa",
+      bodyBg: "#f4f7fb",
       headerBg: "#ffffff",
       headerPadding: "0 24px",
-      siderBg: "#09090b",
+      siderBg: "#ffffff",
     },
     Menu: {
       darkItemBg: "transparent",
@@ -68,11 +68,11 @@ export const antdShadcnTheme: ThemeConfig = {
       darkSubMenuItemBg: "#09090b",
     },
     Table: {
-      borderColor: "#e4e4e7",
-      headerBg: "#fafafa",
+      borderColor: "#dce5ee",
+      headerBg: "#f8fafc",
     },
     Typography: {
-      colorTextHeading: "#09090b",
+      colorTextHeading: "#102033",
     },
   },
 };

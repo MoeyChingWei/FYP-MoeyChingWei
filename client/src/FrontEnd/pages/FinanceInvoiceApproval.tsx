@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, Card, Descriptions, Empty, Flex, Table, Tag, Typography, message } from "antd";
 import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../shared/auth/session";
 import { canApproveSupplierInvoices } from "../shared/types/roles";
 import RejectReasonModal from "../shared/components/RejectReasonModal";
@@ -19,11 +20,12 @@ import styles from "./purchasing/ApprovalDetailSubmodule.module.css";
 const { Title, Text } = Typography;
 
 function money(row: SupplierInvoiceRecord): string {
-  return `${row.currency} ${Number(row.grandTotal || 0).toFixed(2)}`;
+  return `${row.currency === "MYR" ? "RM" : row.currency} ${Number(row.grandTotal || 0).toFixed(2)}`;
 }
 
 export default function FinanceInvoiceApproval(): React.ReactElement {
   const navigate = useNavigate();
+  const { t } = useTranslation("finance");
   const user = useMemo(() => getSessionUser(), []);
   const [rows, setRows] = useState<SupplierInvoiceRecord[]>([]);
   const [selected, setSelected] = useState<SupplierInvoiceRecord | null>(null);
@@ -56,7 +58,7 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
   const approve = async (row: SupplierInvoiceRecord): Promise<void> => {
     if (row.status !== "SUBMITTED") return;
     if (!row.grnLocalId || !row.poNumber || !row.supplierEmail || !row.items.length || !Number.isFinite(row.grandTotal) || row.grandTotal <= 0) {
-      message.error("Invoice cannot be approved because required linkage or amount information is missing");
+      message.error(t("invoiceApproval.validationError"));
       return;
     }
     if (processingId) return;
@@ -68,10 +70,10 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
         saveSupplierPayments([...loadSupplierPayments(), result.payment]);
       }
       setSelected(null);
-      message.success("Supplier invoice approved and sent to Payment Team");
+      message.success(t("invoiceApproval.approved"));
       void sync();
     } catch (error) {
-      message.error(error instanceof Error ? error.message : "Unable to approve supplier invoice");
+      message.error(error instanceof Error ? error.message : t("invoiceApproval.approveError"));
       void sync();
     } finally {
       setProcessingId(null);
@@ -87,10 +89,10 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
       updateSupplierInvoice(rejecting.localId, () => invoice);
       setRejecting(null);
       setSelected(null);
-      message.success("Supplier invoice rejected");
+      message.success(t("invoiceApproval.rejected"));
       void sync();
     } catch (error) {
-      message.error(error instanceof Error ? error.message : "Unable to reject supplier invoice");
+      message.error(error instanceof Error ? error.message : t("invoiceApproval.rejectError"));
       void sync();
     } finally {
       setProcessingId(null);
@@ -98,43 +100,43 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
   };
 
   const columns = [
-    { title: "Invoice", dataIndex: "invoiceNumber", render: (value: string, row: SupplierInvoiceRecord) => value || row.poNumber },
-    { title: "Supplier", key: "supplier", render: (_: unknown, row: SupplierInvoiceRecord) => row.supplierCompanyName || row.supplierName || row.supplierEmail || "-" },
-    { title: "PO / GRN", key: "source", render: (_: unknown, row: SupplierInvoiceRecord) => `${row.poNumber} / ${row.deliveryNo || "-"}` },
-    { title: "Amount", key: "amount", render: (_: unknown, row: SupplierInvoiceRecord) => money(row), sorter: (a: SupplierInvoiceRecord, b: SupplierInvoiceRecord) => a.grandTotal - b.grandTotal },
-    { title: "Submitted", dataIndex: "submittedDate", render: (value: string) => value ? new Date(value).toLocaleDateString() : "-" },
-    { title: "Action", key: "action", render: (_: unknown, row: SupplierInvoiceRecord) => <Button icon={<EyeOutlined />} onClick={() => setSelected(row)}>Review</Button> },
+    { title: t("invoiceApproval.columns.invoice"), dataIndex: "invoiceNumber", render: (value: string, row: SupplierInvoiceRecord) => value || row.poNumber },
+    { title: t("invoiceApproval.columns.supplier"), key: "supplier", render: (_: unknown, row: SupplierInvoiceRecord) => row.supplierCompanyName || row.supplierName || row.supplierEmail || "-" },
+    { title: t("invoiceApproval.columns.source"), key: "source", render: (_: unknown, row: SupplierInvoiceRecord) => `${row.poNumber} / ${row.deliveryNo || "-"}` },
+    { title: t("invoiceApproval.columns.amount"), key: "amount", render: (_: unknown, row: SupplierInvoiceRecord) => money(row), sorter: (a: SupplierInvoiceRecord, b: SupplierInvoiceRecord) => a.grandTotal - b.grandTotal },
+    { title: t("invoiceApproval.columns.submitted"), dataIndex: "submittedDate", render: (value: string) => value ? new Date(value).toLocaleDateString() : "-" },
+    { title: t("invoiceApproval.columns.action"), key: "action", render: (_: unknown, row: SupplierInvoiceRecord) => <Button icon={<EyeOutlined />} onClick={() => setSelected(row)}>{t("invoiceApproval.review")}</Button> },
   ];
 
-  if (!canApproveSupplierInvoices(user?.role)) return <Card><Empty description="Treasury / Finance Officer access required" /></Card>;
+  if (!canApproveSupplierInvoices(user?.role)) return <Card><Empty description={t("invoiceApproval.accessRequired")} /></Card>;
   return <div className={styles.page}>
     <Flex justify="space-between" align="center" className={styles.header}>
       <Flex align="center" gap={8}>
-        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/finance")} aria-label="Back to Finance" title="Back to Finance" />
-        <Title level={3} style={{ margin: 0 }}>Supplier Invoice Approval</Title>
+        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/finance")} aria-label={t("invoiceApproval.back")} title={t("invoiceApproval.back")} />
+        <Title level={3} style={{ margin: 0 }}>{t("invoiceApproval.title")}</Title>
       </Flex>
-      <Tag color="blue">{pending.length} pending</Tag>
+      <Tag color="blue">{t("invoiceApproval.pending", { count: pending.length })}</Tag>
     </Flex>
     <Card>
-      <Table rowKey="localId" dataSource={pending} columns={columns} pagination={{ pageSize: 10 }} locale={{ emptyText: <Empty description="No supplier invoices pending approval" /> }} scroll={{ x: 900 }} />
+      <Table rowKey="localId" dataSource={pending} columns={columns} pagination={{ pageSize: 10 }} locale={{ emptyText: <Empty description={t("invoiceApproval.empty")} /> }} scroll={{ x: 900 }} />
     </Card>
     {selected ? <Card className={styles.sectionCard} title={<Flex justify="space-between"><span>{selected.invoiceNumber || selected.poNumber}</span><Tag color={selected.status === "SUBMITTED" ? "blue" : selected.status === "APPROVED" ? "green" : "red"}>{selected.status}</Tag></Flex>}>
       <Descriptions bordered column={2} size="small">
-        <Descriptions.Item label="Supplier">{selected.supplierCompanyName || selected.supplierName || selected.supplierEmail || "-"}</Descriptions.Item>
-        <Descriptions.Item label="Amount">{money(selected)}</Descriptions.Item>
+        <Descriptions.Item label={t("invoiceApproval.columns.supplier")}>{selected.supplierCompanyName || selected.supplierName || selected.supplierEmail || "-"}</Descriptions.Item>
+        <Descriptions.Item label={t("invoiceApproval.details.amount")}>{money(selected)}</Descriptions.Item>
         <Descriptions.Item label="PO">{selected.poNumber}</Descriptions.Item>
         <Descriptions.Item label="GRN">{selected.deliveryNo || "-"}</Descriptions.Item>
-        <Descriptions.Item label="Invoice date">{selected.invoiceDate || "-"}</Descriptions.Item>
-        <Descriptions.Item label="Payment terms">{selected.paymentTerms || "-"}</Descriptions.Item>
+        <Descriptions.Item label={t("invoiceApproval.details.invoiceDate")}>{selected.invoiceDate || "-"}</Descriptions.Item>
+        <Descriptions.Item label={t("invoiceApproval.details.paymentTerms")}>{selected.paymentTerms || "-"}</Descriptions.Item>
       </Descriptions>
       <Flex gap={8} style={{ marginTop: 16 }}>
-        <Button type="primary" icon={<CheckCircleOutlined />} loading={processingId === selected.localId} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => void approve(selected)}>Approve</Button>
-        <Button danger icon={<CloseCircleOutlined />} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => setRejecting(selected)}>Reject</Button>
-        <Button onClick={() => navigate(`/supplier-overview/invoice/${selected.localId}`)}>View full invoice</Button>
-        <Button icon={<DownloadOutlined />} onClick={() => window.open(supplierFinancePdfUrl("invoices", selected.localId), "_blank", "noopener,noreferrer")}>Download PDF</Button>
+        <Button type="primary" icon={<CheckCircleOutlined />} loading={processingId === selected.localId} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => void approve(selected)}>{t("invoiceApproval.approve")}</Button>
+        <Button danger icon={<CloseCircleOutlined />} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => setRejecting(selected)}>{t("invoiceApproval.reject")}</Button>
+        <Button onClick={() => navigate(`/supplier-overview/invoice/${selected.localId}`)}>{t("invoiceApproval.viewFull")}</Button>
+        <Button icon={<DownloadOutlined />} onClick={() => window.open(supplierFinancePdfUrl("invoices", selected.localId), "_blank", "noopener,noreferrer")}>{t("invoiceApproval.downloadPdf")}</Button>
       </Flex>
-      {selected.notes ? <Text type="secondary">Notes: {selected.notes}</Text> : null}
+      {selected.notes ? <Text type="secondary">{t("invoiceApproval.details.notes")}: {selected.notes}</Text> : null}
     </Card> : null}
-    <RejectReasonModal open={Boolean(rejecting)} title="Reject supplier invoice" itemLabel={rejecting?.invoiceNumber || rejecting?.poNumber || "invoice"} onCancel={() => setRejecting(null)} onConfirm={reject} />
+    <RejectReasonModal open={Boolean(rejecting)} title={t("invoiceApproval.rejectTitle")} itemLabel={rejecting?.invoiceNumber || rejecting?.poNumber || t("invoiceApproval.columns.invoice")} onCancel={() => setRejecting(null)} onConfirm={reject} />
   </div>;
 }

@@ -8,6 +8,7 @@ import {
   sendSystemNotificationEmail,
 } from "./emailNotifications.js";
 import { addDebugLog } from "../routes/debug-logs.js";
+import { displayCurrency } from "../utils/currency.js";
 
 function uniqueById(users) {
   const seen = new Set();
@@ -670,7 +671,7 @@ export async function processWorkflowNotifications(
         const financeUsers = await findUsersByRoles(financeRoles);
         if (financeUsers.length) await createInAppNotifications(financeUsers, {
           title: "Supplier Invoice Pending Approval",
-          message: `${invoiceRef} from ${row.supplierCompanyName || row.supplierName || row.supplierEmail || "supplier"} requires Finance approval (${row.currency || ""} ${Number(row.grandTotal || 0).toFixed(2)}).`,
+          message: `${invoiceRef} from ${row.supplierCompanyName || row.supplierName || row.supplierEmail || "supplier"} requires Finance approval (${displayCurrency(row.currency)} ${Number(row.grandTotal || 0).toFixed(2)}).`,
           type: "SUPPLIER_INVOICE_APPROVAL", refType: "supplier-invoice", refId: localId,
         });
       }
@@ -710,7 +711,7 @@ export async function processWorkflowNotifications(
             const paymentUsers = await findUsersByRoles(paymentRoles);
             if (paymentUsers.length) await createInAppNotifications(paymentUsers, {
               title: "Payment Pending Processing",
-              message: `${paymentNumber} for ${invoiceRef} is ready for payment processing (${row.currency || ""} ${Number(row.grandTotal || 0).toFixed(2)}).`,
+              message: `${paymentNumber} for ${invoiceRef} is ready for payment processing (${displayCurrency(row.currency)} ${Number(row.grandTotal || 0).toFixed(2)}).`,
               type: "SUPPLIER_PAYMENT_PENDING", refType: "supplier-payment", refId: paymentLocalId,
             });
           }

@@ -257,7 +257,7 @@ export default function OrderAcknowledgementSubmodule(): React.ReactElement {
                   );
                   return (
                     <Text strong>
-                      {row.currency} {total.toFixed(2)}
+                      {row.currency === "MYR" ? "RM" : row.currency} {total.toFixed(2)}
                     </Text>
                   );
                 },

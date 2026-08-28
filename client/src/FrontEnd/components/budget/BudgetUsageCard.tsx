@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Progress, Tag, Statistic, Row, Col } from "antd";
 import { WarningOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import type { BudgetUsageSummary } from "../../shared/api/departmentBudget";
 
 interface BudgetUsageCardProps {
@@ -14,6 +15,7 @@ const formatPeriod = (year: number, month: number): string => {
 };
 
 export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading }) => {
+  const { t } = useTranslation("budgetManagement");
   const getStatusColor = () => {
     if (usage.status === "exceeded") return "red";
     if (usage.status === "warning") return "orange";
@@ -27,9 +29,9 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
   };
 
   const getStatusText = () => {
-    if (usage.status === "exceeded") return "Over Budget";
-    if (usage.status === "warning") return "Warning";
-    return "On Track";
+    if (usage.status === "exceeded") return t("exceeded");
+    if (usage.status === "warning") return t("warning");
+    return t("onTrack");
   };
 
   return (
@@ -37,7 +39,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
       className="budgetUsageCard"
       title={
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>Budget Usage - {usage.department.name}</span>
+          <span>{t("budgetUsage", { department: usage.department.name })}</span>
           <Tag color={getStatusColor()} icon={getStatusIcon()}>
             {getStatusText()}
           </Tag>
@@ -48,36 +50,36 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
       <Row gutter={16}>
         <Col span={6}>
           <Statistic
-            title="Allocated"
+            title={t("allocated")}
             value={usage.allocatedAmount}
             precision={2}
-            prefix="$"
+            prefix="RM"
           />
         </Col>
         <Col span={6}>
           <Statistic
-            title="Spent"
+            title={t("spent")}
             value={usage.spentAmount}
             precision={2}
-            prefix="$"
+            prefix="RM"
             styles={{ content: { color: usage.status === "exceeded" ? "#ff4d4f" : undefined } }}
           />
         </Col>
         <Col span={6}>
           <Statistic
-            title="Reserved"
+            title={t("reserved")}
             value={usage.reservedAmount}
             precision={2}
-            prefix="$"
+            prefix="RM"
             styles={{ content: { color: "#fa8c16" } }}
           />
         </Col>
         <Col span={6}>
           <Statistic
-            title="Remaining"
+            title={t("remaining")}
             value={usage.remainingAmount}
             precision={2}
-            prefix="$"
+            prefix="RM"
             styles={{ content: { color: usage.remainingAmount < 0 ? "#ff4d4f" : "#3f8600" } }}
           />
         </Col>
@@ -85,7 +87,7 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
 
       <div style={{ marginTop: 24 }}>
         <div style={{ marginBottom: 8, display: "flex", justifyContent: "space-between" }}>
-          <span>Usage:</span>
+          <span>{t("usage")}:</span>
           <span style={{ fontWeight: 600 }}>{usage.usagePercentage.toFixed(1)}%</span>
         </div>
         <Progress
@@ -101,13 +103,13 @@ export const BudgetUsageCard: React.FC<BudgetUsageCardProps> = ({ usage, loading
         />
         {usage.usagePercentage > 100 && (
           <div style={{ color: "#ff4d4f", fontSize: 12, marginTop: 4 }}>
-            Exceeded by ${Math.abs(usage.remainingAmount).toFixed(2)}
+            {t("exceededBy", { amount: Math.abs(usage.remainingAmount).toFixed(2) })}
           </div>
         )}
       </div>
 
       <div style={{ marginTop: 16, fontSize: 12, color: "#8c8c8c" }}>
-        Period: {formatPeriod(usage.year, usage.month)}
+        {t("periodLabel", { period: formatPeriod(usage.year, usage.month) })}
       </div>
     </Card>
   );

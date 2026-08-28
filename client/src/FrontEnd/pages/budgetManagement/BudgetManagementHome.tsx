@@ -24,8 +24,8 @@ export default function BudgetManagementHome(): React.ReactElement {
     },
     {
       key: "finance-dashboard",
-      title: "Finance Budget Dashboard",
-      description: "Review budget allocation and department spending",
+      title: t("budgetManagement:financeBudgetDashboard"),
+      description: t("budgetManagement:financeDashboardDescription"),
       icon: <FundOutlined className={styles.cardIcon} />,
       path: "/budget/finance-dashboard",
       visible: role === UserRole.ADMIN || role === UserRole.MANAGER || isFinanceRole(role),

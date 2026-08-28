@@ -9,7 +9,8 @@
   },
   "actions": {
     "open": "Buka",
-    "manage": "Urus"
+    "manage": "Urus",
+    "cancel": "Batal"
   },
   "description": "Urus keutamaan dan konfigurasi sistem anda",
   "companyAddress": {
@@ -29,6 +30,50 @@
     "placeholder": "Masukkan alamat syarikat",
     "supplierPlaceholder": "Masukkan alamat syarikat pembekal anda",
     "saveButton": "Simpan Butiran"
+  },
+  "gmail": {
+    "title": "Sambungkan Gmail",
+    "description": "Susun e-mel OptiMind secara automatik dengan label Gmail.",
+    "connected": "Disambungkan",
+    "disconnected": "Tidak disambungkan",
+    "connectedMessage": "Gmail disambungkan ke OptiMind"
+  },
+  "taxInformation": {
+    "title": "Maklumat cukai",
+    "tileDescription": "Tetapkan cukai lalai yang digunakan untuk pesanan pembelian anda.",
+    "backLabel": "Kembali ke Tetapan",
+    "notice": "Tetapan ini digunakan sekali pada jumlah setiap pesanan pembelian, bukan pada item inventori individu.",
+    "defaultOrderTax": "Cukai pesanan lalai",
+    "description": "Tetapan anda disimpan secara berasingan dan digunakan apabila pembeli memilih item inventori anda.",
+    "taxApplies": "Cukai dikenakan pada pesanan pembelian saya",
+    "taxes": "Cukai",
+    "addTax": "Tambah cukai",
+    "removeTax": "Buang cukai",
+    "yes": "Ya",
+    "no": "Tidak",
+    "taxType": "Jenis cukai",
+    "taxRate": "Kadar cukai (%)",
+    "selectTaxType": "Pilih jenis cukai",
+    "selectTaxTypeError": "Pilih jenis cukai",
+    "taxRateError": "Masukkan kadar cukai",
+    "salesTax": "Cukai jualan",
+    "serviceTax": "Cukai perkhidmatan",
+    "otherTax": "Cukai lain",
+    "noTax": "Tiada cukai",
+    "preview": "Pratonton",
+    "orderSubtotal": "Jumlah kecil pesanan",
+    "totalPayable": "Jumlah perlu dibayar",
+    "newRequestsOnly": "Perubahan hanya menjejaskan permintaan pembelian baharu.",
+    "save": "Simpan tetapan cukai",
+    "saved": "Tetapan cukai disimpan",
+    "loadError": "Tidak dapat memuatkan tetapan cukai",
+    "saveError": "Tidak dapat menyimpan tetapan cukai"
+  },
+  "paymentDetails": {
+    "title": "Butiran pembayaran", "tileDescription": "Urus akaun bank yang digunakan untuk menerima pembayaran pembekal.", "backLabel": "Kembali ke Tetapan", "description": "Butiran ini hanya dikongsi dengan Kewangan untuk pembayaran pembekal yang diluluskan.", "bankName": "Nama bank", "accountName": "Nama pemegang akaun", "accountNumber": "Nombor akaun", "accountNumberRule": "Gunakan huruf, nombor, ruang atau tanda sempang sahaja", "save": "Simpan butiran pembayaran", "saved": "Butiran pembayaran dikemas kini", "loadError": "Tidak dapat memuatkan butiran pembayaran", "saveError": "Tidak dapat menyimpan butiran pembayaran"
+  },
+  "aiAssistant": {
+    "configuration": "Konfigurasi Pembantu AI", "description": "Konfigurasi dan urus pembantu AI untuk mengautomasikan tugas perolehan", "tip": "Petua:", "tipDescription": "Klik mana-mana kad Ejen Utama untuk melihat semua Sub-Ejennya", "settings": "Tetapan", "title": "Pembantu AI", "notFound": "Tidak Ditemui", "mainAgentNotFound": "Ejen Utama Tidak Ditemui", "mainAgentNotFoundDescription": "Kategori ejen yang diminta tidak ditemui.", "noSubAgents": "Tiada Sub-Ejen Tersedia", "noSubAgentsDescription": "Tiada sub-ejen dikonfigurasi untuk kategori ini pada masa ini.", "viewDetails": "Lihat Butiran", "viewDetailsFor": "Lihat butiran untuk {{name}}", "viewAgents": "Lihat ejen {{name}}", "subAgents": "{{count}} Sub-Ejen", "clickForDetails": "Klik untuk melihat butiran", "breadcrumb": "Jejak navigasi", "goBack": "Kembali"
   },
   "feedback": {
     "title": "Maklum Balas",

@@ -8,13 +8,13 @@ import { getSessionUser } from "../../shared/auth/session";
 import { UserRole } from "../../shared/types/roles";
 import { hydrateSupplierInvoices, loadSupplierInvoices, updateSupplierInvoice, type SupplierInvoiceRecord } from "../../modules/supplierFulfillment/workflow";
 import { submitSupplierInvoice, supplierFinancePdfUrl } from "../../shared/api/supplierFinance";
-import { computeDraftLineAmountAfterTax } from "../../modules/purchasing/requestCreation/constants";
+import { computeDraftLineAmountAfterTax, computeTaxBreakdown } from "../../modules/purchasing/requestCreation/constants";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
 
 const { Paragraph, Title } = Typography;
 
-function currencyLabel(currency: string, amount: number): string { return `${currency} ${amount.toFixed(2)}`; }
+function currencyLabel(currency: string, amount: number): string { return `${currency === "MYR" ? "RM" : currency} ${amount.toFixed(2)}`; }
 function statusColor(status: SupplierInvoiceRecord["status"]): string {
   if (status === "SUBMITTED") return "blue";
   if (status === "APPROVED") return "green";
@@ -76,6 +76,8 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
 
   if (localId) {
     if (!row) return <Card><Empty description={t("invoice.messages.notFound")} /></Card>;
+    const invoiceRules = row.supplierTaxRules?.length ? row.supplierTaxRules : (row.supplierTaxApplies && row.supplierTaxType ? [{ taxType: row.supplierTaxType, taxRate: row.supplierTaxRate ?? 0 }] : []);
+    const invoiceTaxBreakdown = computeTaxBreakdown(row.subtotal, invoiceRules);
     return <Card><div className={styles.page}>
       <div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview/invoice")} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.detail.title")}</Title></Flex><Tag color={statusColor(row.status)}>{t(`invoice.status.${row.status.toLowerCase()}`)}</Tag></div>
       <div className={styles.summaryGrid}>
@@ -88,6 +90,11 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
         <Descriptions.Item label={t("invoice.fields.invoiceNumber")}>{row.invoiceNumber || "-"}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.invoiceDate")}>{row.invoiceDate || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoice.fields.sourcePr")}>{row.sourcePrNumber}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.supplier")}>{row.supplierName || row.supplierEmail || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoice.fields.subtotal")}>{currencyLabel(row.currency, row.subtotal)}</Descriptions.Item><Descriptions.Item label={t("invoice.fields.taxTotal")}>{currencyLabel(row.currency, row.taxTotal)}</Descriptions.Item>
+      </Descriptions></div>
+      <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>Calculation summary</h3><Descriptions column={1} bordered size="middle">
+        <Descriptions.Item label="Items subtotal">{currencyLabel(row.currency, row.subtotal)}</Descriptions.Item>
+        {invoiceRules.map((rule, index) => <Descriptions.Item key={`${rule.taxType}-${index}`} label={`${({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[rule.taxType] ?? "Tax"} (${Number(rule.taxRate ?? 0).toFixed(2)}%)`}>{currencyLabel(row.currency, invoiceTaxBreakdown.amounts[index] ?? 0)}</Descriptions.Item>)}
+        <Descriptions.Item label="Total payable">{currencyLabel(row.currency, row.grandTotal)}</Descriptions.Item>
       </Descriptions></div>
       {row.status === "REJECTED" ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.rejectionTitle")}</h3><Paragraph type="danger">{row.rejectionReason || t("invoice.detail.noRejectionReason")}</Paragraph><Paragraph>Rejected by: {row.rejectedBy || row.reviewedBy || "-"}<br/>Rejected date: {row.rejectedDate || row.reviewedDate || "-"}</Paragraph></div> : null}
       {row.approvalHistory?.length ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>Approval history</h3>{row.approvalHistory.map((entry) => <Paragraph key={`${entry.action}-${entry.date}`}>{entry.action} by {entry.by} on {new Date(entry.date).toLocaleString()}{entry.reason ? `: ${entry.reason}` : ""}</Paragraph>)}</div> : null}

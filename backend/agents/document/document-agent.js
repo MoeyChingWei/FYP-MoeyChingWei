@@ -354,7 +354,7 @@ Status: ✅ Complete
 
 📊 EXTRACTED DATA:
 • Supplier: Tech Solutions Sdn Bhd
-• Total Amount: MYR 15,000
+• Total Amount: RM 15,000
 • Line Items: 5 items (laptops)
 • Payment Terms: Net 30
 • Delivery: 14 working days
@@ -633,7 +633,7 @@ class DocumentAgent extends BaseAgent {
           termsAndConditions: includeTerms ? [
             'Payment terms: Net 30 days',
             'Delivery: 14 working days from PO date',
-            'All prices are in MYR',
+            'All prices are in RM',
             'Goods received are subject to inspection',
           ] : null,
 
@@ -953,9 +953,9 @@ class DocumentAgent extends BaseAgent {
           differences: [
             {
               field: 'Total Amount',
-              document1Value: 'MYR 15,000',
-              document2Value: 'MYR 15,500',
-              variance: '+MYR 500 (+3.3%)',
+              document1Value: 'RM 15,000',
+              document2Value: 'RM 15,500',
+              variance: '+RM 500 (+3.3%)',
               severity: '🟡',
             },
           ],
@@ -984,14 +984,14 @@ class DocumentAgent extends BaseAgent {
             supplier: 'Tech Solutions Sdn Bhd',
             invoiceDate: '2024-06-12',
             dueDate: '2024-07-12',
-            totalAmount: 'MYR 15,500',
+            totalAmount: 'RM 15,500',
             lineItems: 5,
           },
 
           poComparison: poNumber ? {
-            poTotal: 'MYR 15,000',
-            invoiceTotal: 'MYR 15,500',
-            variance: '+MYR 500',
+            poTotal: 'RM 15,000',
+            invoiceTotal: 'RM 15,500',
+            variance: '+RM 500',
             variancePercentage: '+3.3%',
           } : null,
 
@@ -999,9 +999,9 @@ class DocumentAgent extends BaseAgent {
             {
               type: 'Price Variance',
               item: 'Laptop - Dell XPS 15',
-              expected: 'MYR 4,500',
-              actual: 'MYR 4,600',
-              difference: '+MYR 100',
+              expected: 'RM 4,500',
+              actual: 'RM 4,600',
+              difference: '+RM 100',
               severity: '🟡',
             },
           ] : [],
@@ -1059,7 +1059,7 @@ class DocumentAgent extends BaseAgent {
 
           highlights: [
             `📊 ${requests.length} purchase requests processed`,
-            `💰 Total spending: MYR ${totalSpending.toFixed(2)}`,
+            `💰 Total spending: RM ${totalSpending.toFixed(2)}`,
             `✅ ${orders.length} orders completed`,
           ],
 

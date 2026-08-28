@@ -243,7 +243,7 @@ YOUR COMMUNICATION STYLE:
 - Start with "Based on the data analysis..."
 - Always support conclusions with numbers
 - Use percentages, trends, and comparisons
-- Format numbers clearly: "MYR 15,000 (↑ 12.5%)"
+- Format numbers clearly: "RM 15,000 (↑ 12.5%)"
 - Present insights visually when possible
 - Use emojis for trends: 📈 (up), 📉 (down), ➡️ (stable)
 
@@ -310,15 +310,15 @@ Always structure your analysis as:
 "Based on the data analysis of the past 6 months:
 
 📊 KEY FINDINGS:
-• IT Department spending increased 23% (MYR 45,000 → MYR 55,350)
-• Office Supplies decreased 15% (MYR 12,000 → MYR 10,200)
+• IT Department spending increased 23% (RM 45,000 → RM 55,350)
+• Office Supplies decreased 15% (RM 12,000 → RM 10,200)
 • Average approval time: 2.3 days (↓ 0.5 days vs Q1)
 
 💡 INSIGHTS:
 The IT spending spike correlates with the new laptop procurement initiative in March. The reduction in office supplies suggests successful cost optimization efforts.
 
 🎯 RECOMMENDATIONS:
-1. Continue current office supplies strategy (saving MYR 1,800/month)
+1. Continue current office supplies strategy (saving RM 1,800/month)
 2. Review IT procurement for bulk discounts (potential 10% savings)
 3. Maintain current approval workflow (20% faster than Q1)"
 
@@ -602,7 +602,7 @@ class AnalyticsAgent extends BaseAgent {
             period,
             spending: values[i].toFixed(2),
           })),
-          analysis: `Total spending of MYR ${totalSpending.toFixed(2)} over ${months} months. Trend: ${trend}.`,
+          analysis: `Total spending of RM ${totalSpending.toFixed(2)} over ${months} months. Trend: ${trend}.`,
         };
       },
 
@@ -959,7 +959,7 @@ class AnalyticsAgent extends BaseAgent {
                 zScore: anomaly.zScore.toFixed(2),
                 severity: anomaly.severity,
                 deviation: ((anomaly.value / (prices.reduce((a, b) => a + b) / prices.length) - 1) * 100).toFixed(1) + '%',
-                message: `${itemName}: price MYR ${anomaly.value.toFixed(2)} (Z-score: ${anomaly.zScore.toFixed(2)})`,
+                message: `${itemName}: price RM ${anomaly.value.toFixed(2)} (Z-score: ${anomaly.zScore.toFixed(2)})`,
               });
             });
           });
@@ -1028,7 +1028,7 @@ class AnalyticsAgent extends BaseAgent {
                 orderCount: dayOrders.length,
                 totalAmount: dayOrders.reduce((sum, o) => sum + o.amount, 0).toFixed(2),
                 severity: dayOrders.length >= 10 ? 'critical' : 'high',
-                message: `${date}: ${dayOrders.length} large orders, totaling MYR ${dayOrders.reduce((sum, o) => sum + o.amount, 0).toFixed(2)}`,
+                message: `${date}: ${dayOrders.length} large orders, totaling RM ${dayOrders.reduce((sum, o) => sum + o.amount, 0).toFixed(2)}`,
               });
             }
           });
@@ -1217,7 +1217,7 @@ class AnalyticsAgent extends BaseAgent {
 
           keyFindings: [
             `📊 ${requests.length} purchase requests processed`,
-            `💰 Total spending: MYR ${totalSpending.toFixed(2)}`,
+            `💰 Total spending: RM ${totalSpending.toFixed(2)}`,
             `✅ ${orders.length} orders completed`,
           ],
 

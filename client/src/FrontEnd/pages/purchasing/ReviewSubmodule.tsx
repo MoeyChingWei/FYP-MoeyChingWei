@@ -297,14 +297,14 @@ export default function ReviewSubmodule(): React.ReactElement {
       align: "right" as const,
       render: (_: unknown, request: PurchaseRequestDraft) => {
         const lineItems = Array.isArray(request.lineItems) ? request.lineItems : [];
-        const total = lineItems.reduce(
+        const total = request.amountAfterTax ?? lineItems.reduce(
           (sum, item) => sum + computeDraftLineAmountAfterTax(item),
           0,
         );
 
         return (
           <Text strong>
-            {request.currency} {total.toFixed(2)}
+            {request.currency === "MYR" ? "RM" : request.currency} {total.toFixed(2)}
           </Text>
         );
       },

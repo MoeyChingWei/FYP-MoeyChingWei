@@ -8,14 +8,12 @@ export interface SupplierInventoryItem {
   reorderLevel: number;
   unit: string;
   unitPrice: number;
-  taxType?: string;
-  taxRate?: number;
   imageDataUrl?: string;
   updatedAt: string;
 }
 
 const STORAGE_PREFIX = "erp_supplier_inventory_v1";
-const SAMPLE_CATALOGUE_VERSION = "5";
+const SAMPLE_CATALOGUE_VERSION = "6";
 
 type InventoryCatalogItem = Omit<SupplierInventoryItem, "id" | "supplierId" | "updatedAt" | "reservedQuantity">;
 
@@ -54,7 +52,7 @@ const INVENTORY_IMAGE_URLS: Record<string, string> = {
 
 // Expand the original one-item demonstration inventory into a useful supplier catalogue.
 const SAMPLE_CATALOGUE: InventoryCatalogItem[] = [
-  { itemName: "Laptop", category: "IT Equipment", quantity: 10, reorderLevel: 3, unit: "pcs", unitPrice: 8399, taxType: "TAX", taxRate: 10 },
+  { itemName: "Laptop", category: "IT Equipment", quantity: 10, reorderLevel: 3, unit: "pcs", unitPrice: 8399 },
   { itemName: "24-inch Business Monitor", category: "IT Equipment", quantity: 28, reorderLevel: 8, unit: "pcs", unitPrice: 890 },
   { itemName: "Wireless Keyboard and Mouse Set", category: "IT Equipment", quantity: 45, reorderLevel: 12, unit: "sets", unitPrice: 155 },
   { itemName: "USB-C Docking Station", category: "IT Equipment", quantity: 16, reorderLevel: 6, unit: "pcs", unitPrice: 520 },
@@ -86,8 +84,6 @@ const SAMPLE_CATALOGUE: InventoryCatalogItem[] = [
   { itemName: "Printer Maintenance Service", category: "Services Procurement", quantity: 2, reorderLevel: 1, unit: "services", unitPrice: 280 },
 ].map((item) => ({
   ...item,
-  taxType: "TAX",
-  taxRate: 10,
   imageDataUrl: INVENTORY_IMAGE_URLS[item.itemName],
 }));
 
@@ -109,7 +105,11 @@ export function loadSupplierInventory(supplierId?: number): SupplierInventoryIte
     const raw = window.localStorage.getItem(storageKey(supplierId));
     const parsed = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed)
-      ? parsed.map((row) => ({ ...row, reservedQuantity: Number(row?.reservedQuantity ?? 0) }))
+      ? parsed.map(({ taxType: _taxType, taxRate: _taxRate, ...row }) => ({
+        ...row,
+        imageDataUrl: typeof row.imageDataUrl === "string" && !row.imageDataUrl.startsWith("data:") ? row.imageDataUrl : undefined,
+        reservedQuantity: Number(row?.reservedQuantity ?? 0),
+      }))
       : [];
   } catch {
     return [];
@@ -117,8 +117,21 @@ export function loadSupplierInventory(supplierId?: number): SupplierInventoryIte
 }
 
 export function saveSupplierInventory(supplierId: number, rows: SupplierInventoryItem[]): void {
-  window.localStorage.setItem(storageKey(supplierId), JSON.stringify(rows));
-  window.dispatchEvent(new Event("erp-supplier-inventory"));
+  // Inventory images belong on the server. Keep only URLs in the browser
+  // cache so a large Base64 payload cannot exhaust localStorage.
+  const cacheRows = rows.map(({ imageDataUrl, ...row }) => ({
+    ...row,
+    ...(imageDataUrl && !imageDataUrl.startsWith("data:") ? { imageDataUrl } : {}),
+  }));
+  let cached = false;
+  try {
+    window.localStorage.setItem(storageKey(supplierId), JSON.stringify(cacheRows));
+    cached = true;
+  } catch {
+    // A full browser cache must never make a successful server write look like
+    // a failed inventory operation.
+  }
+  if (cached) window.dispatchEvent(new Event("erp-supplier-inventory"));
 }
 
 export function seedSampleSupplierInventory(supplierId?: number): SupplierInventoryItem[] {
@@ -138,18 +151,20 @@ export function seedSampleSupplierInventory(supplierId?: number): SupplierInvent
       ? {
         ...row,
         category: sampleItem.category,
-        taxType: "TAX",
-        taxRate: 10,
         imageDataUrl: row.imageDataUrl ?? sampleItem.imageDataUrl,
       }
-      : { ...row, taxType: "TAX", taxRate: 10 };
+      : row;
   });
   const additions = SAMPLE_CATALOGUE
     .filter((item) => !names.has(item.itemName.toLowerCase()))
     .map((item) => createSupplierInventoryItem(supplierId, item));
   const seededRows = [...updatedRows, ...additions];
   saveSupplierInventory(supplierId, seededRows);
-  localStorage.setItem(catalogueVersionKey(supplierId), SAMPLE_CATALOGUE_VERSION);
+  try {
+    localStorage.setItem(catalogueVersionKey(supplierId), SAMPLE_CATALOGUE_VERSION);
+  } catch {
+    // The catalogue cache is optional; the API remains the source of truth.
+  }
   return seededRows;
 }
 
@@ -175,19 +190,30 @@ export async function fetchSupplierInventory(supplierId?: number): Promise<Suppl
   return response.data.items ?? [];
 }
 
-export async function createSupplierInventory(item: Omit<SupplierInventoryItem, "id" | "updatedAt" | "reservedQuantity">): Promise<SupplierInventoryItem> {
+type InventoryWriteInput = Omit<SupplierInventoryItem, "id" | "updatedAt" | "reservedQuantity">;
+
+function inventoryFormData(item: InventoryWriteInput, imageFile?: File): FormData {
+  const formData = new FormData();
+  Object.entries(item).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) formData.append(key, String(value));
+  });
+  if (imageFile) formData.append("image", imageFile);
+  return formData;
+}
+
+export async function createSupplierInventory(item: InventoryWriteInput, imageFile?: File): Promise<SupplierInventoryItem> {
   const response = await axios.post<{ success: boolean; item?: SupplierInventoryItem; message?: string }>(
     `${API_ROOT}/purchasing/inventory`,
-    item,
+    inventoryFormData(item, imageFile),
   );
   if (!response.data?.success || !response.data.item) throw new Error(response.data?.message ?? "Could not add inventory item");
   return response.data.item;
 }
 
-export async function updateSupplierInventory(item: SupplierInventoryItem): Promise<SupplierInventoryItem> {
+export async function updateSupplierInventory(item: SupplierInventoryItem, imageFile?: File): Promise<SupplierInventoryItem> {
   const response = await axios.put<{ success: boolean; item?: SupplierInventoryItem; message?: string }>(
     `${API_ROOT}/purchasing/inventory/${item.id}`,
-    item,
+    inventoryFormData(item, imageFile),
   );
   if (!response.data?.success || !response.data.item) throw new Error(response.data?.message ?? "Could not update inventory item");
   return response.data.item;

@@ -2,42 +2,34 @@ import express from "express";
 import { randomUUID } from "node:crypto";
 
 import prisma from "../config/prisma.js";
+import { uploadInventoryImageMiddleware } from "../middleware/uploadInventoryImage.js";
 
 const router = express.Router();
-
-const TAX_RATES = { TAX: 10, SERVICE_TAX: 6 };
 
 function cleanText(value, maxLength = 200) {
   return typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, maxLength) : "";
 }
 
-function parseInventory(body) {
+function parseInventory(body, uploadedImageUrl) {
   const supplierId = Number(body?.supplierId);
   const quantity = Number(body?.quantity);
   const reorderLevel = Number(body?.reorderLevel ?? 0);
   const unitPrice = Number(body?.unitPrice);
-  const rawTaxCodes = Array.isArray(body?.taxType)
-    ? body.taxType
-    : String(body?.taxType ?? "").split(",");
-  const taxCodes = Array.from(new Set(
-    rawTaxCodes
-      .map((code) => String(code).trim().toUpperCase())
-      .map((code) => code === "SST" || code === "SALES_TAX" ? "TAX" : code)
-      .filter((code) => code in TAX_RATES),
-  ));
-  const taxType = taxCodes.join(",") || "NO_TAX";
-  const taxRate = taxCodes.reduce((total, code) => total + TAX_RATES[code], 0);
   const itemName = cleanText(body?.itemName);
   const category = cleanText(body?.category);
   const unit = cleanText(body?.unit, 50);
-  const imageDataUrl = typeof body?.imageDataUrl === "string" && body.imageDataUrl.length
-    ? body.imageDataUrl
+  const submittedImage = uploadedImageUrl !== undefined ? uploadedImageUrl : body?.imageDataUrl;
+  const imageDataUrl = typeof submittedImage === "string" && submittedImage.trim().length
+    ? submittedImage.trim()
     : null;
 
   if (!Number.isInteger(supplierId) || supplierId < 1 || !itemName || !category || !unit) return null;
   if (!Number.isInteger(quantity) || quantity < 0 || !Number.isInteger(reorderLevel) || reorderLevel < 0) return null;
   if (!Number.isFinite(unitPrice) || unitPrice < 0) return null;
-  if (imageDataUrl && imageDataUrl.length > 8_000_000) return null;
+  // New uploads are stored as server URLs. Reject inline data URLs so a
+  // client cannot reintroduce the localStorage-sized Base64 payload.
+  if (imageDataUrl?.startsWith("data:")) return null;
+  if (imageDataUrl && imageDataUrl.length > 2_000) return null;
   return {
     supplierId,
     itemName,
@@ -46,9 +38,22 @@ function parseInventory(body) {
     reorderLevel,
     unit,
     unitPrice,
-    taxType,
-    taxRate,
     imageDataUrl,
+  };
+}
+
+function inventoryImageUrl(req) {
+  if (!req.file) return undefined;
+  const publicBase = (process.env.API_PUBLIC_BASE || `${req.protocol}://${req.get("host")}`).replace(/\/$/, "");
+  return `${publicBase}/uploads/inventory/${req.file.filename}`;
+}
+
+function withInventoryImageUpload(handler) {
+  return (req, res, next) => {
+    uploadInventoryImageMiddleware.single("image")(req, res, (error) => {
+      if (error) return res.status(400).json({ success: false, message: error.message || "Image upload failed" });
+      return handler(req, res, next);
+    });
   };
 }
 
@@ -72,8 +77,8 @@ router.get("/inventory", async (req, res) => {
   }
 });
 
-router.post("/inventory", async (req, res) => {
-  const data = parseInventory(req.body);
+router.post("/inventory", withInventoryImageUpload(async (req, res) => {
+  const data = parseInventory(req.body, inventoryImageUrl(req));
   if (!data) return res.status(400).json({ success: false, message: "Invalid inventory item" });
   try {
     const supplier = await prisma.user.findFirst({ where: { id: data.supplierId, role: "Supplier", isActive: true } });
@@ -86,10 +91,10 @@ router.post("/inventory", async (req, res) => {
     console.error("POST /purchasing/inventory error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
-});
+}));
 
-router.put("/inventory/:id", async (req, res) => {
-  const data = parseInventory(req.body);
+router.put("/inventory/:id", withInventoryImageUpload(async (req, res) => {
+  const data = parseInventory(req.body, inventoryImageUrl(req));
   if (!data || !req.params.id) return res.status(400).json({ success: false, message: "Invalid inventory item" });
   try {
     const existing = await prisma.supplierInventoryItem.findUnique({
@@ -113,7 +118,7 @@ router.put("/inventory/:id", async (req, res) => {
     console.error("PUT /purchasing/inventory/:id error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
-});
+}));
 
 // Reserve catalogue quantities when a purchase request is submitted. The
 // quantity remains on hand, but is unavailable to other requests until the

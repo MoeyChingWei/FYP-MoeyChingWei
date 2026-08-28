@@ -2,11 +2,13 @@ import React from "react";
 import { Button, Card, Flex } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import LookupKindTable from "./LookupKindTable";
 
 export default function ItemCategoriesPage(): React.ReactElement {
   const navigate = useNavigate();
+  const { t } = useTranslation("lookupTable");
 
   return (
     <Card
@@ -17,9 +19,9 @@ export default function ItemCategoriesPage(): React.ReactElement {
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/category-selection")}
             style={{ paddingInline: 0 }}
-            aria-label="Back"
+            aria-label={t("page.back")}
           />
-          <span>Item categories</span>
+          <span>{t("page.itemCategories")}</span>
         </Flex>
       }
     >

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './Breadcrumb.module.css';
 
 interface BreadcrumbItem {
@@ -12,6 +13,7 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items }: BreadcrumbProps): React.ReactElement {
+  const { t } = useTranslation('settings');
   const navigate = useNavigate();
 
   const handleClick = (path?: string) => {
@@ -32,12 +34,12 @@ export default function Breadcrumb({ items }: BreadcrumbProps): React.ReactEleme
   };
 
   return (
-    <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
+    <nav aria-label={t('aiAssistant.breadcrumb')} className={styles.breadcrumb}>
       <button
         type="button"
         className={styles.backButton}
         onClick={handleBack}
-        aria-label="Go back"
+        aria-label={t('aiAssistant.goBack')}
       >
         ←
       </button>

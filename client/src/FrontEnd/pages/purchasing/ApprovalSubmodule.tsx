@@ -446,14 +446,14 @@ export default function ApprovalSubmodule(): React.ReactElement {
                   const lineItems = Array.isArray(request.lineItems)
                     ? request.lineItems
                     : [];
-                  const total = lineItems.reduce(
+                  const total = request.amountAfterTax ?? lineItems.reduce(
                     (sum, item) => sum + computeDraftLineAmountAfterTax(item),
                     0,
                   );
 
                   return (
                     <Text strong>
-                      {request.currency} {total.toFixed(2)}
+                      {request.currency === "MYR" ? "RM" : request.currency} {total.toFixed(2)}
                     </Text>
                   );
                 },

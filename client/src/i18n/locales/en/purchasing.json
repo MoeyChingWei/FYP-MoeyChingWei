@@ -173,10 +173,10 @@
         },
         "paymentTermOptions": {
           "DUE_ON_RECEIPT": "Due on receipt",
-          "NET_7": "Net 7 days",
-          "NET_30": "Net 30 days",
-          "NET_60": "Net 60 days",
-          "NET_90": "Net 90 days"
+          "NET_7": "Within 7 days",
+          "NET_30": "Within 30 days",
+          "NET_60": "Within 60 days",
+          "NET_90": "Within 90 days"
         }
       },
       "supplier": {

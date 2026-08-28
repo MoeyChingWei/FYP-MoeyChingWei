@@ -7,6 +7,8 @@
     "history": "Sejarah ({{count}})",
     "markAllRead": "Tandakan semua telah dibaca",
     "deleteAll": "Padam semua",
+    "deleteAllConfirm": "Padam semua notifikasi sejarah?",
+    "deleteOneConfirm": "Padam notifikasi ini?",
     "type": {
       "success": "kejayaan",
       "warning": "amaran",
@@ -147,12 +149,29 @@
       },
       "items": {
         "title": "Item Pesanan",
-        "description": "Semak item pesanan pembelian sebelum meluluskan atau menolak pengakuan pesanan ini."
+        "description": "Semak item pesanan pembelian sebelum meluluskan atau menolak pengakuan pesanan ini.",
+        "item": "Item {{index}}",
+        "fields": {
+          "description": "Penerangan",
+          "quantity": "Kuantiti",
+          "unit": "Unit",
+          "unitPrice": "Harga Seunit",
+          "lineTotal": "Jumlah Baris",
+          "assignedSupplier": "Pembekal Ditugaskan",
+          "supplierEmail": "E-mel Pembekal",
+          "noDescription": "Tiada penerangan diberikan",
+          "noSupplier": "Tiada pembekal dipilih"
+        }
       },
       "actions": {
         "approve": "Lulus",
         "reject": "Tolak",
         "back": "Kembali"
+      },
+      "status": {
+        "pendingOrderAcknowledge": "Menunggu Pengakuan Pesanan",
+        "approved": "Diluluskan",
+        "rejected": "Ditolak"
       },
       "messages": {
         "notFound": "Butiran pengakuan pesanan tidak ditemui."
@@ -221,6 +240,10 @@
         "deliver": "Hantar",
         "back": "Kembali"
       },
+      "status": {
+        "pendingDelivery": "Menunggu Penghantaran",
+        "delivered": "Dihantar"
+      },
       "messages": {
         "notFound": "Butiran penghantaran tidak ditemui."
       }
@@ -229,21 +252,95 @@
   "grnStatus": {
     "title": "Status Nota Barang Diterima",
     "list": {
+      "table": { "orderNo": "No Pesanan", "status": "Status", "supplier": "Pembekal", "items": "Item", "reason": "Sebab" },
+      "filter": { "filterByDate": "Tapis mengikut tarikh", "searchPlaceholder": "Cari no pesanan, pembekal, item..." },
       "summary": "{{count}} rekod nota barang diterima",
+      "status": { "pendingGrn": "Menunggu Nota Barang Diterima", "received": "Diterima", "discrepancy": "Percanggahan" },
+      "actions": { "view": "Lihat", "back": "Kembali" },
       "messages": {
         "noGrnRecords": "Tiada rekod nota barang diterima ditemui."
       }
     },
     "detail": {
       "title": "Butiran Nota Barang Diterima",
+      "summary": { "orderNumber": "Nombor Pesanan", "createdDate": "Tarikh Dicipta", "items": "Item", "total": "Jumlah" },
+      "info": {
+        "title": "Gambaran Nota Barang Diterima", "sourcePr": "PR Sumber", "purchaseRequester": "Pemohon Pembelian", "createdBy": "Dicipta Oleh", "supplier": "Pembekal", "supplierEmail": "E-mel Pembekal", "department": "Jabatan", "currentStatus": "Status Semasa", "companyAddress": "Alamat Syarikat", "discrepancyReason": "Sebab Percanggahan"
+      },
+      "items": { "title": "Item Nota Barang Diterima", "description": "Semak butiran pesanan yang dihantar dan maklumat nota barang diterima." },
       "actions": {
         "createNewDelivery": "Cipta Penghantaran Baharu",
         "back": "Kembali"
       },
+      "status": { "pendingGrn": "Menunggu Nota Barang Diterima", "received": "Diterima", "discrepancy": "Percanggahan" },
       "messages": {
         "notFound": "Butiran nota barang diterima tidak ditemui."
       }
+    },
+    "createDelivery": {
+      "title": "Cipta Penghantaran Baharu",
+      "summary": { "orderNumber": "Nombor Pesanan (No Penghantaran)", "sourcePr": "PR Sumber", "items": "Item", "total": "Jumlah" },
+      "info": {
+        "title": "Gambaran Nota Barang Diterima", "sourcePr": "PR Sumber", "originalOrderNo": "Nombor Pesanan Asal", "purchaseRequester": "Pemohon Pembelian", "supplier": "Pembekal", "supplierEmail": "E-mel Pembekal", "department": "Jabatan", "companyAddress": "Alamat Syarikat", "discrepancyReason": "Sebab Percanggahan"
+      },
+      "items": {
+        "title": "Butiran Item (Diisi Pembekal)",
+        "description": "Kemas kini butiran item dan hantar untuk mencipta rekod Penghantaran Menunggu baharu.",
+        "item": "Item {{index}}",
+        "fields": { "description": "Penerangan", "quantity": "Kuantiti", "unit": "Unit", "unitPrice": "Harga Seunit ({{currency}})" },
+        "validation": { "descriptionRequired": "Penerangan diperlukan", "quantityRequired": "Kuantiti diperlukan", "unitRequired": "Unit diperlukan", "unitPriceRequired": "Harga seunit diperlukan" }
+      },
+      "actions": { "submitNewDelivery": "Hantar Penghantaran Baharu", "back": "Kembali" },
+      "status": { "pendingDelivery": "Menunggu Penghantaran" },
+      "messages": { "created": "{{deliveryNo}} dicipta dengan status Menunggu Penghantaran.", "notFound": "Butiran GRN tidak ditemui.", "onlyFromDiscrepancy": "Penghantaran baharu hanya boleh dicipta daripada rekod percanggahan." }
     }
+  },
+  "inventory": {
+    "back": "Gambaran Keseluruhan Pembekal",
+    "title": "Inventori Saya",
+    "description": "Jejak stok yang tersedia untuk pesanan dan penghantaran masuk.",
+    "add": "Tambah item inventori",
+    "edit": "Edit item inventori",
+    "saveChanges": "Simpan perubahan",
+    "itemImage": "Imej item",
+    "uploadImage": "Muat naik imej",
+    "removeImage": "Buang imej",
+    "imageFormats": "PNG, JPG atau WebP",
+    "itemPreview": "Pratonton item",
+    "itemName": "Nama item",
+    "itemNamePlaceholder": "Nama produk atau bahan",
+    "category": "Kategori",
+    "categoryPlaceholder": "Pilih kategori",
+    "unit": "Unit",
+    "quantity": "Kuantiti",
+    "reorderLevel": "Tahap pesanan semula",
+    "unitPrice": "Harga seunit",
+    "totalValue": "Jumlah nilai",
+    "available": "Tersedia",
+    "reserved": "Diperuntukkan",
+    "status": "Status",
+    "actions": "Tindakan",
+    "items": "Item",
+    "unitsOnHand": "Unit dalam stok",
+    "inventoryValue": "Nilai inventori",
+    "lowStockItems": "Item stok rendah",
+    "searchPlaceholder": "Cari item atau kategori",
+    "allStatuses": "Semua status",
+    "healthy": "Mencukupi",
+    "inStock": "Dalam stok",
+    "lowStock": "Stok rendah",
+    "outOfStock": "Stok habis",
+    "noMatching": "Tiada item inventori sepadan",
+    "noItems": "Tiada item inventori lagi",
+    "enterItemName": "Masukkan nama item",
+    "selectCategory": "Pilih kategori",
+    "deleteTitle": "Padam {{itemName}}?",
+    "deleteDescription": "Rekod inventori ini akan dibuang daripada senarai stok pembekal anda.",
+    "deleted": "Item inventori dipadam",
+    "added": "Item inventori ditambah",
+    "updated": "Item inventori dikemas kini",
+    "saveError": "Item inventori tidak dapat disimpan",
+    "deleteError": "Item inventori tidak dapat dipadam"
   },
   "common": {
     "back": "Kembali",

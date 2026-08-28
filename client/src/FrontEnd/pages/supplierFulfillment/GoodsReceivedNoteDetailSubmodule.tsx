@@ -24,7 +24,7 @@ import WorkflowPartyInfo from "../../components/shared/WorkflowPartyInfo";
 const { Paragraph, Title } = Typography;
 
 function currencyLabel(currency: string, amount: number): string {
-  return `${currency} ${amount.toFixed(2)}`;
+  return `${currency === "MYR" ? "RM" : currency} ${amount.toFixed(2)}`;
 }
 
 function statusColor(status: SupplierGrnRecord["status"]): string {

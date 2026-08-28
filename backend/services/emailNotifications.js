@@ -9,6 +9,7 @@ import {
   hydrateWorkflowItemImages,
   workflowHtml,
 } from "../routes/export.js";
+import { formatCurrency, displayCurrency } from "../utils/currency.js";
 
 const DEFAULT_FEEDBACK_RECIPIENTS = [
   "fypadminsystem@gmail.com",
@@ -55,10 +56,8 @@ function textValue(value, fallback = "-") {
   return normalized || fallback;
 }
 
-function formatMoney(value, currency = "MYR") {
-  const amount = Number(value);
-  if (!Number.isFinite(amount)) return `${currency} -`;
-  return `${currency} ${amount.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+function formatMoney(value, currency = "RM") {
+  return formatCurrency(value, currency);
 }
 
 function normalizeItems(record = {}) {
@@ -118,7 +117,7 @@ function parseInlineImage(source, index, attachments) {
   return `cid:${cid}`;
 }
 
-function renderItems(record, currency = "MYR") {
+function renderItems(record, currency = "RM") {
   const items = normalizeItems(record);
   const inlineAttachments = [];
   const textLines = [];
@@ -157,13 +156,13 @@ function renderDetails(rows) {
 
 export function renderEmailDocument({ title, intro, details = [], itemsRecord, total, action, footer = "Regards,\nOptiMind System" }) {
   const detailMarkup = renderDetails(details);
-  const itemMarkup = itemsRecord ? renderItems(itemsRecord, itemsRecord.currency || "MYR") : { html: "", text: "", attachments: [] };
+  const itemMarkup = itemsRecord ? renderItems(itemsRecord, itemsRecord.currency || "RM") : { html: "", text: "", attachments: [] };
   const totalMarkup = total != null
-    ? `<p style="font-size:15px"><b>Total Amount: ${escapeHtml(formatMoney(total, itemsRecord?.currency || "MYR"))}</b></p>`
+    ? `<p style="font-size:15px"><b>Total Amount: ${escapeHtml(formatMoney(total, itemsRecord?.currency || "RM"))}</b></p>`
     : "";
   return {
     html: `<div style="font-family:Arial,sans-serif;color:#17202a;max-width:760px"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(intro)}</p>${detailMarkup.html}${itemMarkup.html}${totalMarkup}<p>${escapeHtml(action).replace(/\n/g, "<br/>")}</p><p>${escapeHtml(footer).replace(/\n/g, "<br/>")}</p></div>`,
-    text: `${title}\n\n${intro}\n\n${detailMarkup.text}${itemMarkup.text ? `\n\n${itemMarkup.text}` : ""}${total != null ? `\n\nTotal Amount: ${formatMoney(total, itemsRecord?.currency || "MYR")}` : ""}\n\n${action}\n\n${footer}`,
+    text: `${title}\n\n${intro}\n\n${detailMarkup.text}${itemMarkup.text ? `\n\n${itemMarkup.text}` : ""}${total != null ? `\n\nTotal Amount: ${formatMoney(total, itemsRecord?.currency || "RM")}` : ""}\n\n${action}\n\n${footer}`,
     attachments: itemMarkup.attachments,
   };
 }
@@ -335,7 +334,7 @@ export async function sendDetailedSupplierPendingOrderEmail(args) {
       ["Requester", record.sourceRequester || record.requesterName],
       ["Department", record.department],
       ["Created Date", record.createdDate],
-      ["Currency", record.currency],
+      ["Currency", displayCurrency(record.currency)],
       ["Payment Terms", record.paymentTerms],
       ["Company", record.companyName || "OptiMind"],
       ["Company Address", record.companyAddress],
@@ -508,7 +507,7 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
         ["Requester", hydratedRecord.requesterName || hydratedRecord.requestBy || hydratedRecord.createdBy || hydratedRecord.sourceRequester],
         ["Department", hydratedRecord.department],
         ["Submitted Date", hydratedRecord.requestDate || hydratedRecord.createdDate],
-        ["Currency", hydratedRecord.currency],
+        ["Currency", displayCurrency(hydratedRecord.currency)],
       ]
     : [
         ["PO Number", number],
@@ -516,7 +515,7 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
         ["Requester", hydratedRecord.sourceRequester || hydratedRecord.requesterName],
         ["Department", hydratedRecord.department],
         ["Created Date", hydratedRecord.createdDate],
-        ["Currency", hydratedRecord.currency],
+        ["Currency", displayCurrency(hydratedRecord.currency)],
         ["Payment Terms", hydratedRecord.paymentTerms],
         ["Supplier", hydratedRecord.supplierCompanyName || hydratedRecord.supplierName],
         ["Supplier Email", hydratedRecord.supplierEmail],
@@ -527,7 +526,7 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
     intro: config.intro,
     details,
     itemsRecord: config.includeItems ? hydratedRecord : null,
-    total: hydratedRecord.totalAmount ?? hydratedRecord.total ?? calculateItemsTotal(hydratedRecord),
+    total: hydratedRecord.totalAmount ?? hydratedRecord.total ?? hydratedRecord.amountAfterTax ?? calculateItemsTotal(hydratedRecord),
     action: config.action,
   });
 

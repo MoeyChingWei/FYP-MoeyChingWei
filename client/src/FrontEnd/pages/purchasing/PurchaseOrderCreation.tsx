@@ -25,9 +25,12 @@ import { useTranslation } from "react-i18next";
 
 import CreatableLookupSelect from "../../components/purchasing/CreatableLookupSelect";
 import { getSessionUser } from "../../shared/auth/session";
+import { displayCurrency } from "../../shared/utils/currency";
 import {
   computeAmountAfterTax,
   computeTaxAmount,
+  computeLineTotal,
+  computeTaxBreakdown,
   taxRateForCodes,
   todayIsoDate,
 } from "../../modules/purchasing/requestCreation/constants";
@@ -87,7 +90,7 @@ function LineRowTotal({ index }: { index: number }): React.ReactElement {
     <InputNumber
       readOnly
       value={total}
-      prefix={DEFAULT_CURRENCY}
+      prefix={displayCurrency(DEFAULT_CURRENCY)}
       style={{
         width: "100%",
         backgroundColor: "var(--ant-color-fill-quaternary, #fafafa)",
@@ -169,11 +172,30 @@ export default function PurchaseOrderCreation(): React.ReactElement {
 
   const orderTotal = useMemo(() => {
     if (!lineItemsWatch?.length) return 0;
+    if (editingDraft?.supplierTaxApplies) {
+      const subtotal = lineItemsWatch.reduce((sum, row) => sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice), 0);
+      const rules = editingDraft.supplierTaxRules?.length ? editingDraft.supplierTaxRules : [{ taxType: editingDraft.supplierTaxType, taxRate: editingDraft.supplierTaxRate }];
+      return Math.round((subtotal + computeTaxBreakdown(subtotal, rules).total) * 100) / 100;
+    }
     return lineItemsWatch.reduce(
       (sum, row) => sum + computeAmountAfterTax(row?.quantity, row?.estimatedUnitPrice, row?.taxRate),
       0,
     );
-  }, [lineItemsWatch]);
+  }, [editingDraft, lineItemsWatch]);
+
+  const orderSubtotal = useMemo(
+    () => (lineItemsWatch ?? []).reduce((sum, row) => sum + computeLineTotal(row?.quantity, row?.estimatedUnitPrice), 0),
+    [lineItemsWatch],
+  );
+  const orderTaxRules = editingDraft?.supplierTaxRules?.length
+    ? editingDraft.supplierTaxRules
+    : editingDraft?.supplierTaxApplies && editingDraft.supplierTaxType
+      ? [{ taxType: editingDraft.supplierTaxType, taxRate: editingDraft.supplierTaxRate ?? 0 }]
+      : [];
+  const orderTaxBreakdown = useMemo(
+    () => computeTaxBreakdown(orderSubtotal, orderTaxRules),
+    [orderSubtotal, orderTaxRules],
+  );
 
   const recalcOrderTotal = (): void => {
     const rows =
@@ -182,7 +204,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
       (sum, row) => sum + computeAmountAfterTax(row?.quantity, row?.estimatedUnitPrice, row?.taxRate),
       0,
     );
-    message.info(t('purchaseOrder.creation.messages.totalCalculated', { currency: DEFAULT_CURRENCY, total: total.toFixed(2) }));
+    message.info(t('purchaseOrder.creation.messages.totalCalculated', { currency: displayCurrency(DEFAULT_CURRENCY), total: total.toFixed(2) }));
   };
 
   const persistOrder = async (
@@ -241,6 +263,13 @@ export default function PurchaseOrderCreation(): React.ReactElement {
       currency: DEFAULT_CURRENCY,
       status,
       lineItems,
+      subtotal: editingDraft?.subtotal,
+      supplierTaxApplies: editingDraft?.supplierTaxApplies,
+      supplierTaxType: editingDraft?.supplierTaxType,
+      supplierTaxRate: editingDraft?.supplierTaxRate,
+      supplierTaxRules: editingDraft?.supplierTaxRules,
+      taxAmount: editingDraft?.supplierTaxApplies ? computeTaxBreakdown(lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0), editingDraft.supplierTaxRules?.length ? editingDraft.supplierTaxRules : [{ taxType: editingDraft.supplierTaxType, taxRate: editingDraft.supplierTaxRate }]).total : editingDraft?.taxAmount,
+      amountAfterTax: editingDraft?.supplierTaxApplies ? orderTotal : undefined,
       paymentTerms: editingDraft?.paymentTerms,
       requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? "EMPLOYEE",
     };
@@ -488,7 +517,7 @@ export default function PurchaseOrderCreation(): React.ReactElement {
                           <InputNumber
                             min={0}
                             step={0.01}
-                            prefix={DEFAULT_CURRENCY}
+                            prefix={displayCurrency(DEFAULT_CURRENCY)}
                             style={{ width: "100%" }}
                           />
                         </Form.Item>
@@ -518,10 +547,15 @@ export default function PurchaseOrderCreation(): React.ReactElement {
           <Row gutter={16} align="bottom" className={creationStyles.summarySection}>
             <Col xs={24} md={16}>
               <Text strong>{t('purchaseOrder.creation.form.poTotal')}</Text>
+              <div className={creationStyles.taxSummary}>
+                <div><span>Items subtotal</span><strong>{displayCurrency(DEFAULT_CURRENCY)} {orderSubtotal.toFixed(2)}</strong></div>
+                {orderTaxRules.length ? orderTaxRules.map((rule, index) => <div key={`${rule.taxType}-${index}`}><span>{({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[rule.taxType] ?? "Tax"} ({Number(rule.taxRate ?? 0).toFixed(2)}%)</span><strong>{displayCurrency(DEFAULT_CURRENCY)} {(orderTaxBreakdown.amounts[index] ?? 0).toFixed(2)}</strong></div>) : <div><span>Supplier tax</span><strong>{displayCurrency(DEFAULT_CURRENCY)} 0.00</strong></div>}
+                <div><span>Amount to reserve</span><strong>{displayCurrency(DEFAULT_CURRENCY)} {orderTotal.toFixed(2)}</strong></div>
+              </div>
               <InputNumber
                 readOnly
                 value={orderTotal}
-                prefix={DEFAULT_CURRENCY}
+                prefix={displayCurrency(DEFAULT_CURRENCY)}
                 style={{ width: "100%", marginTop: 8, ...autoFieldStyle }}
                 formatter={(v) =>
                   v != null && !Number.isNaN(Number(v)) ? Number(v).toFixed(2) : "0.00"

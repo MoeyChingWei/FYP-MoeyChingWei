@@ -347,8 +347,6 @@ model supplier_inventory_items {
   imageDataUrl     String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime
-  taxType          String   @default("TAX")
-  taxRate          Float    @default(10)
   users            users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@index([category])
@@ -387,6 +385,7 @@ model users {
   sources                                                                  sources[]
   supplier_inventory_items                                                 supplier_inventory_items[]
   supplier_bank_details                                                    supplier_bank_details?
+  supplier_tax_settings                                                    supplier_tax_settings?
 }
 
 model supplier_bank_details {
@@ -396,6 +395,16 @@ model supplier_bank_details {
   accountNumber String?
   updatedAt     DateTime @default(now())
   users         users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+}
+
+model supplier_tax_settings {
+  supplierId Int      @id
+  taxApplies Boolean  @default(false)
+  taxType    String   @default("NO_TAX")
+  taxRate    Float    @default(0)
+  taxRules   Json?
+  updatedAt  DateTime @updatedAt
+  users      users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 }
 
 enum Language {

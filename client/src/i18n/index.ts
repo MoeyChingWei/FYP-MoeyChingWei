@@ -22,6 +22,7 @@ import enLookupTable from './locales/en/lookupTable.json';
 import enMultiAgent from './locales/en/multiAgent.json';
 import enUserGuide from './locales/en/userGuide.json';
 import enBudgetManagement from './locales/en/budgetManagement.json';
+import enFinance from './locales/en/finance.json';
 
 import zhCommon from './locales/zh/common.json';
 import zhNavigation from './locales/zh/navigation.json';
@@ -41,6 +42,7 @@ import zhLookupTable from './locales/zh/lookupTable.json';
 import zhMultiAgent from './locales/zh/multiAgent.json';
 import zhUserGuide from './locales/zh/userGuide.json';
 import zhBudgetManagement from './locales/zh/budgetManagement.json';
+import zhFinance from './locales/zh/finance.json';
 
 import msCommon from './locales/ms/common.json';
 import msNavigation from './locales/ms/navigation.json';
@@ -60,6 +62,7 @@ import msLookupTable from './locales/ms/lookupTable.json';
 import msMultiAgent from './locales/ms/multiAgent.json';
 import msUserGuide from './locales/ms/userGuide.json';
 import msBudgetManagement from './locales/ms/budgetManagement.json';
+import msFinance from './locales/ms/finance.json';
 
 const resources = {
   en: {
@@ -81,6 +84,7 @@ const resources = {
     multiAgent: enMultiAgent,
     userGuide: enUserGuide,
     budgetManagement: enBudgetManagement,
+    finance: enFinance,
   },
   zh: {
     common: zhCommon,
@@ -101,6 +105,7 @@ const resources = {
     multiAgent: zhMultiAgent,
     userGuide: zhUserGuide,
     budgetManagement: zhBudgetManagement,
+    finance: zhFinance,
   },
   ms: {
     common: msCommon,
@@ -121,6 +126,7 @@ const resources = {
     multiAgent: msMultiAgent,
     userGuide: msUserGuide,
     budgetManagement: msBudgetManagement,
+    finance: msFinance,
   },
 };
 

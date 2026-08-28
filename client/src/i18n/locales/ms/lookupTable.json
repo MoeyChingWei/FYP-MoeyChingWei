@@ -1,4 +1,15 @@
 {
+  "page": {
+    "title": "Kategori Pilihan",
+    "back": "Kembali ke Pengurusan Kategori",
+    "backToSettings": "Kembali ke Tetapan",
+    "open": "Buka",
+    "itemCategories": "Kategori item",
+    "departments": "Jabatan",
+    "roles": "Peranan",
+    "unitsOfMeasurement": "Unit ukuran",
+    "paymentTerms": "Terma pembayaran"
+  },
   "newValuePlaceholder": "Nilai baharu",
   "source": {
     "builtin": "Terbina dalam",

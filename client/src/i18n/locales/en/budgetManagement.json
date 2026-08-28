@@ -1,6 +1,8 @@
 {
   "budgetManagement": "Budget Management",
   "departmentBudgetForecasting": "Department Budget Forecasting",
+  "financeBudgetDashboard": "Finance Budget Dashboard",
+  "financeDashboardDescription": "Review budget allocation and department spending",
   "departmentForecastingDescription": "Review department budgets, AI predictions, and adjustment requests",
   "homeDescription": "Manage and forecast your organization's budget effectively",
   "period": "Period",
@@ -24,5 +26,8 @@
   "categoryBreakdown": "Category Breakdown",
   "forecastPredictions": "Forecast Predictions",
   "department": "Department",
-  "allDepartments": "All Departments"
+  "allDepartments": "All Departments",
+  "allocated": "Allocated", "spent": "Spent", "reserved": "Reserved", "remaining": "Remaining", "usage": "Usage", "status": "Status", "action": "Action", "details": "Details",
+  "onTrack": "On Track", "warning": "Warning", "exceeded": "Over Budget", "exceededBy": "Exceeded by RM {{amount}}", "budgetUsage": "Budget Usage - {{department}}", "periodLabel": "Period: {{period}}",
+  "budgetUsageTrend": "Budget Usage Trend", "historicalBudget": "Historical Budget", "actualPurchasingSpend": "Actual Purchasing Spend", "averageUsage": "Average Usage ({{count}} Budgeted Months)", "noHistoricalData": "No historical data available"
 }

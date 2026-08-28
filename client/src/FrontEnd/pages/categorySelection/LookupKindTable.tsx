@@ -31,6 +31,14 @@ export default function LookupKindTable({
   const { t: tLookup } = useTranslation('lookupTable');
   const { t: tCommon } = useTranslation('common');
   const { t: tMsg } = useTranslation('messages');
+  const { t: tPurchasing } = useTranslation('purchasing');
+
+  const displayValue = (value: string): string => {
+    if (kind !== "PAYMENT_TERM") return value;
+    return tPurchasing(`purchaseRequest.creation.form.paymentTermOptions.${value}`, {
+      defaultValue: value,
+    });
+  };
 
   const builtIns = useMemo(() => [...defaultOptionsForKind(kind)], [kind]);
   const [customRows, setCustomRows] = useState<
@@ -192,7 +200,12 @@ export default function LookupKindTable({
         pagination={false}
         dataSource={dataSource}
         columns={[
-          { title: tLookup('columns.value'), dataIndex: "value", key: "value" },
+          {
+            title: tLookup('columns.value'),
+            dataIndex: "value",
+            key: "value",
+            render: (value: string) => displayValue(value),
+          },
           { title: tLookup('columns.source'), dataIndex: "source", key: "source", width: 120 },
           {
             title: tLookup('columns.actions'),

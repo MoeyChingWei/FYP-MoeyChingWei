@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { MAIN_AGENTS } from '../../modules/aiAssistant/mainAgents';
 import MainAgentCard from './components/MainAgentCard';
 import styles from './AIAssistantRedesign.module.css';
@@ -7,14 +8,15 @@ import styles from './AIAssistantRedesign.module.css';
 const { Title, Paragraph } = Typography;
 
 export default function AIAssistantRedesign(): React.ReactElement {
+  const { t } = useTranslation('settings');
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <Title level={2} className={styles.title}>
-          AI Assistant Configuration
+          {t('aiAssistant.configuration')}
         </Title>
         <Paragraph className={styles.description}>
-          Configure and manage AI assistants to automate procurement tasks
+          {t('aiAssistant.description')}
         </Paragraph>
       </div>
 
