@@ -142,6 +142,7 @@
         "supplier": "供应商",
         "supplierEmail": "供应商电子邮件",
         "department": "部门",
+        "paymentTerms": "付款条款",
         "currentStatus": "当前状态",
         "companyAddress": "公司地址",
         "rejectedBy": "拒绝人",

@@ -14,6 +14,7 @@ import {
   Space,
   Spin,
   Statistic,
+  Tag,
   Typography,
   message,
 } from "antd";
@@ -22,10 +23,12 @@ import {
   CalculatorOutlined,
   ClearOutlined,
   DeleteOutlined,
+  ExclamationCircleOutlined,
   InboxOutlined,
   LockOutlined,
   PlusOutlined,
   SearchOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -483,11 +486,6 @@ export default function CreationSubmodule(): React.ReactElement {
   const [paymentTermOptions, setPaymentTermOptions] = useState<string[]>(
     () => [...PAYMENT_TERM_VALUES],
   );
-
-  useEffect(() => {
-    setSessionUser(getSessionUser());
-  }, []);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -501,9 +499,11 @@ export default function CreationSubmodule(): React.ReactElement {
         console.error("Load payment terms error:", error);
       });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    setSessionUser(getSessionUser());
   }, []);
 
   useEffect(() => {
@@ -788,7 +788,7 @@ export default function CreationSubmodule(): React.ReactElement {
       supplierTaxRules: requestTax.applies ? requestTax.rules : [],
       taxAmount: requestTaxAmount,
       amountAfterTax: requestTotal,
-      paymentTerms: String(form.getFieldValue("paymentTerms") ?? "").trim(),
+      paymentTerms: String(form.getFieldValue("paymentTerms") ?? "").trim() || undefined,
       requesterRole: editingDraft?.requesterRole ?? sessionUser?.role ?? UserRole.EMPLOYEE,
       inventoryReservationStatus:
         status === "SUBMITTED" && inventoryReservations.length > 0
@@ -896,13 +896,9 @@ export default function CreationSubmodule(): React.ReactElement {
           <Form.Item
             label={t('purchaseRequest.creation.form.paymentTerms')}
             name="paymentTerms"
-            rules={[{
-              required: true,
-              message: t('purchaseRequest.creation.form.validation.paymentTermsRequired'),
-            }]}
+            rules={[{ required: true, message: t('purchaseRequest.creation.form.validation.paymentTermsRequired') }]}
           >
             <Select
-              allowClear
               placeholder={t('purchaseRequest.creation.form.placeholders.paymentTerms')}
               options={paymentTermOptions.map((value) => ({
                 value,
@@ -1233,9 +1229,30 @@ export default function CreationSubmodule(): React.ReactElement {
                   />
                 </Col>
                 <Col span={24}>
-                  <Text type="secondary">
-                    Usage: {departmentBudget.usagePercentage.toFixed(2)}% ({departmentBudget.status.toUpperCase()})
-                  </Text>
+                  <div className={creationStyles.budgetUsageStatus}>
+                    <Text type="secondary">
+                      Usage: {departmentBudget.usagePercentage.toFixed(2)}%
+                    </Text>
+                    {departmentBudget.status === "exceeded" ? (
+                      <Tag
+                        color="red"
+                        icon={<ExclamationCircleOutlined />}
+                        className={creationStyles.budgetStatusExceeded}
+                      >
+                        EXCEEDED
+                      </Tag>
+                    ) : departmentBudget.status === "warning" ? (
+                      <Tag
+                        color="orange"
+                        icon={<WarningOutlined />}
+                        className={creationStyles.budgetStatusWarning}
+                      >
+                        WARNING
+                      </Tag>
+                    ) : (
+                      <Tag color="green">ON TRACK</Tag>
+                    )}
+                  </div>
                 </Col>
               </Row>
             ) : (

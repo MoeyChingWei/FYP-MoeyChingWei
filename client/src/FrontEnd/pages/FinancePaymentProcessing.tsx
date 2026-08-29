@@ -5,6 +5,7 @@ import type { RcFile } from "antd/es/upload/interface";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../shared/auth/session";
+import { formatPaymentTerm } from "../shared/utils/paymentTerms";
 import { UserRole } from "../shared/types/roles";
 import {
   hydrateSupplierPayments,
@@ -146,7 +147,7 @@ export default function FinancePaymentProcessing(): React.ReactElement {
               { title: t("payment.columns.invoice"), dataIndex: "invoiceNumber", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.invoiceLocalId },
               { title: t("payment.columns.supplier"), dataIndex: "supplierName", render: (value: string | undefined, row: SupplierPaymentRecord) => value || row.supplierEmail || "-" },
               { title: t("payment.columns.amount"), key: "amount", render: (_: unknown, row: SupplierPaymentRecord) => `${row.currency === "MYR" ? "RM" : row.currency} ${Number(row.amount || 0).toFixed(2)}` },
-              { title: t("payment.columns.paymentTerms"), dataIndex: "paymentTerms", render: (value: string | undefined) => value || "-" },
+              { title: t("payment.columns.paymentTerms"), dataIndex: "paymentTerms", render: (value: string | undefined) => formatPaymentTerm(value) },
               { title: t("payment.columns.status"), dataIndex: "status", render: (value: string) => <Tag color="orange">{value}</Tag> },
               { title: t("payment.columns.action"), key: "action", render: (_: unknown, row: SupplierPaymentRecord) => <Button type="primary" icon={<CreditCardOutlined />} onClick={() => openPayment(row)}>{t("payment.process")}</Button> },
             ]} />,

@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Typography } from "antd";
+import { Button, Card, Tag, Typography } from "antd";
 import {
+  ArrowRightOutlined,
   CheckCircleOutlined,
   FileSearchOutlined,
   InboxOutlined,
@@ -92,9 +93,14 @@ export default function PurchasingManagement(): React.ReactElement {
       <div className={styles.shell}>
         <section className={styles.content}>
           <div className={styles.header}>
-            <Title level={2} className={styles.title}>
-              {t('moduleTitle')}
-            </Title>
+            <div>
+              <span className={styles.eyebrow}>Procurement operations</span>
+              <Title level={2} className={styles.title}>
+                {t('moduleTitle')}
+              </Title>
+              <p className={styles.subtitle}>Manage every purchasing workflow from one focused workspace.</p>
+            </div>
+            <Tag className={styles.periodTag}>Workflow hub</Tag>
           </div>
 
           <div className={styles.layout}>
@@ -102,9 +108,8 @@ export default function PurchasingManagement(): React.ReactElement {
               {visibleRequestCards.length ? (
                 <Card className={styles.sectionCard} bordered={false}>
                   <div className={styles.sectionHeader}>
-                    <Title level={4} className={styles.sectionTitle}>
-                      {t('purchaseRequest.title')}
-                    </Title>
+                    <div><span className={styles.sectionKicker}>Request workflow</span><Title level={4} className={styles.sectionTitle}>{t('purchaseRequest.title')}</Title></div>
+                    <span className={styles.sectionCount}>{visibleRequestCards.length} available</span>
                   </div>
                   <div className={styles.cardGrid}>
                     {visibleRequestCards.map((item) => (
@@ -117,6 +122,7 @@ export default function PurchasingManagement(): React.ReactElement {
                         <div className={styles.moduleIcon}>{item.icon}</div>
                         <div className={styles.moduleTitle}>{item.title}</div>
                         <div className={styles.moduleHint}>{item.hint}</div>
+                        <div className={styles.moduleAction}>Open workspace <ArrowRightOutlined /></div>
                       </Button>
                     ))}
                   </div>
@@ -126,9 +132,8 @@ export default function PurchasingManagement(): React.ReactElement {
               {visibleOrderCards.length ? (
                 <Card className={styles.sectionCard} bordered={false}>
                   <div className={styles.sectionHeader}>
-                    <Title level={4} className={styles.sectionTitle}>
-                      {t('purchaseOrder.title')}
-                    </Title>
+                    <div><span className={styles.sectionKicker}>Order workflow</span><Title level={4} className={styles.sectionTitle}>{t('purchaseOrder.title')}</Title></div>
+                    <span className={styles.sectionCount}>{visibleOrderCards.length} available</span>
                   </div>
                   <div className={styles.cardGrid}>
                     {visibleOrderCards.map((item) => (
@@ -141,6 +146,7 @@ export default function PurchasingManagement(): React.ReactElement {
                         <div className={styles.moduleIcon}>{item.icon}</div>
                         <div className={styles.moduleTitle}>{item.title}</div>
                         <div className={styles.moduleHint}>{item.hint}</div>
+                        <div className={styles.moduleAction}>Open workspace <ArrowRightOutlined /></div>
                       </Button>
                     ))}
                   </div>
@@ -160,6 +166,7 @@ export default function PurchasingManagement(): React.ReactElement {
                   </div>
                   <div className={styles.grnTitle}>{t('grn.title')}</div>
                   <div className={styles.grnHint}>{t('grn.hint')}</div>
+                  <div className={styles.moduleAction}>Open workspace <ArrowRightOutlined /></div>
                 </Button>
               </Card>
             ) : null}

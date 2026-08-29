@@ -6,6 +6,8 @@ import fs from "fs/promises";
 import { fileURLToPath } from "url";
 import { PDFGenerator } from "../services/pdf-generator.js";
 import { formatCurrency, displayCurrency } from "../utils/currency.js";
+import { calculateWorkflowTotals } from "../utils/workflow-totals.js";
+import { formatPaymentTerm } from "../utils/payment-terms.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -56,25 +58,7 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
   const isFinanceDocument = FINANCE_WORKFLOW_TYPES.has(workflowType);
   const isPartyDocument = ["acknowledgement", "delivery", "grn"].includes(workflowType) || isFinanceDocument;
   const currency = displayCurrency(record.currency);
-  const subtotal = Number.isFinite(Number(record.subtotal))
-    ? Number(record.subtotal)
-    : items.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.unitPrice || 0), 0);
-  const taxRules = Array.isArray(record.supplierTaxRules) && record.supplierTaxRules.length
-    ? record.supplierTaxRules
-    : record.supplierTaxApplies && record.supplierTaxType && record.supplierTaxType !== "NO_TAX"
-      ? [{ taxType: record.supplierTaxType, taxRate: record.supplierTaxRate }]
-      : [];
-  const taxLabels = { SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" };
-  const taxBreakdown = taxRules.map((rule) => ({
-    label: taxLabels[String(rule?.taxType || "").toUpperCase()] || "Tax",
-    rate: Number(rule?.taxRate || 0),
-    amount: Math.round(subtotal * Number(rule?.taxRate || 0)) / 100,
-  }));
-  const calculatedTax = taxBreakdown.reduce((sum, tax) => sum + tax.amount, 0);
-  const calculatedTotal = Math.round((subtotal + calculatedTax) * 100) / 100;
-  const totalAmount = Number.isFinite(Number(record.amountAfterTax))
-    ? Number(record.amountAfterTax)
-    : record.totalAmount ?? record.total ?? record.grandTotal ?? record.amount ?? calculatedTotal;
+  const { subtotal, taxBreakdown, total: totalAmount } = calculateWorkflowTotals(record);
   const rows = items.map((item, index) => {
     const imageUrl = item.itemImageUrl || item.imageUrl || item.image || item.imageDataUrl;
     const image = imageUrl
@@ -89,12 +73,12 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
   };
   const bank = record.bankDetails || {};
   const extra = {
-    "purchase-request": [["Requester", record.requestBy], ["Department", record.department], ["Request date", record.requestDate], ["Currency", currency]],
-    "purchase-order": [["Source PR", record.sourcePrNumber], ["Requester", record.sourceRequester], ["Department", record.department], ["Currency", currency], ["Payment terms", record.paymentTerms]],
+    "purchase-request": [["Requester", record.requestBy], ["Department", record.department], ["Request date", record.requestDate], ["Currency", currency], ["Payment terms", formatPaymentTerm(record.paymentTerms)]],
+    "purchase-order": [["Source PR", record.sourcePrNumber], ["Requester", record.sourceRequester], ["Department", record.department], ["Currency", currency], ["Payment terms", formatPaymentTerm(record.paymentTerms)]],
     acknowledgement: [["Sender (Company)", companyContact], ["Sender company", companyName], ["Sender address", record.companyAddress], ["Receiver (Supplier)", supplierName], ["Receiver email", record.supplierEmail], ["Receiver address", supplierAddress], ["Department", record.department]],
     delivery: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
     grn: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
-    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Supplier", supplierName], ["Supplier email", record.supplierEmail], ["Payment terms", record.paymentTerms], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Currency", currency]],
+    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Supplier", supplierName], ["Supplier email", record.supplierEmail], ["Payment terms", formatPaymentTerm(record.paymentTerms)], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Currency", currency]],
     "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Supplier", record.supplierName || supplierName], ["Supplier email", record.supplierEmail], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Payment proof", record.attachmentName || "Not provided"], ["Currency", currency]],
   }[workflowType] || [];
   const partyInfo = isPartyDocument
@@ -131,10 +115,10 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
     ? `<div class="party-grid">${renderPartyCard("Sender", partyInfo.sender, partyInfo.senderLogo, "Sender logo")}${renderPartyCard("Receiver", partyInfo.receiver, partyInfo.receiverLogo, "Receiver logo")}</div>`
     : "";
   const documentDetails = {
-    acknowledgement: [["Department", record.department], ["Purchase order", record.poNumber], ["Source PR", record.sourcePrNumber]],
+    acknowledgement: [["Department", record.department], ["Purchase order", record.poNumber], ["Source PR", record.sourcePrNumber], ["Payment terms", formatPaymentTerm(record.paymentTerms)]],
     delivery: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
     grn: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
-    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Approval status", status], ["Payment terms", record.paymentTerms], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)]],
+    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Approval status", status], ["Payment terms", formatPaymentTerm(record.paymentTerms)], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)]],
     "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Payment status", status], ["Amount", formatCurrency(record.amount ?? record.totalAmount ?? 0, currency)], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Payment proof", record.attachmentName || "Not provided"]],
   }[workflowType] || [];
   const generalMarkup = isPartyDocument
@@ -146,7 +130,9 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
   const itemsMarkup = workflowType === "payment-advice" && !items.length
     ? ""
     : `<h2>Items</h2><table><thead><tr><th>No.</th><th>Image</th><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit price (${htmlEscape(currency)})</th><th>Line subtotal (${htmlEscape(currency)})</th></tr></thead><tbody>${rows || '<tr><td colspan="8">No items</td></tr>'}</tbody></table>`;
-  const totalsMarkup = workflowType === "payment-advice" ? "" : `<section class="totals-block"><h2>Calculation summary</h2><div class="totals-row"><span>Items subtotal</span><strong>${htmlEscape(formatCurrency(subtotal, currency))}</strong></div>${taxBreakdown.map((tax) => `<div class="totals-row"><span>${htmlEscape(tax.label)} (${htmlEscape(tax.rate.toFixed(2))}%)</span><strong>${htmlEscape(formatCurrency(tax.amount, currency))}</strong></div>`).join("")}${!taxBreakdown.length ? `<div class="totals-row muted-row"><span>Tax</span><strong>${htmlEscape(formatCurrency(0, currency))}</strong></div>` : ""}<div class="totals-row total-row"><span>Total payable</span><strong>${htmlEscape(formatCurrency(totalAmount, currency))}</strong></div></section>`;
+  const summaryTitle = workflowType === "payment-advice" ? "Payment summary" : "Calculation summary";
+  const totalLabel = workflowType === "payment-advice" ? "Paid amount" : "Total payable";
+  const totalsMarkup = `<section class="totals-block"><h2>${summaryTitle}</h2><div class="totals-row"><span>Items subtotal</span><strong>${htmlEscape(formatCurrency(subtotal, currency))}</strong></div>${taxBreakdown.map((tax) => `<div class="totals-row"><span>${htmlEscape(tax.rate == null ? tax.label : `${tax.label} (${tax.rate.toFixed(2)}%)`)}</span><strong>${htmlEscape(formatCurrency(tax.amount, currency))}</strong></div>`).join("")}${!taxBreakdown.length ? `<div class="totals-row muted-row"><span>Tax</span><strong>${htmlEscape(formatCurrency(0, currency))}</strong></div>` : ""}<div class="totals-row total-row"><span>${totalLabel}</span><strong>${htmlEscape(formatCurrency(totalAmount, currency))}</strong></div></section>`;
   return `<!doctype html><html><head><meta charset="utf-8"><title>${htmlEscape(title)}</title><style>
     @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}.document-heading{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:start;gap:24px;min-height:100px}.document-heading-copy{min-width:0;padding-top:3px}.header-brand{display:flex;justify-content:flex-end;align-items:flex-start;min-height:100px}.header-logo{width:150px;height:100px;object-fit:contain;display:block}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-logo{width:52px;height:40px;object-fit:contain;display:block;margin-bottom:7px}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}th.amount,td.amount{text-align:right;white-space:nowrap}.totals-block{width:52%;margin:18px 0 0 auto}.totals-row{display:flex;justify-content:space-between;gap:20px;padding:7px 10px;border-bottom:1px solid #eaecf0}.totals-row strong{white-space:nowrap}.muted-row{color:#667085}.total-row{margin-top:3px;border-top:2px solid #17202a;border-bottom:0;font-size:12px;font-weight:700;padding-top:9px}.footer{margin-top:24px;color:#667085;font-size:10px}
   </style></head><body><div class="document-heading"><div class="document-heading-copy"><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${htmlEscape(status)}</div></div><div class="header-brand">${logoMarkup(companyLogo, "Company logo").replace('class="party-logo"', 'class="header-logo"')}</div></div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}${itemsMarkup}${totalsMarkup}${historyMarkup}<div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Select, Button, Space, Typography, message, Spin, Table, Tag, Segmented, Dropdown } from "antd";
+import { Card, Row, Col, Select, Button, Space, Typography, message, Spin, Table, Tag, Segmented, Dropdown, Modal, Form, Input, InputNumber } from "antd";
 import { ArrowLeftOutlined, ReloadOutlined, ThunderboltOutlined, FormOutlined, AuditOutlined, CalendarOutlined, MoreOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { BudgetUsageCard } from "../components/budget/BudgetUsageCard";
@@ -9,10 +9,14 @@ import {
   getHistoricalComparison,
   getOwnBudgetHistory,
   getPredictions,
+  getUpcomingForecastEvents,
+  createUpcomingForecastEvent,
+  cancelUpcomingForecastEvent,
   type BudgetUsageSummary,
   type BudgetPrediction,
   type HistoricalComparison,
-  type OwnBudgetHistoryRow
+  type OwnBudgetHistoryRow,
+  type UpcomingForecastEvent
 } from "../shared/api/departmentBudget";
 import { API_ROOT } from "../shared/api/base";
 import { getSessionUser } from "../shared/auth/session";
@@ -53,6 +57,10 @@ function matchesDepartment(department: ForecastDepartment, userDepartment?: stri
   );
 }
 
+function formatForecastPeriod(year: number, month: number): string {
+  return new Date(year, month - 1, 1).toLocaleDateString(undefined, { month: "short", year: "numeric" });
+}
+
 export const DepartmentBudgetOverview: React.FC = () => {
   const navigate = useNavigate();
   const [sessionUser] = useState(() => getSessionUser());
@@ -64,6 +72,7 @@ export const DepartmentBudgetOverview: React.FC = () => {
 
   const [usage, setUsage] = useState<BudgetUsageSummary | null>(null);
   const [predictions, setPredictions] = useState<BudgetPrediction[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingForecastEvent[]>([]);
   const [historical, setHistorical] = useState<HistoricalComparison | null>(null);
   const [ownBudgetHistory, setOwnBudgetHistory] = useState<OwnBudgetHistoryRow[]>([]);
   const [ownDepartmentName, setOwnDepartmentName] = useState("");
@@ -76,11 +85,16 @@ export const DepartmentBudgetOverview: React.FC = () => {
   const [loadingPredictions, setLoadingPredictions] = useState(false);
   const [loadingHistorical, setLoadingHistorical] = useState(false);
   const [triggeringPrediction, setTriggeringPrediction] = useState(false);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [savingEvent, setSavingEvent] = useState(false);
+  const [eventForm] = Form.useForm();
 
   const canViewAllDepartments = DEPARTMENT_OVERVIEW_ROLES.has(sessionUser?.role ?? "");
   const canGeneratePrediction = Boolean(
     sessionUser?.role && sessionUser.role !== UserRole.EMPLOYEE
   );
+  const canManageUpcomingEvents = [UserRole.ADMIN, UserRole.MANAGER, UserRole.DEPARTMENT_EXECUTIVE]
+    .includes(sessionUser?.role as UserRole);
 
   useEffect(() => {
     loadDepartments();
@@ -201,6 +215,11 @@ export const DepartmentBudgetOverview: React.FC = () => {
         : [];
       setPredictions(storedPredictions);
 
+      const events = department?.id
+        ? await getUpcomingForecastEvents(department.id, nextYear, nextMonth)
+        : [];
+      setUpcomingEvents(events);
+
       const historicalComparison = department?.id
         ? await getHistoricalComparison(department.id, { preset: "last-6-months" })
         : null;
@@ -264,6 +283,50 @@ export const DepartmentBudgetOverview: React.FC = () => {
     } finally {
       setTriggeringPrediction(false);
     }
+  };
+
+  const handleCreateUpcomingEvent = async (values: { title: string; estimatedImpact: number; likelihood: "low" | "medium" | "high"; notes?: string }) => {
+    const department = departments.find((dept) => dept.code === selectedDepartmentCode || dept.name === selectedDepartmentCode);
+    if (!department) return;
+    const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+    const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
+    setSavingEvent(true);
+    const created = await createUpcomingForecastEvent({
+      departmentId: department.id,
+      title: values.title,
+      targetYear: nextYear,
+      targetMonth: nextMonth,
+      estimatedImpact: values.estimatedImpact,
+      likelihood: values.likelihood,
+      notes: values.notes,
+    });
+    setSavingEvent(false);
+    if (!created) {
+      message.error("Unable to save the planned procurement need");
+      return;
+    }
+    eventForm.resetFields();
+    setEventModalOpen(false);
+    message.success("Planned procurement need added to the forecast");
+    await loadBudgetData();
+  };
+
+  const handleCancelUpcomingEvent = (event: UpcomingForecastEvent) => {
+    Modal.confirm({
+      title: "Remove planned procurement need?",
+      content: `“${event.title}” will no longer be included in future forecasts.`,
+      okText: "Remove",
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        const success = await cancelUpcomingForecastEvent(event.id);
+        if (!success) {
+          message.error("Unable to remove the planned procurement need");
+          return;
+        }
+        message.success("Planned procurement need removed");
+        await loadBudgetData();
+      },
+    });
   };
 
   const filteredBudgetHistory = ownBudgetHistory
@@ -389,7 +452,22 @@ export const DepartmentBudgetOverview: React.FC = () => {
           )}
 
           {activeView === "prediction" && (
-            <Card title="AI Budget Predictions" loading={loadingPredictions}>
+            <Card
+              title="AI Budget Predictions"
+              loading={loadingPredictions}
+              extra={canManageUpcomingEvents ? <Button onClick={() => setEventModalOpen(true)}>Add planned procurement need</Button> : undefined}
+            >
+              {upcomingEvents.length > 0 && (
+                <div className={styles.upcomingEvents}>
+                  <div className={styles.upcomingEventsTitle}>Known planned procurement needs for the next forecast</div>
+                  {upcomingEvents.map((event) => (
+                    <div className={styles.upcomingEvent} key={event.id}>
+                      <span><strong>{event.title}</strong> · RM {event.estimatedImpact.toLocaleString(undefined, { minimumFractionDigits: 2 })} · {event.likelihood} likelihood</span>
+                      {canManageUpcomingEvents && <Button type="link" danger size="small" onClick={() => handleCancelUpcomingEvent(event)}>Remove</Button>}
+                    </div>
+                  ))}
+                </div>
+              )}
               {predictions.length > 0 ? <div className={styles.predictionGrid}>{predictions.map(p => <PredictionCard key={p.id} prediction={p} />)}</div> : <div className={styles.emptyState}>No predictions available. Generate a prediction to create one.</div>}
             </Card>
           )}
@@ -399,6 +477,30 @@ export const DepartmentBudgetOverview: React.FC = () => {
           )}
         </Col>
       </Row>
+      <Modal
+        title="Add planned procurement need"
+        open={eventModalOpen}
+        onCancel={() => setEventModalOpen(false)}
+        onOk={() => eventForm.submit()}
+        confirmLoading={savingEvent}
+        okText="Add to forecast"
+      >
+        <p className={styles.modalHint}>Add a known procurement need that is not yet included in an actual spend or purchase request. This will be included in the {formatForecastPeriod(currentMonth === 12 ? currentYear + 1 : currentYear, currentMonth === 12 ? 1 : currentMonth)} forecast.</p>
+        <Form form={eventForm} layout="vertical" onFinish={handleCreateUpcomingEvent} initialValues={{ likelihood: "medium" }}>
+          <Form.Item name="title" label="Procurement need" rules={[{ required: true, message: "Enter a procurement need" }]}>
+            <Input maxLength={160} placeholder="e.g. Annual server maintenance" />
+          </Form.Item>
+          <Form.Item name="estimatedImpact" label="Estimated impact (RM)" rules={[{ required: true, message: "Enter a positive estimated impact" }]}>
+            <InputNumber min={0.01} precision={2} style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item name="likelihood" label="Likelihood" rules={[{ required: true }]}>
+            <Select options={[{ value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" }]} />
+          </Form.Item>
+          <Form.Item name="notes" label="Notes (optional)">
+            <Input.TextArea rows={3} maxLength={500} placeholder="Short context for the forecast review" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { getSessionUser } from "../../shared/auth/session";
+import { formatPaymentTerm } from "../../shared/utils/paymentTerms";
 import { UserRole } from "../../shared/types/roles";
 import { hydrateSupplierInvoices, loadSupplierInvoices, updateSupplierInvoice, type SupplierInvoiceRecord } from "../../modules/supplierFulfillment/workflow";
 import { submitSupplierInvoice, supplierFinancePdfUrl } from "../../shared/api/supplierFinance";
@@ -83,7 +84,7 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.poNumber")}</div><div className={styles.summaryValue}>{row.poNumber}</div></div>
         <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.grnNumber")}</div><div className={styles.summaryValue}>{row.deliveryNo || "-"}</div></div>
-        <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.paymentTerms")}</div><div className={styles.summaryValue}>{row.paymentTerms || "-"}</div></div>
+        <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.paymentTerms")}</div><div className={styles.summaryValue}>{formatPaymentTerm(row.paymentTerms)}</div></div>
         <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.grandTotal")}</div><div className={styles.summaryValue}>{currencyLabel(row.currency, row.grandTotal)}</div></div>
       </div>
       <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.information")}</h3><Descriptions column={2} bordered size="middle">
@@ -107,7 +108,7 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
     { title: t("invoice.fields.invoiceNumber"), dataIndex: "invoiceNumber", render: (value: string | undefined, item: SupplierInvoiceRecord) => value || `${t("invoice.labels.pending")} (${item.poNumber})` },
     { title: t("invoice.fields.poNumber"), dataIndex: "poNumber" },
     { title: t("invoice.fields.grnNumber"), dataIndex: "deliveryNo", render: (value: string | undefined) => value || "-" },
-    { title: t("invoice.fields.paymentTerms"), dataIndex: "paymentTerms", render: (value: string | undefined) => value || "-" },
+    { title: t("invoice.fields.paymentTerms"), dataIndex: "paymentTerms", render: (value: string | undefined) => formatPaymentTerm(value) },
     { title: t("invoice.fields.grandTotal"), key: "total", render: (_: unknown, item: SupplierInvoiceRecord) => currencyLabel(item.currency, item.grandTotal) },
     { title: t("invoice.fields.status"), dataIndex: "status", render: (value: SupplierInvoiceRecord["status"]) => <Tag color={statusColor(value)}>{t(`invoice.status.${value.toLowerCase()}`)}</Tag> },
     { title: t("invoice.actions.view"), key: "action", render: (_: unknown, item: SupplierInvoiceRecord) => <Button icon={<EyeOutlined />} onClick={() => navigate(`/supplier-overview/invoice/${item.localId}`)}>{t("invoice.actions.view")}</Button> },

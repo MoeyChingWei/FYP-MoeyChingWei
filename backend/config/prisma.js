@@ -44,6 +44,7 @@ Object.assign(prisma, {
   monthlyBudget: prisma.monthly_budgets,
   budgetAdjustmentRequest: prisma.budget_adjustment_requests,
   budgetPrediction: prisma.budget_predictions,
+  budgetUpcomingEvent: prisma.budget_upcoming_events,
 });
 
 export default prisma;

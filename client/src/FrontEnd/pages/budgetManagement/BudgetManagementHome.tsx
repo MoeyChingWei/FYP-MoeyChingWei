@@ -1,8 +1,8 @@
 import React from "react";
-import { Card, Row, Col } from "antd";
+import { Card, Row, Col, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ApartmentOutlined, FundOutlined } from "@ant-design/icons";
+import { ApartmentOutlined, ArrowRightOutlined, FundOutlined } from "@ant-design/icons";
 import { getSessionUser } from "../../shared/auth/session";
 import { UserRole, isFinanceRole } from "../../shared/types/roles";
 
@@ -34,8 +34,14 @@ export default function BudgetManagementHome(): React.ReactElement {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{t("budgetManagement:budgetManagement")}</h1>
-      <p className={styles.subtitle}>{t("budgetManagement:homeDescription")}</p>
+      <header className={styles.pageHeader}>
+        <div>
+          <span className={styles.eyebrow}>Financial planning</span>
+          <h1 className={styles.title}>{t("budgetManagement:budgetManagement")}</h1>
+          <p className={styles.subtitle}>{t("budgetManagement:homeDescription")}</p>
+        </div>
+        <Tag className={styles.periodTag}>Planning workspace</Tag>
+      </header>
 
       <Row gutter={[24, 24]} className={styles.cardsRow}>
         {modules.filter((module) => module.visible !== false).map((module) => (
@@ -46,9 +52,15 @@ export default function BudgetManagementHome(): React.ReactElement {
               onClick={() => navigate(module.path)}
             >
               <div className={styles.cardContent}>
-                {module.icon}
-                <h3 className={styles.cardTitle}>{module.title}</h3>
-                <p className={styles.cardDescription}>{module.description}</p>
+                <div className={styles.cardTop}>
+                  {module.icon}
+                  <span className={styles.cardType}>{module.key === "department-forecasting" ? "Department" : "Finance"}</span>
+                </div>
+                <div className={styles.cardBody}>
+                  <h3 className={styles.cardTitle}>{module.title}</h3>
+                  <p className={styles.cardDescription}>{module.description}</p>
+                </div>
+                <div className={styles.cardAction}>Open workspace <ArrowRightOutlined /></div>
               </div>
             </Card>
           </Col>

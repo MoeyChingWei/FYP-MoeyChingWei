@@ -26,6 +26,7 @@ import {
 } from "../../modules/supplierFulfillment/workflow";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import { getSessionUser } from "../../shared/auth/session";
+import { formatPaymentTerm } from "../../shared/utils/paymentTerms";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
@@ -250,6 +251,7 @@ export default function OrderAcknowledgementDetailSubmodule(): React.ReactElemen
             </Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.createdBy")}>{row.createdBy}</Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.department")}>{row.department || "-"}</Descriptions.Item>
+            <Descriptions.Item label={t("orderAcknowledgement.detail.info.paymentTerms")}>{formatPaymentTerm(row.paymentTerms)}</Descriptions.Item>
             <Descriptions.Item label={t("orderAcknowledgement.detail.info.currentStatus")}>{statusText(row.status, t)}</Descriptions.Item>
             {row.status === "REJECTED" ? (
               <>

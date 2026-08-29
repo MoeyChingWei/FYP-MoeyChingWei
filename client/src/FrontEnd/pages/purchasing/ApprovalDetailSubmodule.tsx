@@ -33,7 +33,6 @@ import type {
 import { getSessionUser } from "../../shared/auth/session";
 import {
   computeTaxBreakdown,
-  taxLabelForCodes,
 } from "../../modules/purchasing/requestCreation/constants";
 import RejectReasonModal from "../../shared/components/RejectReasonModal";
 import { deductBudgetForPR, releaseBudgetForPR } from "../../shared/api/departmentBudget";
@@ -62,8 +61,7 @@ function ItemDetailCard({
   index: number;
 }): React.ReactElement {
   const { t } = useTranslation('purchasing');
-  const taxAmount = item.taxAmount ?? Math.round(item.quantity * item.unitPrice * (item.taxRate ?? 0)) / 100;
-  const lineTotal = item.amountAfterTax ?? item.quantity * item.unitPrice + taxAmount;
+  const lineSubtotal = item.quantity * item.unitPrice;
 
   return (
     <div className={styles.itemCard}>
@@ -106,18 +104,10 @@ function ItemDetailCard({
         </div>
 
         <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>Amount after tax</span>
+          <span className={styles.detailLabel}>Line subtotal</span>
           <div className={styles.detailValue}>
-            {currencyLabel(currency, lineTotal)}
+            {currencyLabel(currency, lineSubtotal)}
           </div>
-        </div>
-        <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>Tax</span>
-          <div className={styles.detailValue}>{taxLabelForCodes(item.taxType)}</div>
-        </div>
-        <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>Tax amount</span>
-          <div className={styles.detailValue}>{currencyLabel(currency, taxAmount)}</div>
         </div>
 
         <div className={`${styles.detailBlock} ${styles.detailWide}`}>
@@ -317,16 +307,13 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
     );
   }
 
-  const total = request.amountAfterTax ?? request.lineItems.reduce(
-    (sum, item) => sum + (item.amountAfterTax ?? item.quantity * item.unitPrice + (item.taxAmount ?? item.quantity * item.unitPrice * (item.taxRate ?? 0) / 100)),
-    0,
-  );
   const supplierCount = new Set(
     request.lineItems.map((item) => item.supplierEmail || item.supplierName).filter(Boolean),
   ).size;
   const orderSubtotal = request.subtotal ?? request.lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const orderRules = request.supplierTaxRules?.length ? request.supplierTaxRules : (request.supplierTaxApplies && request.supplierTaxType ? [{ taxType: request.supplierTaxType, taxRate: request.supplierTaxRate ?? 0 }] : []);
+  const orderRules = request.supplierTaxRules?.length ? request.supplierTaxRules : (request.supplierTaxApplies && request.supplierTaxType && request.supplierTaxType !== "NO_TAX" ? [{ taxType: request.supplierTaxType, taxRate: request.supplierTaxRate ?? 0 }] : []);
   const orderTaxBreakdown = computeTaxBreakdown(orderSubtotal, orderRules);
+  const total = request.amountAfterTax ?? Math.round((orderSubtotal + orderTaxBreakdown.total) * 100) / 100;
 
   return (
     <Card>
@@ -382,9 +369,7 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
               {request.department || "-"}
             </Descriptions.Item>
             <Descriptions.Item label={t('purchaseRequest.detail.info.paymentTerms')}>
-              {request.paymentTerms
-                ? t(`purchaseRequest.creation.form.paymentTermOptions.${request.paymentTerms}`)
-                : "-"}
+              {request.paymentTerms ? t(`purchaseRequest.creation.form.paymentTermOptions.${request.paymentTerms}`, { defaultValue: request.paymentTerms }) : "-"}
             </Descriptions.Item>
             <Descriptions.Item label={t('purchaseRequest.detail.info.currentStatus')}>
               {t('purchaseRequest.review.status.submitted')}
@@ -395,15 +380,6 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
             <Descriptions.Item label={t('purchaseOrder.detail.info.currency')}>
               {request.currency === "MYR" ? "RM" : request.currency}
             </Descriptions.Item>
-          </Descriptions>
-        </div>
-
-        <div className={styles.sectionCard}>
-          <h3 className={styles.sectionTitle}>Calculation summary</h3>
-          <Descriptions column={1} bordered size="middle">
-            <Descriptions.Item label="Items subtotal">{currencyLabel(request.currency, orderSubtotal)}</Descriptions.Item>
-            {orderRules.map((rule, index) => <Descriptions.Item key={`${rule.taxType}-${index}`} label={`${({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[rule.taxType] ?? "Tax"} (${Number(rule.taxRate ?? 0).toFixed(2)}%)`}>{currencyLabel(request.currency, orderTaxBreakdown.amounts[index] ?? 0)}</Descriptions.Item>)}
-            <Descriptions.Item label="Total payable">{currencyLabel(request.currency, total)}</Descriptions.Item>
           </Descriptions>
         </div>
 
@@ -423,6 +399,15 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
               />
             ))}
           </div>
+        </div>
+
+        <div className={styles.sectionCard}>
+          <h3 className={styles.sectionTitle}>Calculation summary</h3>
+          <Descriptions column={1} bordered size="middle">
+            <Descriptions.Item label="Items subtotal">{currencyLabel(request.currency, orderSubtotal)}</Descriptions.Item>
+            {orderRules.map((rule, index) => <Descriptions.Item key={`${rule.taxType}-${index}`} label={`${({ SALES_TAX: "Sales tax", SERVICE_TAX: "Service tax", OTHER: "Other tax" } as Record<string, string>)[rule.taxType] ?? "Tax"} (${Number(rule.taxRate ?? 0).toFixed(2)}%)`}>{currencyLabel(request.currency, orderTaxBreakdown.amounts[index] ?? 0)}</Descriptions.Item>)}
+            <Descriptions.Item label="Total payable">{currencyLabel(request.currency, total)}</Descriptions.Item>
+          </Descriptions>
         </div>
 
         <div className={styles.actionRow}>

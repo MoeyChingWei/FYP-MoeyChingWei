@@ -91,6 +91,36 @@
   text-align: center;
 }
 
+.upcomingEvents {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+}
+
+.upcomingEventsTitle {
+  margin-bottom: 6px;
+  color: #1e3a5f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.upcomingEvent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.modalHint {
+  margin-bottom: 18px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
 :global(.budgetUsageCard) {
   border: 1px solid #e4e7ec;
   border-radius: 8px;

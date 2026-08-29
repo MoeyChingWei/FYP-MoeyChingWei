@@ -3,6 +3,8 @@ import analyticsAgent from '../agents/analytics/analytics-agent.js';
 import Decimal from 'decimal.js';
 import { notifyBudgetPredictionReady } from './notification-service.js';
 import crypto from 'crypto';
+import { classifyPurchaseRequestForForecast } from './forecast-risk-signals.js';
+import { calculateRiskAdjustedForecast } from './forecast-risk-adjustment-service.js';
 
 // Constants for budget prediction thresholds
 // Default budget for new departments with no historical data (RM)
@@ -121,6 +123,56 @@ async function getHistoricalSpending(departmentId) {
   return Object.values(aggregated).sort((a, b) => a.period.localeCompare(b.period));
 }
 
+async function getRecentForecastSignals(departmentId) {
+  const department = await prisma.department.findUnique({ where: { id: departmentId } });
+  if (!department) return [];
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        { department: { equals: department.code, mode: 'insensitive' } },
+        { department: { equals: department.name, mode: 'insensitive' } },
+      ],
+    },
+    select: { id: true },
+  });
+  const userIds = new Set(users.map(user => user.id));
+  const cutoffDate = new Date();
+  cutoffDate.setMonth(cutoffDate.getMonth() - 3);
+  const requests = await prisma.purchaseRequestRecord.findMany({
+    where: { createdAt: { gte: cutoffDate } },
+    select: { localId: true, payload: true },
+  });
+  const relevantRequests = requests
+    .filter(request => String(request.payload?.status ?? '').trim().toUpperCase() === 'APPROVED' && userIds.has(request.payload?.requestorId))
+    .map(request => ({
+      request,
+      signal: request.payload?.forecastSignal ?? classifyPurchaseRequestForForecast(request.payload),
+    }));
+
+  // Persist the transparent, AI-inferred tag alongside the original payload so
+  // later forecast reviews can trace a contributor back to its PR. This does
+  // not introduce any new user-facing input or overwrite a stored tag.
+  await Promise.all(relevantRequests
+    .filter(({ request }) => !request.payload?.forecastSignal)
+    .map(({ request, signal }) => prisma.purchaseRequestRecord.update({
+      where: { localId: request.localId },
+      data: { payload: { ...request.payload, forecastSignal: signal }, updatedAt: new Date() },
+    })));
+
+  return relevantRequests.map(({ signal }) => signal).filter(signal => signal.riskWeight > 0);
+}
+
+async function getRiskAdjustment(departmentId, targetYear, targetMonth, historicalData) {
+  const [upcomingEvents, requestSignals] = await Promise.all([
+    prisma.budgetUpcomingEvent.findMany({
+      where: { departmentId, targetYear, targetMonth, status: 'active' },
+      select: { id: true, title: true, estimatedImpact: true, likelihood: true, status: true },
+    }),
+    getRecentForecastSignals(departmentId),
+  ]);
+  return { upcomingEvents, requestSignals, build: (baseForecast) => calculateRiskAdjustedForecast({ baseForecast, historicalData, requestSignals, upcomingEvents }) };
+}
+
 /**
  * Calculate name similarity between two department names
  * @param {string} name1 - First department name
@@ -197,6 +249,7 @@ async function findSimilarDepartments(departmentId) {
  */
 async function handleNewDepartment(departmentId, targetYear, targetMonth, userId) {
   const similarDepts = await findSimilarDepartments(departmentId);
+  const riskAdjustment = await getRiskAdjustment(departmentId, targetYear, targetMonth, []);
 
   let prediction;
   if (similarDepts.length === 0) {
@@ -205,6 +258,7 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
       confidence: 'low',
       algorithm: 'default',
       aiInsights: 'No historical data available and no similar departments found. Using system default.',
+      comparisonData: { riskAdjustment: riskAdjustment.build(DEFAULT_NEW_DEPARTMENT_BUDGET) },
       triggerType: userId ? 'manual' : 'automatic',
       triggeredBy: userId || null
     });
@@ -222,7 +276,8 @@ async function handleNewDepartment(departmentId, targetYear, targetMonth, userId
       comparisonData: {
         similarDepartment: topSimilar.name,
         similarity: topSimilar.similarity,
-        referenceMonths: topSimilar.historicalMonths
+        referenceMonths: topSimilar.historicalMonths,
+        riskAdjustment: riskAdjustment.build(avgAmount),
       },
       triggerType: userId ? 'manual' : 'automatic',
       triggeredBy: userId || null
@@ -470,6 +525,7 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
 
   // Call analytics agent for prediction
   const aiResponse = await callAnalyticsAgent(department, historicalData, targetYear, targetMonth, userId);
+  const riskAdjustment = await getRiskAdjustment(department.id, targetYear, targetMonth, historicalData);
 
   // Create prediction record with enhanced analytics data
   const prediction = await savePredictionForPeriod(department.id, targetYear, targetMonth, {
@@ -482,7 +538,8 @@ export async function generateDepartmentPrediction(deptCode, targetYear, targetM
       ...aiResponse.comparisonData,
       usedFallback: aiResponse.usedFallback || false,
       predictionInterval: aiResponse.predictionInterval,
-      modelBreakdown: aiResponse.modelBreakdown
+      modelBreakdown: aiResponse.modelBreakdown,
+      riskAdjustment: riskAdjustment.build(aiResponse.amount)
     },
     triggerType: userId ? 'manual' : 'automatic',
     triggeredBy: userId || null

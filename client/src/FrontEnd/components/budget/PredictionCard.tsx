@@ -34,19 +34,22 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({ prediction, load
   const interval = comparison?.predictionInterval;
   const modelBreakdown = comparison?.modelBreakdown;
   const categoryBreakdown = prediction.categoryBreakdown;
+  const numericCategoryBreakdown = Object.entries(categoryBreakdown ?? {})
+    .filter(([, value]) => Number.isFinite(Number(value)));
+  const riskAdjustment = comparison?.riskAdjustment;
   const formatAmount = (value?: number) =>
     typeof value === "number"
-      ? `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      ? `RM ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : "-";
 
-  const analysisItems = [
+  const technicalDetailItems = [
     {
-      key: "analysis",
-      label: "View AI Analysis",
+      key: "technical-details",
+      label: "See calculation details",
       children: (
         <Space direction="vertical" style={{ width: "100%" }} size="small">
           {prediction.aiInsights && (
-            <div style={{ lineHeight: 1.55 }}>{prediction.aiInsights}</div>
+            <div className={styles.technicalNote}>{prediction.aiInsights}</div>
           )}
           <Descriptions size="small" column={1} bordered>
             {comparison?.historicalPeriods !== undefined && (
@@ -95,20 +98,63 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({ prediction, load
                 </Space>
               </Descriptions.Item>
             )}
-            {categoryBreakdown && Object.keys(categoryBreakdown).length > 0 && (
+            {numericCategoryBreakdown.length > 0 && (
               <Descriptions.Item label="Category breakdown">
                 <Space direction="vertical" size={0}>
-                  {Object.entries(categoryBreakdown).map(([category, value]) => (
+                  {numericCategoryBreakdown.map(([category, value]) => (
                     <span key={category}>{category}: {formatAmount(Number(value))}</span>
                   ))}
                 </Space>
               </Descriptions.Item>
+            )}
+            {riskAdjustment && (
+              <>
+                <Descriptions.Item label="Contingency reserve">
+                  {formatAmount(riskAdjustment.contingencyReserve)} ({riskAdjustment.reserveRate}%)
+                </Descriptions.Item>
+                <Descriptions.Item label="Expected planned procurement needs">
+                  {formatAmount(riskAdjustment.expectedEventImpact)}
+                </Descriptions.Item>
+                <Descriptions.Item label="Recommended allocation">
+                  <strong>{formatAmount(riskAdjustment.scenarios.recommended)}</strong>
+                </Descriptions.Item>
+                <Descriptions.Item label="Budget scenarios">
+                  <Space direction="vertical" size={0}>
+                    <span>Conservative: {formatAmount(riskAdjustment.scenarios.conservative)}</span>
+                    <span>Recommended: {formatAmount(riskAdjustment.scenarios.recommended)}</span>
+                    <span>High risk: {formatAmount(riskAdjustment.scenarios.highRisk)}</span>
+                  </Space>
+                </Descriptions.Item>
+                {riskAdjustment.contributors.length > 0 && (
+                  <Descriptions.Item label="Risk contributors">
+                    <Space direction="vertical" size={0}>
+                      {riskAdjustment.contributors.map((contributor, index) => (
+                        <span key={`${contributor.type}-${contributor.label}-${index}`}>
+                          {contributor.label}
+                          {contributor.amount !== undefined && `: ${formatAmount(contributor.amount)}`}
+                          {contributor.likelihood && ` (${contributor.likelihood})`}
+                        </span>
+                      ))}
+                    </Space>
+                  </Descriptions.Item>
+                )}
+              </>
             )}
           </Descriptions>
         </Space>
       )
     }
   ];
+
+  const riskReasons = riskAdjustment?.contributors
+    .filter((contributor) => contributor.type !== "upcoming_event")
+    .map((contributor) => {
+      if (contributor.type === "volatility") return "Previous monthly spending varies, so a reserve is included.";
+      if (contributor.type === "growth") return "Recent spending is higher than the historical average.";
+      if (contributor.type === "request_signals") return "Recent urgent or non-routine purchase requests increase budget risk.";
+      return contributor.label;
+    }) ?? [];
+  const plannedNeeds = riskAdjustment?.contributors.filter((contributor) => contributor.type === "upcoming_event") ?? [];
 
   const getTriggerIcon = () => {
     return prediction.triggerType === "automatic" ? <ClockCircleOutlined /> : <ThunderboltOutlined />;
@@ -138,7 +184,7 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({ prediction, load
             title="Predicted Budget"
             value={prediction.predictedAmount}
             precision={2}
-            prefix="$"
+            prefix="RM "
             styles={{ content: { fontSize: 28, fontWeight: 650, color: "#0f172a" } }}
           />
 
@@ -160,12 +206,41 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({ prediction, load
               {prediction.metadata?.basedOnMonths && ` (${prediction.metadata.basedOnMonths}M history)`}
             </div>
           )}
+          {riskAdjustment && (
+            <div className={styles.recommendedBudget}>
+              Recommended budget: {formatAmount(riskAdjustment.scenarios.recommended)}
+            </div>
+          )}
           <div className={styles.created}>Created: {new Date(prediction.createdAt).toLocaleDateString()}</div>
         </div>
 
         <div className={styles.analysis}>
-          <div className={styles.analysisHeading}>Forecast details</div>
-          <Collapse ghost items={analysisItems} />
+          {riskAdjustment ? (
+            <>
+              <div className={styles.analysisHeading}>Why this budget?</div>
+              <div className={styles.recommendationLead}>
+                <div className={styles.recommendationLabel}>Recommended next-month budget</div>
+                <div className={styles.recommendationAmount}>{formatAmount(riskAdjustment.scenarios.recommended)}</div>
+                <div className={styles.recommendationCopy}>
+                  This recommendation includes normal spending, a risk reserve, and known planned procurement needs.
+                </div>
+              </div>
+              <div className={styles.explanationRows}>
+                <div><span>Normal spending forecast</span><strong>{formatAmount(riskAdjustment.baseForecast)}</strong></div>
+                <div><span>Risk reserve</span><strong>{formatAmount(riskAdjustment.contingencyReserve)}</strong></div>
+                {riskAdjustment.expectedEventImpact > 0 && <div><span>Planned procurement needs</span><strong>{formatAmount(riskAdjustment.expectedEventImpact)}</strong></div>}
+              </div>
+              <div className={styles.reasonList}>
+                {riskReasons.map((reason) => <div key={reason}>• {reason}</div>)}
+                {plannedNeeds.map((need) => <div key={need.label}>• {need.label} is included at {formatAmount(need.amount)}.</div>)}
+                <div>• Confidence is {prediction.confidence.replace("_", " ")} based on {comparison?.historicalPeriods ?? "available"} months of historical data.</div>
+              </div>
+            </>
+          ) : (
+            <div className={styles.noRiskSummary}>This forecast is based on the available purchasing history. Generate a new prediction to include risk-adjusted budgeting.</div>
+          )}
+          <div className={styles.detailsHeading}>Technical details</div>
+          <Collapse ghost items={technicalDetailItems} />
         </div>
       </div>
     </Card>

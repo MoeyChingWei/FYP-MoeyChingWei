@@ -41,6 +41,37 @@ export default function CategorySelectionManagement(): React.ReactElement {
             className={styles.tile}
             role="button"
             tabIndex={0}
+            onClick={() => navigate("/category-selection/payment-terms")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate("/category-selection/payment-terms");
+              }
+            }}
+            aria-label={t("page.paymentTerms")}
+          >
+            <Flex vertical align="center" gap={14} className={styles.tileInner}>
+              <div className={styles.iconWrap} aria-hidden>
+                <DollarOutlined className={styles.tileIcon} />
+              </div>
+              <div className={styles.tileTextBlock}>
+                <Text strong className={styles.tileTitle}>
+                  {t("page.paymentTerms")}
+                </Text>
+                <Flex align="center" gap={6} className={styles.tileAction}>
+                  <Text type="secondary">{t("page.open")}</Text>
+                  <RightOutlined className={styles.tileChevron} />
+                </Flex>
+              </div>
+            </Flex>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={4}>
+          <Card
+            hoverable
+            className={styles.tile}
+            role="button"
+            tabIndex={0}
             onClick={() => navigate("/category-selection/item-categories")}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -88,37 +119,6 @@ export default function CategorySelectionManagement(): React.ReactElement {
               <div className={styles.tileTextBlock}>
                 <Text strong className={styles.tileTitle}>
                   {t("page.unitsOfMeasurement")}
-                </Text>
-                <Flex align="center" gap={6} className={styles.tileAction}>
-                  <Text type="secondary">{t("page.open")}</Text>
-                  <RightOutlined className={styles.tileChevron} />
-                </Flex>
-              </div>
-            </Flex>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={4}>
-          <Card
-            hoverable
-            className={styles.tile}
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate("/category-selection/payment-terms")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                navigate("/category-selection/payment-terms");
-              }
-            }}
-            aria-label={t("page.paymentTerms")}
-          >
-            <Flex vertical align="center" gap={14} className={styles.tileInner}>
-              <div className={styles.iconWrap} aria-hidden>
-                <DollarOutlined className={styles.tileIcon} />
-              </div>
-              <div className={styles.tileTextBlock}>
-                <Text strong className={styles.tileTitle}>
-                  {t("page.paymentTerms")}
                 </Text>
                 <Flex align="center" gap={6} className={styles.tileAction}>
                   <Text type="secondary">{t("page.open")}</Text>

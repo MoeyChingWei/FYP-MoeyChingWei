@@ -142,6 +142,7 @@
         "supplier": "Pembekal",
         "supplierEmail": "E-mel Pembekal",
         "department": "Jabatan",
+        "paymentTerms": "Terma pembayaran",
         "currentStatus": "Status Semasa",
         "companyAddress": "Alamat Syarikat",
         "rejectedBy": "Ditolak Oleh",

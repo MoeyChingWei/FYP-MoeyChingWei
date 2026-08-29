@@ -10,6 +10,8 @@ import {
   workflowHtml,
 } from "../routes/export.js";
 import { formatCurrency, displayCurrency } from "../utils/currency.js";
+import { calculateWorkflowTotals } from "../utils/workflow-totals.js";
+import { formatPaymentTerm } from "../utils/payment-terms.js";
 
 const DEFAULT_FEEDBACK_RECIPIENTS = [
   "fypadminsystem@gmail.com",
@@ -127,22 +129,38 @@ function renderItems(record, currency = "RM") {
     const quantity = textValue(item.quantity);
     const unit = textValue(item.unitOfMeasurement || item.unit);
     const unitPrice = formatMoney(item.unitPrice, currency);
-    const tax = item.taxAmount != null ? formatMoney(item.taxAmount, currency) : "-";
-    const amount = formatMoney(
-      item.amountAfterTax ?? item.amount ?? item.lineTotal ?? Number(item.quantity || 0) * Number(item.unitPrice || 0),
-      currency,
-    );
+    const lineSubtotal = formatMoney(Number(item.quantity || 0) * Number(item.unitPrice || 0), currency);
     textLines.push(
       `${index + 1}. ${textValue(item.itemName)} - ${textValue(item.itemDescription)}; ` +
-      `Quantity: ${quantity} ${unit}; Unit price: ${unitPrice}; Tax: ${tax}; Amount: ${amount}`,
+      `Quantity: ${quantity} ${unit}; Unit price: ${unitPrice}; Line subtotal: ${lineSubtotal}`,
     );
-    return `<tr><td>${index + 1}</td><td>${imageSrc ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(item.itemName)}" style="width:64px;height:64px;object-fit:contain" />` : "-"}</td><td><b>${escapeHtml(item.itemName)}</b><br/><span style="color:#667085">${escapeHtml(item.itemDescription)}</span></td><td>${escapeHtml(quantity)} ${escapeHtml(unit)}</td><td>${escapeHtml(unitPrice)}</td><td>${escapeHtml(tax)}</td><td>${escapeHtml(amount)}</td></tr>`;
+    return `<tr><td>${index + 1}</td><td>${imageSrc ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(item.itemName)}" style="width:64px;height:64px;object-fit:contain" />` : "-"}</td><td><b>${escapeHtml(item.itemName)}</b><br/><span style="color:#667085">${escapeHtml(item.itemDescription)}</span></td><td>${escapeHtml(quantity)} ${escapeHtml(unit)}</td><td>${escapeHtml(unitPrice)}</td><td>${escapeHtml(lineSubtotal)}</td></tr>`;
   }).join("");
 
   return {
-    html: `<h3 style="margin:22px 0 8px">Order Items</h3><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f2f4f7"><th style="padding:8px;border:1px solid #d0d5dd">No.</th><th style="padding:8px;border:1px solid #d0d5dd">Image</th><th style="padding:8px;border:1px solid #d0d5dd;text-align:left">Item</th><th style="padding:8px;border:1px solid #d0d5dd">Qty</th><th style="padding:8px;border:1px solid #d0d5dd">Unit price</th><th style="padding:8px;border:1px solid #d0d5dd">Tax</th><th style="padding:8px;border:1px solid #d0d5dd">Amount</th></tr></thead><tbody>${rows || '<tr><td colspan="7" style="padding:8px;border:1px solid #d0d5dd">No items</td></tr>'}</tbody></table>`,
+    html: `<h3 style="margin:22px 0 8px">Order Items</h3><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f2f4f7"><th style="padding:8px;border:1px solid #d0d5dd">No.</th><th style="padding:8px;border:1px solid #d0d5dd">Image</th><th style="padding:8px;border:1px solid #d0d5dd;text-align:left">Item</th><th style="padding:8px;border:1px solid #d0d5dd">Qty</th><th style="padding:8px;border:1px solid #d0d5dd">Unit price</th><th style="padding:8px;border:1px solid #d0d5dd">Line subtotal</th></tr></thead><tbody>${rows || '<tr><td colspan="6" style="padding:8px;border:1px solid #d0d5dd">No items</td></tr>'}</tbody></table>`,
     text: textLines.length ? `Order Items\n${textLines.join("\n")}` : "Order Items\nNo items",
     attachments: inlineAttachments,
+  };
+}
+
+function renderCalculationSummary(record, currency = "RM") {
+  const { subtotal, taxBreakdown, total } = calculateWorkflowTotals(record);
+  const taxRows = taxBreakdown.length
+    ? taxBreakdown.map((tax) => [
+        tax.rate == null ? tax.label : `${tax.label} (${tax.rate.toFixed(2)}%)`,
+        formatMoney(tax.amount, currency),
+      ])
+    : [["Tax", formatMoney(0, currency)]];
+  const rows = [["Items subtotal", formatMoney(subtotal, currency)], ...taxRows];
+  const summaryRows = rows.map(([label, amount]) =>
+    `<tr><td style="padding:7px 10px;border-bottom:1px solid #eaecf0">${escapeHtml(label)}</td><td style="padding:7px 10px;border-bottom:1px solid #eaecf0;text-align:right;white-space:nowrap"><b>${escapeHtml(amount)}</b></td></tr>`,
+  ).join("");
+
+  return {
+    total,
+    html: `<section style="width:52%;min-width:300px;margin:18px 0 0 auto"><h3 style="margin:0 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px">Calculation Summary</h3><table style="width:100%;border-collapse:collapse;font-size:13px"><tbody>${summaryRows}<tr><td style="padding:9px 10px;border-top:2px solid #17202a;font-size:15px"><b>Total payable</b></td><td style="padding:9px 10px;border-top:2px solid #17202a;text-align:right;white-space:nowrap;font-size:15px"><b>${escapeHtml(formatMoney(total, currency))}</b></td></tr></tbody></table></section>`,
+    text: `Calculation Summary\n${rows.map(([label, amount]) => `${label}: ${amount}`).join("\n")}\nTotal payable: ${formatMoney(total, currency)}`,
   };
 }
 
@@ -154,15 +172,20 @@ function renderDetails(rows) {
   };
 }
 
-export function renderEmailDocument({ title, intro, details = [], itemsRecord, total, action, footer = "Regards,\nOptiMind System" }) {
+export function renderEmailDocument({ title, intro, details = [], itemsRecord, calculationRecord, total, showCalculationSummary = false, action, footer = "Regards,\nOptiMind System" }) {
   const detailMarkup = renderDetails(details);
   const itemMarkup = itemsRecord ? renderItems(itemsRecord, itemsRecord.currency || "RM") : { html: "", text: "", attachments: [] };
-  const totalMarkup = total != null
-    ? `<p style="font-size:15px"><b>Total Amount: ${escapeHtml(formatMoney(total, itemsRecord?.currency || "RM"))}</b></p>`
+  const recordForCalculation = calculationRecord || itemsRecord;
+  const calculationMarkup = showCalculationSummary && recordForCalculation
+    ? renderCalculationSummary(recordForCalculation, recordForCalculation.currency || "RM")
+    : null;
+  const resolvedTotal = calculationMarkup?.total ?? total;
+  const totalMarkup = !calculationMarkup && resolvedTotal != null
+    ? `<p style="font-size:15px"><b>Total Amount: ${escapeHtml(formatMoney(resolvedTotal, itemsRecord?.currency || "RM"))}</b></p>`
     : "";
   return {
-    html: `<div style="font-family:Arial,sans-serif;color:#17202a;max-width:760px"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(intro)}</p>${detailMarkup.html}${itemMarkup.html}${totalMarkup}<p>${escapeHtml(action).replace(/\n/g, "<br/>")}</p><p>${escapeHtml(footer).replace(/\n/g, "<br/>")}</p></div>`,
-    text: `${title}\n\n${intro}\n\n${detailMarkup.text}${itemMarkup.text ? `\n\n${itemMarkup.text}` : ""}${total != null ? `\n\nTotal Amount: ${formatMoney(total, itemsRecord?.currency || "RM")}` : ""}\n\n${action}\n\n${footer}`,
+    html: `<div style="font-family:Arial,sans-serif;color:#17202a;max-width:760px"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(intro)}</p>${detailMarkup.html}${itemMarkup.html}${calculationMarkup?.html || totalMarkup}<p>${escapeHtml(action).replace(/\n/g, "<br/>")}</p><p>${escapeHtml(footer).replace(/\n/g, "<br/>")}</p></div>`,
+    text: `${title}\n\n${intro}\n\n${detailMarkup.text}${itemMarkup.text ? `\n\n${itemMarkup.text}` : ""}${calculationMarkup ? `\n\n${calculationMarkup.text}` : (resolvedTotal != null ? `\n\nTotal Amount: ${formatMoney(resolvedTotal, itemsRecord?.currency || "RM")}` : "")}\n\n${action}\n\n${footer}`,
     attachments: itemMarkup.attachments,
   };
 }
@@ -335,7 +358,7 @@ export async function sendDetailedSupplierPendingOrderEmail(args) {
       ["Department", record.department],
       ["Created Date", record.createdDate],
       ["Currency", displayCurrency(record.currency)],
-      ["Payment Terms", record.paymentTerms],
+      ["Payment Terms", formatPaymentTerm(record.paymentTerms)],
       ["Company", record.companyName || "OptiMind"],
       ["Company Address", record.companyAddress],
     ],
@@ -508,6 +531,7 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
         ["Department", hydratedRecord.department],
         ["Submitted Date", hydratedRecord.requestDate || hydratedRecord.createdDate],
         ["Currency", displayCurrency(hydratedRecord.currency)],
+        ["Payment Terms", formatPaymentTerm(hydratedRecord.paymentTerms)],
       ]
     : [
         ["PO Number", number],
@@ -516,7 +540,7 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
         ["Department", hydratedRecord.department],
         ["Created Date", hydratedRecord.createdDate],
         ["Currency", displayCurrency(hydratedRecord.currency)],
-        ["Payment Terms", hydratedRecord.paymentTerms],
+        ["Payment Terms", formatPaymentTerm(hydratedRecord.paymentTerms)],
         ["Supplier", hydratedRecord.supplierCompanyName || hydratedRecord.supplierName],
         ["Supplier Email", hydratedRecord.supplierEmail],
         ["Supplier Address", hydratedRecord.supplierAddress],
@@ -526,7 +550,8 @@ async function sendPurchaseWorkflowEmail({ kind, event, record, recipients }) {
     intro: config.intro,
     details,
     itemsRecord: config.includeItems ? hydratedRecord : null,
-    total: hydratedRecord.totalAmount ?? hydratedRecord.total ?? hydratedRecord.amountAfterTax ?? calculateItemsTotal(hydratedRecord),
+    total: hydratedRecord.amountAfterTax ?? hydratedRecord.totalAmount ?? hydratedRecord.total ?? calculateItemsTotal(hydratedRecord),
+    showCalculationSummary: config.includeItems,
     action: config.action,
   });
 

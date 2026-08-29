@@ -44,4 +44,49 @@ describe("workflow party direction", () => {
     expect(partyCard(html, "Sender")).toContain("Our Company Sdn Bhd");
     expect(partyCard(html, "Receiver")).toContain("Supplier Sdn Bhd");
   });
+
+  it("shows the organisation-configured payment term on a purchase order", () => {
+    const html = workflowHtml("purchase-order", {
+      ...record,
+      poNumber: "PO-1",
+      paymentTerms: "Payment within 14 working days",
+    });
+
+    expect(html).toContain("Payment terms");
+    expect(html).toContain("Payment within 14 working days");
+  });
+
+  it("shows the selected payment term on a purchase request", () => {
+    const html = workflowHtml("purchase-request", {
+      ...record,
+      prNumber: "PR-1",
+      paymentTerms: "NET_30",
+    });
+
+    expect(html).toContain("Payment terms");
+    expect(html).toContain("Within 30 days");
+  });
+
+  it("shows the selected payment term on an order acknowledgement", () => {
+    const html = workflowHtml("acknowledgement", {
+      ...record,
+      poNumber: "PO-1",
+      sourcePrNumber: "PR-1",
+      paymentTerms: "NET_7",
+    });
+
+    expect(html).toContain("Payment terms");
+    expect(html).toContain("Within 7 days");
+  });
+
+  it("renders legacy payment-term codes as formal within-days labels", () => {
+    const html = workflowHtml("purchase-order", {
+      ...record,
+      poNumber: "PO-1",
+      paymentTerms: "NET_30",
+    });
+
+    expect(html).toContain("Within 30 days");
+    expect(html).not.toContain("NET_30");
+  });
 });

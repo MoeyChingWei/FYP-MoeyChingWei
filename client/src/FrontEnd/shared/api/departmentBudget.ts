@@ -202,11 +202,85 @@ export interface BudgetPrediction {
     similarDepartment?: string;
     similarity?: number;
     referenceMonths?: number;
+    riskAdjustment?: {
+      baseForecast: number;
+      contingencyReserve: number;
+      reserveRate: number;
+      expectedEventImpact: number;
+      contributors: Array<{
+        type: string;
+        label: string;
+        rate?: number;
+        amount?: number;
+        likelihood?: "low" | "medium" | "high";
+        growthRate?: number;
+      }>;
+      scenarios: { conservative: number; recommended: number; highRisk: number };
+    };
   };
   metadata?: any;
   createdAt: string;
   department?: Department;
   triggeredByUser?: { id: number; name: string; email: string };
+}
+
+export interface UpcomingForecastEvent {
+  id: number;
+  departmentId: number;
+  title: string;
+  targetYear: number;
+  targetMonth: number;
+  estimatedImpact: number;
+  likelihood: "low" | "medium" | "high";
+  notes?: string | null;
+  status: "active" | "cancelled";
+  createdAt: string;
+  creator?: { id: number; name?: string | null };
+}
+
+export async function getUpcomingForecastEvents(
+  departmentId: number,
+  targetYear: number,
+  targetMonth: number,
+): Promise<UpcomingForecastEvent[]> {
+  try {
+    const user = getSessionUser();
+    if (!user) return [];
+    const res = await axios.get(`${API}/upcoming-events/${departmentId}`, {
+      params: { userId: user.id, email: user.email, year: targetYear, month: targetMonth },
+    });
+    return res.data.success ? res.data.data.map((event: UpcomingForecastEvent) => ({
+      ...event,
+      estimatedImpact: toBudgetNumber(event.estimatedImpact),
+    })) : [];
+  } catch (error) {
+    console.error("Get upcoming forecast events error:", error);
+    return [];
+  }
+}
+
+export async function createUpcomingForecastEvent(input: Omit<UpcomingForecastEvent, "id" | "status" | "createdAt" | "creator">): Promise<UpcomingForecastEvent | null> {
+  try {
+    const user = getSessionUser();
+    if (!user) return null;
+    const res = await axios.post(`${API}/upcoming-events`, { ...input, userId: user.id, email: user.email });
+    return res.data.success ? { ...res.data.data, estimatedImpact: toBudgetNumber(res.data.data.estimatedImpact) } : null;
+  } catch (error) {
+    console.error("Create upcoming forecast event error:", error);
+    return null;
+  }
+}
+
+export async function cancelUpcomingForecastEvent(id: number): Promise<boolean> {
+  try {
+    const user = getSessionUser();
+    if (!user) return false;
+    const res = await axios.delete(`${API}/upcoming-events/${id}`, { params: { userId: user.id, email: user.email } });
+    return Boolean(res.data.success);
+  } catch (error) {
+    console.error("Cancel upcoming forecast event error:", error);
+    return false;
+  }
 }
 
 export async function getDepartments(isActive?: boolean): Promise<Department[]> {

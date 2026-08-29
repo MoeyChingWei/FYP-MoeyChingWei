@@ -128,10 +128,32 @@ model departments {
   updatedAt                  DateTime
   budget_adjustment_requests budget_adjustment_requests[]
   budget_predictions         budget_predictions[]
+  budget_upcoming_events     budget_upcoming_events[]
   monthly_budgets            monthly_budgets[]
 
   @@index([code])
   @@index([isActive])
+}
+
+model budget_upcoming_events {
+  id              Int         @id @default(autoincrement())
+  departmentId    Int
+  title           String
+  targetYear      Int
+  targetMonth     Int
+  estimatedImpact Decimal     @db.Decimal(15, 2)
+  likelihood      String      @default("medium")
+  notes           String?
+  status          String      @default("active")
+  createdBy       Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  department      departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  creator         users       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([departmentId, targetYear, targetMonth])
+  @@index([createdBy])
+  @@index([status])
 }
 
 model feedbacks {
@@ -377,6 +399,7 @@ model users {
   budget_adjustment_requests_budget_adjustment_requests_requestedByTousers budget_adjustment_requests[] @relation("budget_adjustment_requests_requestedByTousers")
   budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers  budget_adjustment_requests[] @relation("budget_adjustment_requests_reviewedByTousers")
   budget_predictions                                                       budget_predictions[]
+  budget_upcoming_events                                                   budget_upcoming_events[]
   chat_sessions                                                            chat_sessions[]
   feedbacks                                                                feedbacks[]
   notifications                                                            notifications[]

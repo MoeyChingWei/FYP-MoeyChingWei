@@ -24,7 +24,7 @@ export interface PurchaseOrderDraft {
   supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
   taxAmount?: number;
   amountAfterTax?: number;
-  /** Payment terms carried forward from the source purchase request. */
+  /** Payment term carried forward from the source purchase request. */
   paymentTerms?: string;
   rejectionReason?: string;
   rejectedBy?: string;

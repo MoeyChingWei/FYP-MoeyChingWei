@@ -49,6 +49,11 @@ export type chat_sessions = $Result.DefaultSelection<Prisma.$chat_sessionsPayloa
  */
 export type departments = $Result.DefaultSelection<Prisma.$departmentsPayload>
 /**
+ * Model budget_upcoming_events
+ * 
+ */
+export type budget_upcoming_events = $Result.DefaultSelection<Prisma.$budget_upcoming_eventsPayload>
+/**
  * Model feedbacks
  * 
  */
@@ -353,6 +358,16 @@ export class PrismaClient<
     * ```
     */
   get departments(): Prisma.departmentsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.budget_upcoming_events`: Exposes CRUD operations for the **budget_upcoming_events** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Budget_upcoming_events
+    * const budget_upcoming_events = await prisma.budget_upcoming_events.findMany()
+    * ```
+    */
+  get budget_upcoming_events(): Prisma.budget_upcoming_eventsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.feedbacks`: Exposes CRUD operations for the **feedbacks** model.
@@ -994,6 +1009,7 @@ export namespace Prisma {
     chat_messages: 'chat_messages',
     chat_sessions: 'chat_sessions',
     departments: 'departments',
+    budget_upcoming_events: 'budget_upcoming_events',
     feedbacks: 'feedbacks',
     message_attachments: 'message_attachments',
     monthly_budgets: 'monthly_budgets',
@@ -1029,7 +1045,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users" | "supplier_bank_details" | "supplier_tax_settings"
+      modelProps: "audit_logs" | "backup_history" | "budget_adjustment_requests" | "budget_predictions" | "chat_messages" | "chat_sessions" | "departments" | "budget_upcoming_events" | "feedbacks" | "message_attachments" | "monthly_budgets" | "notifications" | "password_reset_codes" | "purchase_order_records" | "purchase_request_records" | "purchasing_lookups" | "role_change_audits" | "source_chunks" | "sources" | "supplier_delivery_records" | "supplier_grn_records" | "supplier_invoice_records" | "supplier_payment_records" | "supplier_inventory_items" | "supplier_order_acknowledgement_records" | "users" | "supplier_bank_details" | "supplier_tax_settings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1548,6 +1564,80 @@ export namespace Prisma {
           count: {
             args: Prisma.departmentsCountArgs<ExtArgs>
             result: $Utils.Optional<DepartmentsCountAggregateOutputType> | number
+          }
+        }
+      }
+      budget_upcoming_events: {
+        payload: Prisma.$budget_upcoming_eventsPayload<ExtArgs>
+        fields: Prisma.budget_upcoming_eventsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.budget_upcoming_eventsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.budget_upcoming_eventsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>
+          }
+          findFirst: {
+            args: Prisma.budget_upcoming_eventsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.budget_upcoming_eventsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>
+          }
+          findMany: {
+            args: Prisma.budget_upcoming_eventsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>[]
+          }
+          create: {
+            args: Prisma.budget_upcoming_eventsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>
+          }
+          createMany: {
+            args: Prisma.budget_upcoming_eventsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.budget_upcoming_eventsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>[]
+          }
+          delete: {
+            args: Prisma.budget_upcoming_eventsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>
+          }
+          update: {
+            args: Prisma.budget_upcoming_eventsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>
+          }
+          deleteMany: {
+            args: Prisma.budget_upcoming_eventsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.budget_upcoming_eventsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.budget_upcoming_eventsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>[]
+          }
+          upsert: {
+            args: Prisma.budget_upcoming_eventsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$budget_upcoming_eventsPayload>
+          }
+          aggregate: {
+            args: Prisma.Budget_upcoming_eventsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBudget_upcoming_events>
+          }
+          groupBy: {
+            args: Prisma.budget_upcoming_eventsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Budget_upcoming_eventsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.budget_upcoming_eventsCountArgs<ExtArgs>
+            result: $Utils.Optional<Budget_upcoming_eventsCountAggregateOutputType> | number
           }
         }
       }
@@ -3130,6 +3220,7 @@ export namespace Prisma {
     chat_messages?: chat_messagesOmit
     chat_sessions?: chat_sessionsOmit
     departments?: departmentsOmit
+    budget_upcoming_events?: budget_upcoming_eventsOmit
     feedbacks?: feedbacksOmit
     message_attachments?: message_attachmentsOmit
     monthly_budgets?: monthly_budgetsOmit
@@ -3303,12 +3394,14 @@ export namespace Prisma {
   export type DepartmentsCountOutputType = {
     budget_adjustment_requests: number
     budget_predictions: number
+    budget_upcoming_events: number
     monthly_budgets: number
   }
 
   export type DepartmentsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     budget_adjustment_requests?: boolean | DepartmentsCountOutputTypeCountBudget_adjustment_requestsArgs
     budget_predictions?: boolean | DepartmentsCountOutputTypeCountBudget_predictionsArgs
+    budget_upcoming_events?: boolean | DepartmentsCountOutputTypeCountBudget_upcoming_eventsArgs
     monthly_budgets?: boolean | DepartmentsCountOutputTypeCountMonthly_budgetsArgs
   }
 
@@ -3335,6 +3428,13 @@ export namespace Prisma {
    */
   export type DepartmentsCountOutputTypeCountBudget_predictionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: budget_predictionsWhereInput
+  }
+
+  /**
+   * DepartmentsCountOutputType without action
+   */
+  export type DepartmentsCountOutputTypeCountBudget_upcoming_eventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: budget_upcoming_eventsWhereInput
   }
 
   /**
@@ -3384,6 +3484,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers: number
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers: number
     budget_predictions: number
+    budget_upcoming_events: number
     chat_sessions: number
     feedbacks: number
     notifications: number
@@ -3397,6 +3498,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: boolean | UsersCountOutputTypeCountBudget_adjustment_requests_budget_adjustment_requests_requestedByTousersArgs
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: boolean | UsersCountOutputTypeCountBudget_adjustment_requests_budget_adjustment_requests_reviewedByTousersArgs
     budget_predictions?: boolean | UsersCountOutputTypeCountBudget_predictionsArgs
+    budget_upcoming_events?: boolean | UsersCountOutputTypeCountBudget_upcoming_eventsArgs
     chat_sessions?: boolean | UsersCountOutputTypeCountChat_sessionsArgs
     feedbacks?: boolean | UsersCountOutputTypeCountFeedbacksArgs
     notifications?: boolean | UsersCountOutputTypeCountNotificationsArgs
@@ -3436,6 +3538,13 @@ export namespace Prisma {
    */
   export type UsersCountOutputTypeCountBudget_predictionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: budget_predictionsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountBudget_upcoming_eventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: budget_upcoming_eventsWhereInput
   }
 
   /**
@@ -10734,6 +10843,7 @@ export namespace Prisma {
     updatedAt?: boolean
     budget_adjustment_requests?: boolean | departments$budget_adjustment_requestsArgs<ExtArgs>
     budget_predictions?: boolean | departments$budget_predictionsArgs<ExtArgs>
+    budget_upcoming_events?: boolean | departments$budget_upcoming_eventsArgs<ExtArgs>
     monthly_budgets?: boolean | departments$monthly_budgetsArgs<ExtArgs>
     _count?: boolean | DepartmentsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["departments"]>
@@ -10772,6 +10882,7 @@ export namespace Prisma {
   export type departmentsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     budget_adjustment_requests?: boolean | departments$budget_adjustment_requestsArgs<ExtArgs>
     budget_predictions?: boolean | departments$budget_predictionsArgs<ExtArgs>
+    budget_upcoming_events?: boolean | departments$budget_upcoming_eventsArgs<ExtArgs>
     monthly_budgets?: boolean | departments$monthly_budgetsArgs<ExtArgs>
     _count?: boolean | DepartmentsCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -10783,6 +10894,7 @@ export namespace Prisma {
     objects: {
       budget_adjustment_requests: Prisma.$budget_adjustment_requestsPayload<ExtArgs>[]
       budget_predictions: Prisma.$budget_predictionsPayload<ExtArgs>[]
+      budget_upcoming_events: Prisma.$budget_upcoming_eventsPayload<ExtArgs>[]
       monthly_budgets: Prisma.$monthly_budgetsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11189,6 +11301,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     budget_adjustment_requests<T extends departments$budget_adjustment_requestsArgs<ExtArgs> = {}>(args?: Subset<T, departments$budget_adjustment_requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_adjustment_requestsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     budget_predictions<T extends departments$budget_predictionsArgs<ExtArgs> = {}>(args?: Subset<T, departments$budget_predictionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_predictionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    budget_upcoming_events<T extends departments$budget_upcoming_eventsArgs<ExtArgs> = {}>(args?: Subset<T, departments$budget_upcoming_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     monthly_budgets<T extends departments$monthly_budgetsArgs<ExtArgs> = {}>(args?: Subset<T, departments$monthly_budgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$monthly_budgetsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -11662,6 +11775,30 @@ export namespace Prisma {
   }
 
   /**
+   * departments.budget_upcoming_events
+   */
+  export type departments$budget_upcoming_eventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    where?: budget_upcoming_eventsWhereInput
+    orderBy?: budget_upcoming_eventsOrderByWithRelationInput | budget_upcoming_eventsOrderByWithRelationInput[]
+    cursor?: budget_upcoming_eventsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Budget_upcoming_eventsScalarFieldEnum | Budget_upcoming_eventsScalarFieldEnum[]
+  }
+
+  /**
    * departments.monthly_budgets
    */
   export type departments$monthly_budgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11701,6 +11838,1217 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: departmentsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model budget_upcoming_events
+   */
+
+  export type AggregateBudget_upcoming_events = {
+    _count: Budget_upcoming_eventsCountAggregateOutputType | null
+    _avg: Budget_upcoming_eventsAvgAggregateOutputType | null
+    _sum: Budget_upcoming_eventsSumAggregateOutputType | null
+    _min: Budget_upcoming_eventsMinAggregateOutputType | null
+    _max: Budget_upcoming_eventsMaxAggregateOutputType | null
+  }
+
+  export type Budget_upcoming_eventsAvgAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    estimatedImpact: Decimal | null
+    createdBy: number | null
+  }
+
+  export type Budget_upcoming_eventsSumAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+    targetYear: number | null
+    targetMonth: number | null
+    estimatedImpact: Decimal | null
+    createdBy: number | null
+  }
+
+  export type Budget_upcoming_eventsMinAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+    title: string | null
+    targetYear: number | null
+    targetMonth: number | null
+    estimatedImpact: Decimal | null
+    likelihood: string | null
+    notes: string | null
+    status: string | null
+    createdBy: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type Budget_upcoming_eventsMaxAggregateOutputType = {
+    id: number | null
+    departmentId: number | null
+    title: string | null
+    targetYear: number | null
+    targetMonth: number | null
+    estimatedImpact: Decimal | null
+    likelihood: string | null
+    notes: string | null
+    status: string | null
+    createdBy: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type Budget_upcoming_eventsCountAggregateOutputType = {
+    id: number
+    departmentId: number
+    title: number
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: number
+    likelihood: number
+    notes: number
+    status: number
+    createdBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type Budget_upcoming_eventsAvgAggregateInputType = {
+    id?: true
+    departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    estimatedImpact?: true
+    createdBy?: true
+  }
+
+  export type Budget_upcoming_eventsSumAggregateInputType = {
+    id?: true
+    departmentId?: true
+    targetYear?: true
+    targetMonth?: true
+    estimatedImpact?: true
+    createdBy?: true
+  }
+
+  export type Budget_upcoming_eventsMinAggregateInputType = {
+    id?: true
+    departmentId?: true
+    title?: true
+    targetYear?: true
+    targetMonth?: true
+    estimatedImpact?: true
+    likelihood?: true
+    notes?: true
+    status?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type Budget_upcoming_eventsMaxAggregateInputType = {
+    id?: true
+    departmentId?: true
+    title?: true
+    targetYear?: true
+    targetMonth?: true
+    estimatedImpact?: true
+    likelihood?: true
+    notes?: true
+    status?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type Budget_upcoming_eventsCountAggregateInputType = {
+    id?: true
+    departmentId?: true
+    title?: true
+    targetYear?: true
+    targetMonth?: true
+    estimatedImpact?: true
+    likelihood?: true
+    notes?: true
+    status?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type Budget_upcoming_eventsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which budget_upcoming_events to aggregate.
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of budget_upcoming_events to fetch.
+     */
+    orderBy?: budget_upcoming_eventsOrderByWithRelationInput | budget_upcoming_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: budget_upcoming_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` budget_upcoming_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` budget_upcoming_events.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned budget_upcoming_events
+    **/
+    _count?: true | Budget_upcoming_eventsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Budget_upcoming_eventsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Budget_upcoming_eventsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Budget_upcoming_eventsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Budget_upcoming_eventsMaxAggregateInputType
+  }
+
+  export type GetBudget_upcoming_eventsAggregateType<T extends Budget_upcoming_eventsAggregateArgs> = {
+        [P in keyof T & keyof AggregateBudget_upcoming_events]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBudget_upcoming_events[P]>
+      : GetScalarType<T[P], AggregateBudget_upcoming_events[P]>
+  }
+
+
+
+
+  export type budget_upcoming_eventsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: budget_upcoming_eventsWhereInput
+    orderBy?: budget_upcoming_eventsOrderByWithAggregationInput | budget_upcoming_eventsOrderByWithAggregationInput[]
+    by: Budget_upcoming_eventsScalarFieldEnum[] | Budget_upcoming_eventsScalarFieldEnum
+    having?: budget_upcoming_eventsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Budget_upcoming_eventsCountAggregateInputType | true
+    _avg?: Budget_upcoming_eventsAvgAggregateInputType
+    _sum?: Budget_upcoming_eventsSumAggregateInputType
+    _min?: Budget_upcoming_eventsMinAggregateInputType
+    _max?: Budget_upcoming_eventsMaxAggregateInputType
+  }
+
+  export type Budget_upcoming_eventsGroupByOutputType = {
+    id: number
+    departmentId: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal
+    likelihood: string
+    notes: string | null
+    status: string
+    createdBy: number
+    createdAt: Date
+    updatedAt: Date
+    _count: Budget_upcoming_eventsCountAggregateOutputType | null
+    _avg: Budget_upcoming_eventsAvgAggregateOutputType | null
+    _sum: Budget_upcoming_eventsSumAggregateOutputType | null
+    _min: Budget_upcoming_eventsMinAggregateOutputType | null
+    _max: Budget_upcoming_eventsMaxAggregateOutputType | null
+  }
+
+  type GetBudget_upcoming_eventsGroupByPayload<T extends budget_upcoming_eventsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Budget_upcoming_eventsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Budget_upcoming_eventsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Budget_upcoming_eventsGroupByOutputType[P]>
+            : GetScalarType<T[P], Budget_upcoming_eventsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type budget_upcoming_eventsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    title?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    estimatedImpact?: boolean
+    likelihood?: boolean
+    notes?: boolean
+    status?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    department?: boolean | departmentsDefaultArgs<ExtArgs>
+    creator?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budget_upcoming_events"]>
+
+  export type budget_upcoming_eventsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    title?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    estimatedImpact?: boolean
+    likelihood?: boolean
+    notes?: boolean
+    status?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    department?: boolean | departmentsDefaultArgs<ExtArgs>
+    creator?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budget_upcoming_events"]>
+
+  export type budget_upcoming_eventsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    departmentId?: boolean
+    title?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    estimatedImpact?: boolean
+    likelihood?: boolean
+    notes?: boolean
+    status?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    department?: boolean | departmentsDefaultArgs<ExtArgs>
+    creator?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budget_upcoming_events"]>
+
+  export type budget_upcoming_eventsSelectScalar = {
+    id?: boolean
+    departmentId?: boolean
+    title?: boolean
+    targetYear?: boolean
+    targetMonth?: boolean
+    estimatedImpact?: boolean
+    likelihood?: boolean
+    notes?: boolean
+    status?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type budget_upcoming_eventsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "departmentId" | "title" | "targetYear" | "targetMonth" | "estimatedImpact" | "likelihood" | "notes" | "status" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["budget_upcoming_events"]>
+  export type budget_upcoming_eventsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | departmentsDefaultArgs<ExtArgs>
+    creator?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type budget_upcoming_eventsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | departmentsDefaultArgs<ExtArgs>
+    creator?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type budget_upcoming_eventsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    department?: boolean | departmentsDefaultArgs<ExtArgs>
+    creator?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $budget_upcoming_eventsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "budget_upcoming_events"
+    objects: {
+      department: Prisma.$departmentsPayload<ExtArgs>
+      creator: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      departmentId: number
+      title: string
+      targetYear: number
+      targetMonth: number
+      estimatedImpact: Prisma.Decimal
+      likelihood: string
+      notes: string | null
+      status: string
+      createdBy: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["budget_upcoming_events"]>
+    composites: {}
+  }
+
+  type budget_upcoming_eventsGetPayload<S extends boolean | null | undefined | budget_upcoming_eventsDefaultArgs> = $Result.GetResult<Prisma.$budget_upcoming_eventsPayload, S>
+
+  type budget_upcoming_eventsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<budget_upcoming_eventsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Budget_upcoming_eventsCountAggregateInputType | true
+    }
+
+  export interface budget_upcoming_eventsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['budget_upcoming_events'], meta: { name: 'budget_upcoming_events' } }
+    /**
+     * Find zero or one Budget_upcoming_events that matches the filter.
+     * @param {budget_upcoming_eventsFindUniqueArgs} args - Arguments to find a Budget_upcoming_events
+     * @example
+     * // Get one Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends budget_upcoming_eventsFindUniqueArgs>(args: SelectSubset<T, budget_upcoming_eventsFindUniqueArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Budget_upcoming_events that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {budget_upcoming_eventsFindUniqueOrThrowArgs} args - Arguments to find a Budget_upcoming_events
+     * @example
+     * // Get one Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends budget_upcoming_eventsFindUniqueOrThrowArgs>(args: SelectSubset<T, budget_upcoming_eventsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Budget_upcoming_events that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {budget_upcoming_eventsFindFirstArgs} args - Arguments to find a Budget_upcoming_events
+     * @example
+     * // Get one Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends budget_upcoming_eventsFindFirstArgs>(args?: SelectSubset<T, budget_upcoming_eventsFindFirstArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Budget_upcoming_events that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {budget_upcoming_eventsFindFirstOrThrowArgs} args - Arguments to find a Budget_upcoming_events
+     * @example
+     * // Get one Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends budget_upcoming_eventsFindFirstOrThrowArgs>(args?: SelectSubset<T, budget_upcoming_eventsFindFirstOrThrowArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Budget_upcoming_events that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {budget_upcoming_eventsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.findMany()
+     * 
+     * // Get first 10 Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const budget_upcoming_eventsWithIdOnly = await prisma.budget_upcoming_events.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends budget_upcoming_eventsFindManyArgs>(args?: SelectSubset<T, budget_upcoming_eventsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Budget_upcoming_events.
+     * @param {budget_upcoming_eventsCreateArgs} args - Arguments to create a Budget_upcoming_events.
+     * @example
+     * // Create one Budget_upcoming_events
+     * const Budget_upcoming_events = await prisma.budget_upcoming_events.create({
+     *   data: {
+     *     // ... data to create a Budget_upcoming_events
+     *   }
+     * })
+     * 
+     */
+    create<T extends budget_upcoming_eventsCreateArgs>(args: SelectSubset<T, budget_upcoming_eventsCreateArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Budget_upcoming_events.
+     * @param {budget_upcoming_eventsCreateManyArgs} args - Arguments to create many Budget_upcoming_events.
+     * @example
+     * // Create many Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends budget_upcoming_eventsCreateManyArgs>(args?: SelectSubset<T, budget_upcoming_eventsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Budget_upcoming_events and returns the data saved in the database.
+     * @param {budget_upcoming_eventsCreateManyAndReturnArgs} args - Arguments to create many Budget_upcoming_events.
+     * @example
+     * // Create many Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Budget_upcoming_events and only return the `id`
+     * const budget_upcoming_eventsWithIdOnly = await prisma.budget_upcoming_events.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends budget_upcoming_eventsCreateManyAndReturnArgs>(args?: SelectSubset<T, budget_upcoming_eventsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Budget_upcoming_events.
+     * @param {budget_upcoming_eventsDeleteArgs} args - Arguments to delete one Budget_upcoming_events.
+     * @example
+     * // Delete one Budget_upcoming_events
+     * const Budget_upcoming_events = await prisma.budget_upcoming_events.delete({
+     *   where: {
+     *     // ... filter to delete one Budget_upcoming_events
+     *   }
+     * })
+     * 
+     */
+    delete<T extends budget_upcoming_eventsDeleteArgs>(args: SelectSubset<T, budget_upcoming_eventsDeleteArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Budget_upcoming_events.
+     * @param {budget_upcoming_eventsUpdateArgs} args - Arguments to update one Budget_upcoming_events.
+     * @example
+     * // Update one Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends budget_upcoming_eventsUpdateArgs>(args: SelectSubset<T, budget_upcoming_eventsUpdateArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Budget_upcoming_events.
+     * @param {budget_upcoming_eventsDeleteManyArgs} args - Arguments to filter Budget_upcoming_events to delete.
+     * @example
+     * // Delete a few Budget_upcoming_events
+     * const { count } = await prisma.budget_upcoming_events.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends budget_upcoming_eventsDeleteManyArgs>(args?: SelectSubset<T, budget_upcoming_eventsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Budget_upcoming_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {budget_upcoming_eventsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends budget_upcoming_eventsUpdateManyArgs>(args: SelectSubset<T, budget_upcoming_eventsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Budget_upcoming_events and returns the data updated in the database.
+     * @param {budget_upcoming_eventsUpdateManyAndReturnArgs} args - Arguments to update many Budget_upcoming_events.
+     * @example
+     * // Update many Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Budget_upcoming_events and only return the `id`
+     * const budget_upcoming_eventsWithIdOnly = await prisma.budget_upcoming_events.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends budget_upcoming_eventsUpdateManyAndReturnArgs>(args: SelectSubset<T, budget_upcoming_eventsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Budget_upcoming_events.
+     * @param {budget_upcoming_eventsUpsertArgs} args - Arguments to update or create a Budget_upcoming_events.
+     * @example
+     * // Update or create a Budget_upcoming_events
+     * const budget_upcoming_events = await prisma.budget_upcoming_events.upsert({
+     *   create: {
+     *     // ... data to create a Budget_upcoming_events
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Budget_upcoming_events we want to update
+     *   }
+     * })
+     */
+    upsert<T extends budget_upcoming_eventsUpsertArgs>(args: SelectSubset<T, budget_upcoming_eventsUpsertArgs<ExtArgs>>): Prisma__budget_upcoming_eventsClient<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Budget_upcoming_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {budget_upcoming_eventsCountArgs} args - Arguments to filter Budget_upcoming_events to count.
+     * @example
+     * // Count the number of Budget_upcoming_events
+     * const count = await prisma.budget_upcoming_events.count({
+     *   where: {
+     *     // ... the filter for the Budget_upcoming_events we want to count
+     *   }
+     * })
+    **/
+    count<T extends budget_upcoming_eventsCountArgs>(
+      args?: Subset<T, budget_upcoming_eventsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Budget_upcoming_eventsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Budget_upcoming_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Budget_upcoming_eventsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Budget_upcoming_eventsAggregateArgs>(args: Subset<T, Budget_upcoming_eventsAggregateArgs>): Prisma.PrismaPromise<GetBudget_upcoming_eventsAggregateType<T>>
+
+    /**
+     * Group by Budget_upcoming_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {budget_upcoming_eventsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends budget_upcoming_eventsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: budget_upcoming_eventsGroupByArgs['orderBy'] }
+        : { orderBy?: budget_upcoming_eventsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, budget_upcoming_eventsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBudget_upcoming_eventsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the budget_upcoming_events model
+   */
+  readonly fields: budget_upcoming_eventsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for budget_upcoming_events.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__budget_upcoming_eventsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    department<T extends departmentsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, departmentsDefaultArgs<ExtArgs>>): Prisma__departmentsClient<$Result.GetResult<Prisma.$departmentsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    creator<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the budget_upcoming_events model
+   */
+  interface budget_upcoming_eventsFieldRefs {
+    readonly id: FieldRef<"budget_upcoming_events", 'Int'>
+    readonly departmentId: FieldRef<"budget_upcoming_events", 'Int'>
+    readonly title: FieldRef<"budget_upcoming_events", 'String'>
+    readonly targetYear: FieldRef<"budget_upcoming_events", 'Int'>
+    readonly targetMonth: FieldRef<"budget_upcoming_events", 'Int'>
+    readonly estimatedImpact: FieldRef<"budget_upcoming_events", 'Decimal'>
+    readonly likelihood: FieldRef<"budget_upcoming_events", 'String'>
+    readonly notes: FieldRef<"budget_upcoming_events", 'String'>
+    readonly status: FieldRef<"budget_upcoming_events", 'String'>
+    readonly createdBy: FieldRef<"budget_upcoming_events", 'Int'>
+    readonly createdAt: FieldRef<"budget_upcoming_events", 'DateTime'>
+    readonly updatedAt: FieldRef<"budget_upcoming_events", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * budget_upcoming_events findUnique
+   */
+  export type budget_upcoming_eventsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which budget_upcoming_events to fetch.
+     */
+    where: budget_upcoming_eventsWhereUniqueInput
+  }
+
+  /**
+   * budget_upcoming_events findUniqueOrThrow
+   */
+  export type budget_upcoming_eventsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which budget_upcoming_events to fetch.
+     */
+    where: budget_upcoming_eventsWhereUniqueInput
+  }
+
+  /**
+   * budget_upcoming_events findFirst
+   */
+  export type budget_upcoming_eventsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which budget_upcoming_events to fetch.
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of budget_upcoming_events to fetch.
+     */
+    orderBy?: budget_upcoming_eventsOrderByWithRelationInput | budget_upcoming_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for budget_upcoming_events.
+     */
+    cursor?: budget_upcoming_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` budget_upcoming_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` budget_upcoming_events.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of budget_upcoming_events.
+     */
+    distinct?: Budget_upcoming_eventsScalarFieldEnum | Budget_upcoming_eventsScalarFieldEnum[]
+  }
+
+  /**
+   * budget_upcoming_events findFirstOrThrow
+   */
+  export type budget_upcoming_eventsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which budget_upcoming_events to fetch.
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of budget_upcoming_events to fetch.
+     */
+    orderBy?: budget_upcoming_eventsOrderByWithRelationInput | budget_upcoming_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for budget_upcoming_events.
+     */
+    cursor?: budget_upcoming_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` budget_upcoming_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` budget_upcoming_events.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of budget_upcoming_events.
+     */
+    distinct?: Budget_upcoming_eventsScalarFieldEnum | Budget_upcoming_eventsScalarFieldEnum[]
+  }
+
+  /**
+   * budget_upcoming_events findMany
+   */
+  export type budget_upcoming_eventsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which budget_upcoming_events to fetch.
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of budget_upcoming_events to fetch.
+     */
+    orderBy?: budget_upcoming_eventsOrderByWithRelationInput | budget_upcoming_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing budget_upcoming_events.
+     */
+    cursor?: budget_upcoming_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` budget_upcoming_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` budget_upcoming_events.
+     */
+    skip?: number
+    distinct?: Budget_upcoming_eventsScalarFieldEnum | Budget_upcoming_eventsScalarFieldEnum[]
+  }
+
+  /**
+   * budget_upcoming_events create
+   */
+  export type budget_upcoming_eventsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a budget_upcoming_events.
+     */
+    data: XOR<budget_upcoming_eventsCreateInput, budget_upcoming_eventsUncheckedCreateInput>
+  }
+
+  /**
+   * budget_upcoming_events createMany
+   */
+  export type budget_upcoming_eventsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many budget_upcoming_events.
+     */
+    data: budget_upcoming_eventsCreateManyInput | budget_upcoming_eventsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * budget_upcoming_events createManyAndReturn
+   */
+  export type budget_upcoming_eventsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * The data used to create many budget_upcoming_events.
+     */
+    data: budget_upcoming_eventsCreateManyInput | budget_upcoming_eventsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * budget_upcoming_events update
+   */
+  export type budget_upcoming_eventsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a budget_upcoming_events.
+     */
+    data: XOR<budget_upcoming_eventsUpdateInput, budget_upcoming_eventsUncheckedUpdateInput>
+    /**
+     * Choose, which budget_upcoming_events to update.
+     */
+    where: budget_upcoming_eventsWhereUniqueInput
+  }
+
+  /**
+   * budget_upcoming_events updateMany
+   */
+  export type budget_upcoming_eventsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update budget_upcoming_events.
+     */
+    data: XOR<budget_upcoming_eventsUpdateManyMutationInput, budget_upcoming_eventsUncheckedUpdateManyInput>
+    /**
+     * Filter which budget_upcoming_events to update
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * Limit how many budget_upcoming_events to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * budget_upcoming_events updateManyAndReturn
+   */
+  export type budget_upcoming_eventsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * The data used to update budget_upcoming_events.
+     */
+    data: XOR<budget_upcoming_eventsUpdateManyMutationInput, budget_upcoming_eventsUncheckedUpdateManyInput>
+    /**
+     * Filter which budget_upcoming_events to update
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * Limit how many budget_upcoming_events to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * budget_upcoming_events upsert
+   */
+  export type budget_upcoming_eventsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the budget_upcoming_events to update in case it exists.
+     */
+    where: budget_upcoming_eventsWhereUniqueInput
+    /**
+     * In case the budget_upcoming_events found by the `where` argument doesn't exist, create a new budget_upcoming_events with this data.
+     */
+    create: XOR<budget_upcoming_eventsCreateInput, budget_upcoming_eventsUncheckedCreateInput>
+    /**
+     * In case the budget_upcoming_events was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<budget_upcoming_eventsUpdateInput, budget_upcoming_eventsUncheckedUpdateInput>
+  }
+
+  /**
+   * budget_upcoming_events delete
+   */
+  export type budget_upcoming_eventsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    /**
+     * Filter which budget_upcoming_events to delete.
+     */
+    where: budget_upcoming_eventsWhereUniqueInput
+  }
+
+  /**
+   * budget_upcoming_events deleteMany
+   */
+  export type budget_upcoming_eventsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which budget_upcoming_events to delete
+     */
+    where?: budget_upcoming_eventsWhereInput
+    /**
+     * Limit how many budget_upcoming_events to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * budget_upcoming_events without action
+   */
+  export type budget_upcoming_eventsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
   }
 
 
@@ -30220,6 +31568,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: boolean | users$budget_adjustment_requests_budget_adjustment_requests_requestedByTousersArgs<ExtArgs>
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: boolean | users$budget_adjustment_requests_budget_adjustment_requests_reviewedByTousersArgs<ExtArgs>
     budget_predictions?: boolean | users$budget_predictionsArgs<ExtArgs>
+    budget_upcoming_events?: boolean | users$budget_upcoming_eventsArgs<ExtArgs>
     chat_sessions?: boolean | users$chat_sessionsArgs<ExtArgs>
     feedbacks?: boolean | users$feedbacksArgs<ExtArgs>
     notifications?: boolean | users$notificationsArgs<ExtArgs>
@@ -30273,6 +31622,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: boolean | users$budget_adjustment_requests_budget_adjustment_requests_requestedByTousersArgs<ExtArgs>
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: boolean | users$budget_adjustment_requests_budget_adjustment_requests_reviewedByTousersArgs<ExtArgs>
     budget_predictions?: boolean | users$budget_predictionsArgs<ExtArgs>
+    budget_upcoming_events?: boolean | users$budget_upcoming_eventsArgs<ExtArgs>
     chat_sessions?: boolean | users$chat_sessionsArgs<ExtArgs>
     feedbacks?: boolean | users$feedbacksArgs<ExtArgs>
     notifications?: boolean | users$notificationsArgs<ExtArgs>
@@ -30293,6 +31643,7 @@ export namespace Prisma {
       budget_adjustment_requests_budget_adjustment_requests_requestedByTousers: Prisma.$budget_adjustment_requestsPayload<ExtArgs>[]
       budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers: Prisma.$budget_adjustment_requestsPayload<ExtArgs>[]
       budget_predictions: Prisma.$budget_predictionsPayload<ExtArgs>[]
+      budget_upcoming_events: Prisma.$budget_upcoming_eventsPayload<ExtArgs>[]
       chat_sessions: Prisma.$chat_sessionsPayload<ExtArgs>[]
       feedbacks: Prisma.$feedbacksPayload<ExtArgs>[]
       notifications: Prisma.$notificationsPayload<ExtArgs>[]
@@ -30710,6 +32061,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers<T extends users$budget_adjustment_requests_budget_adjustment_requests_requestedByTousersArgs<ExtArgs> = {}>(args?: Subset<T, users$budget_adjustment_requests_budget_adjustment_requests_requestedByTousersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_adjustment_requestsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers<T extends users$budget_adjustment_requests_budget_adjustment_requests_reviewedByTousersArgs<ExtArgs> = {}>(args?: Subset<T, users$budget_adjustment_requests_budget_adjustment_requests_reviewedByTousersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_adjustment_requestsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     budget_predictions<T extends users$budget_predictionsArgs<ExtArgs> = {}>(args?: Subset<T, users$budget_predictionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_predictionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    budget_upcoming_events<T extends users$budget_upcoming_eventsArgs<ExtArgs> = {}>(args?: Subset<T, users$budget_upcoming_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$budget_upcoming_eventsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chat_sessions<T extends users$chat_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, users$chat_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$chat_sessionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedbacks<T extends users$feedbacksArgs<ExtArgs> = {}>(args?: Subset<T, users$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$feedbacksPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends users$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, users$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -31214,6 +32566,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Budget_predictionsScalarFieldEnum | Budget_predictionsScalarFieldEnum[]
+  }
+
+  /**
+   * users.budget_upcoming_events
+   */
+  export type users$budget_upcoming_eventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the budget_upcoming_events
+     */
+    select?: budget_upcoming_eventsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the budget_upcoming_events
+     */
+    omit?: budget_upcoming_eventsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: budget_upcoming_eventsInclude<ExtArgs> | null
+    where?: budget_upcoming_eventsWhereInput
+    orderBy?: budget_upcoming_eventsOrderByWithRelationInput | budget_upcoming_eventsOrderByWithRelationInput[]
+    cursor?: budget_upcoming_eventsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Budget_upcoming_eventsScalarFieldEnum | Budget_upcoming_eventsScalarFieldEnum[]
   }
 
   /**
@@ -33762,6 +35138,24 @@ export namespace Prisma {
   export type DepartmentsScalarFieldEnum = (typeof DepartmentsScalarFieldEnum)[keyof typeof DepartmentsScalarFieldEnum]
 
 
+  export const Budget_upcoming_eventsScalarFieldEnum: {
+    id: 'id',
+    departmentId: 'departmentId',
+    title: 'title',
+    targetYear: 'targetYear',
+    targetMonth: 'targetMonth',
+    estimatedImpact: 'estimatedImpact',
+    likelihood: 'likelihood',
+    notes: 'notes',
+    status: 'status',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type Budget_upcoming_eventsScalarFieldEnum = (typeof Budget_upcoming_eventsScalarFieldEnum)[keyof typeof Budget_upcoming_eventsScalarFieldEnum]
+
+
   export const FeedbacksScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -34712,6 +36106,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"departments"> | Date | string
     budget_adjustment_requests?: Budget_adjustment_requestsListRelationFilter
     budget_predictions?: Budget_predictionsListRelationFilter
+    budget_upcoming_events?: Budget_upcoming_eventsListRelationFilter
     monthly_budgets?: Monthly_budgetsListRelationFilter
   }
 
@@ -34725,6 +36120,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     budget_adjustment_requests?: budget_adjustment_requestsOrderByRelationAggregateInput
     budget_predictions?: budget_predictionsOrderByRelationAggregateInput
+    budget_upcoming_events?: budget_upcoming_eventsOrderByRelationAggregateInput
     monthly_budgets?: monthly_budgetsOrderByRelationAggregateInput
   }
 
@@ -34741,6 +36137,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"departments"> | Date | string
     budget_adjustment_requests?: Budget_adjustment_requestsListRelationFilter
     budget_predictions?: Budget_predictionsListRelationFilter
+    budget_upcoming_events?: Budget_upcoming_eventsListRelationFilter
     monthly_budgets?: Monthly_budgetsListRelationFilter
   }, "id" | "code">
 
@@ -34770,6 +36167,101 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"departments"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"departments"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"departments"> | Date | string
+  }
+
+  export type budget_upcoming_eventsWhereInput = {
+    AND?: budget_upcoming_eventsWhereInput | budget_upcoming_eventsWhereInput[]
+    OR?: budget_upcoming_eventsWhereInput[]
+    NOT?: budget_upcoming_eventsWhereInput | budget_upcoming_eventsWhereInput[]
+    id?: IntFilter<"budget_upcoming_events"> | number
+    departmentId?: IntFilter<"budget_upcoming_events"> | number
+    title?: StringFilter<"budget_upcoming_events"> | string
+    targetYear?: IntFilter<"budget_upcoming_events"> | number
+    targetMonth?: IntFilter<"budget_upcoming_events"> | number
+    estimatedImpact?: DecimalFilter<"budget_upcoming_events"> | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFilter<"budget_upcoming_events"> | string
+    notes?: StringNullableFilter<"budget_upcoming_events"> | string | null
+    status?: StringFilter<"budget_upcoming_events"> | string
+    createdBy?: IntFilter<"budget_upcoming_events"> | number
+    createdAt?: DateTimeFilter<"budget_upcoming_events"> | Date | string
+    updatedAt?: DateTimeFilter<"budget_upcoming_events"> | Date | string
+    department?: XOR<DepartmentsScalarRelationFilter, departmentsWhereInput>
+    creator?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }
+
+  export type budget_upcoming_eventsOrderByWithRelationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    title?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    likelihood?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    department?: departmentsOrderByWithRelationInput
+    creator?: usersOrderByWithRelationInput
+  }
+
+  export type budget_upcoming_eventsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: budget_upcoming_eventsWhereInput | budget_upcoming_eventsWhereInput[]
+    OR?: budget_upcoming_eventsWhereInput[]
+    NOT?: budget_upcoming_eventsWhereInput | budget_upcoming_eventsWhereInput[]
+    departmentId?: IntFilter<"budget_upcoming_events"> | number
+    title?: StringFilter<"budget_upcoming_events"> | string
+    targetYear?: IntFilter<"budget_upcoming_events"> | number
+    targetMonth?: IntFilter<"budget_upcoming_events"> | number
+    estimatedImpact?: DecimalFilter<"budget_upcoming_events"> | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFilter<"budget_upcoming_events"> | string
+    notes?: StringNullableFilter<"budget_upcoming_events"> | string | null
+    status?: StringFilter<"budget_upcoming_events"> | string
+    createdBy?: IntFilter<"budget_upcoming_events"> | number
+    createdAt?: DateTimeFilter<"budget_upcoming_events"> | Date | string
+    updatedAt?: DateTimeFilter<"budget_upcoming_events"> | Date | string
+    department?: XOR<DepartmentsScalarRelationFilter, departmentsWhereInput>
+    creator?: XOR<UsersScalarRelationFilter, usersWhereInput>
+  }, "id">
+
+  export type budget_upcoming_eventsOrderByWithAggregationInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    title?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    likelihood?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: budget_upcoming_eventsCountOrderByAggregateInput
+    _avg?: budget_upcoming_eventsAvgOrderByAggregateInput
+    _max?: budget_upcoming_eventsMaxOrderByAggregateInput
+    _min?: budget_upcoming_eventsMinOrderByAggregateInput
+    _sum?: budget_upcoming_eventsSumOrderByAggregateInput
+  }
+
+  export type budget_upcoming_eventsScalarWhereWithAggregatesInput = {
+    AND?: budget_upcoming_eventsScalarWhereWithAggregatesInput | budget_upcoming_eventsScalarWhereWithAggregatesInput[]
+    OR?: budget_upcoming_eventsScalarWhereWithAggregatesInput[]
+    NOT?: budget_upcoming_eventsScalarWhereWithAggregatesInput | budget_upcoming_eventsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"budget_upcoming_events"> | number
+    departmentId?: IntWithAggregatesFilter<"budget_upcoming_events"> | number
+    title?: StringWithAggregatesFilter<"budget_upcoming_events"> | string
+    targetYear?: IntWithAggregatesFilter<"budget_upcoming_events"> | number
+    targetMonth?: IntWithAggregatesFilter<"budget_upcoming_events"> | number
+    estimatedImpact?: DecimalWithAggregatesFilter<"budget_upcoming_events"> | Decimal | DecimalJsLike | number | string
+    likelihood?: StringWithAggregatesFilter<"budget_upcoming_events"> | string
+    notes?: StringNullableWithAggregatesFilter<"budget_upcoming_events"> | string | null
+    status?: StringWithAggregatesFilter<"budget_upcoming_events"> | string
+    createdBy?: IntWithAggregatesFilter<"budget_upcoming_events"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"budget_upcoming_events"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"budget_upcoming_events"> | Date | string
   }
 
   export type feedbacksWhereInput = {
@@ -35867,6 +37359,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: Budget_adjustment_requestsListRelationFilter
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: Budget_adjustment_requestsListRelationFilter
     budget_predictions?: Budget_predictionsListRelationFilter
+    budget_upcoming_events?: Budget_upcoming_eventsListRelationFilter
     chat_sessions?: Chat_sessionsListRelationFilter
     feedbacks?: FeedbacksListRelationFilter
     notifications?: NotificationsListRelationFilter
@@ -35891,6 +37384,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsOrderByRelationAggregateInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsOrderByRelationAggregateInput
     budget_predictions?: budget_predictionsOrderByRelationAggregateInput
+    budget_upcoming_events?: budget_upcoming_eventsOrderByRelationAggregateInput
     chat_sessions?: chat_sessionsOrderByRelationAggregateInput
     feedbacks?: feedbacksOrderByRelationAggregateInput
     notifications?: notificationsOrderByRelationAggregateInput
@@ -35918,6 +37412,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: Budget_adjustment_requestsListRelationFilter
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: Budget_adjustment_requestsListRelationFilter
     budget_predictions?: Budget_predictionsListRelationFilter
+    budget_upcoming_events?: Budget_upcoming_eventsListRelationFilter
     chat_sessions?: Chat_sessionsListRelationFilter
     feedbacks?: FeedbacksListRelationFilter
     notifications?: NotificationsListRelationFilter
@@ -36632,6 +38127,7 @@ export namespace Prisma {
     updatedAt: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
   }
 
@@ -36645,6 +38141,7 @@ export namespace Prisma {
     updatedAt: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
   }
 
@@ -36657,6 +38154,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUpdateManyWithoutDepartmentNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutDepartmentNestedInput
     monthly_budgets?: monthly_budgetsUpdateManyWithoutDepartmentNestedInput
   }
 
@@ -36670,6 +38168,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedUpdateManyWithoutDepartmentNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentNestedInput
     monthly_budgets?: monthly_budgetsUncheckedUpdateManyWithoutDepartmentNestedInput
   }
 
@@ -36698,6 +38197,106 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type budget_upcoming_eventsCreateInput = {
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    department: departmentsCreateNestedOneWithoutBudget_upcoming_eventsInput
+    creator: usersCreateNestedOneWithoutBudget_upcoming_eventsInput
+  }
+
+  export type budget_upcoming_eventsUncheckedCreateInput = {
+    id?: number
+    departmentId: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdBy: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type budget_upcoming_eventsUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    department?: departmentsUpdateOneRequiredWithoutBudget_upcoming_eventsNestedInput
+    creator?: usersUpdateOneRequiredWithoutBudget_upcoming_eventsNestedInput
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type budget_upcoming_eventsCreateManyInput = {
+    id?: number
+    departmentId: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdBy: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type budget_upcoming_eventsUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdBy?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37838,6 +39437,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -37862,6 +39462,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -37885,6 +39486,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -37909,6 +39511,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -38721,6 +40324,12 @@ export namespace Prisma {
     none?: budget_predictionsWhereInput
   }
 
+  export type Budget_upcoming_eventsListRelationFilter = {
+    every?: budget_upcoming_eventsWhereInput
+    some?: budget_upcoming_eventsWhereInput
+    none?: budget_upcoming_eventsWhereInput
+  }
+
   export type Monthly_budgetsListRelationFilter = {
     every?: monthly_budgetsWhereInput
     some?: monthly_budgetsWhereInput
@@ -38732,6 +40341,10 @@ export namespace Prisma {
   }
 
   export type budget_predictionsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type budget_upcoming_eventsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -38783,6 +40396,69 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type budget_upcoming_eventsCountOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    title?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    likelihood?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type budget_upcoming_eventsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type budget_upcoming_eventsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    title?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    likelihood?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type budget_upcoming_eventsMinOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    title?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    likelihood?: SortOrder
+    notes?: SortOrder
+    status?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type budget_upcoming_eventsSumOrderByAggregateInput = {
+    id?: SortOrder
+    departmentId?: SortOrder
+    targetYear?: SortOrder
+    targetMonth?: SortOrder
+    estimatedImpact?: SortOrder
+    createdBy?: SortOrder
   }
 
   export type feedbacksCountOrderByAggregateInput = {
@@ -39979,6 +41655,13 @@ export namespace Prisma {
     connect?: budget_predictionsWhereUniqueInput | budget_predictionsWhereUniqueInput[]
   }
 
+  export type budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutDepartmentInput, budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput> | budget_upcoming_eventsCreateWithoutDepartmentInput[] | budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput | budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput[]
+    createMany?: budget_upcoming_eventsCreateManyDepartmentInputEnvelope
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+  }
+
   export type monthly_budgetsCreateNestedManyWithoutDepartmentInput = {
     create?: XOR<monthly_budgetsCreateWithoutDepartmentInput, monthly_budgetsUncheckedCreateWithoutDepartmentInput> | monthly_budgetsCreateWithoutDepartmentInput[] | monthly_budgetsUncheckedCreateWithoutDepartmentInput[]
     connectOrCreate?: monthly_budgetsCreateOrConnectWithoutDepartmentInput | monthly_budgetsCreateOrConnectWithoutDepartmentInput[]
@@ -39998,6 +41681,13 @@ export namespace Prisma {
     connectOrCreate?: budget_predictionsCreateOrConnectWithoutDepartmentInput | budget_predictionsCreateOrConnectWithoutDepartmentInput[]
     createMany?: budget_predictionsCreateManyDepartmentInputEnvelope
     connect?: budget_predictionsWhereUniqueInput | budget_predictionsWhereUniqueInput[]
+  }
+
+  export type budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutDepartmentInput, budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput> | budget_upcoming_eventsCreateWithoutDepartmentInput[] | budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput | budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput[]
+    createMany?: budget_upcoming_eventsCreateManyDepartmentInputEnvelope
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
   }
 
   export type monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput = {
@@ -40037,6 +41727,20 @@ export namespace Prisma {
     update?: budget_predictionsUpdateWithWhereUniqueWithoutDepartmentInput | budget_predictionsUpdateWithWhereUniqueWithoutDepartmentInput[]
     updateMany?: budget_predictionsUpdateManyWithWhereWithoutDepartmentInput | budget_predictionsUpdateManyWithWhereWithoutDepartmentInput[]
     deleteMany?: budget_predictionsScalarWhereInput | budget_predictionsScalarWhereInput[]
+  }
+
+  export type budget_upcoming_eventsUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutDepartmentInput, budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput> | budget_upcoming_eventsCreateWithoutDepartmentInput[] | budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput | budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput[]
+    upsert?: budget_upcoming_eventsUpsertWithWhereUniqueWithoutDepartmentInput | budget_upcoming_eventsUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: budget_upcoming_eventsCreateManyDepartmentInputEnvelope
+    set?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    disconnect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    delete?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    update?: budget_upcoming_eventsUpdateWithWhereUniqueWithoutDepartmentInput | budget_upcoming_eventsUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: budget_upcoming_eventsUpdateManyWithWhereWithoutDepartmentInput | budget_upcoming_eventsUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: budget_upcoming_eventsScalarWhereInput | budget_upcoming_eventsScalarWhereInput[]
   }
 
   export type monthly_budgetsUpdateManyWithoutDepartmentNestedInput = {
@@ -40081,6 +41785,20 @@ export namespace Prisma {
     deleteMany?: budget_predictionsScalarWhereInput | budget_predictionsScalarWhereInput[]
   }
 
+  export type budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentNestedInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutDepartmentInput, budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput> | budget_upcoming_eventsCreateWithoutDepartmentInput[] | budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput | budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput[]
+    upsert?: budget_upcoming_eventsUpsertWithWhereUniqueWithoutDepartmentInput | budget_upcoming_eventsUpsertWithWhereUniqueWithoutDepartmentInput[]
+    createMany?: budget_upcoming_eventsCreateManyDepartmentInputEnvelope
+    set?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    disconnect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    delete?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    update?: budget_upcoming_eventsUpdateWithWhereUniqueWithoutDepartmentInput | budget_upcoming_eventsUpdateWithWhereUniqueWithoutDepartmentInput[]
+    updateMany?: budget_upcoming_eventsUpdateManyWithWhereWithoutDepartmentInput | budget_upcoming_eventsUpdateManyWithWhereWithoutDepartmentInput[]
+    deleteMany?: budget_upcoming_eventsScalarWhereInput | budget_upcoming_eventsScalarWhereInput[]
+  }
+
   export type monthly_budgetsUncheckedUpdateManyWithoutDepartmentNestedInput = {
     create?: XOR<monthly_budgetsCreateWithoutDepartmentInput, monthly_budgetsUncheckedCreateWithoutDepartmentInput> | monthly_budgetsCreateWithoutDepartmentInput[] | monthly_budgetsUncheckedCreateWithoutDepartmentInput[]
     connectOrCreate?: monthly_budgetsCreateOrConnectWithoutDepartmentInput | monthly_budgetsCreateOrConnectWithoutDepartmentInput[]
@@ -40093,6 +41811,34 @@ export namespace Prisma {
     update?: monthly_budgetsUpdateWithWhereUniqueWithoutDepartmentInput | monthly_budgetsUpdateWithWhereUniqueWithoutDepartmentInput[]
     updateMany?: monthly_budgetsUpdateManyWithWhereWithoutDepartmentInput | monthly_budgetsUpdateManyWithWhereWithoutDepartmentInput[]
     deleteMany?: monthly_budgetsScalarWhereInput | monthly_budgetsScalarWhereInput[]
+  }
+
+  export type departmentsCreateNestedOneWithoutBudget_upcoming_eventsInput = {
+    create?: XOR<departmentsCreateWithoutBudget_upcoming_eventsInput, departmentsUncheckedCreateWithoutBudget_upcoming_eventsInput>
+    connectOrCreate?: departmentsCreateOrConnectWithoutBudget_upcoming_eventsInput
+    connect?: departmentsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutBudget_upcoming_eventsInput = {
+    create?: XOR<usersCreateWithoutBudget_upcoming_eventsInput, usersUncheckedCreateWithoutBudget_upcoming_eventsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutBudget_upcoming_eventsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type departmentsUpdateOneRequiredWithoutBudget_upcoming_eventsNestedInput = {
+    create?: XOR<departmentsCreateWithoutBudget_upcoming_eventsInput, departmentsUncheckedCreateWithoutBudget_upcoming_eventsInput>
+    connectOrCreate?: departmentsCreateOrConnectWithoutBudget_upcoming_eventsInput
+    upsert?: departmentsUpsertWithoutBudget_upcoming_eventsInput
+    connect?: departmentsWhereUniqueInput
+    update?: XOR<XOR<departmentsUpdateToOneWithWhereWithoutBudget_upcoming_eventsInput, departmentsUpdateWithoutBudget_upcoming_eventsInput>, departmentsUncheckedUpdateWithoutBudget_upcoming_eventsInput>
+  }
+
+  export type usersUpdateOneRequiredWithoutBudget_upcoming_eventsNestedInput = {
+    create?: XOR<usersCreateWithoutBudget_upcoming_eventsInput, usersUncheckedCreateWithoutBudget_upcoming_eventsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutBudget_upcoming_eventsInput
+    upsert?: usersUpsertWithoutBudget_upcoming_eventsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutBudget_upcoming_eventsInput, usersUpdateWithoutBudget_upcoming_eventsInput>, usersUncheckedUpdateWithoutBudget_upcoming_eventsInput>
   }
 
   export type usersCreateNestedOneWithoutFeedbacksInput = {
@@ -40308,6 +42054,13 @@ export namespace Prisma {
     connect?: budget_predictionsWhereUniqueInput | budget_predictionsWhereUniqueInput[]
   }
 
+  export type budget_upcoming_eventsCreateNestedManyWithoutCreatorInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutCreatorInput, budget_upcoming_eventsUncheckedCreateWithoutCreatorInput> | budget_upcoming_eventsCreateWithoutCreatorInput[] | budget_upcoming_eventsUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutCreatorInput | budget_upcoming_eventsCreateOrConnectWithoutCreatorInput[]
+    createMany?: budget_upcoming_eventsCreateManyCreatorInputEnvelope
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+  }
+
   export type chat_sessionsCreateNestedManyWithoutUsersInput = {
     create?: XOR<chat_sessionsCreateWithoutUsersInput, chat_sessionsUncheckedCreateWithoutUsersInput> | chat_sessionsCreateWithoutUsersInput[] | chat_sessionsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: chat_sessionsCreateOrConnectWithoutUsersInput | chat_sessionsCreateOrConnectWithoutUsersInput[]
@@ -40388,6 +42141,13 @@ export namespace Prisma {
     connectOrCreate?: budget_predictionsCreateOrConnectWithoutTriggeredByUserInput | budget_predictionsCreateOrConnectWithoutTriggeredByUserInput[]
     createMany?: budget_predictionsCreateManyTriggeredByUserInputEnvelope
     connect?: budget_predictionsWhereUniqueInput | budget_predictionsWhereUniqueInput[]
+  }
+
+  export type budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutCreatorInput, budget_upcoming_eventsUncheckedCreateWithoutCreatorInput> | budget_upcoming_eventsCreateWithoutCreatorInput[] | budget_upcoming_eventsUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutCreatorInput | budget_upcoming_eventsCreateOrConnectWithoutCreatorInput[]
+    createMany?: budget_upcoming_eventsCreateManyCreatorInputEnvelope
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
   }
 
   export type chat_sessionsUncheckedCreateNestedManyWithoutUsersInput = {
@@ -40495,6 +42255,20 @@ export namespace Prisma {
     update?: budget_predictionsUpdateWithWhereUniqueWithoutTriggeredByUserInput | budget_predictionsUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
     updateMany?: budget_predictionsUpdateManyWithWhereWithoutTriggeredByUserInput | budget_predictionsUpdateManyWithWhereWithoutTriggeredByUserInput[]
     deleteMany?: budget_predictionsScalarWhereInput | budget_predictionsScalarWhereInput[]
+  }
+
+  export type budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutCreatorInput, budget_upcoming_eventsUncheckedCreateWithoutCreatorInput> | budget_upcoming_eventsCreateWithoutCreatorInput[] | budget_upcoming_eventsUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutCreatorInput | budget_upcoming_eventsCreateOrConnectWithoutCreatorInput[]
+    upsert?: budget_upcoming_eventsUpsertWithWhereUniqueWithoutCreatorInput | budget_upcoming_eventsUpsertWithWhereUniqueWithoutCreatorInput[]
+    createMany?: budget_upcoming_eventsCreateManyCreatorInputEnvelope
+    set?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    disconnect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    delete?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    update?: budget_upcoming_eventsUpdateWithWhereUniqueWithoutCreatorInput | budget_upcoming_eventsUpdateWithWhereUniqueWithoutCreatorInput[]
+    updateMany?: budget_upcoming_eventsUpdateManyWithWhereWithoutCreatorInput | budget_upcoming_eventsUpdateManyWithWhereWithoutCreatorInput[]
+    deleteMany?: budget_upcoming_eventsScalarWhereInput | budget_upcoming_eventsScalarWhereInput[]
   }
 
   export type chat_sessionsUpdateManyWithoutUsersNestedInput = {
@@ -40655,6 +42429,20 @@ export namespace Prisma {
     update?: budget_predictionsUpdateWithWhereUniqueWithoutTriggeredByUserInput | budget_predictionsUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
     updateMany?: budget_predictionsUpdateManyWithWhereWithoutTriggeredByUserInput | budget_predictionsUpdateManyWithWhereWithoutTriggeredByUserInput[]
     deleteMany?: budget_predictionsScalarWhereInput | budget_predictionsScalarWhereInput[]
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput = {
+    create?: XOR<budget_upcoming_eventsCreateWithoutCreatorInput, budget_upcoming_eventsUncheckedCreateWithoutCreatorInput> | budget_upcoming_eventsCreateWithoutCreatorInput[] | budget_upcoming_eventsUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: budget_upcoming_eventsCreateOrConnectWithoutCreatorInput | budget_upcoming_eventsCreateOrConnectWithoutCreatorInput[]
+    upsert?: budget_upcoming_eventsUpsertWithWhereUniqueWithoutCreatorInput | budget_upcoming_eventsUpsertWithWhereUniqueWithoutCreatorInput[]
+    createMany?: budget_upcoming_eventsCreateManyCreatorInputEnvelope
+    set?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    disconnect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    delete?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    connect?: budget_upcoming_eventsWhereUniqueInput | budget_upcoming_eventsWhereUniqueInput[]
+    update?: budget_upcoming_eventsUpdateWithWhereUniqueWithoutCreatorInput | budget_upcoming_eventsUpdateWithWhereUniqueWithoutCreatorInput[]
+    updateMany?: budget_upcoming_eventsUpdateManyWithWhereWithoutCreatorInput | budget_upcoming_eventsUpdateManyWithWhereWithoutCreatorInput[]
+    deleteMany?: budget_upcoming_eventsScalarWhereInput | budget_upcoming_eventsScalarWhereInput[]
   }
 
   export type chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput = {
@@ -41145,6 +42933,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt: Date | string
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
   }
 
@@ -41157,6 +42946,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt: Date | string
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
   }
 
@@ -41176,6 +42966,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -41199,6 +42990,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -41226,6 +43018,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -41249,6 +43042,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -41284,6 +43078,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_predictions?: budget_predictionsUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutDepartmentNestedInput
     monthly_budgets?: monthly_budgetsUpdateManyWithoutDepartmentNestedInput
   }
 
@@ -41296,6 +43091,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentNestedInput
     monthly_budgets?: monthly_budgetsUncheckedUpdateManyWithoutDepartmentNestedInput
   }
 
@@ -41321,6 +43117,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -41344,6 +43141,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -41377,6 +43175,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -41400,6 +43199,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -41419,6 +43219,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
   }
 
@@ -41431,6 +43232,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
   }
 
@@ -41450,6 +43252,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -41473,6 +43276,7 @@ export namespace Prisma {
     preferredLanguage?: $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -41508,6 +43312,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutDepartmentNestedInput
     monthly_budgets?: monthly_budgetsUpdateManyWithoutDepartmentNestedInput
   }
 
@@ -41520,6 +43325,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentNestedInput
     monthly_budgets?: monthly_budgetsUncheckedUpdateManyWithoutDepartmentNestedInput
   }
 
@@ -41545,6 +43351,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -41568,6 +43375,7 @@ export namespace Prisma {
     preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -41739,6 +43547,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
@@ -41762,6 +43571,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
@@ -41860,6 +43670,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
@@ -41883,6 +43694,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
@@ -42001,6 +43813,43 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type budget_upcoming_eventsCreateWithoutDepartmentInput = {
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    creator: usersCreateNestedOneWithoutBudget_upcoming_eventsInput
+  }
+
+  export type budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput = {
+    id?: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdBy: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type budget_upcoming_eventsCreateOrConnectWithoutDepartmentInput = {
+    where: budget_upcoming_eventsWhereUniqueInput
+    create: XOR<budget_upcoming_eventsCreateWithoutDepartmentInput, budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type budget_upcoming_eventsCreateManyDepartmentInputEnvelope = {
+    data: budget_upcoming_eventsCreateManyDepartmentInput | budget_upcoming_eventsCreateManyDepartmentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type monthly_budgetsCreateWithoutDepartmentInput = {
     allocatedAmount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -42106,6 +43955,40 @@ export namespace Prisma {
     triggeredBy?: IntNullableFilter<"budget_predictions"> | number | null
   }
 
+  export type budget_upcoming_eventsUpsertWithWhereUniqueWithoutDepartmentInput = {
+    where: budget_upcoming_eventsWhereUniqueInput
+    update: XOR<budget_upcoming_eventsUpdateWithoutDepartmentInput, budget_upcoming_eventsUncheckedUpdateWithoutDepartmentInput>
+    create: XOR<budget_upcoming_eventsCreateWithoutDepartmentInput, budget_upcoming_eventsUncheckedCreateWithoutDepartmentInput>
+  }
+
+  export type budget_upcoming_eventsUpdateWithWhereUniqueWithoutDepartmentInput = {
+    where: budget_upcoming_eventsWhereUniqueInput
+    data: XOR<budget_upcoming_eventsUpdateWithoutDepartmentInput, budget_upcoming_eventsUncheckedUpdateWithoutDepartmentInput>
+  }
+
+  export type budget_upcoming_eventsUpdateManyWithWhereWithoutDepartmentInput = {
+    where: budget_upcoming_eventsScalarWhereInput
+    data: XOR<budget_upcoming_eventsUpdateManyMutationInput, budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentInput>
+  }
+
+  export type budget_upcoming_eventsScalarWhereInput = {
+    AND?: budget_upcoming_eventsScalarWhereInput | budget_upcoming_eventsScalarWhereInput[]
+    OR?: budget_upcoming_eventsScalarWhereInput[]
+    NOT?: budget_upcoming_eventsScalarWhereInput | budget_upcoming_eventsScalarWhereInput[]
+    id?: IntFilter<"budget_upcoming_events"> | number
+    departmentId?: IntFilter<"budget_upcoming_events"> | number
+    title?: StringFilter<"budget_upcoming_events"> | string
+    targetYear?: IntFilter<"budget_upcoming_events"> | number
+    targetMonth?: IntFilter<"budget_upcoming_events"> | number
+    estimatedImpact?: DecimalFilter<"budget_upcoming_events"> | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFilter<"budget_upcoming_events"> | string
+    notes?: StringNullableFilter<"budget_upcoming_events"> | string | null
+    status?: StringFilter<"budget_upcoming_events"> | string
+    createdBy?: IntFilter<"budget_upcoming_events"> | number
+    createdAt?: DateTimeFilter<"budget_upcoming_events"> | Date | string
+    updatedAt?: DateTimeFilter<"budget_upcoming_events"> | Date | string
+  }
+
   export type monthly_budgetsUpsertWithWhereUniqueWithoutDepartmentInput = {
     where: monthly_budgetsWhereUniqueInput
     update: XOR<monthly_budgetsUpdateWithoutDepartmentInput, monthly_budgetsUncheckedUpdateWithoutDepartmentInput>
@@ -42139,6 +44022,182 @@ export namespace Prisma {
     lastNotifiedThreshold?: IntFilter<"monthly_budgets"> | number
   }
 
+  export type departmentsCreateWithoutBudget_upcoming_eventsInput = {
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt: Date | string
+    budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
+    budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
+    monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type departmentsUncheckedCreateWithoutBudget_upcoming_eventsInput = {
+    id?: number
+    code: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt: Date | string
+    budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
+    budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
+    monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
+  }
+
+  export type departmentsCreateOrConnectWithoutBudget_upcoming_eventsInput = {
+    where: departmentsWhereUniqueInput
+    create: XOR<departmentsCreateWithoutBudget_upcoming_eventsInput, departmentsUncheckedCreateWithoutBudget_upcoming_eventsInput>
+  }
+
+  export type usersCreateWithoutBudget_upcoming_eventsInput = {
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    avatarUrl?: string | null
+    department?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
+    budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
+    feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
+    notifications?: notificationsCreateNestedManyWithoutUsersInput
+    password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
+    role_change_audits?: role_change_auditsCreateNestedManyWithoutUsersInput
+    sources?: sourcesCreateNestedManyWithoutUsersInput
+    supplier_inventory_items?: supplier_inventory_itemsCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutBudget_upcoming_eventsInput = {
+    id?: number
+    name?: string | null
+    email: string
+    password: string
+    role?: string
+    avatarUrl?: string | null
+    department?: string | null
+    isActive?: boolean
+    preferredLanguage?: $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
+    budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
+    feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
+    notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
+    password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
+    role_change_audits?: role_change_auditsUncheckedCreateNestedManyWithoutUsersInput
+    sources?: sourcesUncheckedCreateNestedManyWithoutUsersInput
+    supplier_inventory_items?: supplier_inventory_itemsUncheckedCreateNestedManyWithoutUsersInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedCreateNestedOneWithoutUsersInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutBudget_upcoming_eventsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutBudget_upcoming_eventsInput, usersUncheckedCreateWithoutBudget_upcoming_eventsInput>
+  }
+
+  export type departmentsUpsertWithoutBudget_upcoming_eventsInput = {
+    update: XOR<departmentsUpdateWithoutBudget_upcoming_eventsInput, departmentsUncheckedUpdateWithoutBudget_upcoming_eventsInput>
+    create: XOR<departmentsCreateWithoutBudget_upcoming_eventsInput, departmentsUncheckedCreateWithoutBudget_upcoming_eventsInput>
+    where?: departmentsWhereInput
+  }
+
+  export type departmentsUpdateToOneWithWhereWithoutBudget_upcoming_eventsInput = {
+    where?: departmentsWhereInput
+    data: XOR<departmentsUpdateWithoutBudget_upcoming_eventsInput, departmentsUncheckedUpdateWithoutBudget_upcoming_eventsInput>
+  }
+
+  export type departmentsUpdateWithoutBudget_upcoming_eventsInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    budget_adjustment_requests?: budget_adjustment_requestsUpdateManyWithoutDepartmentNestedInput
+    budget_predictions?: budget_predictionsUpdateManyWithoutDepartmentNestedInput
+    monthly_budgets?: monthly_budgetsUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type departmentsUncheckedUpdateWithoutBudget_upcoming_eventsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    budget_adjustment_requests?: budget_adjustment_requestsUncheckedUpdateManyWithoutDepartmentNestedInput
+    budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutDepartmentNestedInput
+    monthly_budgets?: monthly_budgetsUncheckedUpdateManyWithoutDepartmentNestedInput
+  }
+
+  export type usersUpsertWithoutBudget_upcoming_eventsInput = {
+    update: XOR<usersUpdateWithoutBudget_upcoming_eventsInput, usersUncheckedUpdateWithoutBudget_upcoming_eventsInput>
+    create: XOR<usersCreateWithoutBudget_upcoming_eventsInput, usersUncheckedCreateWithoutBudget_upcoming_eventsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutBudget_upcoming_eventsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutBudget_upcoming_eventsInput, usersUncheckedUpdateWithoutBudget_upcoming_eventsInput>
+  }
+
+  export type usersUpdateWithoutBudget_upcoming_eventsInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
+    budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
+    feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUpdateManyWithoutUsersNestedInput
+    password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
+    role_change_audits?: role_change_auditsUpdateManyWithoutUsersNestedInput
+    sources?: sourcesUpdateManyWithoutUsersNestedInput
+    supplier_inventory_items?: supplier_inventory_itemsUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUpdateOneWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutBudget_upcoming_eventsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    preferredLanguage?: EnumLanguageFieldUpdateOperationsInput | $Enums.Language
+    budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
+    budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
+    budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+    feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
+    notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
+    password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
+    role_change_audits?: role_change_auditsUncheckedUpdateManyWithoutUsersNestedInput
+    sources?: sourcesUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_inventory_items?: supplier_inventory_itemsUncheckedUpdateManyWithoutUsersNestedInput
+    supplier_bank_details?: supplier_bank_detailsUncheckedUpdateOneWithoutUsersNestedInput
+    supplier_tax_settings?: supplier_tax_settingsUncheckedUpdateOneWithoutUsersNestedInput
+  }
+
   export type usersCreateWithoutFeedbacksInput = {
     name?: string | null
     email: string
@@ -42151,6 +44210,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
     password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
@@ -42174,6 +44234,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
     password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
@@ -42212,6 +44273,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
     password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
@@ -42235,6 +44297,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
     password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
@@ -42304,6 +44367,7 @@ export namespace Prisma {
     updatedAt: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
   }
 
   export type departmentsUncheckedCreateWithoutMonthly_budgetsInput = {
@@ -42316,6 +44380,7 @@ export namespace Prisma {
     updatedAt: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
   }
 
   export type departmentsCreateOrConnectWithoutMonthly_budgetsInput = {
@@ -42343,6 +44408,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUpdateManyWithoutDepartmentNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutDepartmentNestedInput
   }
 
   export type departmentsUncheckedUpdateWithoutMonthly_budgetsInput = {
@@ -42355,6 +44421,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedUpdateManyWithoutDepartmentNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutDepartmentNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentNestedInput
   }
 
   export type usersCreateWithoutNotificationsInput = {
@@ -42369,6 +44436,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     password_reset_codes?: password_reset_codesCreateNestedManyWithoutUsersInput
@@ -42392,6 +44460,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     password_reset_codes?: password_reset_codesUncheckedCreateNestedManyWithoutUsersInput
@@ -42430,6 +44499,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     password_reset_codes?: password_reset_codesUpdateManyWithoutUsersNestedInput
@@ -42453,6 +44523,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     password_reset_codes?: password_reset_codesUncheckedUpdateManyWithoutUsersNestedInput
@@ -42475,6 +44546,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -42498,6 +44570,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -42536,6 +44609,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -42559,6 +44633,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -42581,6 +44656,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -42604,6 +44680,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -42642,6 +44719,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -42665,6 +44743,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -42792,6 +44871,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -42815,6 +44895,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -42908,6 +44989,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -42931,6 +45013,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -42953,6 +45036,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -42976,6 +45060,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -43014,6 +45099,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -43037,6 +45123,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -43161,6 +45248,43 @@ export namespace Prisma {
 
   export type budget_predictionsCreateManyTriggeredByUserInputEnvelope = {
     data: budget_predictionsCreateManyTriggeredByUserInput | budget_predictionsCreateManyTriggeredByUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type budget_upcoming_eventsCreateWithoutCreatorInput = {
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    department: departmentsCreateNestedOneWithoutBudget_upcoming_eventsInput
+  }
+
+  export type budget_upcoming_eventsUncheckedCreateWithoutCreatorInput = {
+    id?: number
+    departmentId: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type budget_upcoming_eventsCreateOrConnectWithoutCreatorInput = {
+    where: budget_upcoming_eventsWhereUniqueInput
+    create: XOR<budget_upcoming_eventsCreateWithoutCreatorInput, budget_upcoming_eventsUncheckedCreateWithoutCreatorInput>
+  }
+
+  export type budget_upcoming_eventsCreateManyCreatorInputEnvelope = {
+    data: budget_upcoming_eventsCreateManyCreatorInput | budget_upcoming_eventsCreateManyCreatorInput[]
     skipDuplicates?: boolean
   }
 
@@ -43472,6 +45596,22 @@ export namespace Prisma {
     data: XOR<budget_predictionsUpdateManyMutationInput, budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserInput>
   }
 
+  export type budget_upcoming_eventsUpsertWithWhereUniqueWithoutCreatorInput = {
+    where: budget_upcoming_eventsWhereUniqueInput
+    update: XOR<budget_upcoming_eventsUpdateWithoutCreatorInput, budget_upcoming_eventsUncheckedUpdateWithoutCreatorInput>
+    create: XOR<budget_upcoming_eventsCreateWithoutCreatorInput, budget_upcoming_eventsUncheckedCreateWithoutCreatorInput>
+  }
+
+  export type budget_upcoming_eventsUpdateWithWhereUniqueWithoutCreatorInput = {
+    where: budget_upcoming_eventsWhereUniqueInput
+    data: XOR<budget_upcoming_eventsUpdateWithoutCreatorInput, budget_upcoming_eventsUncheckedUpdateWithoutCreatorInput>
+  }
+
+  export type budget_upcoming_eventsUpdateManyWithWhereWithoutCreatorInput = {
+    where: budget_upcoming_eventsScalarWhereInput
+    data: XOR<budget_upcoming_eventsUpdateManyMutationInput, budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorInput>
+  }
+
   export type chat_sessionsUpsertWithWhereUniqueWithoutUsersInput = {
     where: chat_sessionsWhereUniqueInput
     update: XOR<chat_sessionsUpdateWithoutUsersInput, chat_sessionsUncheckedUpdateWithoutUsersInput>
@@ -43736,6 +45876,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -43759,6 +45900,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -43797,6 +45939,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -43820,6 +45963,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -43842,6 +45986,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksCreateNestedManyWithoutUsersInput
     notifications?: notificationsCreateNestedManyWithoutUsersInput
@@ -43865,6 +46010,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutRequesterInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutReviewerInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutCreatorInput
     chat_sessions?: chat_sessionsUncheckedCreateNestedManyWithoutUsersInput
     feedbacks?: feedbacksUncheckedCreateNestedManyWithoutUsersInput
     notifications?: notificationsUncheckedCreateNestedManyWithoutUsersInput
@@ -43903,6 +46049,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUpdateManyWithoutUsersNestedInput
@@ -43926,6 +46073,7 @@ export namespace Prisma {
     budget_adjustment_requests_budget_adjustment_requests_requestedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutRequesterNestedInput
     budget_adjustment_requests_budget_adjustment_requests_reviewedByTousers?: budget_adjustment_requestsUncheckedUpdateManyWithoutReviewerNestedInput
     budget_predictions?: budget_predictionsUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    budget_upcoming_events?: budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorNestedInput
     chat_sessions?: chat_sessionsUncheckedUpdateManyWithoutUsersNestedInput
     feedbacks?: feedbacksUncheckedUpdateManyWithoutUsersNestedInput
     notifications?: notificationsUncheckedUpdateManyWithoutUsersNestedInput
@@ -44093,6 +46241,20 @@ export namespace Prisma {
     triggeredBy?: number | null
   }
 
+  export type budget_upcoming_eventsCreateManyDepartmentInput = {
+    id?: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdBy: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type monthly_budgetsCreateManyDepartmentInput = {
     id?: number
     allocatedAmount: Decimal | DecimalJsLike | number | string
@@ -44192,6 +46354,47 @@ export namespace Prisma {
     targetYear?: IntFieldUpdateOperationsInput | number
     triggerType?: StringFieldUpdateOperationsInput | string
     triggeredBy?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type budget_upcoming_eventsUpdateWithoutDepartmentInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    creator?: usersUpdateOneRequiredWithoutBudget_upcoming_eventsNestedInput
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateManyWithoutDepartmentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type monthly_budgetsUpdateWithoutDepartmentInput = {
@@ -44299,6 +46502,20 @@ export namespace Prisma {
     targetMonth: number
     targetYear: number
     triggerType: string
+  }
+
+  export type budget_upcoming_eventsCreateManyCreatorInput = {
+    id?: number
+    departmentId: number
+    title: string
+    targetYear: number
+    targetMonth: number
+    estimatedImpact: Decimal | DecimalJsLike | number | string
+    likelihood?: string
+    notes?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type chat_sessionsCreateManyUsersInput = {
@@ -44505,6 +46722,47 @@ export namespace Prisma {
     targetMonth?: IntFieldUpdateOperationsInput | number
     targetYear?: IntFieldUpdateOperationsInput | number
     triggerType?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type budget_upcoming_eventsUpdateWithoutCreatorInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    department?: departmentsUpdateOneRequiredWithoutBudget_upcoming_eventsNestedInput
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateWithoutCreatorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type budget_upcoming_eventsUncheckedUpdateManyWithoutCreatorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    departmentId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    targetYear?: IntFieldUpdateOperationsInput | number
+    targetMonth?: IntFieldUpdateOperationsInput | number
+    estimatedImpact?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    likelihood?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chat_sessionsUpdateWithoutUsersInput = {

@@ -10,39 +10,47 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 28px;
 }
 
 .header {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
 }
+
+.eyebrow { display: block; color: #0f766e; font-size: 12px; font-weight: 800; letter-spacing: .11em; margin-bottom: 8px; text-transform: uppercase; }
 
 .title {
   margin: 0 !important;
-  color: #0f172a !important;
+  color: #13233f !important;
+  font-size: clamp(30px, 3vw, 40px) !important;
+  letter-spacing: -.035em;
 }
+
+.subtitle { color: #64748b; font-size: 16px; margin: 10px 0 0; }
+.periodTag { margin: 2px 0 0 !important; padding: 6px 10px !important; border: 1px solid #cce9e4 !important; border-radius: 999px !important; background: #effaf8 !important; color: #0f766e !important; font-size: 12px !important; font-weight: 700; }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) 260px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 2fr) 276px;
+  gap: 20px;
   align-items: stretch;
 }
 
 .mainStack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .sectionCard,
 .grnCard {
-  border-radius: 24px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(15, 35, 63, .05);
 }
 
 .sectionCard :global(.ant-card-body),
@@ -51,10 +59,16 @@
 }
 
 .sectionHeader {
-  margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eef2f6;
 }
+
+.sectionKicker { color: #0f766e; display: block; font-size: 11px; font-weight: 800; letter-spacing: .09em; margin-bottom: 3px; text-transform: uppercase; }
+.sectionCount { background: #f1f5f9; border-radius: 999px; color: #64748b; font-size: 11px; font-weight: 700; padding: 4px 8px; }
 
 .sectionTitle {
   margin: 0 !important;
@@ -63,49 +77,51 @@
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 
 .moduleButton,
 .grnButton {
   height: auto !important;
-  border-radius: 20px !important;
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
-  background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
-  padding: 18px 16px !important;
+  border-radius: 14px !important;
+  border: 1px solid #e8eef4 !important;
+  background: linear-gradient(145deg, #ffffff, #f8fbfc) !important;
+  min-height: 192px;
+  padding: 18px !important;
   display: flex !important;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
   text-align: left;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .moduleButton:hover,
 .grnButton:hover {
-  transform: translateY(-2px);
-  border-color: rgba(34, 197, 94, 0.28) !important;
-  box-shadow: 0 14px 28px rgba(34, 197, 94, 0.12);
+  transform: translateY(-3px);
+  border-color: #9ed6cd !important;
+  box-shadow: 0 14px 26px rgba(15, 118, 110, .13);
 }
 
 .moduleIcon,
 .grnIcon {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: 13px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(135deg, #157b73, #0f5d67);
   color: #fff;
   font-size: 20px;
-  box-shadow: 0 12px 22px rgba(34, 197, 94, 0.24);
+  box-shadow: 0 10px 20px rgba(15, 118, 110, .22);
 }
 
 .moduleTitle,
 .grnTitle {
   font-size: 18px;
   font-weight: 700;
-  color: #0f172a;
+  color: #13233f;
+  letter-spacing: -.015em;
 }
 
 .moduleHint,
@@ -116,8 +132,12 @@
   line-height: 1.4;
 }
 
+.moduleAction { align-items: center; border-top: 1px solid #eef2f6; color: #0f766e; display: flex; font-size: 12px; font-weight: 750; gap: 7px; margin-top: auto; padding-top: 13px; }
+
 .grnCard {
   display: flex;
+  align-self: start;
+  min-height: 244px;
 }
 
 .grnCard :global(.ant-card-body) {
@@ -127,10 +147,15 @@
 
 .grnButton {
   width: 100%;
+  height: 100% !important;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
+
+.grnTitle { margin-top: 4px; }
+.grnHint { max-width: 180px; }
+.grnButton .moduleAction { justify-content: center; margin-top: 12px; width: 100%; }
 
 @media (max-width: 1100px) {
   .page {
@@ -140,10 +165,14 @@
   .layout {
     grid-template-columns: 1fr;
   }
+
+  .grnButton { min-height: 192px; }
 }
 
 @media (max-width: 720px) {
   .cardGrid {
     grid-template-columns: 1fr;
   }
+
+  .header { flex-direction: column; gap: 10px; }
 }

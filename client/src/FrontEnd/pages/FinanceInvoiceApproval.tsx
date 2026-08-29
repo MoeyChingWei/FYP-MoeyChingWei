@@ -4,6 +4,7 @@ import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined, DownloadOu
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../shared/auth/session";
+import { formatPaymentTerm } from "../shared/utils/paymentTerms";
 import { canApproveSupplierInvoices } from "../shared/types/roles";
 import RejectReasonModal from "../shared/components/RejectReasonModal";
 import {
@@ -127,7 +128,7 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
         <Descriptions.Item label="PO">{selected.poNumber}</Descriptions.Item>
         <Descriptions.Item label="GRN">{selected.deliveryNo || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoiceApproval.details.invoiceDate")}>{selected.invoiceDate || "-"}</Descriptions.Item>
-        <Descriptions.Item label={t("invoiceApproval.details.paymentTerms")}>{selected.paymentTerms || "-"}</Descriptions.Item>
+        <Descriptions.Item label={t("invoiceApproval.details.paymentTerms")}>{formatPaymentTerm(selected.paymentTerms)}</Descriptions.Item>
       </Descriptions>
       <Flex gap={8} style={{ marginTop: 16 }}>
         <Button type="primary" icon={<CheckCircleOutlined />} loading={processingId === selected.localId} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => void approve(selected)}>{t("invoiceApproval.approve")}</Button>

@@ -74,6 +74,12 @@
   line-height: 1.5;
 }
 
+.recommendedBudget {
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .created {
   margin-top: auto;
 }
@@ -91,6 +97,73 @@
   font-weight: 650;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+}
+
+.recommendationLead {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+}
+
+.recommendationLabel,
+.recommendationCopy,
+.noRiskSummary {
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.recommendationAmount {
+  margin: 2px 0 4px;
+  color: #047857;
+  font-size: 24px;
+  font-weight: 750;
+}
+
+.explanationRows {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.explanationRows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.explanationRows strong {
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.reasonList {
+  display: grid;
+  gap: 6px;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.detailsHeading {
+  margin-top: 18px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.technicalNote {
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: #475569;
+  background: #f1f5f9;
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .analysis :global(.ant-collapse-header) {

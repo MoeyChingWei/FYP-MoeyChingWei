@@ -142,6 +142,7 @@
         "supplier": "Supplier",
         "supplierEmail": "Supplier Email",
         "department": "Department",
+        "paymentTerms": "Payment terms",
         "currentStatus": "Current Status",
         "companyAddress": "Company Address",
         "rejectedBy": "Rejected By",

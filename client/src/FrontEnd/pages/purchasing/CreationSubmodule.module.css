@@ -222,6 +222,54 @@
   font-size: 13px;
 }
 
+.budgetUsageStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.budgetStatusWarning {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  animation: warningPulse 1.8s ease-in-out infinite;
+}
+
+.budgetStatusExceeded {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  animation: exceededPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes warningPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 173, 20, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(250, 173, 20, 0.2);
+  }
+}
+
+@keyframes exceededPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .budgetStatusWarning,
+  .budgetStatusExceeded {
+    animation: none;
+  }
+}
+
 @media (max-width: 700px) {
   .taxSummary {
     grid-template-columns: 1fr;

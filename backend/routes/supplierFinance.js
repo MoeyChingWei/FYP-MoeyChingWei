@@ -104,7 +104,34 @@ async function getInvoice(localId) {
 
 async function getPayment(localId) {
   const record = await prisma.supplierPaymentRecordStore.findUnique({ where: { localId }, select: { localId: true, payload: true } });
-  return record ? { localId: record.localId, ...(record.payload || {}) } : null;
+  return record ? hydratePaymentFinancialDetails({ localId: record.localId, ...(record.payload || {}) }) : null;
+}
+
+// Payment records created before the finance email enhancement only stored a
+// final amount. Recover the invoice calculation so older payment advice and
+// completion emails can also show subtotal and tax formally.
+async function hydratePaymentFinancialDetails(payment = {}) {
+  if (Number.isFinite(Number(payment.subtotal)) || !payment.invoiceLocalId) return payment;
+  const invoice = await getInvoice(payment.invoiceLocalId);
+  if (!invoice) return payment;
+  return {
+    ...payment,
+    items: invoice.items,
+    subtotal: invoice.subtotal,
+    taxTotal: invoice.taxTotal,
+    grandTotal: invoice.grandTotal,
+    amountAfterTax: invoice.amountAfterTax ?? invoice.grandTotal,
+    supplierTaxApplies: invoice.supplierTaxApplies,
+    supplierTaxType: invoice.supplierTaxType,
+    supplierTaxRate: invoice.supplierTaxRate,
+    supplierTaxRules: invoice.supplierTaxRules,
+    supplierCompanyName: payment.supplierCompanyName || invoice.supplierCompanyName,
+    supplierAddress: payment.supplierAddress || invoice.supplierAddress,
+    supplierLogo: payment.supplierLogo || invoice.supplierLogo,
+    companyName: payment.companyName || invoice.companyName,
+    companyAddress: payment.companyAddress || invoice.companyAddress,
+    companyLogo: payment.companyLogo || invoice.companyLogo,
+  };
 }
 
 function isOwnInvoice(invoice, user) {
@@ -186,13 +213,16 @@ async function bestEffortPaymentPdf(payment) {
 }
 
 function emailDocument(title, message, invoice, extra = []) {
-  const details = [["Status", invoice.status], ["Invoice number", invoice.invoiceNumber], ["Payment number", invoice.paymentNumber], ["Supplier", invoice.supplierCompanyName || invoice.supplierName], ["PO / GRN", `${invoice.poNumber || "-"} / ${invoice.deliveryNo || invoice.grnNumber || "-"}`], ["Amount", money(invoice.grandTotal ?? invoice.amount, invoice.currency)], ...extra];
+  const isPayment = Boolean(invoice.paymentNumber);
+  const details = [["Status", invoice.status], ["Invoice number", invoice.invoiceNumber], ["Payment number", invoice.paymentNumber], ["Supplier", invoice.supplierCompanyName || invoice.supplierName], ["PO / GRN", `${invoice.poNumber || "-"} / ${invoice.deliveryNo || invoice.grnNumber || "-"}`], [isPayment ? "Paid amount" : "Invoice amount", money(invoice.grandTotal ?? invoice.amount, invoice.currency)], ...extra];
   const rendered = renderEmailDocument({
     title,
     intro: message,
     details,
     itemsRecord: Array.isArray(invoice.items) && invoice.items.length ? invoice : null,
+    calculationRecord: invoice,
     total: invoice.grandTotal ?? invoice.amount,
+    showCalculationSummary: true,
     action: "Please sign in to OptiMind ERP to review the document and continue the workflow.",
   });
   return { subject: title, text: rendered.text, html: rendered.html, attachments: rendered.attachments };
@@ -299,7 +329,7 @@ router.post("/invoices/:localId/approve", requireRoles(FINANCE_ROLES), async (re
     const paymentLocalId = `payment-${invoice.localId}`;
     const paymentNumber = `PAY-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${invoice.localId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase()}`;
     const approvedInvoice = { ...invoice, ...totals, status: "APPROVED", reviewedDate: now.toISOString(), approvedDate: now.toISOString(), reviewedBy: req.user.name || req.user.email, approvedBy: req.user.name || req.user.email, rejectionReason: undefined, approvalHistory: appendHistory(invoice, "APPROVED", req.user) };
-    const payment = { localId: paymentLocalId, paymentNumber, invoiceLocalId: invoice.localId, invoiceNumber: invoice.invoiceNumber, poNumber: invoice.poNumber, grnNumber: invoice.deliveryNo, supplierId: invoice.supplierId, supplierName: invoice.supplierCompanyName || invoice.supplierName, supplierEmail: invoice.supplierEmail, bankDetails: invoice.bankDetails || {}, amount: totals.grandTotal, currency: invoice.currency, paymentTerms: invoice.paymentTerms, invoiceDate: invoice.invoiceDate, createdDate: now.toISOString(), updatedDate: now.toISOString(), status: "PENDING_PAYMENT", paymentHistory: [{ action: "CREATED", by: req.user.name || req.user.email, date: now.toISOString() }] };
+    const payment = { localId: paymentLocalId, paymentNumber, invoiceLocalId: invoice.localId, invoiceNumber: invoice.invoiceNumber, poNumber: invoice.poNumber, grnNumber: invoice.deliveryNo, supplierId: invoice.supplierId, supplierName: invoice.supplierCompanyName || invoice.supplierName, supplierCompanyName: invoice.supplierCompanyName, supplierEmail: invoice.supplierEmail, supplierAddress: invoice.supplierAddress, supplierLogo: invoice.supplierLogo, companyName: invoice.companyName, companyAddress: invoice.companyAddress, companyLogo: invoice.companyLogo, bankDetails: invoice.bankDetails || {}, items: totals.items, subtotal: totals.subtotal, taxTotal: totals.taxTotal, grandTotal: totals.grandTotal, amountAfterTax: totals.grandTotal, supplierTaxApplies: invoice.supplierTaxApplies, supplierTaxType: invoice.supplierTaxType, supplierTaxRate: invoice.supplierTaxRate, supplierTaxRules: invoice.supplierTaxRules, amount: totals.grandTotal, currency: invoice.currency, paymentTerms: invoice.paymentTerms, invoiceDate: invoice.invoiceDate, createdDate: now.toISOString(), updatedDate: now.toISOString(), status: "PENDING_PAYMENT", paymentHistory: [{ action: "CREATED", by: req.user.name || req.user.email, date: now.toISOString() }] };
     await prisma.$transaction(async (tx) => {
       const current = await tx.supplierInvoiceRecordStore.findUnique({ where: { localId: invoice.localId }, select: { payload: true } });
       if (!current || current.payload?.status !== "SUBMITTED") throw new Error("Invoice was already processed");
@@ -358,7 +388,7 @@ router.post("/payments/:localId/process", requireRoles(PAYMENT_ROLES), async (re
     Object.assign(payment, processedPayment);
     const pdf = await bestEffortPaymentPdf(payment);
     const supplier = payment.supplierEmail ? await prisma.user.findFirst({ where: { email: { equals: payment.supplierEmail, mode: "insensitive" }, isActive: true }, select: { id: true, email: true } }) : null;
-    if (supplier) { await notify([supplier], { title: "Supplier Payment Completed", message: `${payment.paymentNumber} has been paid.`, type: "SUPPLIER_PAYMENT_COMPLETED", refType: "supplier-payment", refId: payment.localId }); const approvalInvoice = { ...payment, grandTotal: payment.amount, subtotal: payment.amount, taxTotal: 0, items: [] }; await email([supplier.email], emailDocument(`[OptiMind ERP] Payment Completed - ${payment.paymentNumber}`, "Your payment has been completed.", approvalInvoice, [["Payment number", payment.paymentNumber], ["Payment method", paymentMethod], ["Paid date", paidDate], ["Transaction reference", transactionReference], ["Processed by", payment.processedBy], ["Bank account", maskAccount(payment.bankDetails?.accountNumber)], ["Payment proof", payment.attachmentName]]), pdf); }
+    if (supplier) { await notify([supplier], { title: "Supplier Payment Completed", message: `${payment.paymentNumber} has been paid.`, type: "SUPPLIER_PAYMENT_COMPLETED", refType: "supplier-payment", refId: payment.localId }); await email([supplier.email], emailDocument(`[OptiMind ERP] Payment Completed - ${payment.paymentNumber}`, "Your payment has been completed.", payment, [["Payment number", payment.paymentNumber], ["Payment method", paymentMethod], ["Paid date", paidDate], ["Transaction reference", transactionReference], ["Processed by", payment.processedBy], ["Bank account", maskAccount(payment.bankDetails?.accountNumber)], ["Payment proof", payment.attachmentName]]), pdf); }
     return res.json({ success: true, payment });
   } catch (error) { return res.status(error.statusCode || (error.code === "P2034" ? 409 : 400)).json({ success: false, message: error.message || "Unable to process payment" }); }
 });

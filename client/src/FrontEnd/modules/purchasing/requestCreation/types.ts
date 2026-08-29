@@ -19,6 +19,8 @@ export interface DraftLineItem {
   taxRate?: number;
   taxAmount?: number;
   amountAfterTax?: number;
+  /** Organisation-configured payment term for the whole purchase request. */
+  paymentTerms?: string;
 }
 
 export interface PurchaseRequestDraft {
@@ -41,8 +43,6 @@ export interface PurchaseRequestDraft {
   supplierTaxRules?: Array<{ taxType: string; taxRate: number }>;
   taxAmount?: number;
   amountAfterTax?: number;
-  /** Payment terms selected for the whole purchase request. */
-  paymentTerms?: string;
   notes?: string;
   rejectionReason?: string;
   rejectedBy?: string;

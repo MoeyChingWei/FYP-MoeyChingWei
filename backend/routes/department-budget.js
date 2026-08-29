@@ -18,6 +18,7 @@ import {
 } from '../services/budget-deduction-service.js';
 import { authenticateRequest, requireRoles, requireOwnDepartment } from '../middleware/auth.js';
 import { ROLES } from '../constants/roles.js';
+import { validateUpcomingEvent } from '../services/upcoming-event-service.js';
 
 const router = express.Router();
 
@@ -32,6 +33,11 @@ const ALL_DEPARTMENT_PREDICTION_ROLES = new Set([
   ROLES.PAYMENT_TEAM,
   ROLES.BUDGET_CONTROLLER,
 ]);
+const UPCOMING_EVENT_MANAGE_ROLES = [
+  ROLES.ADMIN,
+  ROLES.MANAGER,
+  ROLES.DEPARTMENT_EXECUTIVE,
+];
 
 function userMatchesDepartment(userDepartment, department) {
   const userValue = String(userDepartment ?? '').trim().toLowerCase();
@@ -39,6 +45,10 @@ function userMatchesDepartment(userDepartment, department) {
     userValue === String(department.code ?? '').trim().toLowerCase() ||
     userValue === String(department.name ?? '').trim().toLowerCase()
   );
+}
+
+function canAccessForecastDepartment(user, department) {
+  return ALL_DEPARTMENT_PREDICTION_ROLES.has(user.role) || userMatchesDepartment(user.department, department);
 }
 
 // Apply authentication to all budget routes
@@ -395,6 +405,83 @@ router.patch('/monthly/:id', async (req, res) => {
       message: 'Failed to update monthly budget',
       error: error.message
     });
+  }
+});
+
+// GET /api/department-budget/upcoming-events/:departmentId - Forecast context for a selected period.
+router.get('/upcoming-events/:departmentId', requireRoles(PREDICTION_ALLOWED_ROLES), async (req, res) => {
+  try {
+    const departmentId = Number(req.params.departmentId);
+    if (!Number.isInteger(departmentId) || departmentId <= 0) {
+      return res.status(400).json({ success: false, message: 'departmentId must be a positive integer' });
+    }
+
+    const department = await prisma.department.findUnique({ where: { id: departmentId } });
+    if (!department) return res.status(404).json({ success: false, message: 'Department not found' });
+    if (!canAccessForecastDepartment(req.user, department)) {
+      return res.status(403).json({ success: false, message: 'Access denied: cannot access another department' });
+    }
+
+    const targetYear = req.query.year === undefined ? undefined : Number(req.query.year);
+    const targetMonth = req.query.month === undefined ? undefined : Number(req.query.month);
+    if ((targetYear !== undefined && (!Number.isInteger(targetYear) || targetYear < 2000 || targetYear > 2100)) ||
+        (targetMonth !== undefined && (!Number.isInteger(targetMonth) || targetMonth < 1 || targetMonth > 12))) {
+      return res.status(400).json({ success: false, message: 'Invalid year or month filter' });
+    }
+
+    const events = await prisma.budgetUpcomingEvent.findMany({
+      where: { departmentId, status: 'active', ...(targetYear ? { targetYear } : {}), ...(targetMonth ? { targetMonth } : {}) },
+      include: { creator: { select: { id: true, name: true } } },
+      orderBy: [{ targetYear: 'asc' }, { targetMonth: 'asc' }, { createdAt: 'desc' }],
+    });
+    res.json({ success: true, data: events });
+  } catch (error) {
+    console.error('Get upcoming forecast events error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch upcoming events' });
+  }
+});
+
+// POST /api/department-budget/upcoming-events - Managers add known future events without burdening PR users.
+router.post('/upcoming-events', requireRoles(UPCOMING_EVENT_MANAGE_ROLES), async (req, res) => {
+  try {
+    const departmentId = Number(req.body.departmentId);
+    if (!Number.isInteger(departmentId) || departmentId <= 0) {
+      return res.status(400).json({ success: false, message: 'departmentId must be a positive integer' });
+    }
+    const validation = validateUpcomingEvent(req.body);
+    if (!validation.valid) return res.status(400).json({ success: false, message: validation.message });
+
+    const department = await prisma.department.findUnique({ where: { id: departmentId } });
+    if (!department) return res.status(404).json({ success: false, message: 'Department not found' });
+    if (!canAccessForecastDepartment(req.user, department)) {
+      return res.status(403).json({ success: false, message: 'Access denied: cannot add an event for another department' });
+    }
+
+    const event = await prisma.budgetUpcomingEvent.create({
+      data: { departmentId, createdBy: req.auth.userId, ...validation.value },
+    });
+    res.status(201).json({ success: true, data: event });
+  } catch (error) {
+    console.error('Create upcoming forecast event error:', error);
+    res.status(500).json({ success: false, message: 'Failed to create upcoming event' });
+  }
+});
+
+// DELETE keeps a cancellation audit trail instead of removing forecasting evidence.
+router.delete('/upcoming-events/:id', requireRoles(UPCOMING_EVENT_MANAGE_ROLES), async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ success: false, message: 'Invalid event id' });
+    const event = await prisma.budgetUpcomingEvent.findUnique({ include: { department: true }, where: { id } });
+    if (!event) return res.status(404).json({ success: false, message: 'Upcoming event not found' });
+    if (!canAccessForecastDepartment(req.user, event.department)) {
+      return res.status(403).json({ success: false, message: 'Access denied: cannot cancel an event for another department' });
+    }
+    const cancelled = await prisma.budgetUpcomingEvent.update({ where: { id }, data: { status: 'cancelled' } });
+    res.json({ success: true, data: cancelled });
+  } catch (error) {
+    console.error('Cancel upcoming forecast event error:', error);
+    res.status(500).json({ success: false, message: 'Failed to cancel upcoming event' });
   }
 });
 

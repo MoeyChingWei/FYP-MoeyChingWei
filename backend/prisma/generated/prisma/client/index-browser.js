@@ -209,6 +209,21 @@ exports.Prisma.DepartmentsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.Budget_upcoming_eventsScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  title: 'title',
+  targetYear: 'targetYear',
+  targetMonth: 'targetMonth',
+  estimatedImpact: 'estimatedImpact',
+  likelihood: 'likelihood',
+  notes: 'notes',
+  status: 'status',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.FeedbacksScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -445,6 +460,7 @@ exports.Prisma.ModelName = {
   chat_messages: 'chat_messages',
   chat_sessions: 'chat_sessions',
   departments: 'departments',
+  budget_upcoming_events: 'budget_upcoming_events',
   feedbacks: 'feedbacks',
   message_attachments: 'message_attachments',
   monthly_budgets: 'monthly_budgets',
