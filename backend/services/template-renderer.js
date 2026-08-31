@@ -9,6 +9,7 @@ import Handlebars from 'handlebars';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getStatusDisplay } from '../utils/status-display.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -124,6 +125,15 @@ async function compileTemplate(templatePath) {
  */
 export async function renderTemplate(templateName, data) {
   try {
+    const statusDisplay = data?.status != null ? getStatusDisplay(data.status) : null;
+    const renderData = statusDisplay
+      ? {
+          ...data,
+          statusLabel: data.statusLabel || statusDisplay.label,
+          statusTone: data.statusTone || statusDisplay.tone,
+        }
+      : data;
+
     // Register partials if not already done
     await registerPartials();
 
@@ -135,7 +145,7 @@ export async function renderTemplate(templateName, data) {
     const documentTemplate = await compileTemplate(documentPath);
 
     // Render the document body with data
-    const bodyContent = documentTemplate(data);
+    const bodyContent = documentTemplate(renderData);
 
     // Load and compile the base layout
     const layoutPath = path.join(LAYOUTS_DIR, 'base.hbs');
@@ -143,7 +153,7 @@ export async function renderTemplate(templateName, data) {
 
     // Merge data with CSS styles and rendered body
     const layoutData = {
-      ...data,
+      ...renderData,
       ...styles,
       body: bodyContent
     };

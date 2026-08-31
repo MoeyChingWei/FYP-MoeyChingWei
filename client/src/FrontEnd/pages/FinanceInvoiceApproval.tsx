@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Descriptions, Empty, Flex, Table, Tag, Typography, message } from "antd";
+import { Button, Card, Descriptions, Empty, Flex, Table, Tabs, Tag, Typography, message } from "antd";
 import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -55,6 +55,8 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
   }, [navigate, user]);
 
   const pending = useMemo(() => rows.filter((row) => row.status === "SUBMITTED"), [rows]);
+  const approved = useMemo(() => rows.filter((row) => row.status === "APPROVED"), [rows]);
+  const rejected = useMemo(() => rows.filter((row) => row.status === "REJECTED"), [rows]);
 
   const approve = async (row: SupplierInvoiceRecord): Promise<void> => {
     if (row.status !== "SUBMITTED") return;
@@ -105,9 +107,27 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
     { title: t("invoiceApproval.columns.supplier"), key: "supplier", render: (_: unknown, row: SupplierInvoiceRecord) => row.supplierCompanyName || row.supplierName || row.supplierEmail || "-" },
     { title: t("invoiceApproval.columns.source"), key: "source", render: (_: unknown, row: SupplierInvoiceRecord) => `${row.poNumber} / ${row.deliveryNo || "-"}` },
     { title: t("invoiceApproval.columns.amount"), key: "amount", render: (_: unknown, row: SupplierInvoiceRecord) => money(row), sorter: (a: SupplierInvoiceRecord, b: SupplierInvoiceRecord) => a.grandTotal - b.grandTotal },
-    { title: t("invoiceApproval.columns.submitted"), dataIndex: "submittedDate", render: (value: string) => value ? new Date(value).toLocaleDateString() : "-" },
+    { title: t("invoiceApproval.columns.date"), key: "date", render: (_: unknown, row: SupplierInvoiceRecord) => {
+      const date = row.status === "APPROVED" ? row.approvedDate : row.status === "REJECTED" ? row.rejectedDate : row.submittedDate;
+      return date ? new Date(date).toLocaleDateString() : "-";
+    } },
     { title: t("invoiceApproval.columns.action"), key: "action", render: (_: unknown, row: SupplierInvoiceRecord) => <Button icon={<EyeOutlined />} onClick={() => setSelected(row)}>{t("invoiceApproval.review")}</Button> },
   ];
+
+  const statusTag = (status: SupplierInvoiceRecord["status"]): React.ReactElement => (
+    <Tag color={status === "SUBMITTED" ? "blue" : status === "APPROVED" ? "green" : "red"}>{status}</Tag>
+  );
+
+  const invoiceTable = (dataSource: SupplierInvoiceRecord[], emptyDescription: string): React.ReactElement => (
+    <Table
+      rowKey="localId"
+      dataSource={dataSource}
+      columns={columns}
+      pagination={{ pageSize: 10 }}
+      locale={{ emptyText: <Empty description={emptyDescription} /> }}
+      scroll={{ x: 900 }}
+    />
+  );
 
   if (!canApproveSupplierInvoices(user?.role)) return <Card><Empty description={t("invoiceApproval.accessRequired")} /></Card>;
   return <div className={styles.page}>
@@ -119,9 +139,15 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
       <Tag color="blue">{t("invoiceApproval.pending", { count: pending.length })}</Tag>
     </Flex>
     <Card>
-      <Table rowKey="localId" dataSource={pending} columns={columns} pagination={{ pageSize: 10 }} locale={{ emptyText: <Empty description={t("invoiceApproval.empty")} /> }} scroll={{ x: 900 }} />
+      <Tabs
+        items={[
+          { key: "pending", label: t("invoiceApproval.pendingTab", { count: pending.length }), children: invoiceTable(pending, t("invoiceApproval.empty")) },
+          { key: "approved", label: t("invoiceApproval.approvedTab", { count: approved.length }), children: invoiceTable(approved, t("invoiceApproval.noApproved")) },
+          { key: "rejected", label: t("invoiceApproval.rejectedTab", { count: rejected.length }), children: invoiceTable(rejected, t("invoiceApproval.noRejected")) },
+        ]}
+      />
     </Card>
-    {selected ? <Card className={styles.sectionCard} title={<Flex justify="space-between"><span>{selected.invoiceNumber || selected.poNumber}</span><Tag color={selected.status === "SUBMITTED" ? "blue" : selected.status === "APPROVED" ? "green" : "red"}>{selected.status}</Tag></Flex>}>
+    {selected ? <Card className={styles.sectionCard} title={<Flex justify="space-between"><span>{selected.invoiceNumber || selected.poNumber}</span>{statusTag(selected.status)}</Flex>}>
       <Descriptions bordered column={2} size="small">
         <Descriptions.Item label={t("invoiceApproval.columns.supplier")}>{selected.supplierCompanyName || selected.supplierName || selected.supplierEmail || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoiceApproval.details.amount")}>{money(selected)}</Descriptions.Item>
@@ -129,6 +155,8 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
         <Descriptions.Item label="GRN">{selected.deliveryNo || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoiceApproval.details.invoiceDate")}>{selected.invoiceDate || "-"}</Descriptions.Item>
         <Descriptions.Item label={t("invoiceApproval.details.paymentTerms")}>{formatPaymentTerm(selected.paymentTerms)}</Descriptions.Item>
+        {(selected.approvedDate || selected.rejectedDate || selected.reviewedDate) ? <Descriptions.Item label={t("invoiceApproval.details.reviewedDate")}>{new Date(selected.approvedDate || selected.rejectedDate || selected.reviewedDate || "").toLocaleDateString()}</Descriptions.Item> : null}
+        {selected.rejectionReason ? <Descriptions.Item label={t("invoiceApproval.details.rejectionReason")} span={2}>{selected.rejectionReason}</Descriptions.Item> : null}
       </Descriptions>
       <Flex gap={8} style={{ marginTop: 16 }}>
         <Button type="primary" icon={<CheckCircleOutlined />} loading={processingId === selected.localId} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => void approve(selected)}>{t("invoiceApproval.approve")}</Button>

@@ -34,10 +34,12 @@ export function calculateWorkflowTotals(record = {}) {
   const items = Array.isArray(record.items)
     ? record.items
     : (Array.isArray(record.lineItems) ? record.lineItems : []);
-  const subtotal = finiteNumber(record.subtotal) ?? items.reduce(
-    (sum, item) => sum + (finiteNumber(item.quantity) ?? 0) * (finiteNumber(item.unitPrice) ?? 0),
-    0,
-  );
+  // Supplier acknowledgement/delivery/GRN records may retain the original
+  // order subtotal even after items are split by supplier. Use visible items
+  // for the document subtotal so tax and totals stay scoped to this record.
+  const subtotal = items.length
+    ? items.reduce((sum, item) => sum + (finiteNumber(item.quantity) ?? 0) * (finiteNumber(item.unitPrice) ?? 0), 0)
+    : finiteNumber(record.subtotal) ?? 0;
   const taxRules = Array.isArray(record.supplierTaxRules) && record.supplierTaxRules.length
     ? record.supplierTaxRules
     : record.supplierTaxApplies && record.supplierTaxType && record.supplierTaxType !== "NO_TAX"
@@ -60,12 +62,12 @@ export function calculateWorkflowTotals(record = {}) {
   }
   const taxAmount = taxBreakdown.reduce((sum, tax) => sum + tax.amount, 0);
   const calculatedTotal = Math.round((subtotal + taxAmount) * 100) / 100;
-  const total = finiteNumber(record.amountAfterTax)
+  const storedTotal = finiteNumber(record.amountAfterTax)
     ?? finiteNumber(record.totalAmount)
     ?? finiteNumber(record.total)
     ?? finiteNumber(record.grandTotal)
-    ?? finiteNumber(record.amount)
-    ?? calculatedTotal;
+    ?? finiteNumber(record.amount);
+  const total = taxBreakdown.length ? calculatedTotal : (storedTotal ?? calculatedTotal);
 
   return { subtotal, taxBreakdown, taxAmount, total };
 }

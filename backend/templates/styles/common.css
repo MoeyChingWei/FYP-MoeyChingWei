@@ -59,6 +59,44 @@ body {
   flex: 1;
 }
 
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 10pt;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.status-pending {
+  color: #8a4b08;
+  background: #fff1d6;
+}
+
+.status-success {
+  color: #146c43;
+  background: #dff5e8;
+}
+
+.status-danger {
+  color: #a61b1b;
+  background: #fde2e1;
+}
+
+.status-info {
+  color: #075985;
+  background: #e0f2fe;
+}
+
+.status-neutral {
+  color: #475467;
+  background: #eaecf0;
+}
+
 .requester-info {
   margin: 20px 0;
   padding: 15px;

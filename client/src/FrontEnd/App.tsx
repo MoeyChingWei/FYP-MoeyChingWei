@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,7 +7,19 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { Avatar, Button, Dropdown, Flex, Layout, Menu, Modal, Spin, theme, Tooltip } from "antd";
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  Flex,
+  Layout,
+  Menu,
+  Modal,
+  notification as antdNotification,
+  Spin,
+  theme,
+  Tooltip,
+} from "antd";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import {
@@ -200,6 +212,8 @@ function MainLayout(): React.ReactElement {
     getSessionUser(),
   );
   const [gmailPromptVisible, setGmailPromptVisible] = useState(false);
+  const gmailNotificationKey = useRef<string | null>(null);
+  const gmailStatusRequestId = useRef(0);
 
   useEffect(() => {
     const sync = () => {
@@ -221,8 +235,13 @@ function MainLayout(): React.ReactElement {
 
   useEffect(() => {
     let cancelled = false;
+    const requestId = ++gmailStatusRequestId.current;
     if (!sessionUser) {
       setGmailPromptVisible(false);
+      if (gmailNotificationKey.current) {
+        antdNotification.destroy(gmailNotificationKey.current);
+        gmailNotificationKey.current = null;
+      }
       return () => {
         cancelled = true;
       };
@@ -232,15 +251,67 @@ function MainLayout(): React.ReactElement {
     axios
       .get(`${API_ROOT}/gmail/status?email=${statusEmail}`)
       .then(({ data }) => {
-        if (cancelled) return;
+        if (cancelled || requestId !== gmailStatusRequestId.current) return;
         // The backend resolves aliases between the OptiMind login and the
         // Google account authorized by the user. A connected response is
         // therefore sufficient; comparing raw Gmail addresses can prompt
         // repeatedly when a university alias is used.
-        setGmailPromptVisible(!data?.connected);
+        const connected = Boolean(data?.connected);
+        const authorizationExpired = data?.code === "invalid_grant";
+        const authorizationRequired =
+          data?.code === "authorization_required" || !data?.code;
+        // Missing authorization uses the existing modal. An expired/revoked
+        // token uses the actionable notification below so the reason is clear.
+        setGmailPromptVisible(!connected && !authorizationExpired && authorizationRequired);
+        if (connected) {
+          if (gmailNotificationKey.current) {
+            antdNotification.destroy(gmailNotificationKey.current);
+            gmailNotificationKey.current = null;
+          }
+          return;
+        }
+
+        // Surface expired/revoked OAuth credentials at startup. The keyed
+        // notification prevents duplicate alerts when the layout re-renders.
+        if (!authorizationExpired) {
+          if (gmailNotificationKey.current) {
+            antdNotification.destroy(gmailNotificationKey.current);
+            gmailNotificationKey.current = null;
+          }
+          return;
+        }
+
+        const notificationKey = `gmail-auth-${String(sessionUser.email || "").trim().toLowerCase()}`;
+        gmailNotificationKey.current = notificationKey;
+        antdNotification.warning({
+          key: notificationKey,
+          message: "Gmail verification required",
+          description:
+            data?.reason ||
+            "Please reconnect your Gmail account so OptiMind can apply email labels.",
+          duration: 0,
+          btn: (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                const email = encodeURIComponent(String(sessionUser.email || "").trim());
+                window.location.assign(`${API_ROOT}/gmail/oauth/start?email=${email}`);
+              }}
+            >
+              Reconnect Gmail
+            </Button>
+          ),
+        });
       })
       .catch(() => {
-        if (!cancelled) setGmailPromptVisible(false);
+        if (!cancelled && requestId === gmailStatusRequestId.current) {
+          setGmailPromptVisible(false);
+          if (gmailNotificationKey.current) {
+            antdNotification.destroy(gmailNotificationKey.current);
+            gmailNotificationKey.current = null;
+          }
+        }
       });
 
     return () => {

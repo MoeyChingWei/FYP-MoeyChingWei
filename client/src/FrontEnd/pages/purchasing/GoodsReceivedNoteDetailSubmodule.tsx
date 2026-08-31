@@ -19,11 +19,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import {
-  computeDraftLineAmountAfterTax,
-  taxLabelForDraftLine,
-  todayIsoDate,
-} from "../../modules/purchasing/requestCreation/constants";
+import { todayIsoDate } from "../../modules/purchasing/requestCreation/constants";
 import {
   loadSupplierGrns,
   appendSupplierInvoice,
@@ -34,6 +30,7 @@ import {
 } from "../../modules/supplierFulfillment/workflow";
 import { createSupplierInvoiceFromReceivedGrn } from "../../shared/api/supplierFinance";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
+import { workflowLineTax, workflowTaxRules, workflowTaxSummary } from "../../shared/utils/workflowTax";
 
 import styles from "./ApprovalDetailSubmodule.module.css";
 import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
@@ -81,15 +78,15 @@ function ItemDetailCard({
   currency,
   index,
   t,
+  fallbackRules,
 }: {
   item: DraftLineItem;
   currency: string;
   index: number;
   t: any;
+  fallbackRules: ReturnType<typeof workflowTaxRules>;
 }): React.ReactElement {
-  const lineTotal = computeDraftLineAmountAfterTax(item);
-  const taxAmount = item.taxAmount ??
-    Math.round(item.quantity * item.unitPrice * (item.taxRate ?? 0)) / 100;
+  const line = workflowLineTax(item, fallbackRules);
 
   return (
     <div className={styles.itemCard}>
@@ -121,17 +118,17 @@ function ItemDetailCard({
         </div>
         <div className={styles.detailBlock}>
           <span className={styles.detailLabel}>Amount after tax</span>
-          <div className={styles.detailValue}>{currencyLabel(currency, lineTotal)}</div>
+          <div className={styles.detailValue}>{currencyLabel(currency, line.amountAfterTax)}</div>
         </div>
         <div className={styles.detailBlock}>
           <span className={styles.detailLabel}>Tax</span>
           <div className={styles.detailValue}>
-            {taxLabelForDraftLine(item.taxType, item.taxRate)}
+            {line.label}
           </div>
         </div>
         <div className={styles.detailBlock}>
           <span className={styles.detailLabel}>Tax amount</span>
-          <div className={styles.detailValue}>{currencyLabel(currency, taxAmount)}</div>
+          <div className={styles.detailValue}>{currencyLabel(currency, line.taxAmount)}</div>
         </div>
         <div className={`${styles.detailBlock} ${styles.detailWide}`}>
           <span className={styles.detailLabel}>{t('purchaseRequest.detail.items.fields.assignedSupplier')}</span>
@@ -238,10 +235,8 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
     );
   }
 
-  const total = row.items.reduce(
-    (sum, item) => sum + computeDraftLineAmountAfterTax(item),
-    0,
-  );
+  const taxSummary = workflowTaxSummary(row);
+  const taxRules = workflowTaxRules(row);
 
   return (
     <Card>
@@ -280,7 +275,7 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
           </div>
           <div className={styles.summaryCard}>
             <div className={styles.summaryLabel}>{t('grn.detail.summary.total')}</div>
-            <div className={styles.summaryValue}>{currencyLabel(row.currency, total)}</div>
+            <div className={styles.summaryValue}>{currencyLabel(row.currency, taxSummary.total)}</div>
           </div>
         </div>
 
@@ -317,9 +312,23 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
           </Paragraph>
           <div className={styles.itemList}>
             {row.items.map((item, index) => (
-              <ItemDetailCard key={item.tempId} item={item} currency={row.currency} index={index} t={t} />
+              <ItemDetailCard key={item.tempId} item={item} currency={row.currency} index={index} t={t} fallbackRules={taxRules} />
             ))}
           </div>
+        </div>
+
+        <div className={styles.sectionCard}>
+          <h3 className={styles.sectionTitle}>Calculation summary</h3>
+          <Descriptions column={1} bordered size="middle">
+            <Descriptions.Item label="Items subtotal">{currencyLabel(row.currency, taxSummary.subtotal)}</Descriptions.Item>
+            {taxSummary.taxBreakdown.map((tax, index) => (
+              <Descriptions.Item key={`${tax.label}-${index}`} label={`${tax.label}${tax.rate !== undefined ? ` (${tax.rate.toFixed(2)}%)` : ""}`}>
+                {currencyLabel(row.currency, tax.amount)}
+              </Descriptions.Item>
+            ))}
+            {!taxSummary.taxBreakdown.length ? <Descriptions.Item label="Tax">{currencyLabel(row.currency, 0)}</Descriptions.Item> : null}
+            <Descriptions.Item label="Total payable">{currencyLabel(row.currency, taxSummary.total)}</Descriptions.Item>
+          </Descriptions>
         </div>
 
         {row.status === "PENDING_GRN" ? (

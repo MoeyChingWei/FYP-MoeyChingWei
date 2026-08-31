@@ -1,6 +1,6 @@
 // Direct test of email notification system
 import 'dotenv/config';
-import { sendSystemNotificationEmail } from './services/emailNotifications.js';
+import { sendSystemNotificationEmail } from '../services/emailNotifications.js';
 
 async function testEmail() {
   console.log("Testing email notification system...\n");

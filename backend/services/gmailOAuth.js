@@ -25,6 +25,23 @@ function normalizeEmail(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+// Google reports expired/revoked refresh tokens as an `invalid_grant` error.
+// Keep this check in one place so API status and notification results expose
+// an actionable message instead of a low-level OAuth error.
+export function isGmailAuthorizationError(error) {
+  const oauthError = error?.response?.data?.error;
+  return oauthError === "invalid_grant"
+    || error?.code === "invalid_grant"
+    || String(error?.message || "").toLowerCase().includes("invalid_grant");
+}
+
+export function gmailAuthorizationErrorMessage(error) {
+  if (isGmailAuthorizationError(error)) {
+    return "Gmail authorization expired or was revoked. Please reconnect Gmail in Settings.";
+  }
+  return error?.message || "Gmail authorization is required for this account";
+}
+
 async function readTokenStore() {
   try {
     const value = await readJson(tokenStorePath);
@@ -228,7 +245,20 @@ export async function getGmailConnectionStatusForEmail(email) {
     };
   } catch (error) {
     if (error?.code === "ENOENT") {
-      return { connected: false, reason: "Gmail authorization is required" };
+      return {
+        connected: false,
+        reason: "Gmail authorization is required",
+        code: "authorization_required",
+        email: requestedEmail || null,
+      };
+    }
+    if (isGmailAuthorizationError(error)) {
+      return {
+        connected: false,
+        reason: gmailAuthorizationErrorMessage(error),
+        code: "invalid_grant",
+        email: requestedEmail || null,
+      };
     }
     throw error;
   }

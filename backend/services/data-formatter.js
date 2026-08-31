@@ -5,6 +5,8 @@
  * Handles Purchase Requests, Purchase Orders, Invoices, and Supplier data.
  */
 
+import { getStatusDisplay } from '../utils/status-display.js';
+
 /**
  * Get current date in ISO format (YYYY-MM-DD)
  * @returns {string} Current date
@@ -57,6 +59,7 @@ export function formatPurchaseRequest(record, options = {}) {
 
   const { payload } = record;
   const { preparedBy, approvedBy } = options;
+  const statusDisplay = getStatusDisplay(payload.status);
 
   const formattedLineItems = addLineItemNumbers(payload.lineItems || []);
 
@@ -65,6 +68,8 @@ export function formatPurchaseRequest(record, options = {}) {
     documentType: 'Purchase Request',
     documentNumber: payload.documentNumber,
     status: payload.status,
+    statusLabel: statusDisplay.label,
+    statusTone: statusDisplay.tone,
     requestDate: payload.requestDate,
     requesterName: payload.requesterName,
     department: payload.department,
@@ -94,6 +99,7 @@ export function formatPurchaseOrder(record, options = {}) {
 
   const { payload } = record;
   const { preparedBy, approvedBy } = options;
+  const statusDisplay = getStatusDisplay(payload.status);
 
   const formattedLineItems = addLineItemNumbers(payload.lineItems || []);
 
@@ -102,6 +108,8 @@ export function formatPurchaseOrder(record, options = {}) {
     documentType: 'Purchase Order',
     documentNumber: payload.documentNumber,
     status: payload.status,
+    statusLabel: statusDisplay.label,
+    statusTone: statusDisplay.tone,
     orderDate: payload.orderDate,
     supplierName: payload.supplierName,
     deliveryAddress: payload.deliveryAddress,
@@ -132,6 +140,7 @@ export function formatInvoice(record, options = {}) {
 
   const { payload } = record;
   const { preparedBy, approvedBy } = options;
+  const statusDisplay = getStatusDisplay(payload.status);
 
   const formattedLineItems = addLineItemNumbers(payload.lineItems || []);
 
@@ -140,6 +149,8 @@ export function formatInvoice(record, options = {}) {
     documentType: 'Invoice',
     documentNumber: payload.documentNumber,
     status: payload.status,
+    statusLabel: statusDisplay.label,
+    statusTone: statusDisplay.tone,
     invoiceDate: payload.invoiceDate,
     dueDate: payload.dueDate,
     supplierName: payload.supplierName,

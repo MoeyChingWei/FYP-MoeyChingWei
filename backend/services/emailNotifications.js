@@ -2,7 +2,10 @@ import nodemailer from "nodemailer";
 import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
-import { applyGmailLabelToMessage } from "./gmailOAuth.js";
+import {
+  applyGmailLabelToMessage,
+  gmailAuthorizationErrorMessage,
+} from "./gmailOAuth.js";
 import { PDFGenerator } from "./pdf-generator.js";
 import {
   hydrateWorkflowCompanyLogo,
@@ -267,7 +270,7 @@ export async function sendSystemNotificationEmail(args) {
       gmailLabels.push({
         email: mailboxEmail,
         labeled: false,
-        reason: error?.message || "Gmail label unavailable",
+        reason: gmailAuthorizationErrorMessage(error) || "Gmail label unavailable",
       });
     }
   }

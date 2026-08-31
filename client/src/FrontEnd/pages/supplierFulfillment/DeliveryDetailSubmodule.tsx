@@ -25,6 +25,7 @@ import {
   updateSupplierDelivery,
 } from "../../modules/supplierFulfillment/workflow";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
+import { workflowLineTax, workflowTaxRules, workflowTaxSummary } from "../../shared/utils/workflowTax";
 
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
 import WorkflowDocumentActions from "../../components/shared/WorkflowDocumentActions";
@@ -53,13 +54,15 @@ function ItemDetailCard({
   currency,
   index,
   t,
+  fallbackRules,
 }: {
   item: DraftLineItem;
   currency: string;
   index: number;
   t: any;
+  fallbackRules: ReturnType<typeof workflowTaxRules>;
 }): React.ReactElement {
-  const lineTotal = item.quantity * item.unitPrice;
+  const line = workflowLineTax(item, fallbackRules);
   return (
     <div className={styles.itemCard}>
       <div className={styles.itemHeader}>
@@ -89,8 +92,20 @@ function ItemDetailCard({
           <div className={styles.detailValue}>{currencyLabel(currency, item.unitPrice)}</div>
         </div>
         <div className={styles.detailBlock}>
-          <span className={styles.detailLabel}>{t("orderAcknowledgement.detail.items.fields.lineTotal")}</span>
-          <div className={styles.detailValue}>{currencyLabel(currency, lineTotal)}</div>
+          <span className={styles.detailLabel}>Line subtotal</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, line.subtotal)}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Amount after tax</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, line.amountAfterTax)}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax</span>
+          <div className={styles.detailValue}>{line.label}</div>
+        </div>
+        <div className={styles.detailBlock}>
+          <span className={styles.detailLabel}>Tax amount</span>
+          <div className={styles.detailValue}>{currencyLabel(currency, line.taxAmount)}</div>
         </div>
 
         <div className={`${styles.detailBlock} ${styles.detailWide}`}>
@@ -164,7 +179,8 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
     );
   }
 
-  const total = row.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const taxSummary = workflowTaxSummary(row);
+  const taxRules = workflowTaxRules(row);
 
   return (
     <Card>
@@ -203,7 +219,7 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
           </div>
           <div className={styles.summaryCard}>
             <div className={styles.summaryLabel}>{t("delivery.detail.summary.total")}</div>
-            <div className={styles.summaryValue}>{currencyLabel(row.currency, total)}</div>
+            <div className={styles.summaryValue}>{currencyLabel(row.currency, taxSummary.total)}</div>
           </div>
         </div>
 
@@ -231,9 +247,23 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
           </Paragraph>
           <div className={styles.itemList}>
             {row.items.map((item, index) => (
-              <ItemDetailCard key={item.tempId} item={item} currency={row.currency} index={index} t={t} />
+              <ItemDetailCard key={item.tempId} item={item} currency={row.currency} index={index} t={t} fallbackRules={taxRules} />
             ))}
           </div>
+        </div>
+
+        <div className={styles.sectionCard}>
+          <h3 className={styles.sectionTitle}>Calculation summary</h3>
+          <Descriptions column={1} bordered size="middle">
+            <Descriptions.Item label="Items subtotal">{currencyLabel(row.currency, taxSummary.subtotal)}</Descriptions.Item>
+            {taxSummary.taxBreakdown.map((tax, index) => (
+              <Descriptions.Item key={`${tax.label}-${index}`} label={`${tax.label}${tax.rate !== undefined ? ` (${tax.rate.toFixed(2)}%)` : ""}`}>
+                {currencyLabel(row.currency, tax.amount)}
+              </Descriptions.Item>
+            ))}
+            {!taxSummary.taxBreakdown.length ? <Descriptions.Item label="Tax">{currencyLabel(row.currency, 0)}</Descriptions.Item> : null}
+            <Descriptions.Item label="Total payable">{currencyLabel(row.currency, taxSummary.total)}</Descriptions.Item>
+          </Descriptions>
         </div>
 
         {row.status === "PENDING_DELIVERY" ? (
