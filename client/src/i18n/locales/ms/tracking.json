@@ -9,6 +9,26 @@
     "unreadCount": "belum dibaca",
     "markAllAsRead": "Tandakan Semua Sebagai Dibaca"
   },
+  "supplier": {
+    "page": { "title": "Penjejakan Pembekal" },
+    "search": { "placeholder": "Cari invois atau pembayaran..." },
+    "stages": {
+      "invoice": { "pending": "Menunggu Invois", "complete": "Invois Diluluskan" },
+      "payment": { "pending": "Menunggu Pembayaran", "complete": "Pembayaran Diproses" },
+      "completed": { "label": "Selesai", "complete": "Selesai" }
+    },
+    "descriptions": {
+      "rejected": "Invois pembekal ini telah ditolak. Semak sebab penolakan dan hantar semula.",
+      "invoice": "Invois pembekal sedang menunggu kelulusan Kewangan.",
+      "payment": "Invois telah diluluskan dan menunggu Pasukan Pembayaran memprosesnya.",
+      "completed": "Pembayaran telah selesai untuk invois pembekal ini."
+    },
+    "status": { "rejected": "Ditolak", "completed": "Selesai" },
+    "row": { "invoice": "Invois", "createdDate": "Tarikh Invois" },
+    "sections": { "completed": "Selesai / Ditolak" },
+    "modal": { "title": "Butiran Penjejakan Pembayaran Pembekal" },
+    "details": { "amount": "Amaun", "invoiceDate": "Tarikh Invois", "payment": "Pembayaran", "paidDate": "Tarikh Dibayar", "reference": "Rujukan Transaksi", "rejectionReason": "Sebab Penolakan" }
+  },
   "sections": {
     "inProgress": "Dalam Proses",
     "completedRejected": "Selesai/Ditolak",

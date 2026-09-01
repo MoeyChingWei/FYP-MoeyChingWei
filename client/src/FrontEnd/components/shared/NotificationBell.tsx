@@ -3,6 +3,7 @@ import { Badge, Button, Dropdown, Typography, Empty, Spin } from "antd";
 import {
   BellOutlined,
   CheckCircleOutlined,
+  DollarOutlined,
   FileTextOutlined,
   MessageOutlined,
   TruckOutlined,
@@ -21,14 +22,19 @@ import {
 } from "../../shared/api/notifications";
 import { UserRole } from "../../shared/types/roles";
 import styles from "./NotificationBell.module.css";
+import { resolveNotificationRoute } from "../../shared/notifications/notificationRoutes";
 
 const { Text } = Typography;
 
 const BUDGET_NOTIFICATION_TYPES = [
   "BUDGET_THRESHOLD_WARNING",
+  "BUDGET_EXCEEDED",
   "BUDGET_THRESHOLD_EXCEEDED",
   "BUDGET_PREDICTION_READY",
   "BUDGET_PREDICTION_FAILED",
+  "BUDGET_AUTO_GENERATED",
+  "BUDGET_SUBMISSION_REMINDER",
+  "BUDGET_ADJUSTMENT_REQUESTED",
   "BUDGET_ADJUSTMENT_SUBMITTED",
   "BUDGET_ADJUSTMENT_APPROVED",
   "BUDGET_ADJUSTMENT_REJECTED"
@@ -92,7 +98,7 @@ function getNotificationPresentation(notification: NotificationRow): {
     if (type === "BUDGET_THRESHOLD_WARNING") {
       tone = "warning";
       label = "Budget Alert";
-    } else if (type === "BUDGET_THRESHOLD_EXCEEDED" || type === "BUDGET_PREDICTION_FAILED" || type === "BUDGET_ADJUSTMENT_REJECTED") {
+    } else if (type === "BUDGET_EXCEEDED" || type === "BUDGET_THRESHOLD_EXCEEDED" || type === "BUDGET_PREDICTION_FAILED" || type === "BUDGET_ADJUSTMENT_REJECTED") {
       tone = "warning";
       label = "Budget";
     } else if (type === "BUDGET_ADJUSTMENT_APPROVED") {
@@ -109,6 +115,18 @@ function getNotificationPresentation(notification: NotificationRow): {
 
   if (notification.refType === "delivery" || notification.refType === "grn") {
     return { icon: <TruckOutlined />, tone: "warning", label: "Delivery" };
+  }
+
+  if (notification.type.includes("PAYMENT") || notification.refType === "supplier-payment") {
+    return {
+      icon: <DollarOutlined />,
+      tone: notification.type.includes("COMPLETED") ? "success" : "info",
+      label: "Payment",
+    };
+  }
+
+  if (notification.refType === "supplier-invoice" || notification.type === "SUPPLIER_UPDATE") {
+    return { icon: <FileTextOutlined />, tone: "info", label: "Supplier Finance" };
   }
 
   if (notification.type.includes("APPROVAL")) {
@@ -160,18 +178,22 @@ export default function NotificationBell(): React.ReactElement {
   const unreadNotifications = notifications.filter((n) => !n.isRead);
   const unreadCount = unreadNotifications.length;
 
-  const resolveNotificationRoute = (n: NotificationRow): string => {
-    // Handle budget notifications
+  const resolveRoute = (n: NotificationRow): string => {
+    // Budget notifications use dedicated dashboard pages.
     if (isBudgetNotification(n.type)) {
       const type = n.type as BudgetNotificationType;
 
       switch (type) {
         case "BUDGET_THRESHOLD_WARNING":
+        case "BUDGET_EXCEEDED":
         case "BUDGET_THRESHOLD_EXCEEDED":
         case "BUDGET_PREDICTION_READY":
         case "BUDGET_PREDICTION_FAILED":
+        case "BUDGET_AUTO_GENERATED":
+        case "BUDGET_SUBMISSION_REMINDER":
           return "/budget/department-overview";
 
+        case "BUDGET_ADJUSTMENT_REQUESTED":
         case "BUDGET_ADJUSTMENT_SUBMITTED":
         case "BUDGET_ADJUSTMENT_APPROVED":
         case "BUDGET_ADJUSTMENT_REJECTED":
@@ -182,16 +204,7 @@ export default function NotificationBell(): React.ReactElement {
       }
     }
 
-    if (n.type === "PURCHASE_REQUEST_APPROVAL" && n.refId) return `/purchasing/approval/${n.refId}`;
-    if (n.type === "PURCHASE_ORDER_APPROVAL" && n.refId) return `/purchasing/po-approval/${n.refId}`;
-    if (n.refType === "purchase-request" && n.refId) return `/purchasing/review/${n.refId}`;
-    if (n.refType === "purchase-order" && n.refId) return `/purchasing/po-review/${n.refId}`;
-    if (n.refType === "supplier-order-ack" && n.refId) return `/supplier-overview/order-acknowledgement/${n.refId}`;
-    if (n.refType === "delivery" && n.refId) return `/supplier-overview/delivery/${n.refId}`;
-    if (n.refType === "grn" && n.refId) return `/supplier-overview/grn-status/${n.refId}`;
-    if (n.refType === "feedback") return "/settings/feedback";
-    if (n.refType === "tracking-item" && n.refId) return `/tracking-item?requestLocalId=${encodeURIComponent(n.refId)}`;
-    return "/overview";
+    return resolveNotificationRoute(n, sessionUser?.role);
   };
 
   const handleNotificationClick = async (n: NotificationRow) => {
@@ -203,7 +216,7 @@ export default function NotificationBell(): React.ReactElement {
     } catch (err) {
       console.error("Failed to mark notification as read:", err);
     }
-    navigate(resolveNotificationRoute(n));
+    navigate(resolveRoute(n));
   };
 
   const dropdownContent = (

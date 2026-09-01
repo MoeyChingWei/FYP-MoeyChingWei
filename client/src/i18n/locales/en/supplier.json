@@ -1,5 +1,6 @@
 {
   "moduleTitle": "Supplier Overview",
+  "userGuide": "User Guide",
   "notifications": {
     "title": "Notifications",
     "hint": "Latest supplier-side updates and activity.",
@@ -48,6 +49,10 @@
     "invoice": {
       "title": "Supplier Invoice",
       "hint": "Create and manage supplier invoices"
+    },
+    "payment": {
+      "title": "Supplier Payment",
+      "hint": "View payment processing status and payment history"
     }
   },
   "invoice": {
@@ -61,6 +66,7 @@
     },
     "status": { "draft": "Draft", "submitted": "Submitted", "approved": "Approved", "rejected": "Rejected" },
     "labels": { "pending": "Pending invoice" },
+    "tabs": { "pending": "Pending approval ({{count}})", "draft": "Draft ({{count}})", "approved": "Approved ({{count}})", "rejected": "Rejected ({{count}})" },
     "fields": {
       "invoiceNumber": "Invoice number",
       "invoiceDate": "Invoice date",
@@ -91,6 +97,54 @@
     "messages": {
       "submitted": "Supplier invoice submitted.",
       "notFound": "Supplier invoice not found."
+    }
+  },
+  "payment": {
+    "title": "Supplier Payment",
+    "empty": "No payment records found.",
+    "accessRequired": "Supplier access is required.",
+    "searchPlaceholder": "Search payment, invoice or PO...",
+    "status": {
+      "pending": "Pending Payment",
+      "processing": "Processing",
+      "paid": "Completed",
+      "failed": "Failed"
+    },
+    "fields": {
+      "paymentNumber": "Payment Number",
+      "invoiceNumber": "Invoice Number",
+      "amount": "Amount",
+      "status": "Status",
+      "action": "View",
+      "paymentTerms": "Payment Terms"
+    },
+    "actions": {
+      "view": "View details",
+      "back": "Back"
+    },
+    "tabs": {
+      "pending": "Pending ({{count}})",
+      "completed": "Completed ({{count}})"
+    },
+    "summary": {
+      "pendingCount": "Pending Payment",
+      "pendingAmount": "Pending Amount",
+      "completedCount": "Completed Payments",
+      "completedAmount": "Completed Amount"
+    },
+    "details": {
+      "title": "Payment Details",
+      "currentStatus": "Current status",
+      "invoiceDate": "Invoice Date",
+      "paidDate": "Paid Date",
+      "method": "Payment Method",
+      "reference": "Transaction Reference",
+      "processedBy": "Processed By",
+      "remarks": "Remarks",
+      "history": "Payment History",
+      "proof": "Payment Proof",
+      "viewProof": "View proof",
+      "downloadProof": "Download"
     }
   },
   "orderAcknowledgement": {

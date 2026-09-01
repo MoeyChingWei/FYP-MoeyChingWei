@@ -197,10 +197,11 @@ export async function applyGmailLabelToMessage({
   }
 
   let messages = [];
-  // Gmail may take a moment to index the sent/received copy. Use a bounded
-  // exponential backoff so delayed indexing is tolerated without hanging the
-  // notification workflow indefinitely.
-  const labelRetryDelays = [500, 1000, 2000, 4000];
+  // Gmail may take a moment to index the sent/received copy. Received copies
+  // can lag behind the SMTP response by tens of seconds, especially for an
+  // alias or a different mailbox. Keep retrying with a bounded backoff so a
+  // delayed index does not permanently lose the label.
+  const labelRetryDelays = [500, 1000, 2000, 4000, 8000, 12000];
   for (let attempt = 0; attempt <= labelRetryDelays.length && !messages.length; attempt += 1) {
     for (const q of queries) {
       const response = await gmail.users.messages.list({

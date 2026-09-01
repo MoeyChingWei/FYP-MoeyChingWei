@@ -130,8 +130,8 @@ export function requireOwnDepartment(req, res, next) {
     });
   }
 
-  // Treasury/Finance Officer and Budget Controller can access all departments
-  if ([ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER, ROLES.ADMIN].includes(req.user.role)) {
+  // Treasury/Finance Officer and Admin can access all departments
+  if ([ROLES.TREASURY_FINANCE_OFFICER, ROLES.ADMIN].includes(req.user.role)) {
     next();
     return;
   }

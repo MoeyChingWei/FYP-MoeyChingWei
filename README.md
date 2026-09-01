@@ -211,7 +211,7 @@ npm start
 
 当前角色定义在 `backend/constants/roles.js` 和 `client/src/FrontEnd/shared/types/roles.ts`：
 
-`Admin`、`Manager`、`Department Executive`、`Account Payable`、`Treasury / Finance Officer`、`Payment Team`、`Budget Controller`、`Employee`、`Supplier`。
+`Admin`、`Manager`、`Department Executive`、`Treasury / Finance Officer`、`Payment Team`、`Employee`、`Supplier`。
 
 角色检查由后端 route middleware 执行，前端路由和菜单只负责用户体验层的隐藏/跳转，不能作为唯一的安全边界。
 

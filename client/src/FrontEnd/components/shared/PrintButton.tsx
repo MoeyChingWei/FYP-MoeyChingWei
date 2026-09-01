@@ -8,7 +8,7 @@ import styles from './PrintButton.module.css';
 
 /**
  * PrintButton component - handles printing data by generating PDF and opening print dialog
- * Automatically triggers browser print dialog after PDF is loaded
+ * Automatically triggers the browser's native print preview after the PDF is loaded
  */
 export default function PrintButton({
   dataType,
@@ -27,7 +27,8 @@ export default function PrintButton({
 
   /**
    * Handle print action
-   * Generates PDF, opens in new window, and triggers print dialog
+   * Generates a PDF and prints it through a hidden frame, matching workflow
+   * document printing without opening an about:blank tab.
    */
   const handlePrint = async () => {
     if (isPrinting) return;
@@ -74,23 +75,28 @@ export default function PrintButton({
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
 
-      // Open PDF in new window
-      const printWindow = window.open(url, '_blank');
+      const printFrame = document.createElement('iframe');
+      printFrame.setAttribute('title', t('documentActions.printPreview'));
+      printFrame.style.position = 'fixed';
+      printFrame.style.left = '-10000px';
+      printFrame.style.top = '-10000px';
+      printFrame.style.width = '1px';
+      printFrame.style.height = '1px';
+      printFrame.style.border = '0';
+      document.body.appendChild(printFrame);
 
-      if (!printWindow) {
-        throw new Error('Failed to open print window. Please allow popups for this site.');
-      }
+      await new Promise<void>((resolve, reject) => {
+        printFrame.onload = () => resolve();
+        printFrame.onerror = () => reject(new Error('Print document failed to load'));
+        printFrame.src = url;
+      });
 
-      // Wait for PDF to load, then trigger print dialog
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-          // Clean up blob URL after a delay to ensure print dialog has opened
-          setTimeout(() => {
-            window.URL.revokeObjectURL(url);
-          }, 1000);
-        }, 500);
-      };
+      printFrame.contentWindow?.focus();
+      printFrame.contentWindow?.print();
+      window.setTimeout(() => {
+        printFrame.remove();
+        window.URL.revokeObjectURL(url);
+      }, 1000);
 
       // Show success message
       message.success(t('buttons.print') + ' ' + t('messages.success'));
@@ -105,16 +111,14 @@ export default function PrintButton({
 
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 403) {
-          errorMessage = 'Permission denied';
+          errorMessage = t('documentActions.permissionDenied');
         } else if (error.response?.status === 404) {
-          errorMessage = 'No records found';
+          errorMessage = t('documentActions.noRecordsFound');
         } else if (error.response?.status === 500) {
-          errorMessage = 'Server error occurred';
+          errorMessage = t('documentActions.serverError');
         } else if (error.code === 'ECONNABORTED') {
-          errorMessage = 'Request timeout';
+          errorMessage = t('documentActions.requestTimedOut');
         }
-      } else if (error instanceof Error && error.message.includes('popup')) {
-        errorMessage = 'Please allow popups to print';
       }
 
       message.error(errorMessage);

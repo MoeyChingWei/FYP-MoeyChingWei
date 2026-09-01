@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Descriptions, Empty, Flex, Table, Tag, Typography, message } from "antd";
-import { ArrowLeftOutlined, CheckOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import { Button, Card, Descriptions, Empty, Flex, Table, Tabs, Tag, Typography, message } from "antd";
+import { ArrowLeftOutlined, CheckOutlined, EyeOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { getSessionUser } from "../../shared/auth/session";
 import { formatPaymentTerm } from "../../shared/utils/paymentTerms";
-import { UserRole } from "../../shared/types/roles";
+import { canApproveSupplierInvoices, UserRole } from "../../shared/types/roles";
 import { hydrateSupplierInvoices, loadSupplierInvoices, updateSupplierInvoice, type SupplierInvoiceRecord } from "../../modules/supplierFulfillment/workflow";
-import { submitSupplierInvoice, supplierFinancePdfUrl } from "../../shared/api/supplierFinance";
+import { submitSupplierInvoice } from "../../shared/api/supplierFinance";
+import SupplierFinanceDocumentActions from "../../components/shared/SupplierFinanceDocumentActions";
 import { computeDraftLineAmountAfterTax, computeTaxBreakdown } from "../../modules/purchasing/requestCreation/constants";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import styles from "../purchasing/ApprovalDetailSubmodule.module.css";
@@ -39,9 +40,14 @@ function ItemRow({ item, currency }: { item: DraftLineItem; currency: string }):
 export default function SupplierInvoiceSubmodule(): React.ReactElement {
   const { t } = useTranslation("supplier");
   const navigate = useNavigate();
+  const location = useLocation();
   const { localId } = useParams();
   const [rows, setRows] = useState<SupplierInvoiceRecord[]>([]);
   const sessionUser = useMemo(() => getSessionUser(), []);
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo;
+  const detailBackPath = returnTo === "/finance/invoice-approval" || canApproveSupplierInvoices(sessionUser?.role)
+    ? "/finance/invoice-approval"
+    : "/supplier-overview/invoice";
 
   useEffect(() => {
     const sync = async (): Promise<void> => { await hydrateSupplierInvoices(); setRows(loadSupplierInvoices()); };
@@ -56,6 +62,17 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
     if (!sessionUser || sessionUser.role !== UserRole.SUPPLIER) return true;
     return (row.supplierId != null && row.supplierId === sessionUser.id) || row.supplierEmail === sessionUser.email;
   }), [rows, sessionUser]);
+  const orderedRows = useMemo(() => {
+    const dateValue = (invoice: SupplierInvoiceRecord): number => {
+      const date = invoice.status === "APPROVED"
+        ? invoice.approvedDate || invoice.reviewedDate || invoice.submittedDate || invoice.createdDate
+        : invoice.submittedDate || invoice.createdDate;
+      const timestamp = date ? Date.parse(date) : 0;
+      return Number.isFinite(timestamp) ? timestamp : 0;
+    };
+
+    return [...visibleRows].sort((a, b) => dateValue(b) - dateValue(a));
+  }, [visibleRows]);
   const row = useMemo(() => visibleRows.find((item) => item.localId === localId), [localId, visibleRows]);
 
   const onSubmit = async (): Promise<void> => {
@@ -80,7 +97,7 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
     const invoiceRules = row.supplierTaxRules?.length ? row.supplierTaxRules : (row.supplierTaxApplies && row.supplierTaxType ? [{ taxType: row.supplierTaxType, taxRate: row.supplierTaxRate ?? 0 }] : []);
     const invoiceTaxBreakdown = computeTaxBreakdown(row.subtotal, invoiceRules);
     return <Card><div className={styles.page}>
-      <div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview/invoice")} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.detail.title")}</Title></Flex><Tag color={statusColor(row.status)}>{t(`invoice.status.${row.status.toLowerCase()}`)}</Tag></div>
+      <div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate(detailBackPath)} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.detail.title")}</Title></Flex><Tag color={statusColor(row.status)}>{t(`invoice.status.${row.status.toLowerCase()}`)}</Tag></div>
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.poNumber")}</div><div className={styles.summaryValue}>{row.poNumber}</div></div>
         <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("invoice.fields.grnNumber")}</div><div className={styles.summaryValue}>{row.deliveryNo || "-"}</div></div>
@@ -100,7 +117,7 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
       {row.status === "REJECTED" ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.rejectionTitle")}</h3><Paragraph type="danger">{row.rejectionReason || t("invoice.detail.noRejectionReason")}</Paragraph><Paragraph>Rejected by: {row.rejectedBy || row.reviewedBy || "-"}<br/>Rejected date: {row.rejectedDate || row.reviewedDate || "-"}</Paragraph></div> : null}
       {row.approvalHistory?.length ? <div className={styles.sectionCard}><h3 className={styles.sectionTitle}>Approval history</h3>{row.approvalHistory.map((entry) => <Paragraph key={`${entry.action}-${entry.date}`}>{entry.action} by {entry.by} on {new Date(entry.date).toLocaleString()}{entry.reason ? `: ${entry.reason}` : ""}</Paragraph>)}</div> : null}
       <div className={styles.itemsCard}><h3 className={styles.sectionTitle}>{t("invoice.detail.items")}</h3><Paragraph type="secondary">{t("invoice.detail.itemsHint")}</Paragraph><div className={styles.itemList}>{row.items.map((item) => <ItemRow key={item.tempId} item={item} currency={row.currency} />)}</div></div>
-      <div className={styles.actionRow}>{row.status === "DRAFT" || row.status === "REJECTED" ? <Button type="primary" icon={<CheckOutlined />} onClick={() => void onSubmit()}>{row.status === "REJECTED" ? t("invoice.actions.resubmit") : t("invoice.actions.submit")}</Button> : null}<Button icon={<DownloadOutlined />} onClick={() => window.open(supplierFinancePdfUrl("invoices", row.localId), "_blank", "noopener,noreferrer")}>Download Invoice PDF</Button></div>
+      <div className={styles.actionRow}>{row.status === "DRAFT" || row.status === "REJECTED" ? <Button type="primary" icon={<CheckOutlined />} onClick={() => void onSubmit()}>{row.status === "REJECTED" ? t("invoice.actions.resubmit") : t("invoice.actions.submit")}</Button> : null}<SupplierFinanceDocumentActions kind="invoice" localId={row.localId} documentNumber={row.invoiceNumber || row.poNumber} /></div>
     </div></Card>;
   }
 
@@ -113,5 +130,17 @@ export default function SupplierInvoiceSubmodule(): React.ReactElement {
     { title: t("invoice.fields.status"), dataIndex: "status", render: (value: SupplierInvoiceRecord["status"]) => <Tag color={statusColor(value)}>{t(`invoice.status.${value.toLowerCase()}`)}</Tag> },
     { title: t("invoice.actions.view"), key: "action", render: (_: unknown, item: SupplierInvoiceRecord) => <Button icon={<EyeOutlined />} onClick={() => navigate(`/supplier-overview/invoice/${item.localId}`)}>{t("invoice.actions.view")}</Button> },
   ];
-  return <Card><div className={styles.page}><div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview")} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.title")}</Title></Flex></div><Table rowKey="localId" dataSource={visibleRows} columns={columns} pagination={{ pageSize: 8 }} locale={{ emptyText: <Empty description={t("invoice.empty")} /> }} scroll={{ x: 980 }} /></div></Card>;
+  const pendingRows = orderedRows.filter((item) => item.status === "SUBMITTED");
+  const draftRows = orderedRows.filter((item) => item.status === "DRAFT");
+  const approvedRows = orderedRows.filter((item) => item.status === "APPROVED");
+  const rejectedRows = orderedRows.filter((item) => item.status === "REJECTED");
+  const invoiceTable = (dataSource: SupplierInvoiceRecord[]): React.ReactElement => (
+    <Table rowKey="localId" dataSource={dataSource} columns={columns} pagination={{ pageSize: 8 }} locale={{ emptyText: <Empty description={t("invoice.empty")} /> }} scroll={{ x: 980 }} />
+  );
+  return <Card><div className={styles.page}><div className={styles.header}><Flex align="center" gap={8}><Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/supplier-overview")} aria-label={t("invoice.actions.back")} /><Title level={3} style={{ margin: 0 }}>{t("invoice.title")}</Title></Flex></div><Tabs defaultActiveKey="pending" items={[
+    { key: "pending", label: t("invoice.tabs.pending", { count: pendingRows.length }), children: invoiceTable(pendingRows) },
+    { key: "draft", label: t("invoice.tabs.draft", { count: draftRows.length }), children: invoiceTable(draftRows) },
+    { key: "approved", label: t("invoice.tabs.approved", { count: approvedRows.length }), children: invoiceTable(approvedRows) },
+    { key: "rejected", label: t("invoice.tabs.rejected", { count: rejectedRows.length }), children: invoiceTable(rejectedRows) },
+  ]} /></div></Card>;
 }

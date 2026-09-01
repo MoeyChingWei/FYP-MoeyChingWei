@@ -43,10 +43,8 @@ interface ForecastResponse {
 const DEPARTMENT_OVERVIEW_ROLES = new Set<string>([
   UserRole.ADMIN,
   UserRole.MANAGER,
-  UserRole.ACCOUNT_PAYABLE,
   UserRole.TREASURY_FINANCE_OFFICER,
   UserRole.PAYMENT_TEAM,
-  UserRole.BUDGET_CONTROLLER,
 ]);
 
 function matchesDepartment(department: ForecastDepartment, userDepartment?: string | null): boolean {

@@ -39,7 +39,7 @@ const NextMonthBudgetSubmission: React.FC = () => {
   const now = new Date();
   const targetMonth = now.getMonth() === 11 ? 1 : now.getMonth() + 2;
   const targetYear = now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear();
-  const financeRoles = [UserRole.ADMIN, UserRole.TREASURY_FINANCE_OFFICER, UserRole.BUDGET_CONTROLLER];
+  const financeRoles = [UserRole.ADMIN, UserRole.TREASURY_FINANCE_OFFICER];
 
   const visibleDepartments = useMemo(() => {
     if (sessionUser?.role && financeRoles.includes(sessionUser.role as UserRole)) return departments;

@@ -9,6 +9,26 @@
     "unreadCount": "unread",
     "markAllAsRead": "Mark All as Read"
   },
+  "supplier": {
+    "page": { "title": "Supplier Tracking" },
+    "search": { "placeholder": "Search invoice or payment..." },
+    "stages": {
+      "invoice": { "pending": "Pending Invoice", "complete": "Invoice Approved" },
+      "payment": { "pending": "Pending Payment", "complete": "Payment Processed" },
+      "completed": { "label": "Completed", "complete": "Completed" }
+    },
+    "descriptions": {
+      "rejected": "This supplier invoice was rejected. Review the rejection reason and resubmit it.",
+      "invoice": "Supplier invoice is waiting for Finance approval.",
+      "payment": "Invoice approved and waiting for the Payment Team to process.",
+      "completed": "Payment has been completed for this supplier invoice."
+    },
+    "status": { "rejected": "Rejected", "completed": "Completed" },
+    "row": { "invoice": "Invoice", "createdDate": "Invoice Date" },
+    "sections": { "completed": "Completed / Rejected" },
+    "modal": { "title": "Supplier Payment Tracking Detail" },
+    "details": { "amount": "Amount", "invoiceDate": "Invoice Date", "payment": "Payment", "paidDate": "Paid Date", "reference": "Transaction Reference", "rejectionReason": "Rejection Reason" }
+  },
   "sections": {
     "inProgress": "In Progress",
     "completedRejected": "Completed/Rejected",

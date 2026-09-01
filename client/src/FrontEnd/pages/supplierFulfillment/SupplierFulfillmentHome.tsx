@@ -2,12 +2,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   BellOutlined,
   CheckCircleOutlined,
+  ClockCircleOutlined,
+  CreditCardOutlined,
   DatabaseOutlined,
   FileTextOutlined,
   DeleteOutlined,
   InboxOutlined,
   ShopOutlined,
   TruckOutlined,
+  QuestionCircleOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Empty, Flex, Popconfirm, Tabs, Tag, Typography, message } from "antd";
@@ -33,6 +37,8 @@ import {
 } from "../../modules/supplierFulfillment/workflow";
 
 import styles from "./SupplierFulfillmentHome.module.css";
+import { resolveNotificationRoute } from "../../shared/notifications/notificationRoutes";
+import UserGuideModal from "../../components/UserGuide/UserGuideModal";
 
 const { Text, Title } = Typography;
 
@@ -52,6 +58,8 @@ type StatusCard = {
   label: string;
   value: number;
   accent: string;
+  icon: React.ReactNode;
+  route: string;
 };
 
 type ModuleCard = {
@@ -71,6 +79,7 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
   const [deliveries, setDeliveries] = useState(() => loadSupplierDeliveries());
   const [grns, setGrns] = useState(() => loadSupplierGrns());
   const sessionUser = useMemo(() => getSessionUser(), []);
+  const [userGuideVisible, setUserGuideVisible] = useState(false);
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const isAdmin = sessionUser?.role === UserRole.ADMIN;
 
@@ -105,6 +114,12 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
         hint: t("modules.invoice.hint"),
         icon: <FileTextOutlined style={{ fontSize: 28 }} />,
         route: "/supplier-overview/invoice",
+      },
+      {
+        title: t("modules.payment.title", { defaultValue: "Supplier Payment" }),
+        hint: t("modules.payment.hint", { defaultValue: "View payment processing status and payment history" }),
+        icon: <CreditCardOutlined style={{ fontSize: 28 }} />,
+        route: "/supplier-overview/payment",
       },
     ],
     [t],
@@ -185,22 +200,6 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
     [notifications],
   );
 
-  const resolveNotificationRoute = (n: NotificationItem): string => {
-    if (n.rawType === "SUPPLIER_ORDER_ACK" && n.refId) {
-      return `/supplier-overview/order-acknowledgement/${n.refId}`;
-    }
-    if (n.refType === "supplier-order-ack" && n.refId) {
-      return `/supplier-overview/order-acknowledgement/${n.refId}`;
-    }
-    if (n.refType === "delivery" && n.refId) {
-      return `/supplier-overview/delivery/${n.refId}`;
-    }
-    if (n.refType === "grn" && n.refId) {
-      return `/supplier-overview/grn-status/${n.refId}`;
-    }
-    return "/supplier-overview";
-  };
-
   const openNotification = async (n: NotificationItem): Promise<void> => {
     try {
       await markNotificationRead(n.id);
@@ -208,7 +207,7 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
     } catch {
       // Keep navigation responsive even if mark-read fails.
     }
-    navigate(resolveNotificationRoute(n));
+    navigate(resolveNotificationRoute(n, sessionUser?.role));
   };
 
   const supplierFilter = <T extends { supplierId?: number; supplierEmail?: string }>(
@@ -241,26 +240,36 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
         value: visibleOrderAcks.filter((row) => row.status === "PENDING_ORDER_ACKNOWLEDGE")
           .length,
         accent: "#f59e0b",
+        icon: <ClockCircleOutlined />,
+        route: "/supplier-overview/order-acknowledgement",
       },
       {
         label: t("statusCards.pendingDelivery"),
         value: visibleDeliveries.filter((row) => row.status === "PENDING_DELIVERY").length,
         accent: "#fb7185",
+        icon: <TruckOutlined />,
+        route: "/supplier-overview/delivery",
       },
       {
         label: t("statusCards.pendingGrn"),
         value: visibleGrns.filter((row) => row.status === "PENDING_GRN").length,
         accent: "#0ea5e9",
+        icon: <InboxOutlined />,
+        route: "/supplier-overview/grn-status?status=PENDING_GRN",
       },
       {
         label: t("statusCards.discrepancy"),
         value: visibleGrns.filter((row) => row.status === "DISCREPANCY").length,
         accent: "#ef4444",
+        icon: <WarningOutlined />,
+        route: "/supplier-overview/grn-status?status=DISCREPANCY",
       },
       {
         label: t("statusCards.received"),
         value: visibleGrns.filter((row) => isGrnReceived(row.status)).length,
         accent: "#14b8a6",
+        icon: <CheckCircleOutlined />,
+        route: "/supplier-overview/grn-status?status=RECEIVED",
       },
     ],
     [visibleDeliveries, visibleGrns, visibleOrderAcks, t],
@@ -418,80 +427,17 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
             {t("moduleTitle")}
           </Title>
         </div>
+        <Button
+          type="default"
+          icon={<QuestionCircleOutlined />}
+          onClick={() => setUserGuideVisible(true)}
+          style={{ marginLeft: "auto" }}
+        >
+          {t("userGuide", { defaultValue: "User Guide" })}
+        </Button>
       </div>
 
-      <div className={`${styles.content} ${isAdmin ? styles.contentNoNotification : ""}`}>
-        {!isAdmin && (
-          <Card
-            className={styles.notifications}
-            variant="borderless"
-            styles={{ body: { padding: 16 } }}
-          >
-            <div className={styles.notificationsBody}>
-              <div className={styles.notificationsHeader}>
-                <div>
-                  <div className={styles.notificationsTitle}>
-                    <BellOutlined /> {t("notifications.title")}
-                  </div>
-                  <div className={styles.notificationsHint}>
-                    {t("notifications.hint")}
-                  </div>
-                </div>
-                <Flex gap={8}>
-                  {activeNotifTab === "history" ? (
-                    <Popconfirm
-                      title={t("notifications.deleteAllConfirm")}
-                      okText={t("notifications.deleteAll")}
-                      okButtonProps={{ danger: true }}
-                      cancelText={t("common.cancel")}
-                      onConfirm={deleteAllHistory}
-                    >
-                      <Button
-                        size="small"
-                        type="default"
-                        icon={<DeleteOutlined />}
-                        disabled={historyNotifications.length === 0}
-                      >
-                        {t("notifications.deleteAll")}
-                      </Button>
-                    </Popconfirm>
-                  ) : (
-                    <Button
-                      size="small"
-                      type="default"
-                      onClick={markAllRead}
-                      disabled={latestNotifications.length === 0}
-                    >
-                      {t("notifications.markAllRead")}
-                    </Button>
-                  )}
-                </Flex>
-              </div>
-
-              <div className={styles.notificationsScroll}>
-                <Tabs
-                  className={styles.notificationsTabs}
-                  size="small"
-                  activeKey={activeNotifTab}
-                  onChange={(k) => setActiveNotifTab(k as "latest" | "history")}
-                  items={[
-                    {
-                      key: "latest",
-                      label: t("notifications.latest", { count: latestNotifications.length }),
-                      children: renderNotificationList(latestNotifications),
-                    },
-                    {
-                      key: "history",
-                      label: t("notifications.history", { count: historyNotifications.length }),
-                      children: renderHistoryList(historyNotifications),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-          </Card>
-        )}
-
+      <div className={styles.content}>
         <div className={styles.mainColumn}>
           <div className={styles.statusGrid}>
             {statusCards.map((item) => (
@@ -499,9 +445,25 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
                 key={item.label}
                 className={styles.statusCard}
                 variant="borderless"
+                hoverable
+                onClick={() => navigate(item.route)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    navigate(item.route);
+                  }
+                }}
+                role="link"
+                tabIndex={0}
+                aria-label={item.label}
                 styles={{ body: { padding: 16 } }}
               >
-                <div className={styles.statusLabel}>{item.label}</div>
+                <div className={styles.statusHeader}>
+                  <div className={styles.statusIcon} style={{ color: item.accent, background: `${item.accent}18` }}>
+                    {item.icon}
+                  </div>
+                  <div className={styles.statusLabel}>{item.label}</div>
+                </div>
                 <div className={styles.statusValue}>{item.value}</div>
                 <div
                   className={styles.statusAccent}
@@ -533,8 +495,85 @@ export default function SupplierFulfillmentHome(): React.ReactElement {
               </Card>
             ))}
           </div>
+
+          {!isAdmin && (
+            <Card
+              className={styles.notifications}
+              variant="borderless"
+              styles={{ body: { padding: 16 } }}
+            >
+              <div className={styles.notificationsBody}>
+                <div className={styles.notificationsHeader}>
+                  <div>
+                    <div className={styles.notificationsTitle}>
+                      <BellOutlined /> {t("notifications.title")}
+                    </div>
+                    <div className={styles.notificationsHint}>
+                      {t("notifications.hint")}
+                    </div>
+                  </div>
+                  <Flex gap={8}>
+                    {activeNotifTab === "history" ? (
+                      <Popconfirm
+                        title={t("notifications.deleteAllConfirm")}
+                        okText={t("notifications.deleteAll")}
+                        okButtonProps={{ danger: true }}
+                        cancelText={t("common.cancel")}
+                        onConfirm={deleteAllHistory}
+                      >
+                        <Button
+                          size="small"
+                          type="default"
+                          icon={<DeleteOutlined />}
+                          disabled={historyNotifications.length === 0}
+                        >
+                          {t("notifications.deleteAll")}
+                        </Button>
+                      </Popconfirm>
+                    ) : (
+                      <Button
+                        size="small"
+                        type="default"
+                        onClick={markAllRead}
+                        disabled={latestNotifications.length === 0}
+                      >
+                        {t("notifications.markAllRead")}
+                      </Button>
+                    )}
+                  </Flex>
+                </div>
+
+                <div className={styles.notificationsScroll}>
+                  <Tabs
+                    className={styles.notificationsTabs}
+                    size="small"
+                    activeKey={activeNotifTab}
+                    onChange={(k) => setActiveNotifTab(k as "latest" | "history")}
+                    items={[
+                      {
+                        key: "latest",
+                        label: t("notifications.latest", { count: latestNotifications.length }),
+                        children: renderNotificationList(latestNotifications),
+                      },
+                      {
+                        key: "history",
+                        label: t("notifications.history", { count: historyNotifications.length }),
+                        children: renderHistoryList(historyNotifications),
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
+            </Card>
+          )}
         </div>
       </div>
+
+      <UserGuideModal
+        visible={userGuideVisible}
+        onClose={() => setUserGuideVisible(false)}
+        userRole={sessionUser?.role}
+      />
     </div>
   );
 }

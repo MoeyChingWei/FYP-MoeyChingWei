@@ -9,6 +9,8 @@ import {
   InboxOutlined,
   ArrowRightOutlined,
   QuestionCircleOutlined,
+  CreditCardOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -20,6 +22,12 @@ import { fetchNotifications, type NotificationRow } from "../shared/api/notifica
 import { fetchDashboardStatistics, type DashboardStatistics } from "../shared/api/dashboard";
 import { loadPurchaseRequestDrafts } from "../modules/purchasing/requestCreation/storage";
 import { loadPurchaseOrderDrafts } from "../modules/purchasing/purchaseOrder/storage";
+import {
+  hydrateSupplierPayments,
+  loadSupplierPayments,
+  type SupplierPaymentRecord,
+} from "../modules/supplierFulfillment/workflow";
+import { resolveNotificationRoute } from "../shared/notifications/notificationRoutes";
 
 import StatCard from "../components/shared/StatCard";
 import PurchasingTrendChart from "../components/shared/PurchasingTrendChart";
@@ -38,6 +46,7 @@ export default function Dashboard(): React.ReactElement {
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [dashboardStats, setDashboardStats] = useState<DashboardStatistics | null>(null);
+  const [paymentRows, setPaymentRows] = useState<SupplierPaymentRecord[]>([]);
   const [userGuideVisible, setUserGuideVisible] = useState(false);
 
   const isAdmin = role === UserRole.ADMIN;
@@ -71,6 +80,17 @@ export default function Dashboard(): React.ReactElement {
     void loadData();
   }, [sessionUser?.id, isAdmin, department]);
 
+  useEffect(() => {
+    if (role !== UserRole.PAYMENT_TEAM) return;
+    const syncPayments = async (): Promise<void> => {
+      await hydrateSupplierPayments();
+      setPaymentRows(loadSupplierPayments());
+    };
+    void syncPayments();
+    window.addEventListener("erp-supplier-payments", syncPayments);
+    return () => window.removeEventListener("erp-supplier-payments", syncPayments);
+  }, [role]);
+
   // Calculate statistics from dashboard API
   const pendingApprovals = dashboardStats?.pendingApprovals ?? 0;
   const totalRequests = dashboardStats?.totalRequests ?? 0;
@@ -96,6 +116,26 @@ export default function Dashboard(): React.ReactElement {
     }
   }, []);
 
+  const ownedRequests = useMemo(() => {
+    if (!sessionUser) return [];
+    const email = String(sessionUser.email ?? "").trim().toLowerCase();
+    const name = String(sessionUser.name ?? "").trim().toLowerCase();
+    return purchaseRequests.filter((request) =>
+      (request.createdByUserId != null && String(request.createdByUserId) === String(sessionUser.id)) ||
+      String(request.createdByEmail ?? "").trim().toLowerCase() === email ||
+      (name.length > 0 && String(request.requestBy ?? "").trim().toLowerCase() === name),
+    );
+  }, [purchaseRequests, sessionUser]);
+
+  const ownedOrders = useMemo(() => {
+    if (!sessionUser) return [];
+    const email = String(sessionUser.email ?? "").trim().toLowerCase();
+    return purchaseOrders.filter((order) =>
+      (order.createdByUserId != null && String(order.createdByUserId) === String(sessionUser.id)) ||
+      String(order.createdByEmail ?? "").trim().toLowerCase() === email,
+    );
+  }, [purchaseOrders, sessionUser]);
+
   // Use real data from API
   const trendData = dashboardStats?.trendData ?? [];
   const categoryData = dashboardStats?.categoryData ?? [];
@@ -114,19 +154,6 @@ export default function Dashboard(): React.ReactElement {
       }));
   }, [notifications]);
 
-  const resolveNotificationRoute = (n: NotificationRow): string => {
-    if (n.type === "PURCHASE_REQUEST_APPROVAL" && n.refId) return `/purchasing/approval/${n.refId}`;
-    if (n.type === "PURCHASE_ORDER_APPROVAL" && n.refId) return `/purchasing/po-approval/${n.refId}`;
-    if (n.refType === "purchase-request" && n.refId) return `/purchasing/review/${n.refId}`;
-    if (n.refType === "purchase-order" && n.refId) return `/purchasing/po-review/${n.refId}`;
-    if (n.refType === "supplier-order-ack" && n.refId) return `/supplier-overview/order-acknowledgement/${n.refId}`;
-    if (n.refType === "delivery" && n.refId) return `/supplier-overview/delivery/${n.refId}`;
-    if (n.refType === "grn" && n.refId) return `/supplier-overview/grn-status/${n.refId}`;
-    if (n.refType === "feedback") return "/settings/feedback";
-    if (n.refType === "tracking-item" && n.refId) return `/tracking-item?requestLocalId=${encodeURIComponent(n.refId)}`;
-    return "#";
-  };
-
   const quickActions = [
     {
       icon: <FileTextOutlined style={{ fontSize: 20 }} />,
@@ -140,14 +167,14 @@ export default function Dashboard(): React.ReactElement {
       label: t('quickActions.approveRequests'),
       path: "/purchasing/approval",
       color: "#22c55e",
-      show: role === UserRole.ADMIN || role === UserRole.DEPARTMENT_EXECUTIVE,
+      show: role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.DEPARTMENT_EXECUTIVE,
     },
     {
       icon: <ShoppingCartOutlined style={{ fontSize: 20 }} />,
       label: t('quickActions.createPurchaseOrder'),
       path: "/purchasing/po-creation",
       color: "#f59e0b",
-      show: role === UserRole.ADMIN || role === UserRole.DEPARTMENT_EXECUTIVE,
+      show: role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.DEPARTMENT_EXECUTIVE,
     },
     {
       icon: <TruckOutlined style={{ fontSize: 20 }} />,
@@ -163,7 +190,104 @@ export default function Dashboard(): React.ReactElement {
       color: "#ec4899",
       show: !isSupplier,
     },
+    {
+      icon: <DollarOutlined style={{ fontSize: 20 }} />,
+      label: "Department budget",
+      path: "/budget/department-overview",
+      color: "#8b5cf6",
+      show: isEmployee,
+    },
+    {
+      icon: <FileTextOutlined style={{ fontSize: 20 }} />,
+      label: "Supplier invoice approval",
+      path: "/finance/invoice-approval",
+      color: "#0f766e",
+      show: role === UserRole.TREASURY_FINANCE_OFFICER,
+    },
+    {
+      icon: <CreditCardOutlined style={{ fontSize: 20 }} />,
+      label: "Payment processing",
+      path: "/finance/payment-processing",
+      color: "#2563eb",
+      show: role === UserRole.PAYMENT_TEAM,
+    },
+    {
+      icon: <DollarOutlined style={{ fontSize: 20 }} />,
+      label: "Budget adjustment",
+      path: "/budget/adjustment-request",
+      color: "#d97706",
+      show: role === UserRole.MANAGER,
+    },
+    {
+      icon: <DollarOutlined style={{ fontSize: 20 }} />,
+      label: "Submit next month budget",
+      path: "/budget/next-month-submission",
+      color: "#7c3aed",
+      show: role === UserRole.DEPARTMENT_EXECUTIVE,
+    },
+    {
+      icon: <DollarOutlined style={{ fontSize: 20 }} />,
+      label: "Budget control centre",
+      path: "/budget/finance-dashboard",
+      color: "#f59e0b",
+      show: role === UserRole.TREASURY_FINANCE_OFFICER,
+    },
   ].filter((action) => action.show);
+
+  const roleTitle = isEmployee
+    ? "My Work"
+    : role === UserRole.MANAGER
+      ? "Department Manager Overview"
+      : role === UserRole.DEPARTMENT_EXECUTIVE
+        ? "Department Executive Overview"
+        : role === UserRole.TREASURY_FINANCE_OFFICER
+          ? "Treasury Control Centre"
+          : role === UserRole.PAYMENT_TEAM
+            ? "Payment Operations"
+            : t("title");
+  const roleSubtitle = isEmployee
+    ? "Your requests, purchase orders and tracked items in one place."
+    : role === UserRole.MANAGER || role === UserRole.DEPARTMENT_EXECUTIVE
+      ? "Monitor department purchasing, budget usage and work waiting for action."
+      : role === UserRole.TREASURY_FINANCE_OFFICER
+        ? "Review invoice approvals, budget submissions and financial exceptions."
+        : role === UserRole.PAYMENT_TEAM
+          ? "Prioritise upcoming, overdue and completed supplier payments."
+          : t("welcome", { name: sessionUser?.name || sessionUser?.email });
+  const departmentFocus: Record<string, string> = {
+    finance: "Invoice, payment and budget exceptions",
+    "human resources": "People-related requests and training spend",
+    it: "Hardware, software and licence requests",
+    purchasing: "Supplier lead time, approvals and delivery flow",
+    operations: "Operational spend, open orders and delivery status",
+    sales: "Sales requests, events and travel-related spend",
+    warehouse: "Stock levels, incoming deliveries and GRN discrepancies",
+    marketing: "Campaign procurement and agency spend",
+    administration: "Facilities, office suppliers and service requests",
+    legal: "Contract vendors, renewals and compliance documents",
+  };
+  const departmentFocusLabel = departmentFocus[String(department ?? "").trim().toLowerCase()];
+
+  const statCards = isEmployee
+    ? [
+        { title: "Draft purchase requests", value: ownedRequests.filter((r) => r.status === "DRAFT").length, icon: <FileTextOutlined />, color: "#3b82f6" },
+        { title: "Submitted requests", value: ownedRequests.filter((r) => r.status !== "DRAFT").length, icon: <ClockCircleOutlined />, color: "#f59e0b" },
+        { title: "My purchase orders", value: ownedOrders.length, icon: <ShoppingCartOutlined />, color: "#22c55e" },
+        { title: "Unread notifications", value: notifications.filter((n) => !n.isRead).length, icon: <InboxOutlined />, color: "#ec4899" },
+      ]
+    : role === UserRole.PAYMENT_TEAM
+      ? [
+          { title: "Pending payments", value: paymentRows.filter((row) => row.status === "PENDING_PAYMENT").length, icon: <ClockCircleOutlined />, color: "#f59e0b" },
+          { title: "Pending payment amount", value: paymentRows.filter((row) => row.status === "PENDING_PAYMENT").reduce((sum, row) => sum + Number(row.amount || 0), 0).toFixed(2), suffix: " RM", icon: <CreditCardOutlined />, color: "#2563eb" },
+          { title: "Paid payments", value: paymentRows.filter((row) => row.status === "PAID").length, icon: <CheckCircleOutlined />, color: "#14b8a6" },
+          { title: "Department monthly spend", value: (currentMonthSpending / 1000).toFixed(1), suffix: "K", icon: <DollarOutlined />, color: "#8b5cf6" },
+        ]
+      : [
+          { title: role === UserRole.TREASURY_FINANCE_OFFICER ? "Pending workflow approvals" : t("cards.pendingApprovals"), value: pendingApprovals, icon: <ClockCircleOutlined />, color: "#f59e0b" },
+          { title: t("cards.purchaseRequests"), value: totalRequests, icon: <FileTextOutlined />, color: "#3b82f6", trend: requestsTrend !== 0 ? { value: Math.abs(requestsTrend), isPositive: requestsTrend > 0 } : undefined },
+          { title: t("cards.purchaseOrders"), value: totalOrders, icon: <ShoppingCartOutlined />, color: "#22c55e", trend: ordersTrend !== 0 ? { value: Math.abs(ordersTrend), isPositive: ordersTrend > 0 } : undefined },
+          { title: t("cards.monthlySpending"), value: (currentMonthSpending / 1000).toFixed(1), suffix: "K", icon: <TruckOutlined />, color: "#ec4899", trend: spendingTrend !== 0 ? { value: Math.abs(spendingTrend), isPositive: spendingTrend > 0 } : undefined },
+        ];
 
   if (isSupplier) {
     return (
@@ -235,78 +359,44 @@ export default function Dashboard(): React.ReactElement {
       <div className={styles.headerRow}>
         <div className={styles.titleWrap}>
           <Title level={3} style={{ marginBottom: 4 }}>
-            {t('title')}
+            {roleTitle}
           </Title>
-          <Text type="secondary">{t('welcome', { name: sessionUser?.name || sessionUser?.email })}</Text>
+          <Text type="secondary">
+            {t('welcome', { name: sessionUser?.name || sessionUser?.email })}
+            {department ? ` · ${department}` : ""}
+          </Text>
+          <Text type="secondary" style={{ display: "block", marginTop: 4 }}>
+            {roleSubtitle}
+          </Text>
+          {departmentFocusLabel && (
+            <Text type="secondary" style={{ display: "block", marginTop: 4 }}>
+              Focus: {departmentFocusLabel}
+            </Text>
+          )}
         </div>
-        <Button
-          type="default"
-          icon={<QuestionCircleOutlined />}
-          onClick={() => setUserGuideVisible(true)}
-        >
-          {t('userGuide')}
-        </Button>
+        <Flex align="center" gap={8} wrap>
+          <Tag color="blue">{role || "User"}</Tag>
+          <Button
+            type="default"
+            icon={<QuestionCircleOutlined />}
+            onClick={() => setUserGuideVisible(true)}
+          >
+            {t('userGuide')}
+          </Button>
+        </Flex>
       </div>
 
-      {!isEmployee && <>
       {/* Statistics Cards */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title={t('cards.pendingApprovals')}
-            value={pendingApprovals}
-            icon={<ClockCircleOutlined />}
-            color="#f59e0b"
-            loading={loading}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title={t('cards.purchaseRequests')}
-            value={totalRequests}
-            icon={<FileTextOutlined />}
-            color="#3b82f6"
-            loading={loading}
-            trend={
-              requestsTrend !== 0
-                ? { value: Math.abs(requestsTrend), isPositive: requestsTrend > 0 }
-                : undefined
-            }
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title={t('cards.purchaseOrders')}
-            value={totalOrders}
-            icon={<ShoppingCartOutlined />}
-            color="#22c55e"
-            loading={loading}
-            trend={
-              ordersTrend !== 0
-                ? { value: Math.abs(ordersTrend), isPositive: ordersTrend > 0 }
-                : undefined
-            }
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title={t('cards.monthlySpending')}
-            value={(currentMonthSpending / 1000).toFixed(1)}
-            suffix="K"
-            icon={<TruckOutlined />}
-            color="#ec4899"
-            loading={loading}
-            trend={
-              spendingTrend !== 0
-                ? { value: Math.abs(spendingTrend), isPositive: spendingTrend > 0 }
-                : undefined
-            }
-          />
-        </Col>
+        {statCards.map((stat) => (
+          <Col xs={24} sm={12} lg={6} key={stat.title}>
+            <StatCard {...stat} loading={loading && !isEmployee && role !== UserRole.PAYMENT_TEAM} />
+          </Col>
+        ))}
       </Row>
 
       {/* Charts */}
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+      {!isEmployee && <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={14}>
           <PurchasingTrendChart data={trendData} loading={loading} />
         </Col>
@@ -314,7 +404,7 @@ export default function Dashboard(): React.ReactElement {
           <SpendingByCategory data={categoryData} loading={loading} />
         </Col>
       </Row>
-      </>}
+      }
 
       {/* Quick Actions and Recent Activity */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
@@ -369,7 +459,7 @@ export default function Dashboard(): React.ReactElement {
           </Card>
         </Col>
 
-        {!isEmployee && <Col xs={24} lg={12}>
+        <Col xs={24} lg={isEmployee ? 12 : 12}>
           <Card
             title={t('recentActivity.title')}
             extra={
@@ -392,7 +482,7 @@ export default function Dashboard(): React.ReactElement {
               <List
                 dataSource={recentActivities}
                 renderItem={(item) => {
-                  const route = resolveNotificationRoute(item.notification);
+                  const route = resolveNotificationRoute(item.notification, sessionUser?.role);
                   return (
                     <List.Item
                       style={{

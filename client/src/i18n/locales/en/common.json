@@ -46,6 +46,17 @@
     "confirmDelete": "Are you sure you want to delete?",
     "unsavedChanges": "You have unsaved changes. Continue?"
   },
+  "documentActions": {
+    "pdfExported": "PDF exported",
+    "pdfExportFailed": "Unable to export PDF",
+    "printPreview": "Print preview",
+    "printPreviewOpened": "Print preview opened",
+    "printFailed": "Unable to open print document",
+    "permissionDenied": "Permission denied",
+    "noRecordsFound": "No records found",
+    "serverError": "Server error occurred",
+    "requestTimedOut": "Request timed out"
+  },
   "languages": {
     "en": "English",
     "zh": "简体中文",

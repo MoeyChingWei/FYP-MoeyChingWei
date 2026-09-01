@@ -2,6 +2,8 @@ import React from "react";
 import { Breadcrumb } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { HomeOutlined } from "@ant-design/icons";
+import { getSessionUser } from "../../shared/auth/session";
+import { canApproveSupplierInvoices } from "../../shared/types/roles";
 import styles from "./BreadcrumbNav.module.css";
 
 type BreadcrumbItem = {
@@ -28,6 +30,7 @@ const routeNameMap: Record<string, string> = {
   "goods-received-note": "Goods Received Note",
   "supplier-overview": "Supplier Overview",
   invoice: "Supplier Invoice",
+  payment: "Supplier Payment",
   "order-acknowledgement": "Order Acknowledgement",
   "grn-status": "GRN Status",
   "tracking-item": "Tracking Item",
@@ -53,6 +56,12 @@ const routeNameMap: Record<string, string> = {
 export default function BreadcrumbNav(): React.ReactElement {
   const location = useLocation();
   const pathSnippets = location.pathname.split("/").filter((i) => i);
+  const sessionUser = getSessionUser();
+  const isFinanceInvoiceDetail =
+    pathSnippets[0] === "supplier-overview" &&
+    pathSnippets[1] === "invoice" &&
+    pathSnippets.length >= 3 &&
+    ((location.state as { returnTo?: string } | null)?.returnTo === "/finance/invoice-approval" || canApproveSupplierInvoices(sessionUser?.role));
 
   const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -64,18 +73,19 @@ export default function BreadcrumbNav(): React.ReactElement {
     },
   ];
 
-  pathSnippets.forEach((snippet, index) => {
-    const rawUrl = `/${pathSnippets.slice(0, index + 1).join("/")}`;
+  const snippets = isFinanceInvoiceDetail ? ["finance", "invoice-approval", pathSnippets[2]] : pathSnippets;
+  snippets.forEach((snippet, index) => {
+    const rawUrl = `/${snippets.slice(0, index + 1).join("/")}`;
     // The budget landing page is named differently from its child routes.
     const url = rawUrl === "/budget" ? "/budget-management" : rawUrl;
-    const isLast = index === pathSnippets.length - 1;
+    const isLast = index === snippets.length - 1;
     const title = routeNameMap[snippet] || snippet;
 
     // Adjustment requests and approvals are submodules of the department
     // forecasting page, rather than separate top-level budget modules.
     const isDepartmentForecastingSubmodule =
       index === 1 &&
-      pathSnippets[0] === "budget" &&
+      snippets[0] === "budget" &&
       ["adjustment-request", "approval-queue"].includes(snippet);
     if (isDepartmentForecastingSubmodule) {
       breadcrumbItems.push({

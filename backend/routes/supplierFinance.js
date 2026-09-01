@@ -9,7 +9,7 @@ import { authenticateRequest, requireRoles } from "../middleware/auth.js";
 import { ROLES } from "../constants/roles.js";
 import { PDFGenerator } from "../services/pdf-generator.js";
 import { renderEmailDocument, sendSystemNotificationEmail } from "../services/emailNotifications.js";
-import { hydrateWorkflowCompanyLogo, hydrateWorkflowItemImages, workflowHtml } from "./export.js";
+import { documentPdfFilename, hydrateWorkflowCompanyLogo, hydrateWorkflowItemImages, workflowHtml } from "./export.js";
 import { formatCurrency } from "../utils/currency.js";
 
 const router = express.Router();
@@ -28,9 +28,9 @@ function money(value, currency = "RM") {
   return formatCurrency(value, currency);
 }
 
-function maskAccount(value) {
+function displayAccount(value) {
   const account = String(value || "").trim();
-  return account ? `****${account.slice(-4)}` : "Not provided";
+  return account || "Not provided";
 }
 
 function calculateTotals(items, orderTax = {}) {
@@ -111,9 +111,10 @@ async function getPayment(localId) {
 // final amount. Recover the invoice calculation so older payment advice and
 // completion emails can also show subtotal and tax formally.
 async function hydratePaymentFinancialDetails(payment = {}) {
-  if (Number.isFinite(Number(payment.subtotal)) || !payment.invoiceLocalId) return payment;
+  if ((Number.isFinite(Number(payment.subtotal)) && payment.sourceRequester && payment.companyLogo) || !payment.invoiceLocalId) return payment;
   const invoice = await getInvoice(payment.invoiceLocalId);
   if (!invoice) return payment;
+  const hydratedInvoice = await hydrateWorkflowCompanyLogo(invoice);
   return {
     ...payment,
     items: invoice.items,
@@ -127,10 +128,11 @@ async function hydratePaymentFinancialDetails(payment = {}) {
     supplierTaxRules: invoice.supplierTaxRules,
     supplierCompanyName: payment.supplierCompanyName || invoice.supplierCompanyName,
     supplierAddress: payment.supplierAddress || invoice.supplierAddress,
+    sourceRequester: payment.sourceRequester || invoice.sourceRequester,
     supplierLogo: payment.supplierLogo || invoice.supplierLogo,
     companyName: payment.companyName || invoice.companyName,
     companyAddress: payment.companyAddress || invoice.companyAddress,
-    companyLogo: payment.companyLogo || invoice.companyLogo,
+    companyLogo: payment.companyLogo || hydratedInvoice.companyLogo,
   };
 }
 
@@ -153,6 +155,19 @@ async function recipientsFor(roles) {
   return prisma.user.findMany({ where: { role: { in: roles }, isActive: true }, select: { id: true, email: true, name: true } });
 }
 
+async function supplierRecipient(record) {
+  const email = String(record?.supplierEmail || "").trim();
+  const supplierId = Number(record?.supplierId);
+  const conditions = [];
+  if (email) conditions.push({ email: { equals: email, mode: "insensitive" } });
+  if (Number.isInteger(supplierId) && supplierId > 0) conditions.push({ id: supplierId });
+  if (!conditions.length) return null;
+  return prisma.user.findFirst({
+    where: { role: ROLES.SUPPLIER, isActive: true, OR: conditions },
+    select: { id: true, email: true, name: true },
+  });
+}
+
 async function notify(users, payload) {
   if (!users.length) return;
   await prisma.notification.createMany({ data: users.map((user) => ({ userId: user.id, ...payload })) }).catch((error) => console.error("Supplier finance notification failed:", error.message));
@@ -170,21 +185,32 @@ function paymentPdfHtml(payment) {
   return workflowHtml("payment-advice", payment, "Payment Advice");
 }
 
-async function generatePdf(kind, record) {
+function validCompanyLogo(value) {
+  const source = String(value || "");
+  return /^data:image\/(?:png|jpe?g|webp|gif|svg\+xml);base64,[A-Za-z0-9+/]*={0,2}$/i.test(source) ? source : "";
+}
+
+async function generatePdf(kind, record, requestedCompanyLogo = "") {
   const number = String(kind === "invoice" ? record.invoiceNumber : record.paymentNumber).replace(/[^a-zA-Z0-9-]/g, "_");
   const filename = kind === "invoice" ? `supplier-invoice-approval-summary-${number}.pdf` : `payment-advice-${number}.pdf`;
   const relativePath = path.join("supplier-finance", filename);
   const outputPath = path.join(UPLOAD_ROOT, relativePath);
   const generator = new PDFGenerator();
   try {
-    const withLogo = await hydrateWorkflowCompanyLogo(record);
-    const withSupplierLogo = await hydrateWorkflowSupplierLogo(withLogo);
-    const hydrated = await hydrateWorkflowItemImages(withSupplierLogo);
-    await generator.generatePDF(kind === "invoice" ? invoicePdfHtml(hydrated) : paymentPdfHtml(hydrated), outputPath);
+    await generator.generatePDF(await financeDocumentHtml(kind, record, requestedCompanyLogo), outputPath);
     return { filename, path: relativePath };
   } finally {
     await generator.close().catch(() => {});
   }
+}
+
+async function financeDocumentHtml(kind, record, requestedCompanyLogo = "") {
+  const withLogo = await hydrateWorkflowCompanyLogo(record);
+  const withSupplierLogo = await hydrateWorkflowSupplierLogo(withLogo);
+  const hydrated = await hydrateWorkflowItemImages(withSupplierLogo);
+  const currentLogo = validCompanyLogo(requestedCompanyLogo);
+  const latest = currentLogo ? { ...hydrated, companyLogo: currentLogo } : hydrated;
+  return kind === "invoice" ? invoicePdfHtml(latest) : paymentPdfHtml(latest);
 }
 
 // Older invoice rows were created without copying the supplier logo from the
@@ -313,7 +339,7 @@ router.post("/invoices/:localId/submit", requireRoles([ROLES.SUPPLIER, ROLES.ADM
     const pdf = await bestEffortInvoicePdf(invoice);
     const finance = await recipientsFor([ROLES.TREASURY_FINANCE_OFFICER]);
     await notify(finance, { title: "Supplier Invoice Pending Approval", message: `${invoice.invoiceNumber} requires Finance approval.`, type: "SUPPLIER_INVOICE_APPROVAL", refType: "supplier-invoice", refId: invoice.localId });
-    const document = emailDocument(`[OptiMind ERP] Supplier Invoice Pending Approval - ${invoice.invoiceNumber}`, "Supplier Invoice has been submitted. Review, approve or reject it in OptiMind ERP.", invoice, [["Supplier bank account", maskAccount(invoice.bankDetails?.accountNumber)]]);
+    const document = emailDocument(`[OptiMind ERP] Supplier Invoice Pending Approval - ${invoice.invoiceNumber}`, "Supplier Invoice has been submitted. Review, approve or reject it in OptiMind ERP.", invoice, [["Supplier bank account", displayAccount(invoice.bankDetails?.accountNumber)]]);
     await email(finance.map((user) => user.email), document, pdf);
     return res.json({ success: true, invoice });
   } catch (error) { return res.status(400).json({ success: false, message: error.message || "Unable to submit invoice" }); }
@@ -329,7 +355,7 @@ router.post("/invoices/:localId/approve", requireRoles(FINANCE_ROLES), async (re
     const paymentLocalId = `payment-${invoice.localId}`;
     const paymentNumber = `PAY-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${invoice.localId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase()}`;
     const approvedInvoice = { ...invoice, ...totals, status: "APPROVED", reviewedDate: now.toISOString(), approvedDate: now.toISOString(), reviewedBy: req.user.name || req.user.email, approvedBy: req.user.name || req.user.email, rejectionReason: undefined, approvalHistory: appendHistory(invoice, "APPROVED", req.user) };
-    const payment = { localId: paymentLocalId, paymentNumber, invoiceLocalId: invoice.localId, invoiceNumber: invoice.invoiceNumber, poNumber: invoice.poNumber, grnNumber: invoice.deliveryNo, supplierId: invoice.supplierId, supplierName: invoice.supplierCompanyName || invoice.supplierName, supplierCompanyName: invoice.supplierCompanyName, supplierEmail: invoice.supplierEmail, supplierAddress: invoice.supplierAddress, supplierLogo: invoice.supplierLogo, companyName: invoice.companyName, companyAddress: invoice.companyAddress, companyLogo: invoice.companyLogo, bankDetails: invoice.bankDetails || {}, items: totals.items, subtotal: totals.subtotal, taxTotal: totals.taxTotal, grandTotal: totals.grandTotal, amountAfterTax: totals.grandTotal, supplierTaxApplies: invoice.supplierTaxApplies, supplierTaxType: invoice.supplierTaxType, supplierTaxRate: invoice.supplierTaxRate, supplierTaxRules: invoice.supplierTaxRules, amount: totals.grandTotal, currency: invoice.currency, paymentTerms: invoice.paymentTerms, invoiceDate: invoice.invoiceDate, createdDate: now.toISOString(), updatedDate: now.toISOString(), status: "PENDING_PAYMENT", paymentHistory: [{ action: "CREATED", by: req.user.name || req.user.email, date: now.toISOString() }] };
+  const payment = { localId: paymentLocalId, paymentNumber, invoiceLocalId: invoice.localId, invoiceNumber: invoice.invoiceNumber, poNumber: invoice.poNumber, grnNumber: invoice.deliveryNo, supplierId: invoice.supplierId, supplierName: invoice.supplierCompanyName || invoice.supplierName, supplierCompanyName: invoice.supplierCompanyName, supplierEmail: invoice.supplierEmail, supplierAddress: invoice.supplierAddress, supplierLogo: invoice.supplierLogo, sourceRequester: invoice.sourceRequester, companyName: invoice.companyName, companyAddress: invoice.companyAddress, companyLogo: invoice.companyLogo, bankDetails: invoice.bankDetails || {}, items: totals.items, subtotal: totals.subtotal, taxTotal: totals.taxTotal, grandTotal: totals.grandTotal, amountAfterTax: totals.grandTotal, supplierTaxApplies: invoice.supplierTaxApplies, supplierTaxType: invoice.supplierTaxType, supplierTaxRate: invoice.supplierTaxRate, supplierTaxRules: invoice.supplierTaxRules, amount: totals.grandTotal, currency: invoice.currency, paymentTerms: invoice.paymentTerms, invoiceDate: invoice.invoiceDate, createdDate: now.toISOString(), updatedDate: now.toISOString(), status: "PENDING_PAYMENT", paymentHistory: [{ action: "CREATED", by: req.user.name || req.user.email, date: now.toISOString() }] };
     await prisma.$transaction(async (tx) => {
       const current = await tx.supplierInvoiceRecordStore.findUnique({ where: { localId: invoice.localId }, select: { payload: true } });
       if (!current || current.payload?.status !== "SUBMITTED") throw new Error("Invoice was already processed");
@@ -337,10 +363,11 @@ router.post("/invoices/:localId/approve", requireRoles(FINANCE_ROLES), async (re
       await tx.supplierPaymentRecordStore.upsert({ where: { localId: paymentLocalId }, update: {}, create: { localId: paymentLocalId, payload: payment, updatedAt: now } });
     }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
     const pdf = await bestEffortInvoicePdf(approvedInvoice);
-    const supplierUser = invoice.supplierEmail ? await prisma.user.findFirst({ where: { email: { equals: invoice.supplierEmail, mode: "insensitive" }, isActive: true }, select: { id: true, email: true } }) : null;
+    const supplierUser = await supplierRecipient(invoice);
     if (supplierUser) await notify([supplierUser], { title: "Supplier Invoice Approved", message: `${invoice.invoiceNumber} was approved and forwarded to the Payment Team.`, type: "SUPPLIER_UPDATE", refType: "supplier-invoice", refId: invoice.localId });
     const paymentTeam = await recipientsFor([ROLES.PAYMENT_TEAM]);
     await notify(paymentTeam, { title: "Payment Pending Processing", message: `${payment.paymentNumber} is ready for payment processing.`, type: "SUPPLIER_PAYMENT_PENDING", refType: "supplier-payment", refId: payment.localId });
+    if (supplierUser) await notify([supplierUser], { title: "Supplier Payment Pending", message: `${payment.paymentNumber} for ${payment.invoiceNumber} is pending Payment Team processing (${money(payment.grandTotal ?? payment.amount, payment.currency)}).`, type: "SUPPLIER_PAYMENT_PENDING", refType: "supplier-payment", refId: payment.localId });
     if (supplierUser) await email([supplierUser.email], emailDocument(`[OptiMind ERP] Supplier Invoice Approved - ${invoice.invoiceNumber}`, "Your supplier invoice has been approved by Finance and has been forwarded to the Payment Team for payment processing.", approvedInvoice, [["Approved by", approvedInvoice.approvedBy], ["Current status", "Approved / Pending Payment"]]), pdf);
     await email(paymentTeam.map((user) => user.email), emailDocument(`[OptiMind ERP] Payment Pending Processing - ${payment.paymentNumber}`, "Payment is pending processing. Open Finance > Payment Processing to complete it.", approvedInvoice, [["Payment number", payment.paymentNumber], ["Payment status", "PENDING_PAYMENT"]]), pdf);
     return res.json({ success: true, invoice: approvedInvoice, payment });
@@ -357,7 +384,7 @@ router.post("/invoices/:localId/reject", requireRoles(FINANCE_ROLES), async (req
     Object.assign(invoice, calculateTotals(invoice.items, invoice), { status: "REJECTED", reviewedDate: new Date().toISOString(), rejectedDate: new Date().toISOString(), reviewedBy: req.user.name || req.user.email, rejectedBy: req.user.name || req.user.email, rejectionReason: reason, approvalHistory: appendHistory(invoice, "REJECTED", req.user, reason) });
     await saveInvoice(invoice);
     const pdf = await bestEffortInvoicePdf(invoice);
-    const supplier = invoice.supplierEmail ? await prisma.user.findFirst({ where: { email: { equals: invoice.supplierEmail, mode: "insensitive" }, isActive: true }, select: { id: true, email: true } }) : null;
+    const supplier = await supplierRecipient(invoice);
     if (supplier) { await notify([supplier], { title: "Supplier Invoice Rejected", message: `${invoice.invoiceNumber} was rejected. Reason: ${reason}`, type: "SUPPLIER_UPDATE", refType: "supplier-invoice", refId: invoice.localId }); await email([supplier.email], emailDocument(`[OptiMind ERP] Supplier Invoice Rejected - ${invoice.invoiceNumber}`, "Your supplier invoice was rejected. Update the information and resubmit it.", invoice, [["Rejected by", invoice.rejectedBy], ["Rejection reason", reason]]), pdf); }
     return res.json({ success: true, invoice });
   } catch (error) { return res.status(400).json({ success: false, message: error.message || "Unable to reject invoice" }); }
@@ -387,8 +414,8 @@ router.post("/payments/:localId/process", requireRoles(PAYMENT_ROLES), async (re
     }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
     Object.assign(payment, processedPayment);
     const pdf = await bestEffortPaymentPdf(payment);
-    const supplier = payment.supplierEmail ? await prisma.user.findFirst({ where: { email: { equals: payment.supplierEmail, mode: "insensitive" }, isActive: true }, select: { id: true, email: true } }) : null;
-    if (supplier) { await notify([supplier], { title: "Supplier Payment Completed", message: `${payment.paymentNumber} has been paid.`, type: "SUPPLIER_PAYMENT_COMPLETED", refType: "supplier-payment", refId: payment.localId }); await email([supplier.email], emailDocument(`[OptiMind ERP] Payment Completed - ${payment.paymentNumber}`, "Your payment has been completed.", payment, [["Payment number", payment.paymentNumber], ["Payment method", paymentMethod], ["Paid date", paidDate], ["Transaction reference", transactionReference], ["Processed by", payment.processedBy], ["Bank account", maskAccount(payment.bankDetails?.accountNumber)], ["Payment proof", payment.attachmentName]]), pdf); }
+    const supplier = await supplierRecipient(payment);
+    if (supplier) { await notify([supplier], { title: "Supplier Payment Completed", message: `${payment.paymentNumber} has been paid.`, type: "SUPPLIER_PAYMENT_COMPLETED", refType: "supplier-payment", refId: payment.localId }); await email([supplier.email], emailDocument(`[OptiMind ERP] Payment Completed - ${payment.paymentNumber}`, "Your payment has been completed.", payment, [["Payment number", payment.paymentNumber], ["Payment method", paymentMethod], ["Paid date", paidDate], ["Transaction reference", transactionReference], ["Processed by", payment.processedBy], ["Bank account", displayAccount(payment.bankDetails?.accountNumber)], ["Payment proof", payment.attachmentName]]), pdf); }
     return res.json({ success: true, payment });
   } catch (error) { return res.status(error.statusCode || (error.code === "P2034" ? 409 : 400)).json({ success: false, message: error.message || "Unable to process payment" }); }
 });
@@ -411,27 +438,50 @@ async function downloadPdf(req, res, kind) {
     };
     // Regenerate on download so exported documents reflect the latest workflow
     // details, including logos recovered from their linked GRN records.
-    record[field] = await generatePdf(kind, record);
+    const requestedCompanyLogo = validCompanyLogo(req.body?.companyLogo);
+    record[field] = await generatePdf(kind, record, requestedCompanyLogo);
     await (kind === "invoice" ? saveInvoice(record) : savePayment(record));
     let diskPath = resolvePdfPath(record[field]);
     if (!diskPath) return res.status(400).json({ success: false, message: "Invalid PDF path" });
     try {
       await fs.access(diskPath);
     } catch {
-      record[field] = await generatePdf(kind, record);
+      record[field] = await generatePdf(kind, record, requestedCompanyLogo);
       await (kind === "invoice" ? saveInvoice(record) : savePayment(record));
       diskPath = resolvePdfPath(record[field]);
       if (!diskPath) return res.status(400).json({ success: false, message: "Invalid PDF path" });
       await fs.access(diskPath);
     }
-    return res.download(diskPath, record[field].filename);
+    // Keep the persisted storage name for backwards compatibility, while
+    // exposing the same predictable download name used by workflow exports.
+    return res.download(diskPath, documentPdfFilename(kind === "invoice" ? "supplier-invoice" : "payment-advice", record));
   } catch (error) {
     console.error("Supplier finance PDF download failed:", error.message);
     return res.status(404).json({ success: false, message: "PDF is not available" });
   }
 }
 
+async function printHtml(req, res, kind) {
+  try {
+    const record = kind === "invoice" ? await getInvoice(req.params.localId) : await getPayment(req.params.localId);
+    if (!record) return res.status(404).json({ success: false, message: "Record not found" });
+    const own = kind === "invoice" ? isOwnInvoice(record, req.user) : isOwnPayment(record, req.user);
+    if (!own && ![...FINANCE_ROLES, ...PAYMENT_ROLES].includes(req.user.role)) return res.status(403).json({ success: false, message: "Access denied" });
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.send(await financeDocumentHtml(kind, record, req.body?.companyLogo));
+  } catch (error) {
+    console.error("Supplier finance print document failed:", error.message);
+    return res.status(404).json({ success: false, message: "Print document is not available" });
+  }
+}
+
+router.get("/invoices/:localId/print", requireRoles([...FINANCE_ROLES, ROLES.SUPPLIER]), (req, res) => printHtml(req, res, "invoice"));
+router.get("/payments/:localId/print", requireRoles([...PAYMENT_ROLES, ROLES.SUPPLIER]), (req, res) => printHtml(req, res, "payment"));
+router.post("/invoices/:localId/print", requireRoles([...FINANCE_ROLES, ROLES.SUPPLIER]), (req, res) => printHtml(req, res, "invoice"));
+router.post("/payments/:localId/print", requireRoles([...PAYMENT_ROLES, ROLES.SUPPLIER]), (req, res) => printHtml(req, res, "payment"));
 router.get("/invoices/:localId/pdf", requireRoles([...FINANCE_ROLES, ROLES.SUPPLIER]), (req, res) => downloadPdf(req, res, "invoice"));
 router.get("/payments/:localId/pdf", requireRoles([...PAYMENT_ROLES, ROLES.SUPPLIER]), (req, res) => downloadPdf(req, res, "payment"));
+router.post("/invoices/:localId/pdf", requireRoles([...FINANCE_ROLES, ROLES.SUPPLIER]), (req, res) => downloadPdf(req, res, "invoice"));
+router.post("/payments/:localId/pdf", requireRoles([...PAYMENT_ROLES, ROLES.SUPPLIER]), (req, res) => downloadPdf(req, res, "payment"));
 
 export default router;

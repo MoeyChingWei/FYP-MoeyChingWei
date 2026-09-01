@@ -43,7 +43,7 @@
   "purchasing": {
     "title": "Purchasing Workflow",
     "requestCreation": "Purchase Request Creation",
-    "availableFor": "Available for: Employee, Executive, Manager",
+    "availableFor": "Available for: Employee, Department Executive, Manager, and Finance roles",
     "whatYouCanDo": "What you can do:",
     "requestCapabilities": {
       "create": "Create purchase requests for items needed",
@@ -119,6 +119,46 @@
       "navigate": "Navigate to Smart Approval in the sidebar"
     }
   },
+  "finance": {
+    "title": "Treasury & Finance",
+    "invoiceApproval": "Supplier Invoice Approval",
+    "availableFor": "Available for: Treasury / Finance Officer and Admin",
+    "whatYouCanDo": "What you can do:",
+    "capabilities": {
+      "reviewInvoices": "Review invoices submitted by suppliers",
+      "approveInvoices": "Approve valid invoices and create payment records",
+      "rejectInvoices": "Reject invoices with a clear reason for correction",
+      "monitorBudgets": "Monitor department budgets, forecasts, and submissions"
+    },
+    "howToReview": "How to review an invoice:",
+    "reviewSteps": {
+      "step1": "Navigate to Finance -> Invoice Approval",
+      "step2": "Open a pending invoice and compare it with the PO and GRN",
+      "step3": "Check supplier, items, amount, payment terms, and supporting details",
+      "step4": "Approve the invoice or reject it with a reason",
+      "step5": "Use the Finance Budget Dashboard to review budget usage and forecasts"
+    }
+  },
+  "payment": {
+    "title": "Payment Operations",
+    "processing": "Supplier Payment Processing",
+    "availableFor": "Available for: Payment Team and Admin",
+    "whatYouCanDo": "What you can do:",
+    "capabilities": {
+      "viewQueue": "View approved supplier payments in the queue",
+      "checkDueDates": "Prioritise overdue and upcoming payments",
+      "recordPayment": "Record the payment method, date, and transaction reference",
+      "uploadProof": "Upload payment proof and retain remarks for audit"
+    },
+    "howToProcess": "How to process a payment:",
+    "processSteps": {
+      "step1": "Navigate to Finance -> Payment Processing",
+      "step2": "Search or filter the pending payment queue",
+      "step3": "Open the payment and verify supplier, invoice, amount, and due date",
+      "step4": "Enter the payment method, paid date, and transaction reference",
+      "step5": "Attach proof of payment, then confirm the payment"
+    }
+  },
   "supplier": {
     "title": "Supplier Fulfillment",
     "orderAcknowledgement": "Order Acknowledgement",
@@ -146,6 +186,25 @@
       "step4": "Specify quantities delivered for each item",
       "step5": "Submit delivery record"
     }
+  },
+  "supplierExtra": {
+    "inventoryManagement": "Inventory Management",
+    "howToManageInventory": "How to manage your inventory:",
+    "inventorySteps": {
+      "step1": "Navigate to Supplier Overview -> Inventory",
+      "step2": "Review current stock and reorder levels",
+      "step3": "Update stock quantities after replenishment or fulfilment",
+      "step4": "Save changes and monitor low-stock items"
+    },
+    "invoiceManagement": "Supplier Invoices",
+    "invoiceSteps": {
+      "step1": "Navigate to Supplier Overview -> Invoice",
+      "step2": "Create an invoice from a completed delivery or GRN",
+      "step3": "Check invoice number, items, amount, tax, and payment terms",
+      "step4": "Submit the invoice and track approval or rejection status"
+    },
+    "paymentTracking": "Payment Tracking",
+    "paymentDescription": "Open Supplier Overview -> Payment to view payment status, due dates, and completed payment history."
   },
   "tracking": {
     "title": "Tracking Items",

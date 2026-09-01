@@ -101,6 +101,7 @@ describe("supplier invoice to payment API", () => {
     expect(rejected.body.invoice.status).toBe("REJECTED");
     expect(rejected.body.invoice.rejectionReason).toBe("Missing delivery note");
     expect(rejected.body.invoice.rejectedBy).toBe("Treasury / Finance Officer test");
+    expect(await prisma.notification.count({ where: { userId: supplier.id, refId: ids.invoice, type: "SUPPLIER_UPDATE", title: "Supplier Invoice Rejected" } })).toBeGreaterThan(0);
 
     await request(app).post(`/api/supplier-finance/invoices/${ids.invoice}/submit`).set(as(supplier)).send({ userId: supplier.id, email: supplier.email }).expect(200);
     const approved = await request(app).post(`/api/supplier-finance/invoices/${ids.invoice}/approve`).set(as(finance)).send({ userId: finance.id, email: finance.email }).expect(200);
@@ -109,6 +110,7 @@ describe("supplier invoice to payment API", () => {
     expect(approved.body.invoice.status).toBe("APPROVED");
     expect(approved.body.payment.status).toBe("PENDING_PAYMENT");
     expect(await prisma.notification.count({ where: { refId: ids.paymentRecord, type: "SUPPLIER_PAYMENT_PENDING" } })).toBeGreaterThan(0);
+    expect(await prisma.notification.count({ where: { userId: supplier.id, refId: ids.paymentRecord, type: "SUPPLIER_PAYMENT_PENDING" } })).toBeGreaterThan(0);
     await request(app).post(`/api/supplier-finance/invoices/${ids.invoice}/approve`).set(as(finance)).send({ userId: finance.id, email: finance.email }).expect(409);
     await request(app).post(`/api/supplier-finance/invoices/${ids.invoice}/reject`).set(as(finance)).send({ userId: finance.id, email: finance.email, reason: "Late" }).expect(409);
     expect(await prisma.supplierPaymentRecordStore.count({ where: { localId: ids.paymentRecord } })).toBe(1);
@@ -125,6 +127,8 @@ describe("supplier invoice to payment API", () => {
     expect(await prisma.notification.count({ where: { refId: ids.paymentRecord, type: "SUPPLIER_PAYMENT_COMPLETED" } })).toBeGreaterThan(0);
     const advicePdf = await request(app).get(`/api/supplier-finance/payments/${ids.paymentRecord}/pdf`).set(as(supplier)).query({ userId: supplier.id, email: supplier.email }).expect(200);
     expect(advicePdf.headers["content-type"]).toContain("application/pdf");
+    const advicePrint = await request(app).post(`/api/supplier-finance/payments/${ids.paymentRecord}/print`).set(as(supplier)).send({ userId: supplier.id, email: supplier.email, companyLogo: "data:image/png;base64,AA==" }).expect(200);
+    expect(advicePrint.text).toContain('alt="Sender logo"');
     await request(app).post(`/api/supplier-finance/payments/${ids.paymentRecord}/process`).set(as(paymentTeam)).send({ userId: paymentTeam.id, email: paymentTeam.email, paymentMethod: "Bank Transfer", paidDate: "2026-08-25", transactionReference: `TX-${suffix}`, attachment: { attachmentName: "proof.pdf", attachmentType: "application/pdf", attachmentDataUrl: "data:application/pdf;base64,JVBERi0=" } }).expect(409);
   }, 60000);
 

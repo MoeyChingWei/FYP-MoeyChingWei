@@ -4,6 +4,7 @@ import {
   BellOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  DollarOutlined,
   ShoppingCartOutlined,
   TruckOutlined,
   FileTextOutlined,
@@ -23,6 +24,7 @@ import {
   markNotificationRead,
   type NotificationRow,
 } from "../shared/api/notifications";
+import { resolveNotificationRoute } from "../shared/notifications/notificationRoutes";
 
 const { Text, Title } = Typography;
 
@@ -62,6 +64,7 @@ export default function NotificationsPage(): React.ReactElement {
 
   // Get notification category from type
   const getNotificationCategory = (type: string): string => {
+    if (type.includes("PAYMENT")) return "payment";
     if (type.includes("APPROVAL")) return "approval";
     if (type.includes("CREATED")) return "created";
     if (type.includes("UPDATE")) return "update";
@@ -115,42 +118,11 @@ export default function NotificationsPage(): React.ReactElement {
     }
   };
 
-  const resolveNotificationRoute = (row: NotificationRow): string => {
-    if (row.type === "PURCHASE_REQUEST_APPROVAL" && row.refId) {
-      return `/purchasing/approval/${row.refId}`;
-    }
-    if (row.type === "PURCHASE_ORDER_APPROVAL" && row.refId) {
-      return `/purchasing/po-approval/${row.refId}`;
-    }
-    if (row.refType === "purchase-request" && row.refId) {
-      return `/purchasing/review/${row.refId}`;
-    }
-    if (row.refType === "purchase-order" && row.refId) {
-      return `/purchasing/po-review/${row.refId}`;
-    }
-    if (row.refType === "supplier-order-ack" && row.refId) {
-      return `/supplier-overview/order-acknowledgement/${row.refId}`;
-    }
-    if (row.refType === "delivery" && row.refId) {
-      return `/supplier-overview/delivery/${row.refId}`;
-    }
-    if (row.refType === "grn" && row.refId) {
-      return `/supplier-overview/grn-status/${row.refId}`;
-    }
-    if (row.refType === "feedback") {
-      return "/settings/feedback";
-    }
-    if (row.refType === "tracking-item" && row.refId) {
-      return `/tracking-item?requestLocalId=${encodeURIComponent(row.refId)}`;
-    }
-    return "/notifications";
-  };
-
   const onOpen = async (row: NotificationRow) => {
     try {
       await onRead(row);
     } finally {
-      navigate(resolveNotificationRoute(row));
+      navigate(resolveNotificationRoute(row, sessionUser?.role));
     }
   };
 
@@ -166,6 +138,7 @@ export default function NotificationsPage(): React.ReactElement {
   };
 
   const getNotificationIcon = (type: string) => {
+    if (type.includes("PAYMENT")) return <DollarOutlined style={{ fontSize: 20, color: type.includes("COMPLETED") ? "#52c41a" : "#1890ff" }} />;
     if (type.includes("APPROVAL")) return <ClockCircleOutlined style={{ fontSize: 20, color: "#faad14" }} />;
     if (type.includes("DELIVERY")) return <TruckOutlined style={{ fontSize: 20, color: "#52c41a" }} />;
     if (type.includes("ORDER")) return <ShoppingCartOutlined style={{ fontSize: 20, color: "#1890ff" }} />;
@@ -176,6 +149,7 @@ export default function NotificationsPage(): React.ReactElement {
   };
 
   const getNotificationTypeTag = (type: string) => {
+    if (type.includes("PAYMENT")) return <Tag color={type.includes("COMPLETED") ? "success" : "blue"}>{tNotif('type.payment', { defaultValue: "Payment" })}</Tag>;
     if (type.includes("APPROVAL")) return <Tag color="orange">{tNotif('type.approval')}</Tag>;
     if (type.includes("CREATED")) return <Tag color="blue">{tNotif('type.created')}</Tag>;
     if (type.includes("UPDATE")) return <Tag color="cyan">{tNotif('type.update')}</Tag>;
@@ -240,6 +214,7 @@ export default function NotificationsPage(): React.ReactElement {
                   { label: tNotif('type.created'), value: "created" },
                   { label: tNotif('type.update'), value: "update" },
                   { label: tNotif('type.delivery'), value: "delivery" },
+                  { label: tNotif('type.payment', { defaultValue: "Payment" }), value: "payment" },
                   { label: tNotif('type.completed'), value: "completed" },
                   { label: tNotif('type.feedback'), value: "feedback" },
                 ]}

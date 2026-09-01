@@ -51,6 +51,7 @@ import {
 } from "../modules/supplierFulfillment/workflow";
 
 import styles from "./TrackingItemManagement.module.css";
+import SupplierTrackingItemManagement from "./SupplierTrackingItemManagement";
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -452,7 +453,7 @@ function TrackingProgress({
   );
 }
 
-export default function TrackingItemManagement(): React.ReactElement {
+function InternalTrackingItemManagement(): React.ReactElement {
   const { t } = useTranslation('tracking');
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -1114,4 +1115,10 @@ export default function TrackingItemManagement(): React.ReactElement {
       </Modal>
     </div>
   );
+}
+
+export default function TrackingItemManagement(): React.ReactElement {
+  return getSessionUser()?.role === UserRole.SUPPLIER
+    ? <SupplierTrackingItemManagement />
+    : <InternalTrackingItemManagement />;
 }

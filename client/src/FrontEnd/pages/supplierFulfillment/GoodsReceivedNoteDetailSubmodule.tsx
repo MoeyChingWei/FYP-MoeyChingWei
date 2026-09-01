@@ -14,7 +14,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { loadSupplierGrns, type SupplierGrnRecord } from "../../modules/supplierFulfillment/workflow";
+import { hydrateSupplierGrns, loadSupplierGrns, type SupplierGrnRecord } from "../../modules/supplierFulfillment/workflow";
 import type { DraftLineItem } from "../../modules/purchasing/requestCreation/types";
 import { workflowLineTax, workflowTaxRules, workflowTaxSummary } from "../../shared/utils/workflowTax";
 
@@ -138,14 +138,15 @@ export default function GoodsReceivedNoteDetailSubmodule(): React.ReactElement {
   const [rows, setRows] = useState<SupplierGrnRecord[]>([]);
 
   useEffect(() => {
-    const sync = (): void => {
+    const sync = async (): Promise<void> => {
+      await hydrateSupplierGrns();
       setRows(loadSupplierGrns());
     };
     const handleSync = (): void => {
-      sync();
+      void sync();
     };
 
-    sync();
+    void sync();
     window.addEventListener("storage", handleSync);
     window.addEventListener("erp-supplier-grns", handleSync);
 

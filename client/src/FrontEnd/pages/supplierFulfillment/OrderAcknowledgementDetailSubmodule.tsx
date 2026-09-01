@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import {
   appendSupplierDelivery,
   createDeliveryFromAcknowledgement,
+  hydrateSupplierOrderAcknowledgements,
   loadSupplierOrderAcknowledgements,
   type SupplierOrderAcknowledgementRecord,
   updateSupplierOrderAcknowledgement,
@@ -153,14 +154,15 @@ export default function OrderAcknowledgementDetailSubmodule(): React.ReactElemen
   const sessionUser = useMemo(() => getSessionUser(), []);
 
   useEffect(() => {
-    const sync = (): void => {
+    const sync = async (): Promise<void> => {
+      await hydrateSupplierOrderAcknowledgements();
       setRows(loadSupplierOrderAcknowledgements());
     };
     const handleSync = (): void => {
-      sync();
+      void sync();
     };
 
-    sync();
+    void sync();
     window.addEventListener("storage", handleSync);
     window.addEventListener("erp-supplier-order-acks", handleSync);
 

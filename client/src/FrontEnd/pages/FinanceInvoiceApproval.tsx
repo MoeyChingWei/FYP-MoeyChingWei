@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Card, Descriptions, Empty, Flex, Table, Tabs, Tag, Typography, message } from "antd";
-import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../shared/auth/session";
@@ -15,7 +15,8 @@ import {
   updateSupplierInvoice,
   type SupplierInvoiceRecord,
 } from "../modules/supplierFulfillment/workflow";
-import { approveSupplierInvoice, rejectSupplierInvoice, supplierFinancePdfUrl } from "../shared/api/supplierFinance";
+import { approveSupplierInvoice, rejectSupplierInvoice } from "../shared/api/supplierFinance";
+import SupplierFinanceDocumentActions from "../components/shared/SupplierFinanceDocumentActions";
 import styles from "./purchasing/ApprovalDetailSubmodule.module.css";
 
 const { Title, Text } = Typography;
@@ -161,8 +162,8 @@ export default function FinanceInvoiceApproval(): React.ReactElement {
       <Flex gap={8} style={{ marginTop: 16 }}>
         <Button type="primary" icon={<CheckCircleOutlined />} loading={processingId === selected.localId} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => void approve(selected)}>{t("invoiceApproval.approve")}</Button>
         <Button danger icon={<CloseCircleOutlined />} disabled={selected.status !== "SUBMITTED" || Boolean(processingId)} onClick={() => setRejecting(selected)}>{t("invoiceApproval.reject")}</Button>
-        <Button onClick={() => navigate(`/supplier-overview/invoice/${selected.localId}`)}>{t("invoiceApproval.viewFull")}</Button>
-        <Button icon={<DownloadOutlined />} onClick={() => window.open(supplierFinancePdfUrl("invoices", selected.localId), "_blank", "noopener,noreferrer")}>{t("invoiceApproval.downloadPdf")}</Button>
+        <Button onClick={() => navigate(`/supplier-overview/invoice/${selected.localId}`, { state: { returnTo: "/finance/invoice-approval" } })}>{t("invoiceApproval.viewFull")}</Button>
+        <SupplierFinanceDocumentActions kind="invoice" localId={selected.localId} documentNumber={selected.invoiceNumber || selected.poNumber} />
       </Flex>
       {selected.notes ? <Text type="secondary">{t("invoiceApproval.details.notes")}: {selected.notes}</Text> : null}
     </Card> : null}

@@ -39,10 +39,48 @@ describe("workflow party direction", () => {
   });
 
   it("keeps payment advice directed from our company to the supplier", () => {
-    const html = workflowHtml("payment-advice", { ...record, paymentNumber: "PAY-1" });
+    const html = workflowHtml("payment-advice", { ...record, paymentNumber: "PAY-1", companyLogo: "data:image/png;base64,AA==" });
 
     expect(partyCard(html, "Sender")).toContain("Our Company Sdn Bhd");
+    expect(partyCard(html, "Sender")).toContain("Our Company Contact");
+    expect(html).toContain('alt="Sender logo"');
     expect(partyCard(html, "Receiver")).toContain("Supplier Sdn Bhd");
+  });
+
+  it("embeds an image payment proof for paid payment advice", () => {
+    const html = workflowHtml("payment-advice", {
+      ...record,
+      paymentNumber: "PAY-1",
+      status: "PAID",
+      attachmentName: "proof.png",
+      attachmentDataUrl: "data:image/png;base64,AA==",
+    });
+
+    expect(html).toContain('class="payment-proof-image"');
+    expect(html).toContain('src="data:image/png;base64,AA=="');
+  });
+
+  it("does not embed a payment proof for unpaid payment advice", () => {
+    const html = workflowHtml("payment-advice", {
+      ...record,
+      paymentNumber: "PAY-1",
+      status: "PENDING_PAYMENT",
+      attachmentName: "proof.png",
+      attachmentDataUrl: "data:image/png;base64,AA==",
+    });
+
+    expect(html).not.toContain('class="payment-proof-image"');
+  });
+
+  it("shows the complete bank account number on finance documents", () => {
+    const html = workflowHtml("supplier-invoice", {
+      ...record,
+      invoiceNumber: "INV-1",
+      bankDetails: { bankName: "Public Bank", accountNumber: "1234567890" },
+    });
+
+    expect(html).toContain("1234567890");
+    expect(html).not.toContain("****7890");
   });
 
   it("shows the organisation-configured payment term on a purchase order", () => {

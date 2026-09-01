@@ -43,7 +43,7 @@
   "purchasing": {
     "title": "Aliran Kerja Pembelian",
     "requestCreation": "Penciptaan Permintaan Pembelian",
-    "availableFor": "Tersedia untuk: Pekerja, Eksekutif, Pengurus",
+    "availableFor": "Tersedia untuk: Pekerja, Eksekutif Jabatan, Pengurus dan peranan Kewangan",
     "whatYouCanDo": "Apa yang boleh anda lakukan:",
     "requestCapabilities": {
       "create": "Cipta permintaan pembelian untuk item yang diperlukan",
@@ -119,6 +119,46 @@
       "navigate": "Navigasi ke Kelulusan Pintar di bar sisi"
     }
   },
+  "finance": {
+    "title": "Perbendaharaan & Kewangan",
+    "invoiceApproval": "Kelulusan Invois Pembekal",
+    "availableFor": "Tersedia untuk: Pegawai Perbendaharaan / Kewangan dan Admin",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "capabilities": {
+      "reviewInvoices": "Semak invois yang dihantar oleh pembekal",
+      "approveInvoices": "Luluskan invois yang sah dan cipta rekod bayaran",
+      "rejectInvoices": "Tolak invois dengan sebab pembetulan yang jelas",
+      "monitorBudgets": "Pantau bajet jabatan, ramalan dan penyerahan"
+    },
+    "howToReview": "Cara menyemak invois:",
+    "reviewSteps": {
+      "step1": "Navigasi ke Kewangan -> Kelulusan Invois",
+      "step2": "Buka invois yang belum selesai dan bandingkan dengan pesanan pembelian serta GRN",
+      "step3": "Semak pembekal, item, jumlah, terma bayaran dan maklumat sokongan",
+      "step4": "Luluskan invois atau tolak dengan sebab",
+      "step5": "Gunakan Papan Pemuka Bajet Kewangan untuk menyemak penggunaan dan ramalan bajet"
+    }
+  },
+  "payment": {
+    "title": "Operasi Bayaran",
+    "processing": "Pemprosesan Bayaran Pembekal",
+    "availableFor": "Tersedia untuk: Pasukan Bayaran dan Admin",
+    "whatYouCanDo": "Apa yang boleh anda lakukan:",
+    "capabilities": {
+      "viewQueue": "Lihat barisan bayaran pembekal yang diluluskan",
+      "checkDueDates": "Utamakan bayaran tertunggak dan akan datang",
+      "recordPayment": "Rekod kaedah bayaran, tarikh dan rujukan transaksi",
+      "uploadProof": "Muat naik bukti bayaran dan simpan catatan untuk audit"
+    },
+    "howToProcess": "Cara memproses bayaran:",
+    "processSteps": {
+      "step1": "Navigasi ke Kewangan -> Pemprosesan Bayaran",
+      "step2": "Cari atau tapis barisan bayaran yang belum selesai",
+      "step3": "Buka bayaran dan sahkan pembekal, invois, jumlah serta tarikh tamat",
+      "step4": "Masukkan kaedah bayaran, tarikh bayaran dan rujukan transaksi",
+      "step5": "Lampirkan bukti bayaran, kemudian sahkan bayaran"
+    }
+  },
   "supplier": {
     "title": "Pemenuhan Pembekal",
     "orderAcknowledgement": "Pengakuan Pesanan",
@@ -146,6 +186,25 @@
       "step4": "Tentukan kuantiti yang dihantar untuk setiap item",
       "step5": "Hantar rekod penghantaran"
     }
+  },
+  "supplierExtra": {
+    "inventoryManagement": "Pengurusan Inventori",
+    "howToManageInventory": "Cara mengurus inventori anda:",
+    "inventorySteps": {
+      "step1": "Navigasi ke Gambaran Pembekal -> Inventori",
+      "step2": "Semak stok semasa dan tahap pesanan semula",
+      "step3": "Kemas kini kuantiti stok selepas penambahan atau pemenuhan",
+      "step4": "Simpan perubahan dan pantau item yang hampir habis"
+    },
+    "invoiceManagement": "Invois Pembekal",
+    "invoiceSteps": {
+      "step1": "Navigasi ke Gambaran Pembekal -> Invois",
+      "step2": "Cipta invois daripada penghantaran atau GRN yang lengkap",
+      "step3": "Semak nombor invois, item, jumlah, cukai dan terma bayaran",
+      "step4": "Hantar invois dan jejak status kelulusan atau penolakan"
+    },
+    "paymentTracking": "Penjejakan Bayaran",
+    "paymentDescription": "Buka Gambaran Pembekal -> Bayaran untuk melihat status bayaran, tarikh tamat dan sejarah bayaran yang telah selesai."
   },
   "tracking": {
     "title": "Penjejakan Item",

@@ -44,6 +44,24 @@ async function notifyDepartmentHeads(dept, title, message, type, refType, refId,
 let schedulerTask = null;
 let deadlineTask = null;
 const CRON_SCHEDULE = process.env.BUDGET_PREDICTION_CRON || '0 0 28 * *';
+// Cron evaluates schedules in the host timezone by default. Keep budget
+// periods aligned with the business timezone even when the server runs in UTC.
+const SCHEDULER_TIMEZONE = process.env.BUDGET_SCHEDULER_TIMEZONE || 'Asia/Kuala_Lumpur';
+
+function getSchedulerDateParts(now) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: SCHEDULER_TIMEZONE,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return {
+    year: Number(values.year),
+    month: Number(values.month),
+    day: Number(values.day)
+  };
+}
 
 async function runMonthlyPredictions() {
   const requestId = crypto.randomUUID();
@@ -53,9 +71,9 @@ async function runMonthlyPredictions() {
     where: { isActive: true }
   });
 
-  const now = new Date();
-  const targetYear = now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear();
-  const targetMonth = now.getMonth() === 11 ? 1 : now.getMonth() + 2;
+  const { year: currentYear, month: currentMonth } = getSchedulerDateParts(new Date());
+  const targetYear = currentMonth === 12 ? currentYear + 1 : currentYear;
+  const targetMonth = currentMonth === 12 ? 1 : currentMonth + 1;
 
   let success = 0;
   let failed = 0;
@@ -113,11 +131,10 @@ async function runMonthlyPredictions() {
 }
 
 async function runBudgetDeadlineChecks(now = new Date()) {
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-  const isFirstDay = now.getDate() === 1;
-  const lastDay = new Date(currentYear, currentMonth, 0).getDate();
-  const isLastDay = now.getDate() === lastDay;
+  const { year: currentYear, month: currentMonth, day: currentDay } = getSchedulerDateParts(now);
+  const isFirstDay = currentDay === 1;
+  const lastDay = new Date(Date.UTC(currentYear, currentMonth, 0)).getUTCDate();
+  const isLastDay = currentDay === lastDay;
   if (!isFirstDay && !isLastDay) return { reminded: 0, autoCreated: 0 };
 
   const departments = await prisma.department.findMany({ where: { isActive: true } });
@@ -163,13 +180,14 @@ async function runBudgetDeadlineChecks(now = new Date()) {
       const existingBudget = await prisma.monthlyBudget.findUnique({ where: { departmentId_year_month: { departmentId: dept.id, year: currentYear, month: currentMonth } } });
       const prediction = await prisma.budgetPrediction.findFirst({ where: { departmentId: dept.id, targetYear: currentYear, targetMonth: currentMonth }, orderBy: { createdAt: 'desc' } });
       if (!existingBudget && prediction) {
-        await prisma.monthlyBudget.create({
+        const budget = await prisma.monthlyBudget.create({
           data: {
             departmentId: dept.id,
             year: currentYear,
             month: currentMonth,
             allocatedAmount: prediction.predictedAmount,
             spentAmount: 0,
+            updatedAt: new Date(),
             reservedAmount: 0,
             notes: `Auto-generated from AI prediction #${prediction.id}`
           }
@@ -180,7 +198,7 @@ async function runBudgetDeadlineChecks(now = new Date()) {
           `No budget submission was received for ${dept.name}. The system allocated $${new Decimal(prediction.predictedAmount).toFixed(2)} for ${currentYear}-${String(currentMonth).padStart(2, '0')} based on the AI prediction.`,
           'BUDGET_AUTO_GENERATED',
           'monthly_budget',
-          prediction.id,
+          budget.id,
           {
             subject: `OptiMind - Budget Auto-generated (${currentYear}-${String(currentMonth).padStart(2, '0')})`,
             title: 'Budget Auto-generated from AI Prediction',
@@ -209,7 +227,7 @@ function startScheduler() {
   schedulerTask = cron.schedule(CRON_SCHEDULE, async () => {
     console.log('[Budget Scheduler] Triggered by cron');
     await runMonthlyPredictions();
-  });
+  }, { timezone: SCHEDULER_TIMEZONE });
 
   // Deadline checks run daily so month-end reminders and first-day fallback
   // still work even when the prediction cron is overridden.
@@ -219,9 +237,19 @@ function startScheduler() {
     } catch (error) {
       console.error('[Budget Scheduler] Deadline check failed', error);
     }
-  });
+  }, { timezone: SCHEDULER_TIMEZONE });
 
-  console.log(`[Budget Scheduler] Started with schedule: ${CRON_SCHEDULE}`);
+  console.log(`[Budget Scheduler] Started with schedule: ${CRON_SCHEDULE}; deadline timezone: ${SCHEDULER_TIMEZONE}`);
+
+  // Do not wait for the next 09:00 tick. This catches up first-day/month-end
+  // work when the API is started or restarted after the scheduled time.
+  void runBudgetDeadlineChecks()
+    .then((result) => {
+      if (result.reminded || result.autoCreated) {
+        console.log('[Budget Scheduler] Startup deadline check completed', result);
+      }
+    })
+    .catch((error) => console.error('[Budget Scheduler] Startup deadline check failed', error));
 }
 
 function stopScheduler() {

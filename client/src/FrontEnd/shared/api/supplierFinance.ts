@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { API_ROOT } from "./base";
 import { getSessionUser } from "../auth/session";
+import { getCompanyLogo } from "../../modules/settings/companyAddress";
 import type { SupplierGrnRecord, SupplierInvoiceRecord, SupplierPaymentRecord } from "../../modules/supplierFulfillment/workflow";
 
 const API = `${API_ROOT}/supplier-finance`;
@@ -89,4 +90,17 @@ export function supplierFinancePdfUrl(kind: "invoices" | "payments", localId: st
   const identity = actor();
   const params = new URLSearchParams({ userId: String(identity.userId), email: identity.email });
   return `${API}/${kind}/${encodeURIComponent(localId)}/pdf?${params.toString()}`;
+}
+
+export function supplierFinancePrintUrl(kind: "invoices" | "payments", localId: string): string {
+  const identity = actor();
+  const params = new URLSearchParams({ userId: String(identity.userId), email: identity.email });
+  return `${API}/${kind}/${encodeURIComponent(localId)}/print?${params.toString()}`;
+}
+
+/** Data supplied with document requests so legacy records use the current logo. */
+export function supplierFinanceDocumentPayload(): { userId: number; email: string; companyLogo?: string } {
+  const identity = actor();
+  const companyLogo = getCompanyLogo();
+  return companyLogo ? { ...identity, companyLogo } : identity;
 }

@@ -1,0 +1,55 @@
+
+> backend@1.0.0 dev
+> nodemon server.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js`[39m
+🟢 [INIT] workflowStorage.js module loaded at 2026-09-01T00:50:51.864Z
+✅ [32m[SUCCESS][0m DeepSeekService: Initialized with model: deepseek-v4-pro
+✅ [32m[SUCCESS][0m AgentInit: General Assistant (chatbot) initialized with 10 tools
+✅ [32m[SUCCESS][0m AgentInit: Purchase Expert (purchase) initialized with 6 tools
+✅ [32m[SUCCESS][0m AgentInit: Data Analyst (analytics) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Approval Advisor (approval) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Supplier Coordinator (supplier) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Document Specialist (document) initialized with 7 tools
+🟢 Budget router initialized - stack length: 0
+🔵 Registering /api/budget routes
+✅ [32m[SUCCESS][0m VisionAIService: Initialized with OpenAI Vision (gpt-4o)
+Server running on port 4000
+Dashboard: http://localhost:4000
+[Budget Scheduler] Started with schedule: 0 0 28 * *; deadline timezone: Asia/Kuala_Lumpur
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+🟢 [INIT] workflowStorage.js module loaded at 2026-09-01T00:51:13.598Z
+✅ [32m[SUCCESS][0m DeepSeekService: Initialized with model: deepseek-v4-pro
+✅ [32m[SUCCESS][0m AgentInit: General Assistant (chatbot) initialized with 10 tools
+✅ [32m[SUCCESS][0m AgentInit: Purchase Expert (purchase) initialized with 6 tools
+✅ [32m[SUCCESS][0m AgentInit: Data Analyst (analytics) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Approval Advisor (approval) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Supplier Coordinator (supplier) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Document Specialist (document) initialized with 7 tools
+🟢 Budget router initialized - stack length: 0
+🔵 Registering /api/budget routes
+✅ [32m[SUCCESS][0m VisionAIService: Initialized with OpenAI Vision (gpt-4o)
+Server running on port 4000
+Dashboard: http://localhost:4000
+[Budget Scheduler] Started with schedule: 0 0 28 * *; deadline timezone: Asia/Kuala_Lumpur
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+🟢 [INIT] workflowStorage.js module loaded at 2026-09-01T00:53:08.111Z
+✅ [32m[SUCCESS][0m DeepSeekService: Initialized with model: deepseek-v4-pro
+✅ [32m[SUCCESS][0m AgentInit: General Assistant (chatbot) initialized with 10 tools
+✅ [32m[SUCCESS][0m AgentInit: Purchase Expert (purchase) initialized with 6 tools
+✅ [32m[SUCCESS][0m AgentInit: Data Analyst (analytics) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Approval Advisor (approval) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Supplier Coordinator (supplier) initialized with 7 tools
+✅ [32m[SUCCESS][0m AgentInit: Document Specialist (document) initialized with 7 tools
+🟢 Budget router initialized - stack length: 0
+🔵 Registering /api/budget routes
+✅ [32m[SUCCESS][0m VisionAIService: Initialized with OpenAI Vision (gpt-4o)
+Server running on port 4000
+Dashboard: http://localhost:4000
+[Budget Scheduler] Started with schedule: 0 0 28 * *; deadline timezone: Asia/Kuala_Lumpur

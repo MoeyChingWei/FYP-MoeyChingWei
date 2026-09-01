@@ -2,11 +2,15 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CheckOutlined,
   ClockCircleOutlined,
+  DatabaseOutlined,
   MessageOutlined,
   QuestionCircleOutlined,
   ReloadOutlined,
+  SettingOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
-import { Button, Empty, Spin, Table, Tag, Typography, message } from "antd";
+import { Button, Card, Col, Empty, Row, Spin, Table, Tag, Typography, message } from "antd";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { getSessionUser } from "../shared/auth/session";
@@ -21,6 +25,7 @@ import {
 } from "../shared/api/notifications";
 import UserGuideModal from "../components/UserGuide/UserGuideModal";
 import styles from "./AdminOverview.module.css";
+import { API_ROOT } from "../shared/api/base";
 
 const { Text, Title } = Typography;
 
@@ -35,6 +40,7 @@ export default function AdminOverview(): React.ReactElement {
   const [items, setItems] = useState<UnreadFeedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [markingId, setMarkingId] = useState<number | null>(null);
+  const [activeUsers, setActiveUsers] = useState<number | null>(null);
   const [userGuideVisible, setUserGuideVisible] = useState(false);
 
   const load = useCallback(async () => {
@@ -46,10 +52,13 @@ export default function AdminOverview(): React.ReactElement {
 
     setLoading(true);
     try {
-      const [notifications, feedbacks] = await Promise.all([
+      const [notifications, feedbacks, usersResponse] = await Promise.all([
         fetchNotifications(sessionUser.id),
         fetchFeedbacks(sessionUser),
+        axios.get(`${API_ROOT}/admin/users`),
       ]);
+      const users = Array.isArray(usersResponse.data?.users) ? usersResponse.data.users : [];
+      setActiveUsers(users.filter((user: { isActive?: boolean }) => user.isActive !== false).length);
       const feedbackById = new Map(feedbacks.map((feedback) => [feedback.id, feedback]));
       const unreadFeedbacks = notifications
         .filter(
@@ -117,6 +126,43 @@ export default function AdminOverview(): React.ReactElement {
           </Button>
         </div>
       </header>
+
+      <Row gutter={[12, 12]} className={styles.metrics}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className={styles.metricCard} bordered={false}>
+            <TeamOutlined className={styles.metricIcon} />
+            <span className={styles.metricLabel}>Active users</span>
+            <strong className={styles.metricValue}>{activeUsers ?? "-"}</strong>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className={styles.metricCard} bordered={false}>
+            <MessageOutlined className={styles.metricIcon} />
+            <span className={styles.metricLabel}>Unread feedback</span>
+            <strong className={styles.metricValue}>{items.length}</strong>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className={styles.metricCard} bordered={false}>
+            <DatabaseOutlined className={styles.metricIcon} />
+            <span className={styles.metricLabel}>Data operations</span>
+            <strong className={styles.metricValue}>Ready</strong>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className={styles.metricCard} bordered={false}>
+            <SettingOutlined className={styles.metricIcon} />
+            <span className={styles.metricLabel}>System status</span>
+            <strong className={styles.metricValue}>Online</strong>
+          </Card>
+        </Col>
+      </Row>
+
+      <div className={styles.adminActions}>
+        <Button icon={<TeamOutlined />} onClick={() => navigate("/users-access")}>Manage users & roles</Button>
+        <Button icon={<SettingOutlined />} onClick={() => navigate("/category-selection")}>Manage lookups</Button>
+        <Button icon={<DatabaseOutlined />} onClick={() => navigate("/settings")}>System settings</Button>
+      </div>
 
       <div className={styles.tableSurface}>
         {loading ? (

@@ -28,10 +28,8 @@ const PREDICTION_ALLOWED_ROLES = Object.values(ROLES).filter(
 const ALL_DEPARTMENT_PREDICTION_ROLES = new Set([
   ROLES.ADMIN,
   ROLES.MANAGER,
-  ROLES.ACCOUNT_PAYABLE,
   ROLES.TREASURY_FINANCE_OFFICER,
   ROLES.PAYMENT_TEAM,
-  ROLES.BUDGET_CONTROLLER,
 ]);
 const UPCOMING_EVENT_MANAGE_ROLES = [
   ROLES.ADMIN,
@@ -728,7 +726,7 @@ router.post('/adjustments', requireRoles([ROLES.ADMIN, ROLES.DEPARTMENT_EXECUTIV
       : null;
     const financeManagers = await prisma.user.findMany({
       where: {
-        role: { in: [ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER] },
+        role: { in: [ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER] },
         isActive: true
       },
       select: { id: true, role: true, email: true }
@@ -786,7 +784,6 @@ router.get('/adjustments', async (req, res) => {
       ROLES.ADMIN,
       ROLES.MANAGER,
       ROLES.TREASURY_FINANCE_OFFICER,
-      ROLES.BUDGET_CONTROLLER
     ].includes(viewer?.role);
     if (!canViewAll) {
       const viewerDepartment = String(viewer?.department ?? '').trim().toLowerCase();
@@ -829,7 +826,7 @@ router.get('/adjustments', async (req, res) => {
 });
 
 // PATCH /api/department-budget/adjustments/:id/approve - Approve adjustment request
-router.patch('/adjustments/:id/approve', requireRoles([ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
+router.patch('/adjustments/:id/approve', requireRoles([ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER]), async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;
@@ -994,7 +991,7 @@ router.patch('/adjustments/:id/approve', requireRoles([ROLES.ADMIN, ROLES.TREASU
 });
 
 // PATCH /api/department-budget/adjustments/:id/reject - Reject adjustment request
-router.patch('/adjustments/:id/reject', requireRoles([ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER, ROLES.BUDGET_CONTROLLER]), async (req, res) => {
+router.patch('/adjustments/:id/reject', requireRoles([ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER]), async (req, res) => {
   try {
     const { id } = req.params;
     const { reviewedBy, reviewComment } = req.body;

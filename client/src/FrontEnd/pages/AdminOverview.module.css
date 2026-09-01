@@ -42,6 +42,43 @@
   border-radius: 8px;
 }
 
+.metrics {
+  margin: 0 !important;
+}
+
+.metricCard {
+  min-height: 124px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.metricIcon {
+  display: block;
+  margin-bottom: 10px;
+  color: #2563eb;
+  font-size: 20px;
+}
+
+.metricLabel {
+  display: block;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.metricValue {
+  display: block;
+  margin-top: 5px;
+  color: #111827;
+  font-size: 24px;
+}
+
+.adminActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .loading,
 .empty {
   display: grid;

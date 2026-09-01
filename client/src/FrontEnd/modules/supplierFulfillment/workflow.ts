@@ -193,6 +193,7 @@ export interface SupplierPaymentRecord {
   supplierId?: number;
   supplierName?: string;
   supplierEmail?: string;
+  sourceRequester?: string;
   amount: number;
   currency: string;
   paymentTerms?: string;

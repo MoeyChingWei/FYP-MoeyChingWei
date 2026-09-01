@@ -14,13 +14,14 @@ import {
   ArrowLeftOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { getSessionUser } from "../../shared/auth/session";
 import { UserRole } from "../../shared/types/roles";
 import {
   hydrateSupplierGrns,
+  isGrnReceived,
   loadSupplierGrns,
   sortWorkflowRowsByStatusAndDate,
   type SupplierGrnRecord,
@@ -58,10 +59,12 @@ function statusTag(status: SupplierGrnRecord["status"], t: any): React.ReactNode
 export default function GoodsReceivedNoteStatusSubmodule(): React.ReactElement {
   const { t } = useTranslation("supplier");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [rows, setRows] = useState<SupplierGrnRecord[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const sessionUser = useMemo(() => getSessionUser(), []);
+  const statusFilter = searchParams.get("status");
 
   useEffect(() => {
     const sync = async (): Promise<void> => {
@@ -92,6 +95,11 @@ export default function GoodsReceivedNoteStatusSubmodule(): React.ReactElement {
   const filteredRows = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
     return visibleRows.filter((row) => {
+      const matchesStatus = !statusFilter || (
+        statusFilter === "RECEIVED"
+          ? isGrnReceived(row.status)
+          : row.status === statusFilter
+      );
       const matchesDate = !selectedDate || row.createdDate === selectedDate;
       const itemText = row.items
         .map((item) => [item.itemName, item.itemDescription, item.itemCategory].join(" "))
@@ -112,9 +120,9 @@ export default function GoodsReceivedNoteStatusSubmodule(): React.ReactElement {
         .toLowerCase()
         .includes(keyword);
 
-      return matchesDate && (!keyword || matchesKeyword);
+      return matchesStatus && matchesDate && (!keyword || matchesKeyword);
     });
-  }, [searchValue, selectedDate, visibleRows]);
+  }, [searchValue, selectedDate, statusFilter, visibleRows]);
 
   return (
     <Card>
@@ -154,7 +162,12 @@ export default function GoodsReceivedNoteStatusSubmodule(): React.ReactElement {
         </div>
 
         <div className={styles.summary}>
-          <Text className={styles.summaryText}>{t("grnStatus.list.summary", { count: filteredRows.length })}</Text>
+          <Flex align="center" gap={8} wrap="wrap">
+            <Text className={styles.summaryText}>{t("grnStatus.list.summary", { count: filteredRows.length })}</Text>
+            {statusFilter === "PENDING_GRN" && statusTag("PENDING_GRN", t)}
+            {statusFilter === "DISCREPANCY" && statusTag("DISCREPANCY", t)}
+            {statusFilter === "RECEIVED" && statusTag("RECEIVED", t)}
+          </Flex>
         </div>
 
         <div className={styles.tableWrap}>

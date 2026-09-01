@@ -10,6 +10,8 @@ import {
   SafetyCertificateOutlined,
   SettingOutlined,
   UserOutlined,
+  DollarOutlined,
+  CreditCardOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { isFinanceRole, UserRole } from "../../shared/types/roles";
@@ -254,6 +256,74 @@ export default function UserGuideModal({
       });
     }
 
+    if (userRole === UserRole.TREASURY_FINANCE_OFFICER || userRole === UserRole.ADMIN) {
+      sections.push({
+        key: "finance-guide",
+        title: t("finance.title"),
+        icon: <DollarOutlined />,
+        content: (
+          <>
+            <Title level={5}>{t("finance.invoiceApproval")}</Title>
+            <Tag color="cyan">{t("finance.availableFor")}</Tag>
+            <Paragraph style={{ marginTop: 8 }}>
+              <Text strong>{t("finance.whatYouCanDo")}</Text>
+            </Paragraph>
+            <List size="small">
+              <List.Item>â€¢ {t("finance.capabilities.reviewInvoices")}</List.Item>
+              <List.Item>â€¢ {t("finance.capabilities.approveInvoices")}</List.Item>
+              <List.Item>â€¢ {t("finance.capabilities.rejectInvoices")}</List.Item>
+              <List.Item>â€¢ {t("finance.capabilities.monitorBudgets")}</List.Item>
+            </List>
+
+            <Paragraph style={{ marginTop: 16 }}>
+              <Text strong>{t("finance.howToReview")}</Text>
+            </Paragraph>
+            <List size="small" bordered>
+              <List.Item>1. {t("finance.reviewSteps.step1")}</List.Item>
+              <List.Item>2. {t("finance.reviewSteps.step2")}</List.Item>
+              <List.Item>3. {t("finance.reviewSteps.step3")}</List.Item>
+              <List.Item>4. {t("finance.reviewSteps.step4")}</List.Item>
+              <List.Item>5. {t("finance.reviewSteps.step5")}</List.Item>
+            </List>
+          </>
+        ),
+      });
+    }
+
+    if (userRole === UserRole.PAYMENT_TEAM || userRole === UserRole.ADMIN) {
+      sections.push({
+        key: "payment-guide",
+        title: t("payment.title"),
+        icon: <CreditCardOutlined />,
+        content: (
+          <>
+            <Title level={5}>{t("payment.processing")}</Title>
+            <Tag color="geekblue">{t("payment.availableFor")}</Tag>
+            <Paragraph style={{ marginTop: 8 }}>
+              <Text strong>{t("payment.whatYouCanDo")}</Text>
+            </Paragraph>
+            <List size="small">
+              <List.Item>â€¢ {t("payment.capabilities.viewQueue")}</List.Item>
+              <List.Item>â€¢ {t("payment.capabilities.checkDueDates")}</List.Item>
+              <List.Item>â€¢ {t("payment.capabilities.recordPayment")}</List.Item>
+              <List.Item>â€¢ {t("payment.capabilities.uploadProof")}</List.Item>
+            </List>
+
+            <Paragraph style={{ marginTop: 16 }}>
+              <Text strong>{t("payment.howToProcess")}</Text>
+            </Paragraph>
+            <List size="small" bordered>
+              <List.Item>1. {t("payment.processSteps.step1")}</List.Item>
+              <List.Item>2. {t("payment.processSteps.step2")}</List.Item>
+              <List.Item>3. {t("payment.processSteps.step3")}</List.Item>
+              <List.Item>4. {t("payment.processSteps.step4")}</List.Item>
+              <List.Item>5. {t("payment.processSteps.step5")}</List.Item>
+            </List>
+          </>
+        ),
+      });
+    }
+
     if (userRole === UserRole.SUPPLIER) {
       sections.push({
         key: "supplier-guide",
@@ -296,6 +366,30 @@ export default function UserGuideModal({
               <List.Item>4. {t("supplier.deliverySteps.step4")}</List.Item>
               <List.Item>5. {t("supplier.deliverySteps.step5")}</List.Item>
             </List>
+
+            <Divider />
+
+            <Title level={5}>{t("supplierExtra.inventoryManagement")}</Title>
+            <Paragraph>
+              <Text strong>{t("supplierExtra.howToManageInventory")}</Text>
+            </Paragraph>
+            <List size="small" bordered>
+              <List.Item>1. {t("supplierExtra.inventorySteps.step1")}</List.Item>
+              <List.Item>2. {t("supplierExtra.inventorySteps.step2")}</List.Item>
+              <List.Item>3. {t("supplierExtra.inventorySteps.step3")}</List.Item>
+              <List.Item>4. {t("supplierExtra.inventorySteps.step4")}</List.Item>
+            </List>
+
+            <Title level={5} style={{ marginTop: 16 }}>{t("supplierExtra.invoiceManagement")}</Title>
+            <List size="small" bordered>
+              <List.Item>1. {t("supplierExtra.invoiceSteps.step1")}</List.Item>
+              <List.Item>2. {t("supplierExtra.invoiceSteps.step2")}</List.Item>
+              <List.Item>3. {t("supplierExtra.invoiceSteps.step3")}</List.Item>
+              <List.Item>4. {t("supplierExtra.invoiceSteps.step4")}</List.Item>
+            </List>
+
+            <Title level={5} style={{ marginTop: 16 }}>{t("supplierExtra.paymentTracking")}</Title>
+            <Paragraph>{t("supplierExtra.paymentDescription")}</Paragraph>
           </>
         ),
       });

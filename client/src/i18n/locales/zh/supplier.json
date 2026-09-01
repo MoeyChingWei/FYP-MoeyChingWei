@@ -1,5 +1,6 @@
 {
   "moduleTitle": "供应商概览",
+  "userGuide": "\u7528\u6237\u6307\u5357",
   "notifications": {
     "title": "通知",
     "hint": "最新的供应商端更新和活动。",
@@ -48,6 +49,10 @@
     "invoice": {
       "title": "供应商发票",
       "hint": "创建和管理供应商发票"
+    },
+    "payment": {
+      "title": "供应商付款",
+      "hint": "查看付款处理状态和付款历史"
     }
   },
   "invoice": {
@@ -61,6 +66,7 @@
     },
     "status": { "draft": "草稿", "submitted": "已提交", "approved": "已批准", "rejected": "已拒绝" },
     "labels": { "pending": "待填写发票" },
+    "tabs": { "pending": "待审批 ({{count}})", "draft": "草稿 ({{count}})", "approved": "已批准 ({{count}})", "rejected": "已拒绝 ({{count}})" },
     "fields": {
       "invoiceNumber": "发票号码",
       "invoiceDate": "发票日期",
@@ -92,6 +98,18 @@
       "submitted": "供应商发票已提交。",
       "notFound": "找不到供应商发票。"
     }
+  },
+  "payment": {
+    "title": "供应商付款",
+    "empty": "未找到付款记录。",
+    "accessRequired": "需要供应商访问权限。",
+    "searchPlaceholder": "搜索付款、发票或 PO…",
+    "status": { "pending": "待付款", "processing": "处理中", "paid": "已完成", "failed": "失败" },
+    "fields": { "paymentNumber": "付款编号", "invoiceNumber": "发票编号", "amount": "金额", "status": "状态", "action": "查看", "paymentTerms": "付款条款" },
+    "actions": { "view": "查看详情", "back": "返回" },
+    "tabs": { "pending": "待处理 ({{count}})", "completed": "已完成 ({{count}})" },
+    "summary": { "pendingCount": "待付款", "pendingAmount": "待付款金额", "completedCount": "已完成付款", "completedAmount": "已完成金额" },
+    "details": { "title": "付款详情", "currentStatus": "当前状态", "invoiceDate": "发票日期", "paidDate": "付款日期", "method": "付款方式", "reference": "交易参考编号", "processedBy": "处理人", "remarks": "备注", "history": "付款历史", "proof": "付款证明", "viewProof": "查看证明", "downloadProof": "下载" }
   },
   "orderAcknowledgement": {
     "title": "订单确认",

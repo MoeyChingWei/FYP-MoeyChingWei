@@ -46,6 +46,17 @@
     "confirmDelete": "确定要删除吗？",
     "unsavedChanges": "您有未保存的更改。是否继续？"
   },
+  "documentActions": {
+    "pdfExported": "PDF 已导出",
+    "pdfExportFailed": "无法导出 PDF",
+    "printPreview": "打印预览",
+    "printPreviewOpened": "已打开打印预览",
+    "printFailed": "无法打开打印文档",
+    "permissionDenied": "权限被拒绝",
+    "noRecordsFound": "未找到记录",
+    "serverError": "发生服务器错误",
+    "requestTimedOut": "请求超时"
+  },
   "languages": {
     "en": "English",
     "zh": "简体中文",

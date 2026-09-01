@@ -46,6 +46,17 @@
     "confirmDelete": "Adakah anda pasti mahu memadamkan?",
     "unsavedChanges": "Anda mempunyai perubahan yang belum disimpan. Teruskan?"
   },
+  "documentActions": {
+    "pdfExported": "PDF telah dieksport",
+    "pdfExportFailed": "Tidak dapat mengeksport PDF",
+    "printPreview": "Pratonton cetakan",
+    "printPreviewOpened": "Pratonton cetakan dibuka",
+    "printFailed": "Tidak dapat membuka dokumen cetakan",
+    "permissionDenied": "Kebenaran ditolak",
+    "noRecordsFound": "Tiada rekod ditemui",
+    "serverError": "Ralat pelayan berlaku",
+    "requestTimedOut": "Permintaan tamat masa"
+  },
   "languages": {
     "en": "English",
     "zh": "简体中文",

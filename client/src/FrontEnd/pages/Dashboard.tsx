@@ -24,6 +24,7 @@ import {
   type NotificationRow,
 } from "../shared/api/notifications";
 import UserGuideModal from "../components/UserGuide/UserGuideModal";
+import { resolveNotificationRoute } from "../shared/notifications/notificationRoutes";
 
 const { Title, Text } = Typography;
 
@@ -99,19 +100,6 @@ export default function Dashboard(): React.ReactElement {
     [notifications],
   );
 
-  const resolveNotificationRoute = (n: NotificationItem): string => {
-    if (n.rawType === "PURCHASE_REQUEST_APPROVAL" && n.refId) return `/purchasing/approval/${n.refId}`;
-    if (n.rawType === "PURCHASE_ORDER_APPROVAL" && n.refId) return `/purchasing/po-approval/${n.refId}`;
-    if (n.refType === "purchase-request" && n.refId) return `/purchasing/review/${n.refId}`;
-    if (n.refType === "purchase-order" && n.refId) return `/purchasing/po-review/${n.refId}`;
-    if (n.refType === "supplier-order-ack" && n.refId) return `/supplier-overview/order-acknowledgement/${n.refId}`;
-    if (n.refType === "delivery" && n.refId) return `/supplier-overview/delivery/${n.refId}`;
-    if (n.refType === "grn" && n.refId) return `/supplier-overview/grn-status/${n.refId}`;
-    if (n.refType === "feedback") return "/settings/feedback";
-    if (n.refType === "tracking-item" && n.refId) return `/tracking-item?requestLocalId=${encodeURIComponent(n.refId)}`;
-    return "/overview";
-  };
-
   function markAllRead(): void {
     if (!sessionUser?.id || latestNotifications.length === 0) return;
     void (async () => {
@@ -157,7 +145,7 @@ export default function Dashboard(): React.ReactElement {
     } catch {
       // still navigate to avoid blocking user.
     }
-    navigate(resolveNotificationRoute(n));
+    navigate(resolveNotificationRoute(n, sessionUser?.role));
   }
 
   function renderNotificationList(items: NotificationItem[]): React.ReactNode {

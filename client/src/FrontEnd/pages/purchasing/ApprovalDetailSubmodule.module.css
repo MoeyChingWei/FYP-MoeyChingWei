@@ -4,6 +4,98 @@
   gap: 18px;
 }
 
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metricCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(15, 35, 63, .04);
+}
+
+.metricCard :global(.ant-card-body) {
+  padding: 16px 18px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.searchInput {
+  min-width: 260px;
+  flex: 1 1 300px;
+}
+
+.filterSummary {
+  margin-bottom: 14px;
+}
+
+.paymentProofField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  line-height: 1.5;
+}
+
+.paymentProofControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.attachmentMeta {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.infoDrawer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.infoAmount {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #d9eee9;
+  border-radius: 10px;
+  background: #f3fbf9;
+}
+
+.infoAmount :global(.ant-typography-strong) {
+  margin-right: auto;
+  color: #0f766e;
+  font-size: 22px;
+}
+
+.attachmentPreviewImage {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.attachmentPreviewFrame {
+  display: block;
+  width: 100%;
+  height: 70vh;
+  border: 0;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -128,6 +220,10 @@
 }
 
 @media (max-width: 1100px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .summaryGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -142,6 +238,7 @@
 }
 
 @media (max-width: 700px) {
+  .metricsGrid,
   .summaryGrid,
   .itemGrid {
     grid-template-columns: 1fr;

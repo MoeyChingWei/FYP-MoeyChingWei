@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Flex, message } from "antd";
 import { DownloadOutlined, PrinterOutlined, LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { getCompanyAddress, getCompanyLogo, getCompanyName, getSupplierCompanyAddress, getSupplierCompanyLogo, getSupplierCompanyName } from "../../modules/settings/companyAddress";
 
 export type WorkflowDocumentType = "purchase-request" | "purchase-order" | "acknowledgement" | "delivery" | "grn";
@@ -13,7 +14,28 @@ interface Props {
   filenamePrefix?: string;
 }
 
+const WORKFLOW_FILENAME_PREFIXES: Record<WorkflowDocumentType, string> = {
+  "purchase-request": "purchase-request",
+  "purchase-order": "purchase-order",
+  acknowledgement: "order-acknowledgement",
+  delivery: "delivery",
+  grn: "grn",
+};
+
+function safeFilenamePart(value: unknown): string {
+  return String(value || "document")
+    .trim()
+    .replace(/[^a-zA-Z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "document";
+}
+
+export function workflowPdfFilename(workflowType: WorkflowDocumentType, record: any, filenamePrefix?: string): string {
+  const number = record?.prNumber || record?.poNumber || record?.deliveryNo || record?.grnNumber || record?.localId;
+  return `${safeFilenamePart(filenamePrefix || WORKFLOW_FILENAME_PREFIXES[workflowType])}-${safeFilenamePart(number)}.pdf`;
+}
+
 export default function WorkflowDocumentActions({ workflowType, record, pageTitle, filenamePrefix }: Props): React.ReactElement {
+  const { t } = useTranslation("common");
   const [loading, setLoading] = useState<"print" | "pdf" | null>(null);
 
   const getPdf = async (): Promise<Blob> => {
@@ -55,15 +77,15 @@ export default function WorkflowDocumentActions({ workflowType, record, pageTitl
       const url = URL.createObjectURL(await getPdf());
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${filenamePrefix || workflowType}-${String(record.prNumber || record.poNumber || record.deliveryNo || "document")}.pdf`;
+      link.download = workflowPdfFilename(workflowType, record, filenamePrefix);
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
-      message.success("PDF exported");
+      message.success(t("documentActions.pdfExported"));
     } catch (error) {
       console.error(error);
-      message.error("Unable to export PDF");
+      message.error(t("documentActions.pdfExportFailed"));
     } finally { setLoading(null); }
   };
 
@@ -74,7 +96,7 @@ export default function WorkflowDocumentActions({ workflowType, record, pageTitl
     try {
       const html = await getPrintHtml();
       printFrame = document.createElement("iframe");
-      printFrame.setAttribute("title", "Print preview");
+      printFrame.setAttribute("title", t("documentActions.printPreview"));
       printFrame.style.position = "fixed";
       printFrame.style.left = "-10000px";
       printFrame.style.top = "-10000px";
@@ -92,17 +114,17 @@ export default function WorkflowDocumentActions({ workflowType, record, pageTitl
 
       printFrame.contentWindow?.focus();
       printFrame.contentWindow?.print();
-      message.success("Print preview opened");
+      message.success(t("documentActions.printPreviewOpened"));
       window.setTimeout(() => printFrame?.remove(), 1000);
     } catch (error) {
       console.error(error);
-      message.error("Unable to open print document");
+      message.error(t("documentActions.printFailed"));
       printFrame?.remove();
     } finally { setLoading(null); }
   };
 
   return <Flex gap={8} wrap="wrap">
-    <Button icon={loading === "print" ? <LoadingOutlined /> : <PrinterOutlined />} onClick={() => void onPrint()} disabled={Boolean(loading)}>Print</Button>
-    <Button icon={loading === "pdf" ? <LoadingOutlined /> : <DownloadOutlined />} onClick={() => void onExport()} disabled={Boolean(loading)}>Export PDF</Button>
+    <Button icon={loading === "print" ? <LoadingOutlined /> : <PrinterOutlined />} onClick={() => void onPrint()} disabled={Boolean(loading)}>{t("buttons.print")}</Button>
+    <Button icon={loading === "pdf" ? <LoadingOutlined /> : <DownloadOutlined />} onClick={() => void onExport()} disabled={Boolean(loading)}>{t("buttons.exportPDF")}</Button>
   </Flex>;
 }

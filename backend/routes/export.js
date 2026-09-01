@@ -31,19 +31,57 @@ const WORKFLOW_TYPES = {
 // /api/export/workflow endpoints because they contain sensitive payment data.
 const FINANCE_WORKFLOW_TYPES = new Set(["supplier-invoice", "payment-advice"]);
 
+const WORKFLOW_FILENAME_PREFIXES = {
+  "purchase-request": "purchase-request",
+  "purchase-order": "purchase-order",
+  acknowledgement: "order-acknowledgement",
+  delivery: "delivery",
+  grn: "grn",
+  "supplier-invoice": "supplier-invoice",
+  "payment-advice": "payment-advice",
+};
+
+function safeFilenamePart(value) {
+  return String(value || "document")
+    .trim()
+    .replace(/[^a-zA-Z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "document";
+}
+
+export function documentPdfFilename(workflowType, record = {}) {
+  const number = workflowType === "supplier-invoice"
+    ? record.invoiceNumber
+    : workflowType === "payment-advice"
+      ? record.paymentNumber
+      : record.prNumber || record.poNumber || record.deliveryNo || record.grnNumber || record.localId;
+  const prefix = WORKFLOW_FILENAME_PREFIXES[workflowType] || workflowType || "document";
+  return `${safeFilenamePart(prefix)}-${safeFilenamePart(number)}.pdf`;
+}
+
 const htmlEscape = (value) => String(value ?? "-")
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   .replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 
 const logoMarkup = (source, alt) => {
   const value = String(source || "");
-  if (!/^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(value)) return "";
+  if (!/^data:image\/(?:png|jpe?g|webp|gif|svg\+xml);base64,/i.test(value)) return "";
   return `<img class="party-logo" src="${htmlEscape(value)}" alt="${htmlEscape(alt)}" />`;
 };
 
 const statusBadgeMarkup = (status) => {
   const display = getStatusDisplay(status);
   return `<span class="status-badge status-${display.tone}">${htmlEscape(display.label)}</span>`;
+};
+
+// Payment proofs are stored as validated data URLs. Only embed image proofs in
+// paid payment advice documents; PDF proofs continue to be represented by
+// their filename because they cannot be rendered as an inline image.
+const paymentProofImageMarkup = (record, status) => {
+  if (String(status || "").toUpperCase() !== "PAID") return null;
+  const source = String(record.attachmentDataUrl || "");
+  if (!/^data:image\/(?:png|jpe?g);base64,[A-Za-z0-9+/]*={0,2}$/i.test(source)) return null;
+  const filename = record.attachmentName ? `<span>${htmlEscape(record.attachmentName)}</span>` : "";
+  return `${filename}<img class="payment-proof-image" src="${htmlEscape(source)}" alt="Payment proof" />`;
 };
 
 export function workflowHtml(workflowType, record = {}, pageTitle) {
@@ -73,9 +111,9 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
     const lineSubtotal = Number(item.quantity || 0) * Number(item.unitPrice || 0);
     return `<tr><td>${index + 1}</td><td>${image}</td><td>${htmlEscape(item.itemName)}</td><td>${htmlEscape(item.itemDescription)}</td><td>${htmlEscape(item.quantity)}</td><td>${htmlEscape(item.unitOfMeasurement || item.unit)}</td><td class="amount">${htmlEscape(formatCurrency(item.unitPrice, currency))}</td><td class="amount">${htmlEscape(formatCurrency(lineSubtotal, currency))}</td></tr>`;
   }).join("");
-  const maskAccount = (value) => {
+  const displayAccount = (value) => {
     const account = String(value || "").trim();
-    return account ? `****${account.slice(-4)}` : "Not provided";
+    return account || "Not provided";
   };
   const bank = record.bankDetails || {};
   const extra = {
@@ -84,8 +122,8 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
     acknowledgement: [["Sender (Company)", companyContact], ["Sender company", companyName], ["Sender address", record.companyAddress], ["Receiver (Supplier)", supplierName], ["Receiver email", record.supplierEmail], ["Receiver address", supplierAddress], ["Department", record.department]],
     delivery: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
     grn: [["Sender (Supplier)", supplierName], ["Sender email", record.supplierEmail], ["Sender address", supplierAddress], ["Receiver (Company)", companyContact], ["Receiver company", companyName], ["Receiver address", record.companyAddress], ["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
-    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Supplier", supplierName], ["Supplier email", record.supplierEmail], ["Payment terms", formatPaymentTerm(record.paymentTerms)], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Currency", currency]],
-    "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Supplier", record.supplierName || supplierName], ["Supplier email", record.supplierEmail], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Payment proof", record.attachmentName || "Not provided"], ["Currency", currency]],
+    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Supplier", supplierName], ["Supplier email", record.supplierEmail], ["Payment terms", formatPaymentTerm(record.paymentTerms)], ["Bank", bank.bankName || "Not provided"], ["Bank account", displayAccount(bank.accountNumber)], ["Currency", currency]],
+    "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Supplier", record.supplierName || supplierName], ["Supplier email", record.supplierEmail], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Bank", bank.bankName || "Not provided"], ["Bank account", displayAccount(bank.accountNumber)], ["Payment proof", record.attachmentName || "Not provided"], ["Currency", currency]],
   }[workflowType] || [];
   const partyInfo = isPartyDocument
     ? (workflowType === "acknowledgement"
@@ -104,7 +142,7 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
             receiverLogo: companyLogo,
           }
         : {
-            sender: [["Company", companyName], ["Address", record.companyAddress]],
+            sender: [["Company", companyName], ["Contact", companyContact], ["Address", record.companyAddress]],
             receiver: [["Supplier", supplierName || record.supplierName], ["Email", record.supplierEmail], ["Address", supplierAddress]],
             senderLogo: companyLogo,
             receiverLogo: supplierLogo,
@@ -124,12 +162,14 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
     acknowledgement: [["Department", record.department], ["Purchase order", record.poNumber], ["Source PR", record.sourcePrNumber], ["Payment terms", formatPaymentTerm(record.paymentTerms)]],
     delivery: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Delivered date", record.deliveredDate]],
     grn: [["Delivery number", record.deliveryNo], ["Original PO", record.originalOrderNo || record.poNumber], ["Completed date", record.completedDate], ["Discrepancy reason", record.discrepancyReason]],
-    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Approval status", status], ["Payment terms", formatPaymentTerm(record.paymentTerms)], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)]],
-    "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Payment status", status], ["Amount", formatCurrency(record.amount ?? record.totalAmount ?? 0, currency)], ["Bank", bank.bankName || "Not provided"], ["Bank account", maskAccount(bank.accountNumber)], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Payment proof", record.attachmentName || "Not provided"]],
+    "supplier-invoice": [["Invoice number", record.invoiceNumber], ["Invoice date", record.invoiceDate], ["Purchase order", record.poNumber], ["GRN / delivery", record.deliveryNo], ["Approval status", status], ["Payment terms", formatPaymentTerm(record.paymentTerms)], ["Bank", bank.bankName || "Not provided"], ["Bank account", displayAccount(bank.accountNumber)]],
+    "payment-advice": [["Payment number", record.paymentNumber], ["Invoice number", record.invoiceNumber], ["Purchase order", record.poNumber], ["GRN / delivery", record.grnNumber || record.deliveryNo], ["Payment status", status], ["Amount", formatCurrency(record.amount ?? record.totalAmount ?? 0, currency)], ["Bank", bank.bankName || "Not provided"], ["Bank account", displayAccount(bank.accountNumber)], ["Payment method", record.paymentMethod], ["Paid date", record.paidDate], ["Transaction reference", record.transactionReference], ["Processed by", record.processedBy], ["Payment proof", record.attachmentName || "Not provided"]],
   }[workflowType] || [];
-  const renderMetaValue = (label, value) => /status/i.test(label)
-    ? statusBadgeMarkup(value)
-    : htmlEscape(value);
+  const renderMetaValue = (label, value) => {
+    if (/status/i.test(label)) return statusBadgeMarkup(value);
+    if (label === "Payment proof") return paymentProofImageMarkup(record, status) || htmlEscape(value);
+    return htmlEscape(value);
+  };
   const generalMarkup = isPartyDocument
     ? `<div class="meta secondary-meta">${documentDetails.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${renderMetaValue(label, value)}</span>`).join("")}</div>`
     : `<div class="meta">${extra.map(([label, value]) => `<b>${htmlEscape(label)}</b><span>${renderMetaValue(label, value)}</span>`).join("")}</div>`;
@@ -143,7 +183,7 @@ export function workflowHtml(workflowType, record = {}, pageTitle) {
   const totalLabel = workflowType === "payment-advice" ? "Paid amount" : "Total payable";
   const totalsMarkup = `<section class="totals-block"><h2>${summaryTitle}</h2><div class="totals-row"><span>Items subtotal</span><strong>${htmlEscape(formatCurrency(subtotal, currency))}</strong></div>${taxBreakdown.map((tax) => `<div class="totals-row"><span>${htmlEscape(tax.rate == null ? tax.label : `${tax.label} (${tax.rate.toFixed(2)}%)`)}</span><strong>${htmlEscape(formatCurrency(tax.amount, currency))}</strong></div>`).join("")}${!taxBreakdown.length ? `<div class="totals-row muted-row"><span>Tax</span><strong>${htmlEscape(formatCurrency(0, currency))}</strong></div>` : ""}<div class="totals-row total-row"><span>${totalLabel}</span><strong>${htmlEscape(formatCurrency(totalAmount, currency))}</strong></div></section>`;
   return `<!doctype html><html><head><meta charset="utf-8"><title>${htmlEscape(title)}</title><style>
-    @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}.document-heading{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:start;gap:24px;min-height:100px}.document-heading-copy{min-width:0;padding-top:3px}.header-brand{display:flex;justify-content:flex-end;align-items:flex-start;min-height:100px}.header-logo{width:150px;height:100px;object-fit:contain;display:block}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-logo{width:52px;height:40px;object-fit:contain;display:block;margin-bottom:7px}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}th.amount,td.amount{text-align:right;white-space:nowrap}.totals-block{width:52%;margin:18px 0 0 auto}.totals-row{display:flex;justify-content:space-between;gap:20px;padding:7px 10px;border-bottom:1px solid #eaecf0}.totals-row strong{white-space:nowrap}.muted-row{color:#667085}.total-row{margin-top:3px;border-top:2px solid #17202a;border-bottom:0;font-size:12px;font-weight:700;padding-top:9px}.footer{margin-top:24px;color:#667085;font-size:10px}.status-badge{display:inline-block;padding:3px 10px;border:1px solid currentColor;border-radius:999px;font-size:10px;font-weight:700;line-height:1.35;letter-spacing:.01em;-webkit-print-color-adjust:exact;print-color-adjust:exact}.status-pending{color:#8a4b08;background:#fff1d6}.status-success{color:#146c43;background:#dff5e8}.status-danger{color:#a61b1b;background:#fde2e1}.status-info{color:#075985;background:#e0f2fe}.status-neutral{color:#475467;background:#eaecf0}
+    @page{size:A4;margin:18mm}body{font-family:Arial,sans-serif;color:#17202a;font-size:11px}.document-heading{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:start;gap:24px;min-height:100px}.document-heading-copy{min-width:0;padding-top:3px}.header-brand{display:flex;justify-content:flex-end;align-items:flex-start;min-height:100px}.header-logo{width:150px;height:100px;object-fit:contain;display:block}h1{font-size:22px;margin:0 0 5px}h2{font-size:13px;margin:20px 0 7px;border-bottom:1px solid #ccd3da;padding-bottom:4px}.muted{color:#667085}.meta{display:grid;grid-template-columns:140px 1fr;gap:5px 12px;margin-top:16px}.meta b{color:#475467}.secondary-meta{padding-top:4px}.payment-proof-image{display:block;max-width:260px;max-height:220px;width:auto;height:auto;object-fit:contain;margin-top:6px;border:1px solid #d0d5dd;padding:4px}.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.party-card{border:1px solid #d0d5dd;border-radius:3px;padding:10px;min-height:105px}.party-card h3{font-size:13px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid #d0d5dd}.party-logo{width:52px;height:40px;object-fit:contain;display:block;margin-bottom:7px}.party-row{display:grid;grid-template-columns:70px 1fr;gap:8px;margin:4px 0}.party-row b{color:#475467}.party-row span{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{border:1px solid #d0d5dd;padding:6px;text-align:left;vertical-align:top}th{background:#f2f4f7;font-weight:600}th.amount,td.amount{text-align:right;white-space:nowrap}.totals-block{width:52%;margin:18px 0 0 auto}.totals-row{display:flex;justify-content:space-between;gap:20px;padding:7px 10px;border-bottom:1px solid #eaecf0}.totals-row strong{white-space:nowrap}.muted-row{color:#667085}.total-row{margin-top:3px;border-top:2px solid #17202a;border-bottom:0;font-size:12px;font-weight:700;padding-top:9px}.footer{margin-top:24px;color:#667085;font-size:10px}.status-badge{display:inline-block;padding:3px 10px;border:1px solid currentColor;border-radius:999px;font-size:10px;font-weight:700;line-height:1.35;letter-spacing:.01em;-webkit-print-color-adjust:exact;print-color-adjust:exact}.status-pending{color:#8a4b08;background:#fff1d6}.status-success{color:#146c43;background:#dff5e8}.status-danger{color:#a61b1b;background:#fde2e1}.status-info{color:#075985;background:#e0f2fe}.status-neutral{color:#475467;background:#eaecf0}
   </style></head><body><div class="document-heading"><div class="document-heading-copy"><h1>${htmlEscape(title)}</h1><div class="muted">Document: ${htmlEscape(number)} &nbsp; | &nbsp; Status: ${statusBadgeMarkup(status)}</div></div><div class="header-brand">${logoMarkup(companyLogo, "Company logo").replace('class="party-logo"', 'class="header-logo"')}</div></div><h2>${isPartyDocument ? "Parties & document information" : "Document information"}</h2>${partyMarkup}${generalMarkup}${itemsMarkup}${totalsMarkup}${historyMarkup}<div class="footer">Generated ${new Date().toLocaleString()}</div></body></html>`;
 }
 
@@ -232,6 +272,7 @@ router.post("/workflow", async (req, res) => {
   }
   const generator = new PDFGenerator();
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const downloadFilename = documentPdfFilename(workflowType, record);
   const tempDir = path.join(process.cwd(), "temp", "exports");
   const outputPath = path.join(tempDir, `${workflowType}-${timestamp}.pdf`);
   try {
@@ -241,7 +282,7 @@ router.post("/workflow", async (req, res) => {
     );
     const fileBuffer = await fs.readFile(outputPath);
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${workflowType}-${timestamp}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="${downloadFilename}"`);
     res.send(fileBuffer);
   } catch (error) {
     console.error("Workflow PDF generation error:", error);

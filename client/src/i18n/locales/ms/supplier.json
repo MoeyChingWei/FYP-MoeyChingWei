@@ -1,5 +1,6 @@
 {
   "moduleTitle": "Gambaran Keseluruhan Pembekal",
+  "userGuide": "Panduan Pengguna",
   "notifications": {
     "title": "Notifikasi",
     "hint": "Kemas kini dan aktiviti terkini pihak pembekal.",
@@ -48,6 +49,10 @@
     "invoice": {
       "title": "Invois Pembekal",
       "hint": "Cipta dan urus invois pembekal"
+    },
+    "payment": {
+      "title": "Pembayaran Pembekal",
+      "hint": "Lihat status pemprosesan pembayaran dan sejarah pembayaran"
     }
   },
   "invoice": {
@@ -61,6 +66,7 @@
     },
     "status": { "draft": "Draf", "submitted": "Dihantar", "approved": "Diluluskan", "rejected": "Ditolak" },
     "labels": { "pending": "Invois belum lengkap" },
+    "tabs": { "pending": "Menunggu kelulusan ({{count}})", "draft": "Draf ({{count}})", "approved": "Diluluskan ({{count}})", "rejected": "Ditolak ({{count}})" },
     "fields": {
       "invoiceNumber": "Nombor invois",
       "invoiceDate": "Tarikh invois",
@@ -92,6 +98,18 @@
       "submitted": "Invois pembekal telah dihantar.",
       "notFound": "Invois pembekal tidak ditemui."
     }
+  },
+  "payment": {
+    "title": "Pembayaran Pembekal",
+    "empty": "Tiada rekod pembayaran ditemui.",
+    "accessRequired": "Akses pembekal diperlukan.",
+    "searchPlaceholder": "Cari pembayaran, invois atau PO...",
+    "status": { "pending": "Menunggu Pembayaran", "processing": "Sedang Diproses", "paid": "Selesai", "failed": "Gagal" },
+    "fields": { "paymentNumber": "Nombor Pembayaran", "invoiceNumber": "Nombor Invois", "amount": "Amaun", "status": "Status", "action": "Lihat", "paymentTerms": "Terma Pembayaran" },
+    "actions": { "view": "Lihat butiran", "back": "Kembali" },
+    "tabs": { "pending": "Menunggu ({{count}})", "completed": "Selesai ({{count}})" },
+    "summary": { "pendingCount": "Menunggu Pembayaran", "pendingAmount": "Amaun Menunggu", "completedCount": "Pembayaran Selesai", "completedAmount": "Amaun Selesai" },
+    "details": { "title": "Butiran Pembayaran", "currentStatus": "Status semasa", "invoiceDate": "Tarikh Invois", "paidDate": "Tarikh Dibayar", "method": "Kaedah Pembayaran", "reference": "Rujukan Transaksi", "processedBy": "Diproses Oleh", "remarks": "Catatan", "history": "Sejarah Pembayaran", "proof": "Bukti Pembayaran", "viewProof": "Lihat bukti", "downloadProof": "Muat turun" }
   },
   "orderAcknowledgement": {
     "title": "Pengakuan Pesanan",

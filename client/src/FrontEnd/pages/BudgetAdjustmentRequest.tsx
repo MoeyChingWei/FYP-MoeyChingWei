@@ -40,7 +40,7 @@ const BudgetAdjustmentRequest: React.FC = () => {
 
   const loadDepartments = async () => {
     const depts = await getDepartments(true);
-    const canViewAll = [UserRole.ADMIN, UserRole.MANAGER, UserRole.TREASURY_FINANCE_OFFICER, UserRole.BUDGET_CONTROLLER]
+    const canViewAll = [UserRole.ADMIN, UserRole.MANAGER, UserRole.TREASURY_FINANCE_OFFICER]
       .includes(sessionUser?.role as UserRole);
     setDepartments(canViewAll
       ? depts

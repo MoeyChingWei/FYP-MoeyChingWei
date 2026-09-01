@@ -20,6 +20,7 @@ import { todayIsoDate } from "../../modules/purchasing/requestCreation/constants
 import {
   appendSupplierGrn,
   createGrnFromDelivery,
+  hydrateSupplierDeliveries,
   loadSupplierDeliveries,
   type SupplierDeliveryRecord,
   updateSupplierDelivery,
@@ -133,14 +134,15 @@ export default function DeliveryDetailSubmodule(): React.ReactElement {
   const [rows, setRows] = useState<SupplierDeliveryRecord[]>([]);
 
   useEffect(() => {
-    const sync = (): void => {
+    const sync = async (): Promise<void> => {
+      await hydrateSupplierDeliveries();
       setRows(loadSupplierDeliveries());
     };
     const handleSync = (): void => {
-      sync();
+      void sync();
     };
 
-    sync();
+    void sync();
     window.addEventListener("storage", handleSync);
     window.addEventListener("erp-supplier-deliveries", handleSync);
 

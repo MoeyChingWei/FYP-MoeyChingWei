@@ -9,6 +9,26 @@
     "unreadCount": "未读",
     "markAllAsRead": "全部标记为已读"
   },
+  "supplier": {
+    "page": { "title": "供应商追踪" },
+    "search": { "placeholder": "搜索发票或付款…" },
+    "stages": {
+      "invoice": { "pending": "待提交发票", "complete": "发票已批准" },
+      "payment": { "pending": "待付款", "complete": "付款已处理" },
+      "completed": { "label": "已完成", "complete": "已完成" }
+    },
+    "descriptions": {
+      "rejected": "此供应商发票已被拒绝。请查看拒绝原因并重新提交。",
+      "invoice": "供应商发票正在等待财务批准。",
+      "payment": "发票已批准，正在等待付款团队处理。",
+      "completed": "此供应商发票的付款已完成。"
+    },
+    "status": { "rejected": "已拒绝", "completed": "已完成" },
+    "row": { "invoice": "发票", "createdDate": "发票日期" },
+    "sections": { "completed": "已完成 / 已拒绝" },
+    "modal": { "title": "供应商付款追踪详情" },
+    "details": { "amount": "金额", "invoiceDate": "发票日期", "payment": "付款", "paidDate": "付款日期", "reference": "交易参考编号", "rejectionReason": "拒绝原因" }
+  },
   "sections": {
     "inProgress": "进行中",
     "completedRejected": "已完成/已拒绝",

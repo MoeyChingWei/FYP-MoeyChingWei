@@ -7,10 +7,8 @@ const ROLES = Object.freeze({
   ADMIN: "Admin",
   MANAGER: "Manager",
   DEPARTMENT_EXECUTIVE: "Department Executive",
-  ACCOUNT_PAYABLE: "Account Payable",
   TREASURY_FINANCE_OFFICER: "Treasury / Finance Officer",
   PAYMENT_TEAM: "Payment Team",
-  BUDGET_CONTROLLER: "Budget Controller",
   EMPLOYEE: "Employee",
   SUPPLIER: "Supplier",
 });

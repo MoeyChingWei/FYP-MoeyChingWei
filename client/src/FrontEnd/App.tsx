@@ -113,6 +113,9 @@ const PurchasingGoodsReceivedNoteDetailSubmodule = lazy(
 const SupplierFulfillmentHome = lazy(
   () => import("./pages/supplierFulfillment/SupplierFulfillmentHome"),
 );
+const SupplierPaymentSubmodule = lazy(
+  () => import("./pages/supplierFulfillment/SupplierPaymentSubmodule"),
+);
 const SupplierInventorySubmodule = lazy(
   () => import("./pages/supplierFulfillment/SupplierInventorySubmodule"),
 );
@@ -368,6 +371,7 @@ function MainLayout(): React.ReactElement {
       if (pathname.startsWith("/supplier-overview")) return true;
       if (pathname.startsWith("/profile")) return true;
       if (pathname.startsWith("/notifications")) return true;
+      if (pathname.startsWith("/tracking-item")) return true;
       if (pathname.startsWith("/settings/ai-assistant")) return false;
       if (pathname.startsWith("/settings")) return true;
       if (pathname.startsWith("/category-selection")) return true;
@@ -439,7 +443,7 @@ function MainLayout(): React.ReactElement {
       );
     }
     if (role === UserRole.SUPPLIER) {
-      return key === "supplier-overview" || key === "settings";
+      return key === "supplier-overview" || key === "tracking-item" || key === "settings";
     }
     return true;
   };
@@ -455,10 +459,16 @@ function MainLayout(): React.ReactElement {
     { key: "chatbot", icon: <CommentOutlined />, label: t("sidebar.chatbot") },
     { key: "settings", icon: <SettingOutlined />, label: t("sidebar.settings") },
   ];
-  const sidebarItems = menuItems.filter((item) => {
-    const key = item.key as MenuKey;
-    return canSeeMenuKey(key) && (role !== UserRole.ADMIN || primaryAdminMenuKeys.includes(key));
-  });
+  const sidebarItems = menuItems
+    .filter((item) => {
+      const key = item.key as MenuKey;
+      return canSeeMenuKey(key) && (role !== UserRole.ADMIN || primaryAdminMenuKeys.includes(key));
+    })
+    .sort((a, b) => {
+      if (role !== UserRole.SUPPLIER) return 0;
+      const supplierOrder: MenuKey[] = ["supplier-overview", "tracking-item", "settings"];
+      return supplierOrder.indexOf(a.key as MenuKey) - supplierOrder.indexOf(b.key as MenuKey);
+    });
   const otherModuleItems = menuItems.filter((item) => {
     const key = item.key as MenuKey;
     return role === UserRole.ADMIN && canSeeMenuKey(key) && !primaryAdminMenuKeys.includes(key);
@@ -757,6 +767,10 @@ function MainLayout(): React.ReactElement {
           <Route
             path="/supplier-overview/invoice/:localId"
             element={<SupplierInvoiceSubmodule />}
+          />
+          <Route
+            path="/supplier-overview/payment"
+            element={<SupplierPaymentSubmodule />}
           />
           <Route
             path="/supplier-overview/delivery"
