@@ -4,6 +4,93 @@
   gap: 16px;
 }
 
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 154px;
+  padding: 26px 30px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  border-radius: 18px;
+  color: #eff6ff;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(56, 189, 248, 0.35), transparent 27%),
+    radial-gradient(circle at 72% 120%, rgba(99, 102, 241, 0.45), transparent 36%),
+    linear-gradient(115deg, #0f2f62 0%, #155e9a 56%, #1d4f91 100%);
+  box-shadow: 0 16px 28px rgba(30, 64, 175, 0.13);
+}
+
+.heroContent { display: flex; flex-direction: column; min-width: 0; }
+.eyebrow { display: flex; align-items: center; gap: 7px; color: #bae6fd; font-size: 11px; font-weight: 700; letter-spacing: 0.11em; }
+.heroTitle { margin: 8px 0 4px !important; color: #fff !important; }
+.heroWelcome { color: #dbeafe !important; font-size: 14px; }
+.heroSubtitle { margin-top: 8px; max-width: 680px; color: #dbeafe !important; }
+.heroFocus { margin-top: 6px; color: #bfdbfe !important; font-size: 12px; }
+.heroActions { flex-shrink: 0; }
+.roleTag { margin-inline-end: 0 !important; font-weight: 600; }
+.datePill { display: flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid rgba(219, 234, 254, 0.28); border-radius: 999px; color: #dbeafe; background: rgba(15, 23, 42, 0.16); font-size: 12px; }
+
+.insightStrip {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 78px;
+  padding: 13px 18px;
+  border: 1px solid #dbe5f1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.035);
+}
+.insightItem { display: flex; align-items: center; gap: 11px; min-width: 230px; }
+.insightIcon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 11px; font-size: 17px; }
+.attentionIcon { color: #b45309; background: #fef3c7; }
+.successIcon { color: #047857; background: #d1fae5; }
+.infoIcon { color: #1d4ed8; background: #dbeafe; }
+.insightLabel, .insightValue { display: block; }
+.insightLabel { color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.insightValue { color: #1e293b; font-size: 13px; font-weight: 600; }
+.insightDivider { width: 1px; height: 34px; background: #e2e8f0; }
+.insightButton { margin-left: auto; border-radius: 8px; font-weight: 600; }
+
+.workspaceCard { height: 100%; border: 1px solid rgba(148, 163, 184, 0.28) !important; border-radius: 14px !important; background: #fff !important; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.035); }
+.workspaceCard :global(.ant-card-head) { min-height: 54px; border-bottom-color: #eef2f7; }
+.workspaceCard :global(.ant-card-head-title) { padding: 15px 0; }
+.cardTitle { color: #172554; font-size: 15px; font-weight: 700; }
+.actionButton { display: flex !important; align-items: center; justify-content: space-between; height: auto !important; padding: 11px 10px !important; text-align: left; border-radius: 10px !important; transition: background 150ms ease, transform 150ms ease; }
+.actionButton:hover { background: #f8fafc !important; transform: translateX(2px); }
+.actionIcon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 10px; color: #fff; font-size: 18px; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12); }
+.actionHint { display: block; margin-top: 1px; color: #94a3b8 !important; font-size: 11px; }
+
+.journeyHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.journeyDescription { display: block; margin-top: 4px; color: #64748b !important; font-size: 12px; }
+.stageGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+.stageCard { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 13px; border: 1px solid #e2e8f0; border-radius: 11px; color: #0f172a; background: #f8fafc; cursor: pointer; text-align: left; transition: border-color 150ms ease, transform 150ms ease; }
+.stageCard:hover { border-color: #93c5fd; transform: translateY(-2px); }
+.stageDot { width: 7px; height: 7px; margin-bottom: 9px; border-radius: 50%; }
+.stageValue { font-size: 24px; font-weight: 700; line-height: 1; }
+.stageLabel { margin-top: 5px; color: #64748b; font-size: 12px; }
+.journeyFooter { display: flex; align-items: center; gap: 7px; margin-top: 15px; color: #64748b; font-size: 12px; }
+.journeyFooter svg { color: #10b981; }
+.activityItem { padding: 12px 0 !important; border-bottom: 1px solid #f1f5f9 !important; cursor: pointer; }
+.activityItem:last-child { border-bottom: 0 !important; }
+.activityAvatar { color: #2563eb !important; background: #eff6ff !important; }
+
+.operationsCard { height: 100%; border: 1px solid rgba(148, 163, 184, 0.28) !important; border-radius: 14px !important; background: linear-gradient(140deg, #ffffff 0%, #f8fbff 100%) !important; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.035); }
+.operationsCard :global(.ant-card-head) { min-height: 54px; border-bottom-color: #eef2f7; }
+.operationsIntro { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.operationsDescription { display: block; margin-top: 4px; color: #64748b !important; font-size: 12px; }
+.queueGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; margin-top: 18px; }
+.queueItem { position: relative; min-height: 151px; padding: 15px; overflow: hidden; border: 1px solid #e5edf6; border-radius: 12px; color: #0f172a; background: rgba(255, 255, 255, 0.88); cursor: pointer; text-align: left; transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.queueItem:hover { border-color: #93c5fd; box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08); transform: translateY(-2px); }
+.queueIcon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 9px; font-size: 16px; }
+.queueCount, .queueLabel, .queueHelper { display: block; }
+.queueCount { margin-top: 13px; font-size: 25px; font-weight: 700; line-height: 1; }
+.queueLabel { margin-top: 7px; font-size: 13px; font-weight: 700; }
+.queueHelper { max-width: 145px; margin-top: 3px; color: #64748b; font-size: 11px; line-height: 1.35; }
+.queueArrow { position: absolute; right: 14px; bottom: 15px; color: #94a3b8; font-size: 12px; }
+
 .headerRow {
   display: flex;
   align-items: flex-end;
@@ -216,6 +303,11 @@
 }
 
 @media (max-width: 980px) {
+  .hero { align-items: flex-start; flex-direction: column; }
+  .heroActions { align-items: flex-start !important; }
+  .insightStrip { align-items: flex-start; flex-wrap: wrap; }
+  .insightButton { margin-left: 0; }
+  .queueGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .content {
     grid-template-columns: 1fr;
   }
@@ -237,6 +329,18 @@
 }
 
 @media (max-width: 640px) {
+  .hero { min-height: 0; padding: 22px 20px; border-radius: 14px; }
+  .heroTitle { font-size: 25px !important; }
+  .insightStrip { gap: 14px; padding: 15px; }
+  .insightDivider { display: none; }
+  .insightItem { min-width: 100%; }
+  .insightButton { width: 100%; }
+  .stageGrid { gap: 7px; }
+  .stageCard { padding: 10px; }
+  .stageValue { font-size: 20px; }
+  .operationsIntro { align-items: flex-start; flex-direction: column; }
+  .queueGrid { grid-template-columns: 1fr; }
+  .queueItem { min-height: 115px; }
   .myItemsGrid {
     grid-template-columns: 1fr;
   }

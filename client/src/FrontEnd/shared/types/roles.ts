@@ -17,6 +17,16 @@ export function isFinanceRole(role?: string | null): role is UserRole {
   return FINANCE_ROLES.includes(role as UserRole);
 }
 
+/** Roles permitted to access the Budget Management workspace and its subpages. */
+export function canAccessBudgetManagement(role?: string | null): boolean {
+  return [
+    UserRole.ADMIN,
+    UserRole.MANAGER,
+    UserRole.DEPARTMENT_EXECUTIVE,
+    ...FINANCE_ROLES,
+  ].includes(role as UserRole);
+}
+
 export function canApproveSupplierInvoices(role?: string | null): boolean {
   return role === UserRole.TREASURY_FINANCE_OFFICER || role === UserRole.ADMIN;
 }

@@ -43,6 +43,7 @@ interface ForecastResponse {
 const DEPARTMENT_OVERVIEW_ROLES = new Set<string>([
   UserRole.ADMIN,
   UserRole.MANAGER,
+  UserRole.DEPARTMENT_EXECUTIVE,
   UserRole.TREASURY_FINANCE_OFFICER,
   UserRole.PAYMENT_TEAM,
 ]);

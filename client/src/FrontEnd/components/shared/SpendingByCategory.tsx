@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Typography, Skeleton } from "antd";
+import { Card, Empty, Typography, Skeleton } from "antd";
 import {
   BarChart,
   Bar,
@@ -58,7 +58,19 @@ export default function SpendingByCategory({
       <Title level={5} style={{ marginBottom: 16 }}>
         Spending by Category
       </Title>
-      <ResponsiveContainer width="100%" height={280}>
+      {data.length === 0 ? (
+        <div style={{ height: 280, display: "grid", placeItems: "center", textAlign: "center" }}>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <div>
+                <div style={{ color: "#334155", fontWeight: 600 }}>No category spend yet</div>
+                <div style={{ marginTop: 4, color: "#94a3b8", fontSize: 12 }}>Spending insights will appear as orders are recorded.</div>
+              </div>
+            }
+          />
+        </div>
+      ) : <ResponsiveContainer width="100%" height={280}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
@@ -89,7 +101,7 @@ export default function SpendingByCategory({
             ))}
           </Bar>
         </BarChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </Card>
   );
 }

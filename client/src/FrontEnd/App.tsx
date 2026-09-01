@@ -47,7 +47,7 @@ import {
   getSessionUser,
   type SessionUser,
 } from "./shared/auth/session";
-import { canApproveSupplierInvoices, isFinanceRole, UserRole } from "./shared/types/roles";
+import { canAccessBudgetManagement, canApproveSupplierInvoices, isFinanceRole, UserRole } from "./shared/types/roles";
 import NotificationBell from "./components/shared/NotificationBell";
 import BreadcrumbNav from "./components/shared/BreadcrumbNav";
 import ChatBotWidget from "./components/ChatBot/ChatBotWidget";
@@ -353,9 +353,7 @@ function MainLayout(): React.ReactElement {
         pathname === "/budget" ||
         pathname.startsWith("/budget/")
       ) {
-        return role === UserRole.EMPLOYEE
-          ? pathname === "/budget-management" || pathname === "/budget/department-overview"
-          : isFinanceRole(role);
+        return canAccessBudgetManagement(role);
       }
       if (pathname.startsWith("/finance/invoice-approval")) return canApproveSupplierInvoices(role);
       if (pathname.startsWith("/finance/payment-processing")) return role === UserRole.PAYMENT_TEAM || role === UserRole.ADMIN;
@@ -435,7 +433,7 @@ function MainLayout(): React.ReactElement {
       return (
         key === "overview" ||
         key === "purchasing" ||
-        (key === "budget-management" && (isFinanceRole(role) || role === UserRole.EMPLOYEE)) ||
+        (key === "budget-management" && canAccessBudgetManagement(role)) ||
         (key === "finance" && isFinanceRole(role)) ||
         key === "tracking-item" ||
         key === "chatbot" ||

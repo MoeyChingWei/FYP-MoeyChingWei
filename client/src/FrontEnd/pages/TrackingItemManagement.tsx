@@ -63,6 +63,8 @@ type StageKey =
   | "grn"
   | "completed";
 
+type JourneyFilter = "all" | "in-review";
+
 type TrackingRow = {
   id: string;
   requestNo: string;
@@ -468,6 +470,7 @@ function InternalTrackingItemManagement(): React.ReactElement {
   const [rejectDetailOpen, setRejectDetailOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [stageFilter, setStageFilter] = useState<StageKey | "all">("all");
+  const [journeyFilter, setJourneyFilter] = useState<JourneyFilter>("all");
   const [readItems, setReadItems] = useState<Set<string>>(() => loadReadItems());
   const sessionUser = useMemo(() => getSessionUser(), []);
 
@@ -754,11 +757,29 @@ function InternalTrackingItemManagement(): React.ReactElement {
     return counts;
   }, [filteredTrackingRows, readItems]);
 
-  // Apply stage filter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const stage = params.get("stage");
+    const journey = params.get("journey");
+
+    setStageFilter(
+      stage && stageMeta.some((item) => item.key === stage)
+        ? (stage as StageKey)
+        : "all",
+    );
+    setJourneyFilter(journey === "in-review" ? "in-review" : "all");
+    setFocusedRowId(null);
+  }, [location.search]);
+
+  // Apply filters selected on this page or linked from the dashboard journey.
   const stageFilteredRows = useMemo(() => {
-    if (stageFilter === "all") return filteredTrackingRows;
-    return filteredTrackingRows.filter((row) => row.stage === stageFilter);
-  }, [filteredTrackingRows, stageFilter]);
+    const journeyRows = journeyFilter === "in-review"
+      ? filteredTrackingRows.filter((row) => row.stage !== "completed" && !row.isRejected)
+      : filteredTrackingRows;
+
+    if (stageFilter === "all") return journeyRows;
+    return journeyRows.filter((row) => row.stage === stageFilter);
+  }, [filteredTrackingRows, journeyFilter, stageFilter]);
 
   const inProgressRows = useMemo(
     () =>
@@ -874,14 +895,17 @@ function InternalTrackingItemManagement(): React.ReactElement {
 
           <div className={styles.headerSearchRow}>
             <div className={styles.filterInfo}>
-              {stageFilter !== "all" && (
+              {(stageFilter !== "all" || journeyFilter !== "all") && (
                 <Button
                   type="default"
                   size="small"
-                  onClick={() => setStageFilter("all")}
+                  onClick={() => {
+                    setStageFilter("all");
+                    setJourneyFilter("all");
+                  }}
                   className={styles.clearFilterButton}
                 >
-                  {t('search.clearFilter')} ({stageCounts[stageFilter]} {t('search.unreadCount')})
+                  {t('search.clearFilter')} ({stageFilteredRows.filter((row) => !readItems.has(row.id)).length} {t('search.unreadCount')})
                 </Button>
               )}
               {Object.values(stageCounts).some(count => count > 0) && (
@@ -920,6 +944,7 @@ function InternalTrackingItemManagement(): React.ReactElement {
             selectedFilter={stageFilter}
             onFilterChange={(stage) => {
               setStageFilter(stage);
+              setJourneyFilter("all");
               setFocusedRowId(null); // Reset focus when filter changes
             }}
             stageCounts={stageCounts}

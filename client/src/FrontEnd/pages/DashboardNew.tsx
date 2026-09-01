@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Col, Empty, Flex, List, Row, Tag, Typography, message } from "antd";
+import { Avatar, Badge, Button, Card, Col, Empty, Flex, List, Progress, Row, Tag, Typography, message } from "antd";
 import {
+  AlertOutlined,
+  BellOutlined,
+  CalendarOutlined,
+  CheckCircleFilled,
   ClockCircleOutlined,
   CheckCircleOutlined,
   ShoppingCartOutlined,
@@ -11,26 +15,33 @@ import {
   QuestionCircleOutlined,
   CreditCardOutlined,
   DollarOutlined,
+  RocketOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import styles from "./Overview.module.css";
 import { getSessionUser } from "../shared/auth/session";
-import { UserRole } from "../shared/types/roles";
+import { canAccessBudgetManagement, UserRole } from "../shared/types/roles";
 import { fetchNotifications, type NotificationRow } from "../shared/api/notifications";
 import { fetchDashboardStatistics, type DashboardStatistics } from "../shared/api/dashboard";
-import { loadPurchaseRequestDrafts } from "../modules/purchasing/requestCreation/storage";
-import { loadPurchaseOrderDrafts } from "../modules/purchasing/purchaseOrder/storage";
 import {
+  hydratePurchaseRequestDrafts,
+  loadPurchaseRequestDrafts,
+} from "../modules/purchasing/requestCreation/storage";
+import type { PurchaseRequestDraft } from "../modules/purchasing/requestCreation/types";
+import {
+  hydrateSupplierGrns,
+  isGrnReceived,
+  loadSupplierGrns,
   hydrateSupplierPayments,
   loadSupplierPayments,
+  type SupplierGrnRecord,
   type SupplierPaymentRecord,
 } from "../modules/supplierFulfillment/workflow";
 import { resolveNotificationRoute } from "../shared/notifications/notificationRoutes";
 
 import StatCard from "../components/shared/StatCard";
-import PurchasingTrendChart from "../components/shared/PurchasingTrendChart";
 import SpendingByCategory from "../components/shared/SpendingByCategory";
 import UserGuideModal from "../components/UserGuide/UserGuideModal";
 
@@ -47,11 +58,14 @@ export default function Dashboard(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [dashboardStats, setDashboardStats] = useState<DashboardStatistics | null>(null);
   const [paymentRows, setPaymentRows] = useState<SupplierPaymentRecord[]>([]);
+  const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequestDraft[]>(() => loadPurchaseRequestDrafts());
+  const [grns, setGrns] = useState<SupplierGrnRecord[]>(() => loadSupplierGrns());
   const [userGuideVisible, setUserGuideVisible] = useState(false);
 
   const isAdmin = role === UserRole.ADMIN;
   const isSupplier = role === UserRole.SUPPLIER;
   const isEmployee = role === UserRole.EMPLOYEE;
+  const canManageBudget = canAccessBudgetManagement(role);
 
   useEffect(() => {
     const loadData = async () => {
@@ -91,6 +105,24 @@ export default function Dashboard(): React.ReactElement {
     return () => window.removeEventListener("erp-supplier-payments", syncPayments);
   }, [role]);
 
+  useEffect(() => {
+    if (!isEmployee) return;
+
+    const syncEmployeeWorkflow = async (): Promise<void> => {
+      await Promise.all([hydratePurchaseRequestDrafts(), hydrateSupplierGrns()]);
+      setPurchaseRequests(loadPurchaseRequestDrafts());
+      setGrns(loadSupplierGrns());
+    };
+
+    void syncEmployeeWorkflow();
+    window.addEventListener("erp-purchase-request-drafts", syncEmployeeWorkflow);
+    window.addEventListener("erp-supplier-grns", syncEmployeeWorkflow);
+    return () => {
+      window.removeEventListener("erp-purchase-request-drafts", syncEmployeeWorkflow);
+      window.removeEventListener("erp-supplier-grns", syncEmployeeWorkflow);
+    };
+  }, [isEmployee]);
+
   // Calculate statistics from dashboard API
   const pendingApprovals = dashboardStats?.pendingApprovals ?? 0;
   const totalRequests = dashboardStats?.totalRequests ?? 0;
@@ -99,22 +131,6 @@ export default function Dashboard(): React.ReactElement {
   const spendingTrend = dashboardStats?.spendingTrend ?? 0;
   const requestsTrend = dashboardStats?.requestsTrend ?? 0;
   const ordersTrend = dashboardStats?.ordersTrend ?? 0;
-
-  const purchaseRequests = useMemo(() => {
-    try {
-      return loadPurchaseRequestDrafts();
-    } catch {
-      return [];
-    }
-  }, []);
-
-  const purchaseOrders = useMemo(() => {
-    try {
-      return loadPurchaseOrderDrafts();
-    } catch {
-      return [];
-    }
-  }, []);
 
   const ownedRequests = useMemo(() => {
     if (!sessionUser) return [];
@@ -127,17 +143,18 @@ export default function Dashboard(): React.ReactElement {
     );
   }, [purchaseRequests, sessionUser]);
 
-  const ownedOrders = useMemo(() => {
-    if (!sessionUser) return [];
-    const email = String(sessionUser.email ?? "").trim().toLowerCase();
-    return purchaseOrders.filter((order) =>
-      (order.createdByUserId != null && String(order.createdByUserId) === String(sessionUser.id)) ||
-      String(order.createdByEmail ?? "").trim().toLowerCase() === email,
+  const completedOwnedRequests = useMemo(() => {
+    const completedRequestNumbers = new Set(
+      grns
+        .filter((grn) => isGrnReceived(grn.status))
+        .map((grn) => grn.sourcePrNumber),
     );
-  }, [purchaseOrders, sessionUser]);
+    return ownedRequests.filter(
+      (request) => request.status === "COMPLETED" || completedRequestNumbers.has(request.prNumber),
+    );
+  }, [grns, ownedRequests]);
 
   // Use real data from API
-  const trendData = dashboardStats?.trendData ?? [];
   const categoryData = dashboardStats?.categoryData ?? [];
 
   const recentActivities = useMemo(() => {
@@ -195,7 +212,7 @@ export default function Dashboard(): React.ReactElement {
       label: "Department budget",
       path: "/budget/department-overview",
       color: "#8b5cf6",
-      show: isEmployee,
+      show: canManageBudget,
     },
     {
       icon: <FileTextOutlined style={{ fontSize: 20 }} />,
@@ -272,7 +289,7 @@ export default function Dashboard(): React.ReactElement {
     ? [
         { title: "Draft purchase requests", value: ownedRequests.filter((r) => r.status === "DRAFT").length, icon: <FileTextOutlined />, color: "#3b82f6" },
         { title: "Submitted requests", value: ownedRequests.filter((r) => r.status !== "DRAFT").length, icon: <ClockCircleOutlined />, color: "#f59e0b" },
-        { title: "My purchase orders", value: ownedOrders.length, icon: <ShoppingCartOutlined />, color: "#22c55e" },
+        { title: "Completed requests", value: completedOwnedRequests.length, icon: <CheckCircleOutlined />, color: "#22c55e" },
         { title: "Unread notifications", value: notifications.filter((n) => !n.isRead).length, icon: <InboxOutlined />, color: "#ec4899" },
       ]
     : role === UserRole.PAYMENT_TEAM
@@ -288,6 +305,41 @@ export default function Dashboard(): React.ReactElement {
           { title: t("cards.purchaseOrders"), value: totalOrders, icon: <ShoppingCartOutlined />, color: "#22c55e", trend: ordersTrend !== 0 ? { value: Math.abs(ordersTrend), isPositive: ordersTrend > 0 } : undefined },
           { title: t("cards.monthlySpending"), value: (currentMonthSpending / 1000).toFixed(1), suffix: "K", icon: <TruckOutlined />, color: "#ec4899", trend: spendingTrend !== 0 ? { value: Math.abs(spendingTrend), isPositive: spendingTrend > 0 } : undefined },
         ];
+
+  const requestStages = isEmployee
+    ? [
+        { label: "Draft", value: ownedRequests.filter((request) => request.status === "DRAFT").length, color: "#64748b", path: "/purchasing/creation" },
+        { label: "In review", value: ownedRequests.filter((request) => !["DRAFT", "COMPLETED", "REJECTED", "CANCELLED"].includes(String(request.status))).length, color: "#f59e0b", path: "/tracking-item?journey=in-review" },
+        { label: "Completed", value: completedOwnedRequests.length, color: "#10b981", path: "/tracking-item?stage=completed" },
+      ]
+    : [];
+  const totalEmployeeRequests = ownedRequests.length;
+  const completedEmployeeRequests = requestStages.find((stage) => stage.label === "Completed")?.value ?? 0;
+  const completionRate = totalEmployeeRequests > 0
+    ? Math.round((completedEmployeeRequests / totalEmployeeRequests) * 100)
+    : 0;
+  const urgentCount = isEmployee
+    ? requestStages.find((stage) => stage.label === "Draft")?.value ?? 0
+    : pendingApprovals;
+  const urgentLabel = isEmployee
+    ? urgentCount > 0
+      ? `${urgentCount} draft request${urgentCount === 1 ? "" : "s"} needs your attention`
+      : "No unfinished drafts — you are all caught up"
+    : urgentCount > 0
+      ? `${urgentCount} workflow item${urgentCount === 1 ? "" : "s"} waiting for action`
+      : "No workflow items waiting for action";
+  const primaryAction = quickActions[0];
+  const operationsSnapshot = role === UserRole.PAYMENT_TEAM
+    ? [
+        { label: "Ready for payment", helper: "Supplier payments in queue", value: paymentRows.filter((row) => row.status === "PENDING_PAYMENT").length, icon: <CreditCardOutlined />, color: "#d97706", path: "/finance/payment-processing" },
+        { label: "Paid payments", helper: "Payments processed successfully", value: paymentRows.filter((row) => row.status === "PAID").length, icon: <CheckCircleOutlined />, color: "#059669", path: "/finance/payment-processing" },
+        { label: "Unread updates", helper: "Notifications to review", value: notifications.filter((notification) => !notification.isRead).length, icon: <BellOutlined />, color: "#2563eb", path: "/notifications" },
+      ]
+    : [
+        { label: "Needs approval", helper: "Workflow items waiting for review", value: pendingApprovals, icon: <ClockCircleOutlined />, color: "#d97706", path: "/purchasing/approval" },
+        { label: "Purchase requests", helper: "Requests in your department", value: totalRequests, icon: <FileTextOutlined />, color: "#2563eb", path: "/purchasing/approval" },
+        { label: "Purchase orders", helper: "Orders currently tracked", value: totalOrders, icon: <ShoppingCartOutlined />, color: "#059669", path: "/purchasing/po-creation" },
+      ];
 
   if (isSupplier) {
     return (
@@ -356,35 +408,54 @@ export default function Dashboard(): React.ReactElement {
 
   return (
     <div className={styles.page}>
-      <div className={styles.headerRow}>
-        <div className={styles.titleWrap}>
-          <Title level={3} style={{ marginBottom: 4 }}>
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <div className={styles.eyebrow}><RocketOutlined /> WORKSPACE OVERVIEW</div>
+          <Title level={2} className={styles.heroTitle}>
             {roleTitle}
           </Title>
-          <Text type="secondary">
+          <Text className={styles.heroWelcome}>
             {t('welcome', { name: sessionUser?.name || sessionUser?.email })}
             {department ? ` · ${department}` : ""}
           </Text>
-          <Text type="secondary" style={{ display: "block", marginTop: 4 }}>
+          <Text className={styles.heroSubtitle}>
             {roleSubtitle}
           </Text>
           {departmentFocusLabel && (
-            <Text type="secondary" style={{ display: "block", marginTop: 4 }}>
+            <Text className={styles.heroFocus}>
               Focus: {departmentFocusLabel}
             </Text>
           )}
         </div>
-        <Flex align="center" gap={8} wrap>
-          <Tag color="blue">{role || "User"}</Tag>
+        <Flex vertical align="flex-end" gap={14} className={styles.heroActions}>
+          <Flex align="center" gap={8} wrap justify="end">
+            <Tag color="blue" className={styles.roleTag}>{role || "User"}</Tag>
           <Button
             type="default"
             icon={<QuestionCircleOutlined />}
             onClick={() => setUserGuideVisible(true)}
           >
             {t('userGuide')}
-          </Button>
+            </Button>
+          </Flex>
+          <div className={styles.datePill}><CalendarOutlined /> {new Intl.DateTimeFormat(undefined, { weekday: "long", day: "numeric", month: "short" }).format(new Date())}</div>
         </Flex>
-      </div>
+      </section>
+
+      <section className={styles.insightStrip} aria-label="Today's overview">
+        <div className={styles.insightItem}>
+          <div className={`${styles.insightIcon} ${urgentCount > 0 ? styles.attentionIcon : styles.successIcon}`}>
+            {urgentCount > 0 ? <AlertOutlined /> : <CheckCircleFilled />}
+          </div>
+          <div><Text className={styles.insightLabel}>Action centre</Text><Text className={styles.insightValue}>{urgentLabel}</Text></div>
+        </div>
+        <div className={styles.insightDivider} />
+        <div className={styles.insightItem}>
+          <div className={`${styles.insightIcon} ${styles.infoIcon}`}><BellOutlined /></div>
+          <div><Text className={styles.insightLabel}>Notifications</Text><Text className={styles.insightValue}>{notifications.filter((notification) => !notification.isRead).length} unread update{notifications.filter((notification) => !notification.isRead).length === 1 ? "" : "s"}</Text></div>
+        </div>
+        {primaryAction && <Button type="primary" className={styles.insightButton} icon={<RocketOutlined />} onClick={() => navigate(primaryAction.path)}>{primaryAction.label}</Button>}
+      </section>
 
       {/* Statistics Cards */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
@@ -395,28 +466,49 @@ export default function Dashboard(): React.ReactElement {
         ))}
       </Row>
 
-      {/* Charts */}
-      {!isEmployee && <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={14}>
-          <PurchasingTrendChart data={trendData} loading={loading} />
-        </Col>
-        <Col xs={24} lg={10}>
-          <SpendingByCategory data={categoryData} loading={loading} />
-        </Col>
-      </Row>
-      }
+      {!isEmployee && (
+        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+          <Col xs={24} lg={15}>
+            <Card
+              className={styles.operationsCard}
+              bordered={false}
+              title={<span className={styles.cardTitle}>Operations snapshot</span>}
+              extra={<Text type="secondary">Live workload</Text>}
+            >
+              <div className={styles.operationsIntro}>
+                <div>
+                  <Text strong>Keep work flowing</Text>
+                  <Text className={styles.operationsDescription}>Prioritise the items that need a decision or follow-up today.</Text>
+                </div>
+                <Tag color={urgentCount > 0 ? "orange" : "green"} icon={urgentCount > 0 ? <AlertOutlined /> : <CheckCircleFilled />}>
+                  {urgentCount > 0 ? "Action required" : "All clear"}
+                </Tag>
+              </div>
+              <div className={styles.queueGrid}>
+                {operationsSnapshot.map((item) => (
+                  <button className={styles.queueItem} key={item.label} onClick={() => navigate(item.path)}>
+                    <span className={styles.queueIcon} style={{ color: item.color, backgroundColor: `${item.color}14` }}>{item.icon}</span>
+                    <span className={styles.queueCount}>{item.value}</span>
+                    <span className={styles.queueLabel}>{item.label}</span>
+                    <span className={styles.queueHelper}>{item.helper}</span>
+                    <ArrowRightOutlined className={styles.queueArrow} />
+                  </button>
+                ))}
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={9}><SpendingByCategory data={categoryData} loading={loading} /></Col>
+        </Row>
+      )}
 
       {/* Quick Actions and Recent Activity */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={isEmployee ? 24 : 12}>
+        <Col xs={24} lg={isEmployee ? 10 : 12}>
           <Card
-            title={t('quickActions.title')}
+            title={<span className={styles.cardTitle}>{t('quickActions.title')}</span>}
+            extra={<Text type="secondary">Start a task</Text>}
             bordered={false}
-            style={{
-              borderRadius: 12,
-              border: "1px solid rgba(2, 6, 23, 0.08)",
-              background: "rgba(255, 255, 255, 0.95)",
-            }}
+            className={styles.workspaceCard}
           >
             <Flex vertical gap={8}>
               {quickActions.map((action, index) => (
@@ -425,32 +517,11 @@ export default function Dashboard(): React.ReactElement {
                   type="text"
                   size="large"
                   onClick={() => navigate(action.path)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    height: "auto",
-                    padding: "12px 16px",
-                    textAlign: "left",
-                    borderRadius: 8,
-                  }}
+                  className={styles.actionButton}
                 >
                   <Flex align="center" gap={12}>
-                    <div
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 8,
-                        background: action.color,
-                        color: "white",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {action.icon}
-                    </div>
-                    <Text strong>{action.label}</Text>
+                    <div className={styles.actionIcon} style={{ background: action.color }}>{action.icon}</div>
+                    <div><Text strong>{action.label}</Text><Text className={styles.actionHint}>Open workspace</Text></div>
                   </Flex>
                   <ArrowRightOutlined style={{ color: "#94a3b8" }} />
                 </Button>
@@ -459,9 +530,30 @@ export default function Dashboard(): React.ReactElement {
           </Card>
         </Col>
 
-        <Col xs={24} lg={isEmployee ? 12 : 12}>
+        {isEmployee && (
+          <Col xs={24} lg={14}>
+            <Card title={<span className={styles.cardTitle}>My request journey</span>} extra={<Tag color="green">{completionRate}% complete</Tag>} bordered={false} className={styles.workspaceCard}>
+              <div className={styles.journeyHeader}>
+                <div><Text strong>Request progress</Text><Text className={styles.journeyDescription}>A clear view of every request you have started.</Text></div>
+                <Progress type="circle" percent={completionRate} size={56} strokeColor="#10b981" trailColor="#e2e8f0" />
+              </div>
+              <div className={styles.stageGrid}>
+                {requestStages.map((stage) => (
+                  <button className={styles.stageCard} key={stage.label} onClick={() => navigate(stage.path)}>
+                    <span className={styles.stageDot} style={{ background: stage.color }} />
+                    <span className={styles.stageValue}>{stage.value}</span>
+                    <span className={styles.stageLabel}>{stage.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className={styles.journeyFooter}><CheckCircleFilled /> Keep requests moving by completing drafts and checking status updates.</div>
+            </Card>
+          </Col>
+        )}
+
+        <Col xs={24} lg={isEmployee ? 24 : 12}>
           <Card
-            title={t('recentActivity.title')}
+            title={<span className={styles.cardTitle}>{t('recentActivity.title')}</span>}
             extra={
               recentActivities.length > 0 && (
                 <Button type="link" onClick={() => navigate("/notifications")}>
@@ -470,11 +562,7 @@ export default function Dashboard(): React.ReactElement {
               )
             }
             bordered={false}
-            style={{
-              borderRadius: 12,
-              border: "1px solid rgba(2, 6, 23, 0.08)",
-              background: "rgba(255, 255, 255, 0.95)",
-            }}
+            className={styles.workspaceCard}
           >
             {recentActivities.length === 0 ? (
               <Empty description={t('recentActivity.noNewActivity')} image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -485,11 +573,7 @@ export default function Dashboard(): React.ReactElement {
                   const route = resolveNotificationRoute(item.notification, sessionUser?.role);
                   return (
                     <List.Item
-                      style={{
-                        padding: "12px 0",
-                        borderBottom: "1px solid #f3f4f6",
-                        cursor: route !== "#" ? "pointer" : "default",
-                      }}
+                      className={styles.activityItem}
                       onClick={() => {
                         if (route !== "#") {
                           navigate(route);
@@ -497,6 +581,7 @@ export default function Dashboard(): React.ReactElement {
                       }}
                     >
                       <List.Item.Meta
+                        avatar={<Badge dot={!item.notification.isRead} color="#3b82f6"><Avatar className={styles.activityAvatar} icon={<BellOutlined />} /></Badge>}
                         title={
                           <Text strong style={{ fontSize: 14 }}>
                             {item.title}
@@ -520,7 +605,7 @@ export default function Dashboard(): React.ReactElement {
               />
             )}
           </Card>
-        </Col>}
+        </Col>
       </Row>
 
       <UserGuideModal
