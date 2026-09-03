@@ -14,7 +14,23 @@ export const ITEM_CATEGORIES = [
 
 export type ItemCategory = (typeof ITEM_CATEGORIES)[number];
 
-export const UNITS_OF_MEASUREMENT = ["pcs", "box", "unit"] as const;
+/**
+ * Shared built-in units for purchasing and supplier inventory.  Keep this
+ * list aligned with the supplier catalogue so an existing inventory item can
+ * always be selected again when it is edited.
+ */
+export const UNITS_OF_MEASUREMENT = [
+  "pcs",
+  "box",
+  "unit",
+  "sets",
+  "reams",
+  "bottles",
+  "rolls",
+  "cartons",
+  "bags",
+  "services",
+] as const;
 
 export type UnitOfMeasurement = (typeof UNITS_OF_MEASUREMENT)[number];
 

@@ -8,6 +8,7 @@ import {
   createPurchasingLookup,
   fetchPurchasingLookups,
   mergePurchasingOptions,
+  PURCHASING_LOOKUPS_UPDATED_EVENT,
 } from "../../shared/api/purchasingLookups";
 
 export interface CreatableLookupSelectProps {
@@ -58,6 +59,15 @@ export default function CreatableLookupSelect({
       cancelled = true;
     };
   }, [load]);
+
+  useEffect(() => {
+    const refreshIfSameKind = (event: Event) => {
+      const changedKind = (event as CustomEvent<{ kind?: PurchasingLookupKind }>).detail?.kind;
+      if (changedKind === kind) void load();
+    };
+    window.addEventListener(PURCHASING_LOOKUPS_UPDATED_EVENT, refreshIfSameKind);
+    return () => window.removeEventListener(PURCHASING_LOOKUPS_UPDATED_EVENT, refreshIfSameKind);
+  }, [kind, load]);
 
   const options = useMemo(
     () => mergePurchasingOptions(kind, customRows),

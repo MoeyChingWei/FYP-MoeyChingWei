@@ -643,7 +643,7 @@
   min-width: 0;
 }
 
-.assistant-plus-button {
+.assistant-attach-files-button {
   width: 34px;
   height: 34px;
   border: 1px solid #fed7aa;
@@ -651,7 +651,7 @@
   background: #fff7ed;
 }
 
-.assistant-plus-button:hover {
+.assistant-attach-files-button:hover {
   border-color: #f59e0b !important;
   color: #d97706 !important;
   background: #fef3c7 !important;

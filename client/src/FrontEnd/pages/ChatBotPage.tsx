@@ -455,31 +455,6 @@ const ChatBotPage: React.FC<ChatBotPageProps> = ({ embedded = false, onClose }) 
     );
   }
 
-  const toolsMenu = {
-    items: [
-      { key: 'attach-files', icon: <PaperClipOutlined />, label: 'Add files' },
-      { type: 'divider' as const },
-      {
-        key: 'agent-mode',
-        icon: <RobotOutlined />,
-        label: 'Agent mode',
-      },
-    ],
-    onClick: ({ key }: { key: string }) => {
-      if (key === 'attach-files') {
-        fileInputRef.current?.click();
-        return;
-      }
-      if (key === 'agent-mode') {
-        setAgentModeOpen(true);
-        return;
-      }
-      if (key.startsWith('agent:')) {
-        handleAgentChange(key.slice('agent:'.length));
-      }
-    },
-  };
-
   const agentModePanel = (
     <div className="assistant-agent-mode-panel">
       <div className="assistant-agent-mode-heading">
@@ -577,15 +552,31 @@ const ChatBotPage: React.FC<ChatBotPageProps> = ({ embedded = false, onClose }) 
           event.target.value = '';
         }}
       />
-      <Dropdown trigger={['click']} menu={toolsMenu}>
-        <Button
-          type="text"
-          shape="circle"
-          icon={<PlusOutlined />}
-          className="assistant-plus-button"
-          aria-label="Open chat tools"
-        />
-      </Dropdown>
+      <Button
+        type="text"
+        shape="circle"
+        icon={<PaperClipOutlined />}
+        className="assistant-attach-files-button"
+        onClick={() => fileInputRef.current?.click()}
+        aria-label="Add files"
+      />
+      <Button
+        type="text"
+        icon={<RobotOutlined />}
+        className={`assistant-agent-mode-button${agentModeEnabled ? ' selected' : ''}`}
+        onClick={() => setAgentModeOpen(true)}
+        aria-label={agentModeEnabled ? `Change agent mode, currently ${agentName}` : 'Choose agent mode'}
+        aria-expanded={agentModeOpen}
+      >
+        {agentModeEnabled ? (
+          <>
+            <span className="assistant-agent-mode-button-name">{agentName}</span>
+            <DownOutlined />
+          </>
+        ) : (
+          <span>Agent mode</span>
+        )}
+      </Button>
     </div>
   );
 
@@ -644,13 +635,6 @@ const ChatBotPage: React.FC<ChatBotPageProps> = ({ embedded = false, onClose }) 
             onDragLeave={handleFileDragLeave}
             onDrop={handleFileDrop}
           >
-            <Button
-              type="text"
-              shape="circle"
-              icon={<PaperClipOutlined />}
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Attach files"
-            />
             {composerTools}
             <Input.TextArea
               value={inputValue}

@@ -104,8 +104,12 @@
   box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12);
 }
 
-.assistant-popup-input-row .assistant-composer-tools .assistant-plus-button {
-  display: none;
+.assistant-popup-input-row .assistant-composer-tools {
+  gap: 2px;
+}
+
+.assistant-popup-input-row .assistant-agent-mode-button {
+  flex: 0 0 auto;
 }
 
 .assistant-popup-input-row {
@@ -162,6 +166,14 @@
 
   .assistant-popup-composer {
     padding: 8px 10px 12px;
+  }
+
+  .assistant-popup-input-row .assistant-agent-mode-button {
+    padding-inline: 8px;
+  }
+
+  .assistant-popup-input-row .assistant-agent-mode-button > span:not(.anticon) {
+    display: none;
   }
 
   .chatbot-widget-button {

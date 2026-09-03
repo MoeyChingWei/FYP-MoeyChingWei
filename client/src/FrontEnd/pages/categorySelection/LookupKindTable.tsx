@@ -19,6 +19,7 @@ import {
   defaultOptionsForKind,
   deletePurchasingLookup,
   fetchPurchasingLookups,
+  PURCHASING_LOOKUPS_UPDATED_EVENT,
 } from "../../shared/api/purchasingLookups";
 
 export interface LookupKindTableProps {
@@ -74,6 +75,15 @@ export default function LookupKindTable({
     };
   }, [load]);
 
+  useEffect(() => {
+    const refreshIfSameKind = (event: Event) => {
+      const changedKind = (event as CustomEvent<{ kind?: PurchasingLookupKind }>).detail?.kind;
+      if (changedKind === kind) void load();
+    };
+    window.addEventListener(PURCHASING_LOOKUPS_UPDATED_EVENT, refreshIfSameKind);
+    return () => window.removeEventListener(PURCHASING_LOOKUPS_UPDATED_EVENT, refreshIfSameKind);
+  }, [kind, load]);
+
   const dataSource = useMemo(() => {
     const builtRows = builtIns.map((value) => ({
       key: `b:${value}`,
@@ -125,7 +135,7 @@ export default function LookupKindTable({
 
   const onDelete = async (id: number): Promise<void> => {
     try {
-      await deletePurchasingLookup(id);
+      await deletePurchasingLookup(id, kind);
       message.success(tMsg('success.save'));
       await load();
     } catch (err) {

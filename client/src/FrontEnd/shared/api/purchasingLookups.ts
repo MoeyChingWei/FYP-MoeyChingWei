@@ -21,6 +21,17 @@ export interface PurchasingLookupRow {
   createdAt: string;
 }
 
+export const PURCHASING_LOOKUPS_UPDATED_EVENT = "erp-purchasing-lookups-updated";
+
+function notifyPurchasingLookupUpdate(kind: PurchasingLookupKind): void {
+  // The same lookup is used by the category-management page, inventory, and
+  // purchasing forms. Notify already-open screens after a change so their
+  // dropdowns do not require a page refresh.
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(PURCHASING_LOOKUPS_UPDATED_EVENT, { detail: { kind } }));
+  }
+}
+
 export function defaultOptionsForKind(
   kind: PurchasingLookupKind,
 ): readonly string[] {
@@ -83,14 +94,16 @@ export async function createPurchasingLookup(
   if (!res.data?.success || !res.data.item) {
     throw new Error(res.data?.message ?? "Could not add value");
   }
+  notifyPurchasingLookupUpdate(kind);
   return res.data.item;
 }
 
-export async function deletePurchasingLookup(id: number): Promise<void> {
+export async function deletePurchasingLookup(id: number, kind?: PurchasingLookupKind): Promise<void> {
   const res = await axios.delete<{ success: boolean; message?: string }>(
     `${API_ROOT}/purchasing/lookups/${id}`,
   );
   if (!res.data?.success) {
     throw new Error(res.data?.message ?? "Could not delete");
   }
+  if (kind) notifyPurchasingLookupUpdate(kind);
 }

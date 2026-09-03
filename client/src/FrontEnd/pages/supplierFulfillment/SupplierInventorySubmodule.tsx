@@ -35,6 +35,7 @@ import { getSessionUser } from "../../shared/auth/session";
 import {
   fetchPurchasingLookups,
   mergePurchasingOptions,
+  PURCHASING_LOOKUPS_UPDATED_EVENT,
 } from "../../shared/api/purchasingLookups";
 import {
   createSupplierInventory,
@@ -179,11 +180,21 @@ export default function SupplierInventorySubmodule(): React.ReactElement {
   }, []);
 
   useEffect(() => {
-    void fetchPurchasingLookups("UNIT_OF_MEASURE")
-      .then((customRows) => setUnitOptions(mergePurchasingOptions("UNIT_OF_MEASURE", customRows)))
-      .catch(() => {
-        // Built-in units remain available when the API is offline.
-      });
+    const loadUnits = () => {
+      void fetchPurchasingLookups("UNIT_OF_MEASURE")
+        .then((customRows) => setUnitOptions(mergePurchasingOptions("UNIT_OF_MEASURE", customRows)))
+        .catch(() => {
+          // Built-in units remain available when the API is offline.
+        });
+    };
+    const refreshUnits = (event: Event) => {
+      const changedKind = (event as CustomEvent<{ kind?: string }>).detail?.kind;
+      if (changedKind === "UNIT_OF_MEASURE") loadUnits();
+    };
+
+    loadUnits();
+    window.addEventListener(PURCHASING_LOOKUPS_UPDATED_EVENT, refreshUnits);
+    return () => window.removeEventListener(PURCHASING_LOOKUPS_UPDATED_EVENT, refreshUnits);
   }, []);
 
   const filteredRows = useMemo(() => {
