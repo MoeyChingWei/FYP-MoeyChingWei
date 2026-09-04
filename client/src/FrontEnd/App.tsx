@@ -44,7 +44,7 @@ import {
   getSessionUser,
   type SessionUser,
 } from "./shared/auth/session";
-import { canAccessBudgetManagement, canApproveSupplierInvoices, isFinanceRole, UserRole } from "./shared/types/roles";
+import { canAccessBudgetManagement, canAccessFinanceModule, canApproveSupplierInvoices, isFinanceRole, UserRole } from "./shared/types/roles";
 import NotificationBell from "./components/shared/NotificationBell";
 import BreadcrumbNav from "./components/shared/BreadcrumbNav";
 import ChatBotWidget from "./components/ChatBot/ChatBotWidget";
@@ -329,10 +329,13 @@ function MainLayout(): React.ReactElement {
   };
 
   const role = sessionUser?.role;
+  const canAccessFinance = canAccessFinanceModule(role, sessionUser?.department);
 
   const canAccessPath = (pathname: string): boolean => {
     if (!role) return true;
     if (role === UserRole.ADMIN) return true;
+    if (pathname.startsWith("/finance") && !canAccessFinance) return false;
+    if (pathname === "/budget/finance-dashboard" && !canAccessFinance) return false;
     if (role === UserRole.MANAGER) return !pathname.startsWith("/supplier-overview");
     if (role === UserRole.DEPARTMENT_EXECUTIVE) {
       if (pathname.startsWith("/users-access")) return false;
@@ -356,9 +359,9 @@ function MainLayout(): React.ReactElement {
       ) {
         return canAccessBudgetManagement(role);
       }
-      if (pathname.startsWith("/finance/invoice-approval")) return canApproveSupplierInvoices(role);
+      if (pathname.startsWith("/finance/invoice-approval")) return canAccessFinance && canApproveSupplierInvoices(role);
       if (pathname.startsWith("/finance/payment-processing")) return role === UserRole.PAYMENT_TEAM || role === UserRole.ADMIN;
-      if (pathname.startsWith("/finance")) return isFinanceRole(role);
+      if (pathname.startsWith("/finance")) return canAccessFinance;
       if (pathname.startsWith("/tracking-item")) return true;
       if (pathname.startsWith("/chatbot")) return true;
       if (pathname.startsWith("/ai-agents")) return true;
@@ -388,7 +391,7 @@ function MainLayout(): React.ReactElement {
     if (!canAccessPath(location.pathname)) {
       navigate(fallbackPath(), { replace: true });
     }
-  }, [location.pathname, role]);
+  }, [location.pathname, role, sessionUser?.department]);
   const accentByKey: Record<MenuKey, string> = useMemo(
     () => ({
       overview: "#0ea5e9",
@@ -426,8 +429,12 @@ function MainLayout(): React.ReactElement {
   const canSeeMenuKey = (key: MenuKey): boolean => {
     if (!role) return true;
     if (role === UserRole.ADMIN) return true;
-    if (role === UserRole.MANAGER) return key !== "supplier-overview";
+    if (role === UserRole.MANAGER) {
+      if (key === "finance") return canAccessFinance;
+      return key !== "supplier-overview";
+    }
     if (role === UserRole.DEPARTMENT_EXECUTIVE) {
+      if (key === "finance") return canAccessFinance;
       return key !== "supplier-overview" && key !== "users-access";
     }
     if (role === UserRole.EMPLOYEE || isFinanceRole(role)) {
@@ -435,7 +442,7 @@ function MainLayout(): React.ReactElement {
         key === "overview" ||
         key === "purchasing" ||
         (key === "budget-management" && canAccessBudgetManagement(role)) ||
-        (key === "finance" && isFinanceRole(role)) ||
+        (key === "finance" && canAccessFinance) ||
         key === "tracking-item" ||
         key === "chatbot" ||
         key === "settings"

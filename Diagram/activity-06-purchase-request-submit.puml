@@ -1,0 +1,38 @@
+@startuml
+title Activity 06 - Submit Purchase Request and Reserve Budget
+
+|Requester|
+start
+:Open saved draft;
+:Review items, supplier and justification;
+:Click Submit;
+|Frontend|
+:Validate required fields;
+if (Complete and valid?) then (yes)
+  :Build submitted payload;
+  :POST workflow purchase-request;
+  |Backend|
+  :Authenticate requester;
+  :Validate department and item amounts;
+  :Check available department budget;
+  if (Budget available?) then (yes)
+    :Reserve request amount;
+    :Set status = SUBMITTED;
+    :Persist request record;
+    :Create requester and reviewer notifications;
+    :Send email notifications;
+    |Frontend|
+    :Refresh Review/Tracking list;
+    :Show submission success;
+    stop
+  else (no)
+    :Reject reservation;
+    |Frontend|
+    :Show insufficient budget;
+    stop
+  endif
+else (no)
+  :Show missing-field errors;
+  stop
+endif
+@enduml

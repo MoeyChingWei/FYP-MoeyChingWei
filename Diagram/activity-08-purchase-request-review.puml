@@ -1,0 +1,36 @@
+@startuml
+title Activity 08 - Purchase Request Review Decision
+
+|Approver|
+start
+:Open request detail;
+:Check requester, department and dates;
+:Check each item quantity, price and category;
+:Check budget reservation;
+:Choose Approve, Request Change or Reject;
+if (Request Change?) then (yes)
+  :Enter change comments;
+  |System|
+  :Set status = REQUEST_CHANGE;
+  :Release or recalculate reservation;
+  :Save comments and audit event;
+  :Notify requester in-app and email;
+  stop
+elseif (Reject?) then (yes)
+  :Enter rejection reason;
+  |System|
+  :Set status = REJECTED;
+  :Release reserved budget;
+  :Save reason and audit event;
+  :Notify requester in-app and email;
+  stop
+else (Approve)
+  |System|
+  :Set status = APPROVED;
+  :Keep reservation for PO conversion;
+  :Save approval audit event;
+  :Generate PO draft context;
+  :Notify requester of approval;
+  stop
+endif
+@enduml

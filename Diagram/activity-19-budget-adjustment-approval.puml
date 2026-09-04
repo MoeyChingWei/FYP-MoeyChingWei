@@ -1,0 +1,37 @@
+@startuml
+title Activity 19 - Finance Budget Adjustment Approval
+
+|Treasury/Finance Officer|
+start
+:Open Budget Approval Queue;
+|Frontend|
+:Load pending adjustment requests;
+|Backend|
+:Verify Finance role and department;
+if (Authorized?) then (yes)
+  :Return request, forecast and department budget;
+  |Treasury/Finance Officer|
+  :Review amount, reason and upcoming events;
+  :Compare forecast and available budget;
+  :Choose Approve or Reject;
+  if (Reject?) then (yes)
+    :Enter rejection reason;
+    |Backend|
+    :Set request status = REJECTED;
+    :Release any temporary reservation;
+    :Notify submitting department;
+    stop
+  else (Approve)
+    |Backend|
+    :Set request status = APPROVED;
+    :Create or update monthly budget;
+    :Write Finance approval source;
+    :Notify submitting department;
+    :Send review email;
+    stop
+  endif
+else (no)
+  :Return 403 and hide queue;
+  stop
+endif
+@enduml

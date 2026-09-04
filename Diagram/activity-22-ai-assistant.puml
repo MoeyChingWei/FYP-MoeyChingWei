@@ -1,0 +1,35 @@
+@startuml
+title Activity 22 - AI Assistant Query and Document Upload
+
+|User|
+start
+:Open AI Assistant;
+:Enter question or select workflow action;
+if (Upload document?) then (yes)
+  :Select file;
+  |Frontend|
+  :Validate type and size;
+  :POST multipart upload;
+  |Backend|
+  :Store temporary file;
+  :Extract text or image content;
+  :Return document context;
+endif
+|Frontend|
+:POST question with context;
+|Backend|
+:Authenticate request;
+:Select configured main/sub-agent;
+:Load relevant system context;
+:Call AI provider;
+if (Provider succeeds?) then (yes)
+  :Return answer and suggested next action;
+  |Frontend|
+  :Render answer and sources;
+else (no)
+  :Return fallback error;
+  |Frontend|
+  :Show retry message;
+endif
+stop
+@enduml

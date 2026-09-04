@@ -1,0 +1,33 @@
+@startuml
+title Activity 20 - Notification Fetch, Read and Cleanup
+
+|User|
+start
+:Open Notifications;
+|Frontend|
+:GET notifications for current user;
+|Backend|
+:Query notification records;
+|Frontend|
+:Render unread and read items;
+if (Open notification?) then (yes)
+  :Click notification;
+  :PATCH notification as read;
+  :Navigate to related module or record;
+endif
+if (Mark all read?) then (yes)
+  :Click Mark all as read;
+  :PATCH all current-user notifications;
+endif
+if (Delete notification?) then (yes)
+  :Confirm deletion;
+  :DELETE selected notification;
+endif
+if (Cleanup old notifications?) then (yes)
+  |Backend|
+  :Delete expired or user-owned records;
+endif
+|Frontend|
+:Refresh unread count;
+stop
+@enduml

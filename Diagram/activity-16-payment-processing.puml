@@ -1,0 +1,46 @@
+@startuml
+title Activity 16 - Payment Team Processes Supplier Payment
+
+|Payment Team|
+start
+:Open Finance > Payment Processing;
+|Frontend|
+:Check Payment Team or Admin role;
+if (Authorized?) then (yes)
+  :Load PENDING_PAYMENT invoices;
+  :Filter by due date, supplier or method;
+  |Payment Team|
+  :Open payment details;
+  :Verify invoice approval and bank details;
+  :Choose payment method;
+  :Enter paid date and transaction reference;
+  :Attach payment proof;
+  :Enter optional remarks;
+  |Frontend|
+  :Validate payment fields and attachment;
+  if (All fields complete?) then (yes)
+    :POST process payment;
+    |Backend|
+    :Recheck current status for duplicate processing;
+    if (Still pending?) then (yes)
+      :Set payment status = PAID;
+      :Store processor, date, reference and proof;
+      :Save payment history;
+      :Notify supplier and requester;
+      |Payment Team|
+      :See paid record and downloadable proof;
+      stop
+    else (no)
+      |Frontend|
+      :Refresh stale row and show conflict;
+      stop
+    endif
+  else (no)
+    :Show required field errors;
+    stop
+  endif
+else (no)
+  :Redirect to Overview;
+  stop
+endif
+@enduml

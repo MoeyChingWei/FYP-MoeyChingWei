@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ApartmentOutlined, ArrowRightOutlined, FundOutlined } from "@ant-design/icons";
 import { getSessionUser } from "../../shared/auth/session";
-import { UserRole, isFinanceRole } from "../../shared/types/roles";
+import { canAccessFinanceModule } from "../../shared/types/roles";
 
 import styles from "./BudgetManagementHome.module.css";
 
@@ -28,7 +28,7 @@ export default function BudgetManagementHome(): React.ReactElement {
       description: t("budgetManagement:financeDashboardDescription"),
       icon: <FundOutlined className={styles.cardIcon} />,
       path: "/budget/finance-dashboard",
-      visible: role === UserRole.ADMIN || role === UserRole.MANAGER || isFinanceRole(role),
+      visible: canAccessFinanceModule(role, sessionUser?.department),
     },
   ];
 

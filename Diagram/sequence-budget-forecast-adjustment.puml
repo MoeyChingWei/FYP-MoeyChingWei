@@ -1,0 +1,37 @@
+@startuml
+title Sequence Diagram - Budget Forecast, Proposal and Finance Review
+
+actor "Department Executive / Manager" as DepartmentUser
+actor "Treasury / Finance Officer" as Finance
+participant "React Budget Pages" as FE
+participant "Department Budget API" as BudgetApi
+participant "Budget Prediction Service" as Predictor
+participant "Notification Service" as NS
+database "Prisma / PostgreSQL" as DB
+
+DepartmentUser -> FE: Select department and target month
+FE -> BudgetApi: GET /predictions/:departmentId
+BudgetApi -> DB: Read approved requests and historical budgets
+BudgetApi -> Predictor: Generate moving-average prediction
+Predictor --> BudgetApi: Amount, trend and confidence
+BudgetApi -> DB: Save budget_predictions
+BudgetApi --> FE: Forecast and upcoming events
+
+DepartmentUser -> FE: Enter proposed amount and reason
+FE -> BudgetApi: POST /adjustments
+BudgetApi -> DB: Verify own department and period
+BudgetApi -> DB: Create PENDING adjustment request
+BudgetApi -> NS: Notify Finance reviewer
+
+Finance -> FE: Open approval queue
+FE -> BudgetApi: GET /adjustments
+Finance -> FE: Approve or reject with notes
+FE -> BudgetApi: PATCH /adjustments/:id/approve or reject
+alt rejected
+  BudgetApi -> DB: Set REJECTED
+  BudgetApi -> NS: Notify department
+else approved
+  BudgetApi -> DB: Set APPROVED and create/update monthly budget
+  BudgetApi -> NS: Notify department and email review result
+end
+@enduml

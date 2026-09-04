@@ -1,86 +1,120 @@
 @startuml
-title Logic Modeling - Core Business Rules
-
+title Logic Modeling - Access, Workflow, Budget and Finance Rules
 skinparam packageStyle rectangle
 
 package "Access Logic" {
-  class User {
-    +id
+  class UserContext {
     +role
+    +department
     +isActive
   }
   class AuthLogic {
     +login(email, password)
     +forgotPassword(email)
-    +resetPassword(email, code, newPassword)
-    +patchProfile(userId, data)
-    +uploadProfileAvatar(file)
+    +resetPassword(code, newPassword)
+    +patchProfile(data)
   }
-  class RoleGuard {
+  class RouteGuard {
     +canAccessPath(role, pathname)
+    +canAccessFinance(role, department)
     +fallbackPath(role)
   }
-  User --> AuthLogic : authenticates
-  User --> RoleGuard : authorize route
+  UserContext --> AuthLogic
+  UserContext --> RouteGuard
 }
 
-package "Workflow Logic" {
-  class WorkflowStorageRoute {
-    +get(store)
-    +put(store, rows[])
+package "Purchasing Workflow" {
+  class WorkflowStore {
+    +purchase-requests
+    +purchase-orders
+    +supplier-order-acks
+    +deliveries
+    +grns
   }
-  class StoreResolver {
-    +mapStoreToModel(store)
-    +stores = {purchase-requests, purchase-orders,\nsupplier-order-acks, deliveries, grns}
+  class WorkflowSync {
+    +GET snapshot
+    +PUT rows + baseLocalIds
+    +upsert and delete stale rows
   }
-  class RowValidation {
-    +check rows[] has localId
+  class StatusRules {
+    +DRAFT -> SUBMITTED
+    +REQUEST_CHANGE / REJECTED
+    +APPROVED -> PO
+    +DISCREPANCY -> resend
   }
-  class SyncTransaction {
-    +delete missing rows
-    +upsert incoming rows
-  }
-  class NotificationRuleEngine {
-    +processWorkflowNotifications(store, before, after)
-  }
-
-  WorkflowStorageRoute --> StoreResolver
-  WorkflowStorageRoute --> RowValidation
-  WorkflowStorageRoute --> SyncTransaction
-  WorkflowStorageRoute --> NotificationRuleEngine : async trigger
+  WorkflowSync --> WorkflowStore
+  WorkflowStore --> StatusRules
 }
 
-package "Feedback Logic" {
-  class FeedbackRoute {
-    +post(userId, type, description)
-    +get()
+package "Supplier Finance" {
+  class FinanceApi {
+    +invoice from completed GRN
+    +supplier submit invoice
+    +finance approve/reject
+    +payment team process
   }
-  class FeedbackValidation {
-    +type in {ISSUE, IMPROVEMENT, COMMENT}
-    +description length >= 5
+  class FinanceStatusRules {
+    +PENDING_APPROVAL
+    +APPROVED -> PENDING_PAYMENT
+    +PAID / REJECTED
   }
-  class FeedbackNotification {
-    +notifyAdminsForFeedback(...)
-  }
+  FinanceApi --> FinanceStatusRules
+}
 
-  FeedbackRoute --> FeedbackValidation
-  FeedbackRoute --> FeedbackNotification
+package "Budget Logic" {
+  class BudgetRules {
+    +reserve on PR submission
+    +release on rejection/change
+    +deduct on completion
+    +own department scope
+  }
+  class ForecastRules {
+    +approved requests only
+    +monthly/quarterly/yearly aggregation
+    +three-period moving average
+    +confidence from trend
+  }
+  class AdjustmentRules {
+    +Executive/Manager submit own department
+    +Finance/Admin approve or reject
+  }
+  BudgetRules --> ForecastRules
+  ForecastRules --> AdjustmentRules
 }
 
 package "Notification Logic" {
-  class NotificationRoute {
-    +get(userId)
-    +patch(id/read)
-    +patch(read-all)
-    +delete(id)
-    +delete(history)
+  class NotificationService {
+    +workflow transition alerts
+    +budget review alerts
+    +invoice/payment alerts
+    +feedback admin alert
   }
-  class NotificationPersistence {
-    +insert notification rows
-    +update isRead/readAt
-    +delete read history
+  class NotificationStore {
+    +read and unread
+    +read-all
+    +delete one/history
   }
-  NotificationRoute --> NotificationPersistence
+  NotificationService --> NotificationStore
 }
 
+package "AI and Feedback" {
+  class AiService {
+    +chat and stream response
+    +session history
+    +document/source upload
+  }
+  class FeedbackRules {
+    +ISSUE / IMPROVEMENT / COMMENT
+    +description minimum length
+    +Admin review state
+  }
+  AiService --> FeedbackRules : separate support module
+}
+
+RouteGuard --> FinanceApi : Finance/FIN + finance role
+WorkflowStore --> BudgetRules
+WorkflowStore --> NotificationService
+FinanceApi --> NotificationService
+AdjustmentRules --> NotificationService
+FeedbackRules --> NotificationService
 @enduml

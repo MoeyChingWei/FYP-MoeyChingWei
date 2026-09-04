@@ -1,0 +1,36 @@
+@startuml
+title Activity 18 - Department Next-Month Budget Submission
+
+|Department Executive/Manager|
+start
+:Open next-month budget page;
+:Select target month;
+:Review current budget and forecast;
+:Enter proposed allocation;
+:Add upcoming event assumptions;
+|Frontend|
+:Validate amount, month and events;
+if (Input valid?) then (yes)
+  :POST next_month_submission;
+  |Backend|
+  :Verify authenticated role and own department;
+  :Check target month is open;
+  if (Submission allowed?) then (yes)
+    :Persist budget adjustment request;
+    :Set status = PENDING;
+    :Notify Finance reviewer;
+    :Send submission email;
+    |Department Executive/Manager|
+    :See pending submission;
+    stop
+  else (no)
+    :Return duplicate or closed-period error;
+    |Frontend|
+    :Show submission error;
+    stop
+  endif
+else (no)
+  :Show input errors;
+  stop
+endif
+@enduml

@@ -1,55 +1,119 @@
 @startuml
-title Use Case Diagram - OptiMind Portal (Detailed)
+title Use Case Diagram - OptiMind Portal (Current Role Scope)
 left to right direction
 
 actor Employee
-actor Admin
+actor "Department Executive" as Executive
+actor Manager
+actor "Treasury / Finance Officer" as FinanceOfficer
+actor "Payment Team" as PaymentTeam
 actor Supplier
+actor Admin
 
 rectangle "FYP MoeyChingWei System" {
-  usecase "Login" as UC1
-  usecase "View Overview" as UC2
-  usecase "Manage Profile" as UC3
-  usecase "Create Purchase Request" as UC4
-  usecase "Review Purchase Request" as UC5
-  usecase "Create/Approve Purchase Order" as UC6
-  usecase "Submit Order Acknowledgement" as UC7
-  usecase "Submit Delivery" as UC8
-  usecase "Check GRN Status" as UC14
-  usecase "Receive In-App Notifications" as UC9
-  usecase "Submit Feedback" as UC10
-  usecase "Manage Users & Roles (RBAC)" as UC11
-  usecase "Manage Purchasing Lookups" as UC13
-  usecase "Track Item Status" as UC15
+  usecase "Login / Reset Password" as Auth
+  usecase "View Role-Scoped Overview" as Overview
+  usecase "Manage Own Profile" as Profile
+  usecase "Create and Save PR Draft" as Draft
+  usecase "Submit Purchase Request" as SubmitPR
+  usecase "Review PR" as ReviewPR
+  usecase "Create and Review PO" as PO
+  usecase "Approve PO" as ApprovePO
+  usecase "Acknowledge Order" as Ack
+  usecase "Submit Delivery" as Delivery
+  usecase "Verify GRN / Report Discrepancy" as GRN
+  usecase "Submit Supplier Invoice" as Invoice
+  usecase "Approve Supplier Invoice" as InvoiceApproval
+  usecase "Process Supplier Payment" as Payment
+  usecase "View Budget / Forecast" as Forecast
+  usecase "Submit Budget Proposal" as BudgetSubmit
+  usecase "Approve Budget Adjustment" as BudgetApprove
+  usecase "Manage Notifications" as Notifications
+  usecase "Submit Feedback" as Feedback
+  usecase "Use AI Assistant" as AI
+  usecase "Manage Supplier Inventory" as Inventory
+  usecase "Manage Purchasing Lookups" as Lookups
+  usecase "Manage Users and Roles" as Users
+  usecase "Review Audit / Export / Backup" as Operations
+  usecase "Manage Tax and Bank Details" as SupplierSettings
 }
 
-Employee --> UC1
-Employee --> UC2
-Employee --> UC3
-Employee --> UC4
-Employee --> UC5
-Employee --> UC9
-Employee --> UC10
-Employee --> UC15
+Employee --> Auth
+Employee --> Overview
+Employee --> Profile
+Employee --> Draft
+Employee --> SubmitPR
+Employee --> GRN
+Employee --> Forecast
+Employee --> Notifications
+Employee --> Feedback
+Employee --> AI
 
-Admin --> UC1
-Admin --> UC2
-Admin --> UC3
-Admin --> UC6
-Admin --> UC9
-Admin --> UC11
-Admin --> UC13
+Executive --> Auth
+Executive --> Overview
+Executive --> ReviewPR
+Executive --> PO
+Executive --> GRN
+Executive --> Forecast
+Executive --> BudgetSubmit
+Executive --> Notifications
+Executive --> Feedback
 
-Supplier --> UC1
-Supplier --> UC2
-Supplier --> UC7
-Supplier --> UC8
-Supplier --> UC14
-Supplier --> UC9
+Manager --> Auth
+Manager --> Overview
+Manager --> ReviewPR
+Manager --> ApprovePO
+Manager --> Forecast
+Manager --> BudgetSubmit
+Manager --> Notifications
 
-UC5 .> UC9 : <<include>>
-UC6 .> UC9 : <<include>>
-UC10 .> UC9 : <<include>>
-UC8 .> UC14 : <<extend>>
+FinanceOfficer --> Auth
+FinanceOfficer --> Overview
+FinanceOfficer --> InvoiceApproval
+FinanceOfficer --> Forecast
+FinanceOfficer --> BudgetApprove
+FinanceOfficer --> Notifications
 
+PaymentTeam --> Auth
+PaymentTeam --> Overview
+PaymentTeam --> Payment
+PaymentTeam --> Forecast
+PaymentTeam --> Notifications
+
+Supplier --> Auth
+Supplier --> Overview
+Supplier --> Ack
+Supplier --> Delivery
+Supplier --> GRN
+Supplier --> Invoice
+Supplier --> Inventory
+Supplier --> SupplierSettings
+Supplier --> Notifications
+Supplier --> Profile
+
+Admin --> Auth
+Admin --> Overview
+Admin --> Profile
+Admin --> Users
+Admin --> Lookups
+Admin --> Operations
+Admin --> PO
+Admin --> ApprovePO
+Admin --> InvoiceApproval
+Admin --> Payment
+Admin --> Forecast
+Admin --> BudgetApprove
+Admin --> Notifications
+Admin --> Feedback
+
+SubmitPR .> Draft : may start from
+SubmitPR .> Forecast : reserve budget
+ReviewPR .> Notifications : <<include>>
+ApprovePO .> Notifications : <<include>>
+GRN .> Delivery : discrepancy resend
+GRN .> Invoice : completed GRN enables
+InvoiceApproval .> Payment : approved invoice creates
+
+note "Finance module visibility = Admin OR (Treasury/Finance Officer or Payment Team in Finance/FIN department). Manager Overview hides statistic cards." as AccessRule
+AccessRule .. Overview
 @enduml

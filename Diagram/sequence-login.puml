@@ -1,33 +1,35 @@
 @startuml
-title Sequence Diagram - Login Flow
+title Sequence Diagram - Login and Role/Department Access
 
 actor User
-participant "React Frontend" as FE
-participant "Express Auth Route" as AR
-participant "Auth Controller" as AC
+participant "React Login" as FE
+participant "Auth Route" as Auth
 database "Prisma / PostgreSQL" as DB
+participant "App Router / RBAC" as Guard
 
-User -> FE: Enter email/password + click Login
-FE -> AR: POST /api/login
-AR -> AC: login(req, res)
-AC -> AC: validate email + password format
-AC -> DB: find user by email
-DB --> AC: user record / null
-
-alt invalid payload
-  AC --> FE: 400 bad request
+User -> FE: Enter email and password
+FE -> FE: Validate required fields
+alt invalid fields
   FE --> User: Show validation error
-else user exists and password matches
-  AC -> AC: check isActive and role
-  AC --> FE: 200 success + session user
-  alt role = SUPPLIER
-    FE --> User: Navigate to /supplier-overview
-  else role != SUPPLIER
-    FE --> User: Navigate to /overview
+else valid fields
+  FE -> Auth: POST /api/login
+  Auth -> DB: Find user by email
+  DB --> Auth: User record / null
+  Auth -> Auth: Compare password and isActive
+  alt invalid credentials or inactive
+    Auth --> FE: 401 unauthorized
+    FE --> User: Show login error
+  else valid account
+    Auth --> FE: 200 user role + department
+    FE -> Guard: Evaluate permitted routes
+    Guard -> Guard: Finance = Admin OR finance role + Finance/FIN
+    Guard -> Guard: Manager Overview hides statistic cards
+    alt Supplier
+      Guard --> FE: Navigate /supplier-overview
+    else other roles
+      Guard --> FE: Navigate /overview
+    end
+    FE --> User: Render role-scoped navigation
   end
-else invalid credentials / inactive
-  AC --> FE: 401 unauthorized
-  FE --> User: Show login error
 end
-
 @enduml

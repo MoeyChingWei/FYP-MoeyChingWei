@@ -1,0 +1,25 @@
+@startuml
+title Activity 21 - Feedback Submission
+
+|User|
+start
+:Open Settings > Feedback;
+:Choose feedback type and rating;
+:Enter message and optional attachment;
+:Click Submit;
+|Frontend|
+:Validate type, rating and message;
+if (Input valid?) then (yes)
+  :POST /api/feedback;
+|Backend|
+:Authenticate user;
+:Persist feedback record;
+:Create Admin notification;
+|Frontend|
+:Show feedback submitted;
+stop
+else (no)
+:Show validation errors;
+stop
+endif
+@enduml

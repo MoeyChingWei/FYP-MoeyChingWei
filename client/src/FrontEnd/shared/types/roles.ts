@@ -17,6 +17,20 @@ export function isFinanceRole(role?: string | null): role is UserRole {
   return FINANCE_ROLES.includes(role as UserRole);
 }
 
+/** Returns true when a user's department is the Finance department. */
+export function isFinanceDepartment(department?: string | null): boolean {
+  const normalized = String(department ?? "").trim().toLowerCase();
+  return normalized === "finance" || normalized === "fin";
+}
+
+/** Finance module visibility is restricted to Finance roles in the Finance department. */
+export function canAccessFinanceModule(
+  role?: string | null,
+  department?: string | null,
+): boolean {
+  return role === UserRole.ADMIN || (isFinanceRole(role) && isFinanceDepartment(department));
+}
+
 /** Roles permitted to access the Budget Management workspace and its subpages. */
 export function canAccessBudgetManagement(role?: string | null): boolean {
   return [

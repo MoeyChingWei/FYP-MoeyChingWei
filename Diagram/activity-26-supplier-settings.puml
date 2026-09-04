@@ -1,0 +1,32 @@
+@startuml
+title Activity 26 - Supplier Tax and Payment Settings
+
+|Supplier|
+start
+:Open Supplier Settings;
+:Choose Tax Information or Payment Details;
+:Enter tax number, bank name, account name and account number;
+|Frontend|
+:Validate required and sensitive fields;
+if (Values valid?) then (yes)
+  :POST supplier-tax or supplier-finance settings;
+  |Backend|
+  :Authenticate supplier;
+  :Verify supplier ownership;
+  if (Authorized?) then (yes)
+    :Persist protected settings;
+    :Write update history;
+    |Frontend|
+    :Show update confirmation;
+    stop
+  else (no)
+    :Return 403;
+    |Frontend|
+    :Show access error;
+    stop
+  endif
+else (no)
+  :Show validation errors;
+  stop
+endif
+@enduml

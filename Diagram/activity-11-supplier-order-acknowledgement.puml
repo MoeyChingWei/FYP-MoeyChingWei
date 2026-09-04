@@ -1,0 +1,39 @@
+@startuml
+title Activity 11 - Supplier Order Acknowledgement
+
+|Supplier|
+start
+:Open supplier notification;
+:Open Order Acknowledgement;
+|Frontend|
+:Load approved PO details;
+:Show items, quantities and requested dates;
+|Supplier|
+:Confirm quantities and expected delivery;
+:Choose Accept or Reject;
+if (Reject?) then (yes)
+  :Enter supplier rejection reason;
+  |Backend|
+  :Validate supplier owns PO;
+  :Set acknowledgement = REJECTED;
+  :Save reason and audit history;
+  :Notify requester and manager;
+  stop
+else (Accept)
+  |Frontend|
+  :Validate acknowledgement fields;
+  if (Fields valid?) then (yes)
+    :POST supplier acknowledgement;
+    |Backend|
+    :Set acknowledgement = ACKNOWLEDGED;
+    :Generate delivery record = PENDING_DELIVERY;
+    :Notify requester;
+    |Supplier|
+    :See delivery task;
+    stop
+  else (no)
+    :Show validation errors;
+    stop
+  endif
+endif
+@enduml

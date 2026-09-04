@@ -1,0 +1,37 @@
+@startuml
+title Activity 14 - Supplier Invoice Submission
+
+|Supplier|
+start
+:Open completed GRN;
+:Choose Create Invoice;
+:Review PO, GRN and supplier details;
+:Enter invoice number and invoice date;
+:Enter amount, tax and currency;
+:Attach invoice PDF or image;
+|Frontend|
+:Validate invoice fields and attachment;
+if (Invoice valid?) then (yes)
+  :POST /api/supplier-finance/invoices;
+  |Backend|
+  :Verify supplier owns completed GRN;
+  :Check invoice number uniqueness;
+  if (GRN and invoice checks pass?) then (yes)
+    :Set invoice status = PENDING_APPROVAL;
+    :Persist protected finance record;
+    :Notify Treasury/Finance Officer;
+    :Send approval email;
+    |Supplier|
+    :See invoice submitted;
+    stop
+  else (no)
+    :Return conflict or eligibility error;
+    |Frontend|
+    :Show invoice error;
+    stop
+  endif
+else (no)
+  :Show missing field or attachment error;
+  stop
+endif
+@enduml

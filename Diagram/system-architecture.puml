@@ -1,100 +1,83 @@
 @startuml
-title System Architecture - FYP MoeyChingWei (Detailed Backend Split)
+title System Architecture - FYP MoeyChingWei (Current Modules)
 left to right direction
+skinparam componentStyle rectangle
 
-actor User
+actor "Authenticated User" as User
 actor Admin
 
-rectangle "Frontend (React + TypeScript)" as FE {
-  component "Pages\nOverview / User & Access / Purchasing /\nSupplier Overview / Tracking Item / Settings" as FEPages
-  component "Overview Widgets\nNotifications panel, quick entry cards" as FEWidgets
-
-  component "Core Domain Modules\nPR (Create/Review/Approve)\nPO (Create/Review/Approve)\nSupplier Fulfillment (Ack/Delivery/GRN)" as FECore
-  component "Platform Modules\nAuth & Session / Notifications / Feedback" as FEPlatform
-  component "Support Modules\nSettings / Tracking Item / RBAC UI" as FESupport
-
-  component "API Client Layer\nshared/api/*" as FEApi
+node "Browser" {
+  component "React SPA\nApp Router + session" as SPA
+  component "Feature Pages\nOverview | Purchasing | Supplier | Budget | Finance | Settings" as Pages
+  component "Shared API Clients\nworkflow sync + role guards" as Clients
 }
 
-rectangle "Backend (Node.js + Express)" as BE {
-  package "API Gateway / Route Groups" {
-    component "Auth Login Route\nPOST /api/login" as AuthLogin
-    component "Password Recovery Routes\nPOST /api/forgot-password\nPOST /api/reset-password" as AuthRecovery
-    component "Profile Routes\nGET/PATCH /api/profile\nPOST /api/profile/avatar" as ProfileRoutes
-
-    component "Workflow API\nGET/PUT /api/workflow/:store" as WorkflowApi
-    component "Workflow Store: purchase-requests" as WfPR
-    component "Workflow Store: purchase-orders" as WfPO
-    component "Workflow Store: supplier-order-acks" as WfAck
-    component "Workflow Store: deliveries" as WfDel
-    component "Workflow Store: grns" as WfGrn
-
-    component "Notifications API\nGET/PATCH/DELETE /api/notifications/*" as NotiApi
-    component "Feedback API\nGET/POST /api/feedback/*" as FbApi
-    component "Admin Users API\n/api/admin/users*" as AdminUsersApi
-    component "Purchasing Lookup API\n/api/purchasing/*" as LookupApi
-    component "Health Endpoint\nGET /" as HealthApi
+node "Express API :4000" {
+  package "Identity and shared" {
+    component "Auth/Profile\n/api/login, /api/profile" as Auth
+    component "Notifications/Feedback\n/api/notifications, /api/feedback" as Shared
+    component "Admin/Audit/Export/Backup" as AdminApi
   }
-
-  package "Service Layer" {
-    component "Notification Service\nprocessWorkflowNotifications\nnotifyAdminsForFeedback" as NotiSvc
-    component "Email Services\nemailNotifications\nsendResetEmail" as EmailSvc
+  package "Business APIs" {
+    component "Workflow snapshot API\n/api/workflow/:store" as Workflow
+    component "Purchasing + Inventory\n/api/purchasing/*" as PurchaseApi
+    component "Supplier Finance/Tax\n/api/supplier-finance/*\n/api/supplier-tax/*" as FinanceApi
+    component "Budget API\n/api/budget/*\n/api/department-budget/*" as BudgetApi
+  }
+  package "AI and integrations" {
+    component "Chatbot / Agents / Sources" as AiApi
+    component "Gmail OAuth and email" as GmailApi
+    component "Notification Service" as Notify
+    component "Budget Prediction Service" as Predict
   }
 }
 
-database "PostgreSQL (Prisma ORM)" as DB
+database "PostgreSQL" as DB
+component "Prisma Client" as Prisma
 folder "uploads/" as Uploads
-cloud "Email Provider" as Email
+cloud "Gmail / SMTP" as Mail
+cloud "AI Provider" as AI
 
-User --> FEPages
-Admin --> FEPages
+User --> SPA
+Admin --> SPA
+SPA --> Pages
+Pages --> Clients
+Clients --> Auth
+Clients --> Shared
+Clients --> AdminApi
+Clients --> Workflow
+Clients --> PurchaseApi
+Clients --> FinanceApi
+Clients --> BudgetApi
+Clients --> AiApi
+Clients --> GmailApi
 
-FEPages --> FEWidgets
-FEPages --> FECore
-FEPages --> FEPlatform
-FEPages --> FESupport
+Auth --> Prisma
+Shared --> Prisma
+AdminApi --> Prisma
+Workflow --> Prisma
+PurchaseApi --> Prisma
+FinanceApi --> Prisma
+BudgetApi --> Prisma
+AiApi --> Prisma
+Prisma --> DB
+Auth --> Uploads
+PurchaseApi --> Uploads
+FinanceApi --> Uploads
+AiApi --> Uploads
+Workflow --> Notify
+Shared --> Notify
+BudgetApi --> Notify
+FinanceApi --> Notify
+BudgetApi --> Predict
+Notify --> Prisma
+Notify --> GmailApi
+GmailApi --> Mail
+AiApi --> AI
 
-FEWidgets --> FEApi
-FECore --> FEApi
-FEPlatform --> FEApi
-FESupport --> FEApi
-
-FEApi --> AuthLogin
-FEApi --> AuthRecovery
-FEApi --> ProfileRoutes
-FEApi --> WorkflowApi
-FEApi --> NotiApi
-FEApi --> FbApi
-FEApi --> AdminUsersApi
-FEApi --> LookupApi
-
-WorkflowApi --> WfPR
-WorkflowApi --> WfPO
-WorkflowApi --> WfAck
-WorkflowApi --> WfDel
-WorkflowApi --> WfGrn
-
-AuthLogin --> DB
-AuthRecovery --> DB
-ProfileRoutes --> DB
-ProfileRoutes --> Uploads
-
-WfPR --> DB
-WfPO --> DB
-WfAck --> DB
-WfDel --> DB
-WfGrn --> DB
-
-NotiApi --> DB
-FbApi --> DB
-AdminUsersApi --> DB
-LookupApi --> DB
-
-WorkflowApi --> NotiSvc
-FbApi --> NotiSvc
-NotiSvc --> DB
-NotiSvc --> EmailSvc
-AuthRecovery --> EmailSvc
-EmailSvc --> Email
-
+note right of Clients
+Finance UI is rendered only for Admin or
+Finance roles in the Finance/FIN department.
+Manager Overview omits statistic cards.
+end note
 @enduml

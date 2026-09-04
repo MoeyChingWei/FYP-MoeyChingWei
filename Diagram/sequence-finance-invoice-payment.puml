@@ -1,0 +1,40 @@
+@startuml
+title Sequence Diagram - Supplier Invoice Approval and Payment
+
+actor Supplier
+actor "Treasury / Finance Officer" as Finance
+actor "Payment Team" as PaymentTeam
+participant "React Finance Pages" as FE
+participant "Supplier Finance API" as SF
+participant "Notification Service" as NS
+database "Prisma / PostgreSQL" as DB
+
+Supplier -> FE: Open completed GRN
+FE -> SF: POST /invoices/from-grn
+SF -> DB: Verify GRN completed and create invoice draft
+Supplier -> FE: Submit invoice attachment and details
+FE -> SF: POST /invoices/:localId/submit
+SF -> DB: Set PENDING_APPROVAL
+SF -> NS: Notify Finance Officer
+
+Finance -> FE: Open invoice approval queue
+FE -> SF: GET /invoices
+SF -> DB: Read protected invoice records
+Finance -> FE: Approve or reject with review note
+FE -> SF: POST /invoices/:localId/approve or reject
+alt rejected
+  SF -> DB: Set REJECTED
+  SF -> NS: Notify supplier
+else approved
+  SF -> DB: Set APPROVED and create PENDING_PAYMENT
+  SF -> NS: Notify Payment Team and supplier
+end
+
+PaymentTeam -> FE: Open payment processing queue
+FE -> SF: GET /payments
+PaymentTeam -> FE: Enter method, date, reference and proof
+FE -> SF: POST /payments/:localId/process
+SF -> DB: Recheck status and set PAID
+SF -> NS: Notify supplier and requester
+SF --> FE: Paid record and payment history
+@enduml

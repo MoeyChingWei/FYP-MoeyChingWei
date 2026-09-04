@@ -1,0 +1,36 @@
+@startuml
+title Activity 12 - Supplier Creates and Submits Delivery
+
+|Supplier|
+start
+:Open pending delivery;
+:Review PO and acknowledged items;
+:Enter dispatch date and quantities;
+:Enter carrier or tracking details;
+:Attach delivery document if available;
+|Frontend|
+:Validate quantities and required dates;
+if (Delivery data valid?) then (yes)
+  :POST delivery record;
+  |Backend|
+  :Verify supplier and PO ownership;
+  :Check delivery is not already completed;
+  if (Accepted?) then (yes)
+    :Set delivery status = SUBMITTED;
+    :Persist delivery;
+    :Create GRN task for requester;
+    :Notify requester in-app and email;
+    |Supplier|
+    :See delivery submitted;
+    stop
+  else (no)
+    :Return conflict or authorization error;
+    |Frontend|
+    :Show submission error;
+    stop
+  endif
+else (no)
+  :Show delivery validation errors;
+  stop
+endif
+@enduml

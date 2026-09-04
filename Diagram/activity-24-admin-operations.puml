@@ -1,0 +1,35 @@
+@startuml
+title Activity 24 - Audit, Export, Backup and System Operations
+
+|Admin|
+start
+:Open Administration tools;
+if (View audit log?) then (yes)
+  :Choose date, actor or action filter;
+  |Backend|
+  :Authenticate Admin;
+  :Query audit events;
+  |Admin|
+  :Inspect event details;
+endif
+if (Export data?) then (yes)
+  :Choose module and format;
+  |Backend|
+  :Validate export scope;
+  :Read permitted records;
+  :Generate file;
+  |Admin|
+  :Download export;
+endif
+if (Create backup?) then (yes)
+  :Confirm backup operation;
+  |Backend|
+  :Authenticate Admin;
+  :Create database backup;
+  :Store backup artifact;
+  :Write audit event;
+  |Admin|
+  :See backup result;
+endif
+stop
+@enduml

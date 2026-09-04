@@ -1,0 +1,38 @@
+@startuml
+title Activity 15 - Finance Officer Invoice Approval
+
+|Treasury/Finance Officer|
+start
+:Open Finance module;
+|Frontend|
+:Check role and Finance department;
+if (Finance access allowed?) then (yes)
+  :Load pending supplier invoices;
+  |Backend|
+  :Read protected supplier-finance records;
+  |Treasury/Finance Officer|
+  :Open invoice details;
+  :Compare invoice with PO and completed GRN;
+  :Check supplier, tax, amount and attachment;
+  :Choose Approve or Reject;
+  if (Reject?) then (yes)
+    :Enter rejection reason;
+    |Backend|
+    :Set invoice status = REJECTED;
+    :Save review history;
+    :Notify supplier;
+    stop
+  else (Approve)
+    |Backend|
+    :Set invoice status = APPROVED;
+    :Create payment status = PENDING_PAYMENT;
+    :Notify Payment Team;
+    :Notify supplier;
+    stop
+  endif
+else (no)
+  :Hide Finance menu and invoice cards;
+  :Redirect to Overview;
+  stop
+endif
+@enduml

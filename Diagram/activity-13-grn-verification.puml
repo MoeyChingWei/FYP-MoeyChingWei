@@ -1,0 +1,44 @@
+@startuml
+title Activity 13 - Goods Received Note Verification and Discrepancy Loop
+
+|Requester|
+start
+:Open GRN task from notification;
+:Compare delivered items with PO;
+:Record received quantity and condition;
+|Frontend|
+:Validate GRN quantities and status;
+if (All goods correct?) then (yes)
+  :Submit GRN as RECEIVED;
+  |Backend|
+  :Persist GRN status = RECEIVED;
+  :Update delivery status;
+  :Create invoice eligibility;
+  :Notify supplier and requester;
+  stop
+else (no)
+  :Enter discrepancy reason and affected items;
+  :Submit GRN as DISCREPANCY;
+  |Backend|
+  :Persist GRN status = DISCREPANCY;
+  :Keep unresolved quantities;
+  :Notify supplier to resend;
+  |Supplier|
+  :Open discrepancy details;
+  :Create replacement delivery;
+  |Backend|
+  :Link replacement delivery to same PO/GRN;
+  |Requester|
+  :Receive replacement shipment;
+  :Reopen GRN and verify again;
+  if (Correct on retry?) then (yes)
+    |Backend|
+    :Set GRN status = COMPLETED;
+    :Create invoice eligibility;
+    stop
+  else (no)
+    :Repeat discrepancy cycle;
+    stop
+  endif
+endif
+@enduml

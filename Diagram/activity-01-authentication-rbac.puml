@@ -1,0 +1,44 @@
+@startuml
+title Activity 01 - Login, RBAC and Role-Based Overview
+
+|User|
+start
+:Open login page;
+:Enter email and password;
+:Click Login;
+|Frontend|
+:Validate required fields;
+if (Fields valid?) then (yes)
+  :POST /api/login;
+  |Backend|
+  :Find user by email;
+  if (Password and account valid?) then (yes)
+    :Build authenticated user profile;
+    :Return role and department;
+    |Frontend|
+    :Store user session;
+    :Evaluate role and department;
+    :Check Admin OR Finance role in Finance/FIN department;
+    if (Finance access rule passes?) then (yes)
+      :Show Finance navigation and cards;
+    else (no)
+      :Hide Finance navigation and cards;
+      :Redirect direct Finance URL to Overview;
+    endif
+    if (User is Manager?) then (yes)
+      :Hide Overview statistic cards;
+      :Keep operations snapshot and activity;
+    endif
+    :Redirect to permitted landing page;
+    stop
+  else (no)
+    :Return 401 or account error;
+    |Frontend|
+    :Show login error;
+    stop
+  endif
+else (no)
+  :Show field validation message;
+  stop
+endif
+@enduml

@@ -1,0 +1,57 @@
+@startuml
+title Activity 03 - Profile, Avatar and Password Management
+
+|User|
+start
+:Open Profile;
+|Frontend|
+:GET current user profile;
+|Backend|
+:Verify authenticated user;
+:Read user and department data;
+|Frontend|
+:Render profile details;
+if (Edit profile?) then (yes)
+  :Change allowed fields;
+  :Validate field values;
+  if (Valid?) then (yes)
+    :PATCH /api/profile;
+    |Backend|
+    :Update user record;
+    |Frontend|
+    :Refresh session profile;
+  else (no)
+    :Show validation errors;
+  endif
+endif
+if (Upload avatar?) then (yes)
+  :Select image file;
+  :Validate type and size;
+  if (File valid?) then (yes)
+    :POST avatar data;
+    |Backend|
+    :Write file under uploads/;
+    :Save avatar URL;
+    |Frontend|
+    :Refresh avatar preview;
+  else (no)
+    :Show upload error;
+  endif
+endif
+if (Change password?) then (yes)
+  :Enter current and new password;
+  :Validate confirmation;
+  :POST password change;
+  |Backend|
+  :Verify current password;
+  if (Current password correct?) then (yes)
+    :Hash and save new password;
+    |Frontend|
+    :Show password changed;
+  else (no)
+    |Frontend|
+    :Show password error;
+  endif
+endif
+stop
+@enduml

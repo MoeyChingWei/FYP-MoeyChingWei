@@ -1,35 +1,55 @@
 @startuml
-title Sequence Diagram - Request Approval to PO Submission
+title Sequence Diagram - Purchase Request Approval and PO Handoff
 
 actor Requester
-actor Executive
+actor "Department Executive" as Executive
 actor Manager
-participant "React Frontend" as FE
-participant "Workflow API\n/api/workflow/*" as WF
+participant "React Purchasing Pages" as FE
+participant "Workflow API" as WF
+participant "Budget API" as Budget
 participant "Notification Service" as NS
 database "Prisma / PostgreSQL" as DB
 
-Requester -> FE: Submit purchase request
-FE -> WF: PUT /api/workflow/purchase-requests
-WF -> DB: upsert purchase request rows
-DB --> WF: saved
-WF -> NS: processWorkflowNotifications(...)
-NS -> DB: create notifications (Requester, Executive)
-NS --> Executive: in-app + email alert
+Requester -> FE: Submit PR payload
+FE -> FE: Validate required fields and totals
+FE -> Budget: POST /usage/reserve
+Budget -> DB: Check department budget
+alt insufficient budget
+  Budget --> FE: 409 insufficient budget
+  FE --> Requester: Show budget error
+else budget reserved
+  FE -> WF: PUT /api/workflow/purchase-requests {rows}
+  WF -> DB: Upsert status=SUBMITTED
+  WF -> WF: Determine approver by role + department
+  WF -> NS: Trigger submission notification
+  NS -> DB: Save requester and approver alerts
+  NS --> Executive: In-app + email (Employee request)
+  NS --> Manager: In-app + email (Executive request)
+end
 
-Executive -> FE: Open request approval detail
-Executive -> FE: Approve request
-FE -> WF: PUT /api/workflow/purchase-requests (status=approved)
-WF -> DB: update approved request
-WF -> DB: create PO draft in purchase-orders store
-WF -> NS: processWorkflowNotifications(...)
-NS -> DB: notify Requester (approved)
+alt Employee request
+  Executive -> FE: Open request detail
+else Department Executive request
+  Manager -> FE: Open request detail
+else Manager request
+  Requester -> FE: Open self-approval detail
+end
 
-Executive -> FE: Submit PO to Manager
-FE -> WF: PUT /api/workflow/purchase-orders (status=submitted)
-WF -> DB: update PO row
-WF -> NS: processWorkflowNotifications(...)
-NS -> DB: notify Manager (PO pending approval)
-NS --> Manager: in-app + email alert
+Executive -> FE: Approve / request change / reject
+Manager -> FE: Approve / request change / reject
+FE -> WF: PUT PR with decision and reason
+WF -> DB: Save status and audit payload
+alt REQUEST_CHANGE or REJECTED
+  WF -> Budget: Release or recalculate reservation
+  WF -> NS: Notify requester with comments/reason
+else APPROVED
+  WF -> DB: Create PO draft from approved PR
+  WF -> NS: Notify requester of approval
+end
 
+Executive -> FE: Review and submit PO draft
+FE -> WF: PUT /api/workflow/purchase-orders {status=PENDING_MANAGER}
+WF -> DB: Persist PO and manager target
+WF -> NS: Notify Manager
+NS --> Manager: In-app + email approval alert
 @enduml

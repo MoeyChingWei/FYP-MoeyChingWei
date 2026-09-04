@@ -1,0 +1,32 @@
+@startuml
+title Activity 25 - Admin Reviews Feedback
+
+|Admin|
+start
+:Open Feedback Management;
+|Frontend|
+:GET feedback records;
+|Backend|
+:Authenticate Admin role;
+if (Admin authorized?) then (yes)
+  :Return feedback and submitter details;
+  |Admin|
+  :Filter by type, rating or status;
+  :Open feedback detail;
+  :Add review note or change review status;
+  |Frontend|
+  :Validate review update;
+  :PATCH feedback review;
+  |Backend|
+  :Persist Admin review state;
+  :Write audit event;
+  |Frontend|
+  :Refresh feedback list;
+  stop
+else (no)
+  :Return 403;
+  |Frontend|
+  :Hide management page;
+  stop
+endif
+@enduml

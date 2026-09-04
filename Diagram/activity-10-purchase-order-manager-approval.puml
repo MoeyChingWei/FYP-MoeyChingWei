@@ -1,0 +1,39 @@
+@startuml
+title Activity 10 - Manager Approves or Rejects Purchase Order
+
+|Manager|
+start
+:Open PO Approval queue;
+|Frontend|
+:GET pending manager POs;
+|Backend|
+:Verify Manager role;
+if (Manager authorized?) then (yes)
+  :Return PO and request details;
+  |Manager|
+  :Review supplier, totals, terms and delivery date;
+  :Choose Approve or Reject;
+  if (Reject?) then (yes)
+    :Enter rejection reason;
+    |Backend|
+    :Set PO status = REJECTED;
+    :Release request reservation;
+    :Notify requester and executive;
+    stop
+  else (Approve)
+    |Backend|
+    :Set PO status = APPROVED;
+    :Create supplier acknowledgement task;
+    :Notify requester;
+    :Notify supplier in-app and email;
+    |Manager|
+    :See approval confirmation;
+    stop
+  endif
+else (no)
+  :Return 403;
+  |Frontend|
+  :Hide queue and redirect;
+  stop
+endif
+@enduml

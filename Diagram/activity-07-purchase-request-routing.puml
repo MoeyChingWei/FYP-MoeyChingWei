@@ -1,0 +1,30 @@
+@startuml
+title Activity 07 - Purchase Request Approval Routing
+
+|System|
+start
+:Read submitted request;
+:Read requester role and department;
+if (Requester is Employee?) then (yes)
+  :Find Department Executive in same department;
+  :Set next approver = Department Executive;
+elseif (Requester is Department Executive?) then (yes)
+  :Find Manager approver;
+  :Set next approver = Manager;
+else (Requester is Manager)
+  :Assign self-approval route;
+endif
+if (Approver found?) then (yes)
+  :Write approval target and audit entry;
+  :Create approval notification;
+  :Send approval email;
+  |Approver|
+  :Open approval queue;
+  :Open request detail;
+  stop
+else (no)
+  :Set routing error;
+  :Notify Admin and requester;
+  stop
+endif
+@enduml

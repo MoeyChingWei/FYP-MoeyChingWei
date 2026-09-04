@@ -1,27 +1,37 @@
 @startuml
-title Deployment Diagram - Runtime Topology
+title Deployment Diagram - OptiMind Runtime Topology
 left to right direction
 
 node "User Device" {
-  artifact "Web Browser\nReact SPA (:3000 dev)" as Browser
+  artifact "Web Browser\nReact SPA (dev :3000 / built static assets)" as Browser
 }
 
 node "Application Server" {
   artifact "Node.js + Express API\n:4000" as API
-  artifact "Prisma Client\n(runtime ORM layer)" as PrismaClient
-  folder "uploads/" as UploadFolder
+  artifact "Prisma Client\nORM runtime" as PrismaClient
+  folder "uploads/\navatars, inventory images, invoices, proofs, sources" as UploadFolder
+  folder "backups/\ndatabase and file archives" as BackupFolder
+  artifact "Scheduler\nbudget prediction jobs" as Scheduler
 }
 
 node "Database Server" {
   database "PostgreSQL\nPrisma-managed schema" as PG
 }
 
-cloud "Email Provider SMTP/API" as Mail
+cloud "Gmail OAuth + SMTP/API" as Mail
+cloud "AI Provider" as AI
 
-Browser --> API : HTTPS/HTTP REST (/api/*)
-API --> PrismaClient : query models
+Browser --> API : REST /api/*
+API --> PrismaClient : model queries and transactions
 PrismaClient --> PG : SQL
-API --> UploadFolder : file write/read
-API --> Mail : send notification/reset email
+API --> UploadFolder : upload/read files
+API --> BackupFolder : write/read backup archives
+Scheduler --> API : budget prediction jobs
+API --> Mail : reset, workflow and review emails
+API --> AI : chatbot/agent requests
 
+note right of Browser
+The frontend hides Finance navigation for users
+outside the Finance department (except Admin).
+end note
 @enduml

@@ -457,14 +457,16 @@ export default function Dashboard(): React.ReactElement {
         {primaryAction && <Button type="primary" className={styles.insightButton} icon={<RocketOutlined />} onClick={() => navigate(primaryAction.path)}>{primaryAction.label}</Button>}
       </section>
 
-      {/* Statistics Cards */}
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        {statCards.map((stat) => (
-          <Col xs={24} sm={12} lg={6} key={stat.title}>
-            <StatCard {...stat} loading={loading && !isEmployee && role !== UserRole.PAYMENT_TEAM} />
-          </Col>
-        ))}
-      </Row>
+      {/* Statistics Cards are not part of the department manager overview. */}
+      {role !== UserRole.MANAGER && (
+        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+          {statCards.map((stat) => (
+            <Col xs={24} sm={12} lg={6} key={stat.title}>
+              <StatCard {...stat} loading={loading && !isEmployee && role !== UserRole.PAYMENT_TEAM} />
+            </Col>
+          ))}
+        </Row>
+      )}
 
       {!isEmployee && (
         <Row gutter={[16, 16]} style={{ marginTop: 16 }}>

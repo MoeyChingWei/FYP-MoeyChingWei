@@ -1,0 +1,31 @@
+@startuml
+title Activity 09 - Executive Creates and Submits Purchase Order
+
+|System|
+start
+:Receive approved purchase request;
+:Copy approved items into PO draft;
+:Assign PO localId and draft status;
+:Place draft in Executive queue;
+|Department Executive|
+:Open PO Review;
+:Check supplier, payment terms and delivery date;
+:Check item quantities and prices;
+:Edit permitted PO fields;
+|Frontend|
+:Validate PO before submission;
+if (PO valid?) then (yes)
+  :POST PO submission;
+  |Backend|
+  :Verify request is APPROVED;
+  :Persist PO with status = PENDING_MANAGER;
+  :Create manager approval notification;
+  :Send manager email;
+  |Department Executive|
+  :See submitted confirmation;
+  stop
+else (no)
+  :Show invalid supplier, terms or item errors;
+  stop
+endif
+@enduml

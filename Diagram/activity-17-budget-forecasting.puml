@@ -1,0 +1,34 @@
+@startuml
+title Activity 17 - Budget Forecasting from Approved Requests
+
+|Authorized User|
+start
+:Open Budget Forecast;
+:Choose department, date range and period;
+|Frontend|
+:Check role and department scope;
+if (Scope allowed?) then (yes)
+  :GET /api/budget/forecast;
+  |Backend|
+  :Authenticate request;
+  :Load approved purchase requests;
+  :Filter by date and department;
+  :Read line items and calculate totals;
+  :Aggregate monthly, quarterly or yearly history;
+  if (At least three periods?) then (yes)
+    :Calculate three-period moving average;
+    :Calculate trend and confidence;
+    :Build next-period forecast;
+  else (no)
+    :Return history with empty forecast;
+  endif
+  :Return history, forecast and summary;
+  |Frontend|
+  :Render chart, total and confidence;
+  stop
+else (no)
+  :Hide cross-department data;
+  :Show access error;
+  stop
+endif
+@enduml

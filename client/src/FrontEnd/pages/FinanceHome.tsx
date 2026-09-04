@@ -4,7 +4,7 @@ import { ArrowRightOutlined, CreditCardOutlined, FileTextOutlined } from "@ant-d
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getSessionUser } from "../shared/auth/session";
-import { canApproveSupplierInvoices, isFinanceRole, UserRole } from "../shared/types/roles";
+import { canAccessFinanceModule, canApproveSupplierInvoices, UserRole } from "../shared/types/roles";
 import { hydrateSupplierInvoices, hydrateSupplierPayments, loadSupplierInvoices, loadSupplierPayments } from "../modules/supplierFulfillment/workflow";
 import styles from "./FinanceHome.module.css";
 
@@ -43,7 +43,7 @@ export default function FinanceHome(): React.ReactElement {
     };
   }, [user?.role]);
 
-  if (!user || !(isFinanceRole(user.role) || user.role === UserRole.ADMIN)) {
+  if (!user || !canAccessFinanceModule(user.role, user.department)) {
     return <div className={styles.container}><Title level={3}>{t("home.title")}</Title><Paragraph>{t("home.accessRequired")}</Paragraph></div>;
   }
 

@@ -1,83 +1,64 @@
 @startuml
-title ERD (Logical) - Purchasing Workflow Relationships
+title ERD (Logical) - Purchasing, Supplier Finance and Budget Workflow
 
 hide methods
 hide stereotypes
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
-entity "users" as User {
-  * id : Int
-  --
-  role : String
-  email : String
-}
+entity "User / Department" as User
+entity "Purchasing Lookup" as Lookup
+entity "Purchase Request\n(status in JSON payload)" as PR
+entity "Purchase Order\n(status in JSON payload)" as PO
+entity "Supplier Acknowledgement" as Ack
+entity "Supplier Delivery" as Delivery
+entity "Goods Received Note" as GRN
+entity "Supplier Invoice" as Invoice
+entity "Supplier Payment" as Payment
+entity "Monthly Budget" as Budget
+entity "Budget Prediction" as Prediction
+entity "Budget Adjustment Request" as Adjustment
+entity "Upcoming Budget Event" as Event
+entity "Notification" as Notification
 
-entity "purchasing_lookups" as PurchasingLookup {
-  * id : Int
-  --
-  kind : String
-  value : String
-}
+User ..> PR : requester / approver
+User ..> PO : executive / manager
+User ..> Ack : supplier
+User ..> Delivery : supplier
+User ..> GRN : requester verifies
+User ..> Invoice : supplier / finance
+User ..> Payment : payment team
+User ..> Adjustment : department submits / finance reviews
+User ..> Event : executive or manager records
+User ..> Prediction : authorized forecast viewer
 
-entity "purchase_request_records" as PurchaseRequestRecord {
-  * localId : String
-  --
-  payload : Json
-  status : draft/submitted/approved/rejected (in payload)
-}
+Lookup ..> PR : category, unit, terms
+PR ..> Budget : reserve and release amount
+PR ..> PO : APPROVED request creates draft
+PO ..> Ack : APPROVED PO requires acknowledgement
+Ack ..> Delivery : ACKNOWLEDGED creates pending delivery
+Delivery ..> GRN : submitted delivery creates GRN task
+GRN ..> Invoice : COMPLETED enables invoice
+Invoice ..> Payment : APPROVED creates PENDING_PAYMENT
+GRN ..> Delivery : DISCREPANCY creates resend cycle
 
-entity "purchase_order_records" as PurchaseOrderRecord {
-  * localId : String
-  --
-  payload : Json
-  status : draft/submitted/approved/rejected (in payload)
-}
+PR ..> Notification : submit, change, approve, reject
+PO ..> Notification : manager approval result
+Ack ..> Notification : supplier response
+Delivery ..> Notification : delivery submitted
+GRN ..> Notification : received or discrepancy
+Invoice ..> Notification : finance review result
+Payment ..> Notification : paid confirmation
+Adjustment ..> Notification : budget review result
+Prediction ..> Adjustment : forecast supports proposal
+Event ..> Prediction : upcoming impact context
 
-entity "supplier_order_acknowledgement_records" as SupplierOrderAckRecord {
-  * localId : String
-  --
-  payload : Json
-  status : pending/acknowledged/rejected (in payload)
-}
-
-entity "supplier_delivery_records" as SupplierDeliveryRecord {
-  * localId : String
-  --
-  payload : Json
-  status : pending delivery/delivered (in payload)
-}
-
-entity "supplier_grn_records" as SupplierGrnRecord {
-  * localId : String
-  --
-  payload : Json
-  status : received/discrepancy/completed (in payload)
-}
-
-entity "notifications" as Notification {
-  * id : Int
-  --
-  userId : Int
-  refType/refId : String
-}
-
-User ..> PurchaseRequestRecord : requester creates request
-User ..> PurchaseOrderRecord : executive/manager review and approval
-User ..> SupplierOrderAckRecord : supplier acknowledgement
-User ..> SupplierDeliveryRecord : supplier delivery actions
-User ..> SupplierGrnRecord : requester GRN verification
-
-PurchasingLookup ..> PurchaseRequestRecord : lookup values used
-PurchaseRequestRecord ..> PurchaseOrderRecord : approved request -> PO draft
-PurchaseOrderRecord ..> SupplierOrderAckRecord : approved PO -> acknowledgement
-SupplierOrderAckRecord ..> SupplierDeliveryRecord : ack approved -> delivery pending
-SupplierDeliveryRecord ..> SupplierGrnRecord : delivered -> GRN verification
-SupplierGrnRecord ..> SupplierDeliveryRecord : discrepancy -> create delivery loop
-
-PurchaseRequestRecord ..> Notification : submit/approve/reject alerts
-PurchaseOrderRecord ..> Notification : manager approval alerts
-SupplierOrderAckRecord ..> Notification : supplier ack alerts
-SupplierDeliveryRecord ..> Notification : delivery alerts
-SupplierGrnRecord ..> Notification : GRN/discrepancy alerts
-
+note "The workflow tables are physical snapshot stores. Links above are business references in JSON/localId, not SQL foreign keys." as N
+N .. PR
+N .. PO
+N .. Ack
+N .. Delivery
+N .. GRN
+N .. Invoice
+N .. Payment
 @enduml

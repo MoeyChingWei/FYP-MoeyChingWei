@@ -1,35 +1,37 @@
 @startuml
-title Sequence Diagram - Feedback Submit and Admin Notification
+title Sequence Diagram - Authenticated Feedback and Admin Notification
 
 actor User
-participant "React Frontend" as FE
+participant "React Feedback Page" as FE
 participant "Feedback Route" as FR
 database "Prisma / PostgreSQL" as DB
 participant "Notification Service" as NS
-participant "Admin Users" as Admin
+participant "Admin" as Admin
 
-User -> FE: Submit feedback form
-FE -> FR: POST /api/feedback {userId, type, description}
-FR -> FR: Validate input
-
+User -> FE: Enter type and description
+FE -> FE: Validate type and minimum 5 chars
 alt invalid input
-  FR --> FE: 400 validation error
   FE --> User: Show validation message
 else valid input
-  FR -> DB: find user
-  DB --> FR: user or null
-  alt user not found
-    FR --> FE: 404 user not found
-  else user found
-    FR -> DB: create feedback
-    DB --> FR: feedback created
-    FR -> NS: notifyAdminsForFeedback(...)
-    NS -> DB: create notification rows
-    DB --> NS: saved
-    NS --> Admin: In-app notification(s) on Overview
-    FR --> FE: 201 created + feedback payload
-    FE --> User: Show success message
+  FE -> FR: POST /api/feedback + auth token
+  FR -> FR: authenticateToken
+  FR -> FR: Use token user id (ignore body userId)
+  alt unauthenticated
+    FR --> FE: 401 unauthorized
+  else authenticated
+    FR -> DB: Create feedback(userId, type, description)
+    DB --> FR: Feedback record
+    FR -> NS: notifyAdminsForFeedback(feedback)
+    NS -> DB: Create Admin notification rows
+    NS --> Admin: In-app feedback alert
+    FR --> FE: 201 created feedback
+    FE --> User: Show submission success
   end
 end
 
+Admin -> FE: Open feedback management
+FE -> FR: GET /api/feedback
+FR -> DB: Admin reads all; user reads own
+DB --> FR: Feedback records
+FR --> FE: Feedback list and submitter details
 @enduml

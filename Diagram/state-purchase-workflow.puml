@@ -1,24 +1,36 @@
 @startuml
-title State Diagram - Purchase Workflow Lifecycle
+title State Diagram - Purchase to Payment Lifecycle
 
-[*] --> DraftRequest
-DraftRequest --> SubmittedForReview : employee submit request
-SubmittedForReview --> RequestRework : reviewer requests changes
-RequestRework --> DraftRequest : employee revises
-SubmittedForReview --> Reviewed : reviewer approves request
+[*] --> DRAFT_REQUEST
+DRAFT_REQUEST --> SUBMITTED : requester submits + budget reserved
+SUBMITTED --> REQUEST_CHANGE : approver requests changes
+REQUEST_CHANGE --> DRAFT_REQUEST : requester revises
+SUBMITTED --> REJECTED_REQUEST : PR rejected
+SUBMITTED --> APPROVED_REQUEST : PR approved
+REJECTED_REQUEST --> [*]
 
-Reviewed --> POCreated : create purchase order
-POCreated --> PendingApproval : send to approver
-PendingApproval --> ApprovalRejected : approver rejects PO
-ApprovalRejected --> POCreated : revise PO details
-PendingApproval --> ApprovedPO : approver approves PO
-
-ApprovedPO --> AcknowledgedBySupplier : supplier submits order acknowledgement
-AcknowledgedBySupplier --> DeliveryCreated : supplier creates delivery
-DeliveryCreated --> GRNPending : waiting buyer GRN processing
-GRNPending --> GoodsReceived : buyer records goods received note
-GoodsReceived --> Closed : workflow finished
-
-Closed --> [*]
-
+APPROVED_REQUEST --> DRAFT_PO : system creates PO draft
+DRAFT_PO --> PENDING_MANAGER_APPROVAL : executive submits PO
+PENDING_MANAGER_APPROVAL --> REJECTED_PO : manager rejects
+REJECTED_PO --> DRAFT_PO : executive revises
+PENDING_MANAGER_APPROVAL --> APPROVED_PO : manager approves
+APPROVED_PO --> PENDING_SUPPLIER_ACK : supplier task created
+PENDING_SUPPLIER_ACK --> SUPPLIER_REJECTED : supplier rejects
+SUPPLIER_REJECTED --> [*]
+PENDING_SUPPLIER_ACK --> ACKNOWLEDGED : supplier accepts
+ACKNOWLEDGED --> PENDING_DELIVERY : delivery record generated
+PENDING_DELIVERY --> DELIVERY_SUBMITTED : supplier submits delivery
+DELIVERY_SUBMITTED --> PENDING_GRN : requester verification task
+PENDING_GRN --> DISCREPANCY : incorrect or missing goods
+DISCREPANCY --> PENDING_DELIVERY : replacement delivery
+PENDING_GRN --> GRN_RECEIVED : goods accepted
+GRN_RECEIVED --> GRN_COMPLETED : all quantities verified
+GRN_COMPLETED --> INVOICE_DRAFT : invoice eligibility created
+INVOICE_DRAFT --> PENDING_INVOICE_APPROVAL : supplier submits invoice
+PENDING_INVOICE_APPROVAL --> INVOICE_REJECTED : Finance rejects
+INVOICE_REJECTED --> INVOICE_DRAFT : supplier corrects and resubmits
+PENDING_INVOICE_APPROVAL --> INVOICE_APPROVED : Finance approves
+INVOICE_APPROVED --> PENDING_PAYMENT : payment record created
+PENDING_PAYMENT --> PAID : Payment Team processes with proof
+PAID --> [*]
 @enduml

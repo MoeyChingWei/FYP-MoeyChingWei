@@ -1,52 +1,85 @@
 @startuml
-title Data Flow Diagram (Level 0 - Detailed)
+title Data Flow Diagram (Level 0) - Current ERP Scope
 left to right direction
 
 actor Employee
-actor Admin
-actor "Department Executive" as DeptExecutive
+actor "Department Executive" as Executive
+actor Manager
+actor "Treasury / Finance Officer" as Finance
+actor "Payment Team" as Payment
 actor Supplier
+actor Admin
 
-rectangle "P1 Auth & User Access" as P1
-rectangle "P2 Purchasing/Supplier Workflow" as P2
-rectangle "P3 Notification Service" as P3
-rectangle "P4 Feedback Management" as P4
-rectangle "P5 Admin Configuration" as P5
+rectangle "P1 Identity and RBAC" as P1
+rectangle "P2 Purchase Request and PO Workflow" as P2
+rectangle "P3 Supplier Fulfillment" as P3
+rectangle "P4 Supplier Finance" as P4
+rectangle "P5 Budget Forecast and Approval" as P5
+rectangle "P6 Notifications and Email" as P6
+rectangle "P7 Feedback and AI" as P7
+rectangle "P8 Administration and Export" as P8
 
-database "D1 Users" as D1
-database "D2 Workflow Stores" as D2
-database "D3 Notifications" as D3
-database "D4 Feedbacks" as D4
-database "D5 Purchasing Lookups" as D5
+database "D1 Users / Departments" as D1
+database "D2 Workflow Snapshot Stores" as D2
+database "D3 Supplier Inventory / Tax / Bank" as D3
+database "D4 Invoice / Payment Stores" as D4
+database "D5 Monthly Budgets / Predictions / Events" as D5
+database "D6 Notifications / Feedback / Audit" as D6
+database "D7 Chat Sessions / Sources" as D7
+database "D8 Backup History / Backup Files" as D8
+cloud "Gmail / SMTP" as Mail
+cloud "AI Provider" as AI
 
-Employee --> P1 : credentials/profile updates
-Admin --> P1 : credentials/profile updates
-DeptExecutive --> P1 : credentials/profile updates
-Supplier --> P1 : credentials/profile updates
-P1 --> D1 : read/write user data
+Employee --> P1 : login, profile
+Executive --> P1 : login, profile
+Manager --> P1 : login, profile
+Finance --> P1 : login, profile
+Payment --> P1 : login, profile
+Supplier --> P1 : login, profile
+Admin --> P1 : login, profile
+P1 --> D1 : users, roles, departments, reset codes
 
-Employee --> P2 : request/review data
-DeptExecutive --> P2 : request approval + PO review actions
-Admin --> P2 : PO approval oversight actions
-Supplier --> P2 : order ack/delivery/grn-status data
-P2 --> D2 : read/write workflow records
-P2 --> P3 : workflow event trigger
-P2 --> D5 : read purchasing lookups
+Employee --> P2 : create and submit PR
+Executive --> P2 : review PR, create PO
+Manager --> P2 : approve PO
+Admin --> P2 : oversight
+P2 <--> D2 : PR, PO records and status payloads
+P2 --> P5 : reserve/release budget
+P2 --> P6 : workflow notifications
 
-P3 --> D3 : create/read/update notifications
-P3 --> Employee : in-app notifications
-P3 --> Admin : in-app notifications
-P3 --> DeptExecutive : in-app notifications
-P3 --> Supplier : in-app notifications
+Supplier --> P3 : acknowledgement, delivery, inventory
+Employee --> P3 : GRN verification
+P3 <--> D2 : ack, delivery, GRN records
+P3 <--> D3 : supplier inventory
+P3 --> P6 : fulfilment alerts
 
-Employee --> P4 : submit feedback
-Admin --> P4 : view feedback list
-P4 --> D4 : create/read feedback
-P4 --> P3 : notify admin for new feedback
+Supplier --> P4 : invoice submission
+Finance --> P4 : invoice approval/rejection
+Payment --> P4 : payment processing
+P4 <--> D4 : protected invoice/payment records
+P4 <--> D3 : supplier bank and tax data
+P4 --> P6 : finance notifications
 
-Admin --> P5 : manage roles/lookups
-P5 --> D1 : user role updates
-P5 --> D5 : lookup updates
-P5 --> P3 : optional admin change notifications
+Executive --> P5 : forecast context and proposal
+Manager --> P5 : forecast context and proposal
+Finance --> P5 : budget approval
+Admin --> P5 : budget administration
+P5 <--> D5 : budgets, predictions, upcoming events, adjustments
+P5 --> P6 : budget notifications
 
+Employee --> P7 : feedback and AI question
+Supplier --> P7 : AI question
+Admin --> P7 : feedback review
+P7 <--> D6 : feedback and audit events
+P7 <--> D7 : chat, source files and chunks
+P7 --> AI : prompt/document context
+AI --> P7 : response
+
+Admin --> P8 : users, lookups, audit, export, backup
+P8 <--> D1 : user and lookup changes
+P8 <--> D6 : audit logs
+P8 <--> D8 : database, file and full backups
+
+P6 <--> D6 : create/read/update notifications
+P6 --> Mail : reset, workflow and review email
 @enduml

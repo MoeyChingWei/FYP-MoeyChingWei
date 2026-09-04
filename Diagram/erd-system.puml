@@ -1,9 +1,10 @@
 @startuml
-title ERD (Physical) - OptiMind Core Data Model
+title ERD (Physical) - OptiMind Current Prisma Data Model
 
 hide methods
 hide stereotypes
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
 entity "users" as User {
   * id : Int <<PK>>
@@ -15,8 +16,15 @@ entity "users" as User {
   department : String?
   avatarUrl : String?
   isActive : Boolean
+  preferredLanguage : Language
 }
-
+entity "departments" as Department {
+  * id : Int <<PK>>
+  --
+  code : String <<UQ>>
+  name : String
+  isActive : Boolean
+}
 entity "notifications" as Notification {
   * id : Int <<PK>>
   --
@@ -31,7 +39,6 @@ entity "notifications" as Notification {
   createdAt : DateTime
   readAt : DateTime?
 }
-
 entity "feedbacks" as Feedback {
   * id : Int <<PK>>
   --
@@ -43,7 +50,16 @@ entity "feedbacks" as Feedback {
   createdAt : DateTime
   updatedAt : DateTime
 }
-
+entity "audit_logs" as AuditLog {
+  * id : Int <<PK>>
+  --
+  userId : Int? <<FK>>
+  action : String
+  entity : String
+  entityId : String?
+  status : String
+  createdAt : DateTime
+}
 entity "role_change_audits" as RoleChangeAudit {
   * id : Int <<PK>>
   --
@@ -51,23 +67,17 @@ entity "role_change_audits" as RoleChangeAudit {
   fromRole : String
   toRole : String
   actorEmail : String
-  actorName : String?
   createdAt : DateTime
 }
-
 entity "password_reset_codes" as PasswordResetCode {
   * id : Int <<PK>>
   --
   userId : Int <<FK>>
   email : String
   codeHash : String
-  salt : String
-  attempts : Int
   expiresAt : DateTime
   usedAt : DateTime?
-  createdAt : DateTime
 }
-
 entity "purchasing_lookups" as PurchasingLookup {
   * id : Int <<PK>>
   --
@@ -76,7 +86,6 @@ entity "purchasing_lookups" as PurchasingLookup {
   createdAt : DateTime
   (kind, value) : UNIQUE
 }
-
 entity "purchase_request_records" as PurchaseRequestRecord {
   * localId : String <<PK>>
   --
@@ -84,7 +93,6 @@ entity "purchase_request_records" as PurchaseRequestRecord {
   createdAt : DateTime
   updatedAt : DateTime
 }
-
 entity "purchase_order_records" as PurchaseOrderRecord {
   * localId : String <<PK>>
   --
@@ -92,34 +100,194 @@ entity "purchase_order_records" as PurchaseOrderRecord {
   createdAt : DateTime
   updatedAt : DateTime
 }
-
-entity "supplier_order_acknowledgement_records" as SupplierOrderAckRecord {
+entity "supplier_order_acknowledgement_records" as SupplierOrderAck {
   * localId : String <<PK>>
   --
   payload : Json
   createdAt : DateTime
   updatedAt : DateTime
 }
-
-entity "supplier_delivery_records" as SupplierDeliveryRecord {
+entity "supplier_delivery_records" as SupplierDelivery {
   * localId : String <<PK>>
   --
   payload : Json
   createdAt : DateTime
   updatedAt : DateTime
 }
-
-entity "supplier_grn_records" as SupplierGrnRecord {
+entity "supplier_grn_records" as SupplierGrn {
   * localId : String <<PK>>
   --
   payload : Json
   createdAt : DateTime
   updatedAt : DateTime
+}
+entity "supplier_invoice_records" as SupplierInvoice {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+entity "supplier_payment_records" as SupplierPayment {
+  * localId : String <<PK>>
+  --
+  payload : Json
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+entity "supplier_inventory_items" as SupplierInventory {
+  * id : String <<PK>>
+  --
+  supplierId : Int <<FK>>
+  itemName : String
+  category : String
+  quantity : Int
+  reservedQuantity : Int
+  unit : String
+  unitPrice : Float
+}
+entity "supplier_bank_details" as SupplierBank {
+  * supplierId : Int <<PK, FK>>
+  --
+  bankName : String?
+  accountName : String?
+  accountNumber : String?
+  updatedAt : DateTime
+}
+entity "supplier_tax_settings" as SupplierTax {
+  * supplierId : Int <<PK, FK>>
+  --
+  taxApplies : Boolean
+  taxType : String
+  taxRate : Float
+  taxRules : Json?
+  updatedAt : DateTime
+}
+entity "monthly_budgets" as MonthlyBudget {
+  * id : Int <<PK>>
+  --
+  departmentId : Int <<FK>>
+  year : Int
+  month : Int
+  allocatedAmount : Decimal
+  spentAmount : Decimal
+  reservedAmount : Decimal
+}
+entity "budget_adjustment_requests" as BudgetAdjustment {
+  * id : Int <<PK>>
+  --
+  departmentId : Int <<FK>>
+  requestedBy : Int <<FK>>
+  reviewedBy : Int? <<FK>>
+  requestType : String
+  requestedAmount : Decimal
+  targetYear : Int
+  targetMonth : Int
+  status : String
+}
+entity "budget_predictions" as BudgetPrediction {
+  * id : Int <<PK>>
+  --
+  departmentId : Int? <<FK>>
+  triggeredBy : Int? <<FK>>
+  predictedAmount : Decimal
+  targetYear : Int
+  targetMonth : Int
+  confidence : String
+  algorithm : String
+}
+entity "budget_upcoming_events" as BudgetEvent {
+  * id : Int <<PK>>
+  --
+  departmentId : Int <<FK>>
+  createdBy : Int <<FK>>
+  title : String
+  targetYear : Int
+  targetMonth : Int
+  estimatedImpact : Decimal
+  status : String
+}
+entity "chat_sessions" as ChatSession {
+  * id : String <<PK>>
+  --
+  userId : Int <<FK>>
+  title : String?
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+entity "chat_messages" as ChatMessage {
+  * id : Int <<PK>>
+  --
+  sessionId : String <<FK>>
+  role : String
+  content : String
+  createdAt : DateTime
+}
+entity "message_attachments" as MessageAttachment {
+  * id : String <<PK>>
+  --
+  messageId : Int <<FK>>
+  fileName : String
+  fileUrl : String
+  fileType : String
+  fileSize : Int
+}
+entity "sources" as Source {
+  * id : String <<PK>>
+  --
+  userId : Int <<FK>>
+  sessionId : String? <<FK>>
+  fileName : String
+  filePath : String
+  fileType : String
+  fileSize : Int
+}
+entity "source_chunks" as SourceChunk {
+  * id : String <<PK>>
+  --
+  sourceId : String <<FK>>
+  content : String
+  chunkIndex : Int
+}
+entity "backup_history" as BackupHistory {
+  * id : Int <<PK>>
+  --
+  backupType : String
+  fileName : String
+  filePath : String
+  status : String
+  startedAt : DateTime
+  completedAt : DateTime?
 }
 
 User ||--o{ Notification
 User ||--o{ Feedback
 User ||--o{ RoleChangeAudit : targetId
 User ||--o{ PasswordResetCode
+User ||--o{ SupplierInventory : supplierId
+User ||--o| SupplierBank : supplierId
+User ||--o| SupplierTax : supplierId
+User ||--o{ BudgetAdjustment : requestedBy
+User ||--o{ BudgetAdjustment : reviewedBy
+User ||--o{ BudgetPrediction : triggeredBy
+User ||--o{ BudgetEvent : createdBy
+User ||--o{ ChatSession
+User ||--o{ Source
+Department ||--o{ MonthlyBudget
+Department ||--o{ BudgetAdjustment
+Department ||--o{ BudgetPrediction
+Department ||--o{ BudgetEvent
+ChatSession ||--o{ ChatMessage
+ChatSession ||--o{ Source
+ChatMessage ||--o{ MessageAttachment
+Source ||--o{ SourceChunk
 
+note "Workflow records use localId and JSON business references; they intentionally have no SQL foreign keys." as N1
+N1 .. PurchaseRequestRecord
+N1 .. PurchaseOrderRecord
+N1 .. SupplierOrderAck
+N1 .. SupplierDelivery
+N1 .. SupplierGrn
+N1 .. SupplierInvoice
+N1 .. SupplierPayment
 @enduml

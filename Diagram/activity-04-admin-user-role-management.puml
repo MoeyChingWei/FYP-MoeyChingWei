@@ -1,0 +1,50 @@
+@startuml
+title Activity 04 - Admin User and Role Management
+
+|Admin|
+start
+:Open User Access;
+:Load user list;
+|Frontend|
+:GET /api/admin/users;
+|Backend|
+:Authenticate Admin role;
+if (Admin authorized?) then (yes)
+  :Read users, roles and departments;
+  |Frontend|
+  :Display searchable list;
+  if (Create or edit user?) then (yes)
+    :Enter email, name, department and role;
+    :Validate required values;
+    if (Values valid?) then (yes)
+      :POST or PATCH user;
+      |Backend|
+      :Check unique email and valid role;
+      if (Business rules pass?) then (yes)
+        :Persist user record;
+        |Frontend|
+        :Refresh list and show success;
+      else (no)
+        :Return conflict or validation error;
+        |Frontend|
+        :Show error;
+      endif
+    else (no)
+      :Show form errors;
+    endif
+  endif
+  if (Deactivate user?) then (yes)
+    :Confirm action;
+    :PATCH account status;
+    |Backend|
+    :Persist inactive status;
+    |Frontend|
+    :Remove user from active list;
+  endif
+else (no)
+  :Return 403;
+  |Frontend|
+  :Redirect to Overview;
+endif
+stop
+@enduml

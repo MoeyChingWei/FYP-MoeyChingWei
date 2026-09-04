@@ -1,0 +1,24 @@
+@startuml
+title Activity 23 - Purchasing Lookup Master Data
+
+|Admin or authorized user|
+start
+:Open Category Selection;
+:Choose departments, roles, item categories, units or payment terms;
+|Frontend|
+:Load lookup data;
+if (Create or edit lookup?) then (yes)
+  :Enter name, code and active state;
+  :Validate uniqueness and required fields;
+  if (Valid?) then (yes)
+    :POST or PATCH lookup;
+    |Backend|
+    :Verify role and persist lookup;
+    |Frontend|
+    :Refresh lookup table;
+  else (no)
+    :Show validation error;
+  endif
+endif
+stop
+@enduml

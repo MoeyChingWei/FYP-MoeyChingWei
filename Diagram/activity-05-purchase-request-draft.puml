@@ -1,0 +1,36 @@
+@startuml
+title Activity 05 - Create and Save Purchase Request Draft
+
+|Requester|
+start
+:Open Purchasing > Creation;
+:Select department and required date;
+:Add item row;
+:Choose category and unit;
+:Enter quantity, unit price and justification;
+:Attach optional image or document;
+|Frontend|
+:Calculate line total and request total;
+:Validate draft-safe fields;
+if (Save Draft clicked?) then (yes)
+  :Generate localId;
+  :Serialize request payload with status = DRAFT;
+  :Save local draft;
+  :Queue workflow sync;
+  |Backend|
+  :Persist purchase-request record;
+  if (Storage succeeds?) then (yes)
+    |Frontend|
+    :Show draft saved;
+    :Keep draft in requester list;
+    stop
+  else (no)
+    |Frontend|
+    :Keep local copy and show sync warning;
+    stop
+  endif
+else (continue editing)
+  :Return to form;
+  stop
+endif
+@enduml
