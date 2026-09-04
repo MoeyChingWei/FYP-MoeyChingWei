@@ -16,7 +16,7 @@ describe('Department Model', () => {
 
   afterAll(async () => {
     if (createdDeptId) {
-      await prisma.department.delete({ where: { id: createdDeptId } }).catch(() => {});
+      await prisma.departments.delete({ where: { id: createdDeptId } }).catch(() => {});
     }
     await prisma.$disconnect();
     await pool.end();
@@ -24,12 +24,13 @@ describe('Department Model', () => {
 
   test('should create department with required fields', async () => {
     const timestamp = Date.now();
-    const dept = await prisma.department.create({
+    const dept = await prisma.departments.create({
       data: {
         code: `ENG${timestamp}`.substring(0, 10),
         name: 'Engineering',
         description: 'Software development department',
-        isActive: true
+        isActive: true,
+        updatedAt: new Date(),
       }
     });
 

@@ -98,11 +98,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
         activeSessionId = await createNewSession(userId);
         setSessionId(activeSessionId);
       }
-      window.localStorage.setItem(`optimind-chat-session-${userId}`, activeSessionId);
+      if (!activeSessionId) throw new Error('Unable to create chat session');
+      const sessionIdForRequest = activeSessionId;
+      window.localStorage.setItem(`optimind-chat-session-${userId}`, sessionIdForRequest);
 
       const attachments: any[] = [];
       for (const file of selectedFiles) {
-        attachments.push(await uploadAttachment(file, activeSessionId, userId));
+        attachments.push(await uploadAttachment(file, sessionIdForRequest, userId));
       }
 
       const content = messageText.trim() || (attachments.length > 0 ? '[Image]' : '');
@@ -119,7 +121,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
       const response = await sendMessage({
         userId,
         message: content,
-        sessionId: activeSessionId,
+        sessionId: sessionIdForRequest,
         attachmentData: attachments.length > 0 ? attachments : undefined,
       });
 
@@ -207,7 +209,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, onClose, onNewMessage }
           </div>
         </div>
       }
-      bodyStyle={{ padding: 0, height: 'calc(100% - 57px)' }}
+      styles={{ body: { padding: 0, height: 'calc(100% - 57px)' } }}
       style={{ height: '100%' }}
     >
       <div className="chatbot-content">

@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import MessageAttachment from './MessageAttachment';
 
 // Mock Ant Design Image component
-jest.mock('antd', () => ({
-  ...jest.requireActual('antd'),
+vi.mock('antd', async () => ({
+  ...(await vi.importActual<typeof import('antd')>('antd')),
   Image: ({ src, alt, preview }: any) => (
     <div data-testid="image-preview">
       <img src={src} alt={alt} />
@@ -49,7 +50,7 @@ describe('MessageAttachment Component', () => {
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders nothing when attachments array is empty', () => {
@@ -117,9 +118,9 @@ describe('MessageAttachment Component', () => {
   });
 
   test('handles download button click', () => {
-    const createElementSpy = jest.spyOn(document, 'createElement');
-    const appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation(() => null as any);
-    const removeChildSpy = jest.spyOn(document.body, 'removeChild').mockImplementation(() => null as any);
+    const createElementSpy = vi.spyOn(document, 'createElement');
+    const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+    const removeChildSpy = vi.spyOn(document.body, 'removeChild');
 
     render(<MessageAttachment attachments={[mockPdfAttachment]} messageRole="user" />);
 

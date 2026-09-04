@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+﻿import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from '../prisma/generated/prisma/client/index.js';
@@ -15,10 +15,10 @@ describe('BudgetAdjustmentRequest Model', () => {
   let testDept, testUser;
 
   beforeAll(async () => {
-    testDept = await prisma.department.create({
-      data: { code: 'ADJ', name: 'Adjustment Test Dept' }
+    testDept = await prisma.departments.create({
+      data: { code: 'ADJ', name: 'Adjustment Test Dept', updatedAt: new Date() }
     });
-    testUser = await prisma.user.create({
+    testUser = await prisma.users.create({
       data: {
         email: 'adjtest@example.com',
         password: 'hashedpassword',
@@ -29,15 +29,15 @@ describe('BudgetAdjustmentRequest Model', () => {
   });
 
   afterAll(async () => {
-    await prisma.budgetAdjustmentRequest.deleteMany({ where: { departmentId: testDept.id } });
-    await prisma.department.delete({ where: { id: testDept.id } });
-    await prisma.user.delete({ where: { id: testUser.id } });
+    await prisma.budget_adjustment_requests.deleteMany({ where: { departmentId: testDept.id } });
+    await prisma.departments.delete({ where: { id: testDept.id } });
+    await prisma.users.delete({ where: { id: testUser.id } });
     await prisma.$disconnect();
     await pool.end();
   });
 
   test('should create adjustment request with pending status', async () => {
-    const request = await prisma.budgetAdjustmentRequest.create({
+    const request = await prisma.budget_adjustment_requests.create({
       data: {
         departmentId: testDept.id,
         targetYear: 2026,

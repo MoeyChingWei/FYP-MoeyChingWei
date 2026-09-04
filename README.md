@@ -254,7 +254,7 @@ cd ..\client
 npm run build
 ```
 
-后端测试依赖 `DATABASE_URL`，部分集成测试会写入数据库；建议使用独立的 test database。测试配置位于 `backend/vitest.config.js`，当前固定单 worker、关闭文件并行，以降低数据库互相干扰。
+Backend tests write integration fixtures to PostgreSQL. Configure `TEST_DATABASE_URL` before running `npm test`; Vitest rejects a missing value or a URL that points to `DATABASE_URL`, then routes all Prisma clients to the disposable test database. Start from `backend/.env.test.example` and run `npx prisma db push` against that database once. Tests use one worker with file parallelism disabled to reduce cross-test contention.
 
 可用的辅助脚本包括：
 

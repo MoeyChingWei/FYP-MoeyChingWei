@@ -26,15 +26,8 @@ export function getMainAgentBySlug(slug: string) {
  */
 export function groupAgentsByCategory(
   agents: AIAgent[]
-): Record<AgentCategory, AIAgent[]> {
-  const grouped: Record<AgentCategory, AIAgent[]> = {
-    'Code Assistant': [],
-    'Chat': [],
-    'Research': [],
-    'Creative': [],
-    'Analysis': [],
-    'Other': []
-  };
+): Record<string, AIAgent[]> {
+  const grouped: Record<string, AIAgent[]> = {};
 
   agents.forEach(agent => {
     const category = agent.category || 'Other';
@@ -64,7 +57,7 @@ export function searchAgents(agents: AIAgent[], query: string): AIAgent[] {
     }
 
     // Search in description
-    if (agent.description.toLowerCase().includes(lowerQuery)) {
+    if ((agent.description ?? agent.fullDescription ?? '').toLowerCase().includes(lowerQuery)) {
       return true;
     }
 
@@ -81,16 +74,19 @@ export function searchAgents(agents: AIAgent[], query: string): AIAgent[] {
  * Get color for a category (for UI styling)
  */
 export function getCategoryColor(category: AgentCategory): string {
-  const colorMap: Record<AgentCategory, string> = {
-    'Code Assistant': '#3b82f6', // blue
-    'Chat': '#10b981', // green
-    'Research': '#8b5cf6', // purple
-    'Creative': '#f59e0b', // amber
-    'Analysis': '#ef4444', // red
-    'Other': '#6b7280' // gray
+  const colorMap: Record<string, string> = {
+    [AgentCategory.PROCUREMENT_PLANNING]: '#3b82f6',
+    [AgentCategory.SUPPLIER_MANAGEMENT]: '#10b981',
+    [AgentCategory.ORDER_EXECUTION]: '#8b5cf6',
+    [AgentCategory.QUALITY_COMPLIANCE]: '#f59e0b',
+    [AgentCategory.FINANCIAL]: '#ef4444',
+    [AgentCategory.RISK_ANOMALY]: '#dc2626',
+    [AgentCategory.DATA_ANALYTICS]: '#2563eb',
+    [AgentCategory.COLLABORATION]: '#0891b2',
+    [AgentCategory.OPTIMIZATION]: '#16a34a',
+    [AgentCategory.USER_SUPPORT]: '#6b7280'
   };
-
-  return colorMap[category] || colorMap['Other'];
+  return colorMap[category] || '#6b7280';
 }
 
 /**
@@ -125,8 +121,8 @@ export function validateConfigValue(
       }
       break;
 
-    case 'string':
     case 'text':
+    case 'string':
       if (typeof value !== 'string') {
         return `${field.label} must be text`;
       }

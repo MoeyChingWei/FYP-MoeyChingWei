@@ -276,7 +276,7 @@ function mergeInvoicesByLocalId(
   return Array.from(merged.values());
 }
 
-function hydrateCompanyLogo<T extends { companyLogo?: string }>(
+function hydrateCompanyLogo<T extends { localId: string; companyLogo?: string }>(
   rows: T[],
   store: string,
 ): T[] {
@@ -592,7 +592,6 @@ export function createSupplierInvoiceFromGrn(row: SupplierGrnRecord): SupplierIn
     supplierAddress: row.supplierAddress,
     currency: row.currency,
     paymentTerms: row.paymentTerms,
-    subtotal: row.subtotal,
     supplierTaxApplies: row.supplierTaxApplies,
     supplierTaxType: row.supplierTaxType,
     supplierTaxRate: row.supplierTaxRate,

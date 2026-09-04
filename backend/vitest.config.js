@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    setupFiles: ['./tests/setup-test-env.js'],
     // Run tests sequentially to avoid database conflicts
     pool: 'forks',
     fileParallelism: false,

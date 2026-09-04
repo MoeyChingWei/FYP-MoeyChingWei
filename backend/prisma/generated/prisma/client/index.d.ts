@@ -38059,7 +38059,7 @@ export namespace Prisma {
     id: string
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     chat_messages?: chat_messagesCreateNestedManyWithoutChat_sessionsInput
     users: usersCreateNestedOneWithoutChat_sessionsInput
     sources?: sourcesCreateNestedManyWithoutChat_sessionsInput
@@ -38070,7 +38070,7 @@ export namespace Prisma {
     userId: number
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     chat_messages?: chat_messagesUncheckedCreateNestedManyWithoutChat_sessionsInput
     sources?: sourcesUncheckedCreateNestedManyWithoutChat_sessionsInput
   }
@@ -38100,7 +38100,7 @@ export namespace Prisma {
     userId: number
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type chat_sessionsUpdateManyMutationInput = {
@@ -38124,7 +38124,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
@@ -38138,7 +38138,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
@@ -38179,7 +38179,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type departmentsUpdateManyMutationInput = {
@@ -38307,7 +38307,7 @@ export namespace Prisma {
     status?: string
     adminComment?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     users: usersCreateNestedOneWithoutFeedbacksInput
   }
 
@@ -38319,7 +38319,7 @@ export namespace Prisma {
     status?: string
     adminComment?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type feedbacksUpdateInput = {
@@ -38351,7 +38351,7 @@ export namespace Prisma {
     status?: string
     adminComment?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type feedbacksUpdateManyMutationInput = {
@@ -38478,7 +38478,7 @@ export namespace Prisma {
     notes?: string | null
     reservedAmount?: Decimal | DecimalJsLike | number | string
     spentAmount?: Decimal | DecimalJsLike | number | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     year: number
     lastNotifiedThreshold?: number
     department: departmentsCreateNestedOneWithoutMonthly_budgetsInput
@@ -38493,7 +38493,7 @@ export namespace Prisma {
     notes?: string | null
     reservedAmount?: Decimal | DecimalJsLike | number | string
     spentAmount?: Decimal | DecimalJsLike | number | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     year: number
     lastNotifiedThreshold?: number
   }
@@ -38534,7 +38534,7 @@ export namespace Prisma {
     notes?: string | null
     reservedAmount?: Decimal | DecimalJsLike | number | string
     spentAmount?: Decimal | DecimalJsLike | number | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     year: number
     lastNotifiedThreshold?: number
   }
@@ -38743,14 +38743,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type purchase_order_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type purchase_order_recordsUpdateInput = {
@@ -38771,7 +38771,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type purchase_order_recordsUpdateManyMutationInput = {
@@ -38792,14 +38792,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type purchase_request_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type purchase_request_recordsUpdateInput = {
@@ -38820,7 +38820,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type purchase_request_recordsUpdateManyMutationInput = {
@@ -39080,14 +39080,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_delivery_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_delivery_recordsUpdateInput = {
@@ -39108,7 +39108,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_delivery_recordsUpdateManyMutationInput = {
@@ -39129,14 +39129,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_grn_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_grn_recordsUpdateInput = {
@@ -39157,7 +39157,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_grn_recordsUpdateManyMutationInput = {
@@ -39178,14 +39178,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_invoice_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_invoice_recordsUpdateInput = {
@@ -39206,7 +39206,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_invoice_recordsUpdateManyMutationInput = {
@@ -39227,14 +39227,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_payment_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_payment_recordsUpdateInput = {
@@ -39255,7 +39255,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_payment_recordsUpdateManyMutationInput = {
@@ -39283,7 +39283,7 @@ export namespace Prisma {
     unitPrice: number
     imageDataUrl?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     users: usersCreateNestedOneWithoutSupplier_inventory_itemsInput
   }
 
@@ -39299,7 +39299,7 @@ export namespace Prisma {
     unitPrice: number
     imageDataUrl?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_inventory_itemsUpdateInput = {
@@ -39344,7 +39344,7 @@ export namespace Prisma {
     unitPrice: number
     imageDataUrl?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_inventory_itemsUpdateManyMutationInput = {
@@ -39380,14 +39380,14 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_order_acknowledgement_recordsUncheckedCreateInput = {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_order_acknowledgement_recordsUpdateInput = {
@@ -39408,7 +39408,7 @@ export namespace Prisma {
     localId: string
     payload: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_order_acknowledgement_recordsUpdateManyMutationInput = {
@@ -42931,7 +42931,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
@@ -42944,7 +42944,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
@@ -43217,7 +43217,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
@@ -43230,7 +43230,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
@@ -43391,7 +43391,7 @@ export namespace Prisma {
     id: string
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     users: usersCreateNestedOneWithoutChat_sessionsInput
     sources?: sourcesCreateNestedManyWithoutChat_sessionsInput
   }
@@ -43401,7 +43401,7 @@ export namespace Prisma {
     userId: number
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     sources?: sourcesUncheckedCreateNestedManyWithoutChat_sessionsInput
   }
 
@@ -43857,7 +43857,7 @@ export namespace Prisma {
     notes?: string | null
     reservedAmount?: Decimal | DecimalJsLike | number | string
     spentAmount?: Decimal | DecimalJsLike | number | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     year: number
     lastNotifiedThreshold?: number
   }
@@ -43870,7 +43870,7 @@ export namespace Prisma {
     notes?: string | null
     reservedAmount?: Decimal | DecimalJsLike | number | string
     spentAmount?: Decimal | DecimalJsLike | number | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     year: number
     lastNotifiedThreshold?: number
   }
@@ -44028,7 +44028,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsCreateNestedManyWithoutDepartmentInput
@@ -44041,7 +44041,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
     monthly_budgets?: monthly_budgetsUncheckedCreateNestedManyWithoutDepartmentInput
@@ -44364,7 +44364,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsCreateNestedManyWithoutDepartmentInput
@@ -44377,7 +44377,7 @@ export namespace Prisma {
     description?: string | null
     isActive?: boolean
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     budget_adjustment_requests?: budget_adjustment_requestsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_predictions?: budget_predictionsUncheckedCreateNestedManyWithoutDepartmentInput
     budget_upcoming_events?: budget_upcoming_eventsUncheckedCreateNestedManyWithoutDepartmentInput
@@ -44840,7 +44840,7 @@ export namespace Prisma {
     id: string
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     chat_messages?: chat_messagesCreateNestedManyWithoutChat_sessionsInput
     users: usersCreateNestedOneWithoutChat_sessionsInput
   }
@@ -44850,7 +44850,7 @@ export namespace Prisma {
     userId: number
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     chat_messages?: chat_messagesUncheckedCreateNestedManyWithoutChat_sessionsInput
   }
 
@@ -45292,7 +45292,7 @@ export namespace Prisma {
     id: string
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     chat_messages?: chat_messagesCreateNestedManyWithoutChat_sessionsInput
     sources?: sourcesCreateNestedManyWithoutChat_sessionsInput
   }
@@ -45301,7 +45301,7 @@ export namespace Prisma {
     id: string
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     chat_messages?: chat_messagesUncheckedCreateNestedManyWithoutChat_sessionsInput
     sources?: sourcesUncheckedCreateNestedManyWithoutChat_sessionsInput
   }
@@ -45322,7 +45322,7 @@ export namespace Prisma {
     status?: string
     adminComment?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type feedbacksUncheckedCreateWithoutUsersInput = {
@@ -45332,7 +45332,7 @@ export namespace Prisma {
     status?: string
     adminComment?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type feedbacksCreateOrConnectWithoutUsersInput = {
@@ -45481,7 +45481,7 @@ export namespace Prisma {
     unitPrice: number
     imageDataUrl?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_inventory_itemsUncheckedCreateWithoutUsersInput = {
@@ -45495,7 +45495,7 @@ export namespace Prisma {
     unitPrice: number
     imageDataUrl?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type supplier_inventory_itemsCreateOrConnectWithoutUsersInput = {
@@ -46263,7 +46263,7 @@ export namespace Prisma {
     notes?: string | null
     reservedAmount?: Decimal | DecimalJsLike | number | string
     spentAmount?: Decimal | DecimalJsLike | number | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
     year: number
     lastNotifiedThreshold?: number
   }
@@ -46522,7 +46522,7 @@ export namespace Prisma {
     id: string
     title?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type feedbacksCreateManyUsersInput = {
@@ -46532,7 +46532,7 @@ export namespace Prisma {
     status?: string
     adminComment?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type notificationsCreateManyUsersInput = {
@@ -46589,7 +46589,7 @@ export namespace Prisma {
     unitPrice: number
     imageDataUrl?: string | null
     createdAt?: Date | string
-    updatedAt: Date | string
+    updatedAt?: Date | string
   }
 
   export type budget_adjustment_requestsUpdateWithoutRequesterInput = {

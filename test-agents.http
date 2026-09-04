@@ -1,5 +1,5 @@
 # Test Analytics Agent Forecasting
-POST http://localhost:5000/api/chatbot/chat
+POST http://localhost:4000/api/chatbot/chat
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 ###
 
 # Test Chatbot Query Database
-POST http://localhost:5000/api/chatbot/chat
+POST http://localhost:4000/api/chatbot/chat
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 ###
 
 # Test Chatbot Export
-POST http://localhost:5000/api/chatbot/chat
+POST http://localhost:4000/api/chatbot/chat
 Content-Type: application/json
 
 {
@@ -35,7 +35,7 @@ Content-Type: application/json
 ###
 
 # Test Chatbot Aggregate
-POST http://localhost:5000/api/chatbot/chat
+POST http://localhost:4000/api/chatbot/chat
 Content-Type: application/json
 
 {
@@ -47,7 +47,7 @@ Content-Type: application/json
 ###
 
 # Test Simple Complexity (fast response)
-POST http://localhost:5000/api/chatbot/chat
+POST http://localhost:4000/api/chatbot/chat
 Content-Type: application/json
 
 {
@@ -59,7 +59,7 @@ Content-Type: application/json
 ###
 
 # Test Advanced Complexity (detailed analysis)
-POST http://localhost:5000/api/chatbot/chat
+POST http://localhost:4000/api/chatbot/chat
 Content-Type: application/json
 
 {

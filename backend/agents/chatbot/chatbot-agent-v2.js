@@ -6,7 +6,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import logger from '../../services/simple-logger.js';
 
-const EXPORTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../exports');
+// Keep all chatbot-generated files in the directory served by
+// /api/chatbot/download/:filename.
+const EXPORTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../temp/exports');
 
 const COMMON_CATEGORIES = [
   'Office Supplies / Stationery',

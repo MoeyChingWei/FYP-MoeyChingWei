@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+﻿import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import "dotenv/config";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../prisma/generated/prisma/client/index.js';
@@ -15,22 +15,22 @@ describe('MonthlyBudget Model', () => {
   let testDept;
 
   beforeAll(async () => {
-    testDept = await prisma.department.create({
-      data: { code: 'TEST', name: 'Test Department' }
+    testDept = await prisma.departments.create({
+      data: { code: 'TEST', name: 'Test Department', updatedAt: new Date() }
     });
   });
 
   afterAll(async () => {
     if (testDept) {
-      await prisma.monthlyBudget.deleteMany({ where: { departmentId: testDept.id } });
-      await prisma.department.delete({ where: { id: testDept.id } });
+      await prisma.monthly_budgets.deleteMany({ where: { departmentId: testDept.id } });
+      await prisma.departments.delete({ where: { id: testDept.id } });
     }
     await prisma.$disconnect();
     await pool.end();
   });
 
   test('should create monthly budget with unique constraint', async () => {
-    const budget = await prisma.monthlyBudget.create({
+    const budget = await prisma.monthly_budgets.create({
       data: {
         departmentId: testDept.id,
         year: 2026,
@@ -48,7 +48,7 @@ describe('MonthlyBudget Model', () => {
 
   test('should reject duplicate department-year-month', async () => {
     await expect(
-      prisma.monthlyBudget.create({
+      prisma.monthly_budgets.create({
         data: {
           departmentId: testDept.id,
           year: 2026,

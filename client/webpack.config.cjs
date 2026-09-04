@@ -98,6 +98,14 @@ module.exports = {
     }),
     new webpack.DefinePlugin(defineEnv),
   ],
+  optimization: {
+    // Route-level React.lazy imports are loaded on demand and can be split
+    // further without adding every vendor chunk to the initial entrypoint.
+    splitChunks: {
+      chunks: 'async',
+      maxSize: 500000,
+    },
+  },
   devtool: 'eval-source-map',
   devServer: {
     host: '0.0.0.0',

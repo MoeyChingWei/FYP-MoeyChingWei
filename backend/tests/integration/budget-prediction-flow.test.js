@@ -10,15 +10,16 @@ app.use(express.json());
 
 // Mock authentication middleware for tests
 app.use((req, res, next) => {
+  const userId = Number(req.body?.userId) || 1;
   req.user = {
-    id: 1,
+    id: userId,
     email: 'test@example.com',
     role: 'Department Executive',
     department: null, // Will be set dynamically in tests
     isActive: true
   };
   req.auth = {
-    userId: 1,
+    userId,
     email: 'test@example.com'
   };
   next();

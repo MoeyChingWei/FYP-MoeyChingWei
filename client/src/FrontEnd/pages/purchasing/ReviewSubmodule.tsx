@@ -12,7 +12,7 @@ import {
   Typography,
   message,
 } from "antd";
-import type { Dayjs } from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import {
   ArrowLeftOutlined,
   DeleteOutlined,
@@ -186,13 +186,14 @@ export default function ReviewSubmodule(): React.ReactElement {
   }, [userRequests]);
 
   // Custom date cell render - highlight dates with requests
-  const cellRender = (current: Dayjs, info: any) => {
+  const cellRender = (current: Dayjs | string | number, info: any) => {
     // Only apply custom styling to date cells (not month/year cells)
     if (info.type !== 'date') {
       return info.originNode;
     }
 
-    const dateString = current.format("YYYY-MM-DD");
+    const date = dayjs.isDayjs(current) ? current : dayjs(current);
+    const dateString = date.format("YYYY-MM-DD");
     const hasRequest = datesWithRequests.has(dateString);
 
     return (
@@ -203,7 +204,7 @@ export default function ReviewSubmodule(): React.ReactElement {
           fontWeight: hasRequest ? 600 : 400,
         }}
       >
-        {current.date()}
+        {date.date()}
       </div>
     );
   };

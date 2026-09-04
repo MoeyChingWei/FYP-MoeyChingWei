@@ -12,6 +12,8 @@
     "admin:create": "node scripts/createSuperAdmin.js",
     "forecast:seed-users": "node scripts/seed-forecast-test-users.js",
     "forecast:seed-purchasing": "node scripts/seed-forecast-purchasing-data.js",
+    "forecast:seed-departments": "node scripts/seed-department-forecast-data.js",
+    "forecast:align-current-usage": "node scripts/align-current-budget-usage.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

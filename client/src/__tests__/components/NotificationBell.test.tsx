@@ -4,13 +4,14 @@ import { BrowserRouter } from "react-router-dom";
 import NotificationBell from "../../FrontEnd/components/shared/NotificationBell";
 import * as notificationsApi from "../../FrontEnd/shared/api/notifications";
 import * as session from "../../FrontEnd/shared/auth/session";
+import { vi } from "vitest";
 
-jest.mock("../../FrontEnd/shared/api/notifications");
-jest.mock("../../FrontEnd/shared/auth/session");
+vi.mock("../../FrontEnd/shared/api/notifications");
+vi.mock("../../FrontEnd/shared/auth/session");
 
-const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", async () => ({
+  ...(await vi.importActual<typeof import("react-router-dom")>("react-router-dom")),
   useNavigate: () => mockNavigate
 }));
 
@@ -49,7 +50,7 @@ describe("NotificationBell Budget Notifications", () => {
   ];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     (session.getSessionUser as jest.Mock).mockReturnValue({
       id: "user-123",
       role: "DEPARTMENT_MANAGER"

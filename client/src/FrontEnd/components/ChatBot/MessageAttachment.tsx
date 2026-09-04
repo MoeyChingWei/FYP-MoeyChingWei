@@ -33,7 +33,8 @@ const formatFileSize = (bytes: number): string => {
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  const value = bytes / Math.pow(k, i);
+  return `${i >= 2 ? Math.round(value) : parseFloat(value.toFixed(2))} ${sizes[i]}`;
 };
 
 // Helper function to get file type icon
@@ -138,7 +139,7 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachments, mess
               // File attachment with download button
               <Card
                 className="attachment-file-card"
-                bodyStyle={{ padding: '12px' }}
+                styles={{ body: { padding: '12px' } }}
               >
                 <div className="attachment-file-content">
                   <div className="attachment-file-icon">
@@ -148,7 +149,7 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachments, mess
                     <Tooltip title={attachment.fileName}>
                       <div className="attachment-file-name">
                         {attachment.fileName.length > 30
-                          ? `${attachment.fileName.substring(0, 27)}...`
+                          ? `${attachment.fileName.substring(0, 28)}...`
                           : attachment.fileName
                         }
                       </div>

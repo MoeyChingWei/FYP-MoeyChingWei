@@ -1,9 +1,10 @@
-/// <reference types="jest" />
 import { render, screen } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import App from './App';
 
-test('renders app', () => {
+test('renders app', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/TEST LAYOUT WORKING/i);
-  expect(linkElement).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText(/OptiMind/i)).toBeInTheDocument();
+  });
 });

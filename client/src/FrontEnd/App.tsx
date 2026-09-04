@@ -39,9 +39,6 @@ import {
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
-import LoginPage from "./pages/Login";
-import ForgetPasswordPage from "./pages/ForgetPassword";
-import ResetPasswordPage from "./pages/ResetPassword";
 import {
   clearSessionUser,
   getSessionUser,
@@ -59,6 +56,10 @@ import sidebarStyles from "./Sidebar.module.css";
 import appStyles from "./App.module.css";
 
 const { Sider, Content } = Layout;
+
+const LoginPage = lazy(() => import("./pages/Login"));
+const ForgetPasswordPage = lazy(() => import("./pages/ForgetPassword"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPassword"));
 
 const Dashboard = lazy(() => import("./pages/DashboardNew"));
 const AdminOverview = lazy(() => import("./pages/AdminOverview"));
@@ -859,13 +860,21 @@ function MainLayout(): React.ReactElement {
 export default function App(): React.ReactElement {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/forgot-password" element={<ForgetPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/*" element={<MainLayout />} />
-      </Routes>
+      <Suspense
+        fallback={
+          <Flex align="center" justify="center" style={{ minHeight: "100vh" }}>
+            <Spin size="large" />
+          </Flex>
+        }
+      >
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgetPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/*" element={<MainLayout />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

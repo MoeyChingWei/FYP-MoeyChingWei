@@ -88,7 +88,7 @@ export default function LookupKindTable({
     const builtRows = builtIns.map((value) => ({
       key: `b:${value}`,
       value,
-      source: tLookup('source.builtin') as const,
+      source: tLookup('source.builtin'),
       id: undefined as number | undefined,
     }));
     const customOnly = customRows.filter(
@@ -100,7 +100,7 @@ export default function LookupKindTable({
     const customTableRows = customOnly.map((r) => ({
       key: `c:${r.id}`,
       value: r.value,
-      source: tLookup('source.added') as const,
+      source: tLookup('source.added'),
       id: r.id,
     }));
     return [...builtRows, ...customTableRows];

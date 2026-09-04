@@ -7,10 +7,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const BACKEND_API_BASE = process.env.BACKEND_API_BASE || 'http://localhost:5000';
+// Keep the internal callback aligned with the Express server's default port.
+// Deployments can still override this with BACKEND_API_BASE.
+const BACKEND_API_BASE = process.env.BACKEND_API_BASE || 'http://localhost:4000';
 const EXPORT_API_ENDPOINT = '/api/export';
 const TIMEOUT_MS = 60000; // 60 seconds
-const TEMP_EXPORTS_DIR = path.join(process.cwd(), 'backend', 'temp', 'exports');
+// Resolve from this module so the path is stable whether the server is started
+// from the repository root or from the backend directory.
+const TEMP_EXPORTS_DIR = path.resolve(__dirname, '..', 'temp', 'exports');
 
 // Supported data types and formats
 const SUPPORTED_DATA_TYPES = ['purchase-requests', 'purchase-orders', 'invoices', 'suppliers'];
@@ -23,6 +27,27 @@ const FORMAT_EXTENSION_MAP = {
   csv: 'csv',
   json: 'json',
 };
+
+function normalizeDateFilters(filters = {}) {
+  const range = filters.dateRange;
+  let dateFrom = filters.dateFrom;
+  let dateTo = filters.dateTo;
+
+  if (range && typeof range === 'object') {
+    dateFrom = dateFrom || range.from || range.start;
+    dateTo = dateTo || range.to || range.end;
+  } else if (typeof range === 'string') {
+    const match = range.match(/last\s+(\d+)\s+days?/i);
+    if (match) {
+      const days = Math.max(1, Number(match[1]));
+      const now = new Date();
+      dateTo = dateTo || now.toISOString();
+      dateFrom = dateFrom || new Date(now.getTime() - (days - 1) * 86400000).toISOString();
+    }
+  }
+
+  return { dateFrom, dateTo };
+}
 
 /**
  * Handle export request from chatbot
@@ -73,7 +98,7 @@ export async function handleExport({
     format,
     filters: {
       status: filters.status || 'ALL',
-      dateRange: filters.dateRange,
+      ...normalizeDateFilters(filters),
       department: filters.department,
       limit: filters.limit || 100,
     },

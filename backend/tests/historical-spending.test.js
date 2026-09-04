@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+﻿import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from '../prisma/generated/prisma/client/index.js';
@@ -20,20 +20,20 @@ describe('Historical Spending Aggregation', () => {
     const uniqueSuffix = Math.random().toString(36).substring(2, 7);
 
     // Clean up any existing test data first
-    await prisma.purchaseRequestRecord.deleteMany({
+    await prisma.purchase_request_records.deleteMany({
       where: { localId: { startsWith: 'PR-HIST-' } }
     });
-    await prisma.user.deleteMany({
+    await prisma.users.deleteMany({
       where: { email: { contains: 'hist-' } }
     });
-    await prisma.department.deleteMany({
+    await prisma.departments.deleteMany({
       where: { code: { startsWith: 'H' } }
     });
 
-    testDept = await prisma.department.create({
-      data: { code: `H${timestamp}${uniqueSuffix}`.substring(0, 10), name: `Historical Test ${timestamp}`, isActive: true }
+    testDept = await prisma.departments.create({
+      data: { code: `H${timestamp}${uniqueSuffix}`.substring(0, 10), name: `Historical Test ${timestamp}`, isActive: true, updatedAt: new Date() }
     });
-    testUser = await prisma.user.create({
+    testUser = await prisma.users.create({
       data: {
         email: `hist-${timestamp}-${uniqueSuffix}@test.com`,
         password: 'hash',
@@ -44,7 +44,7 @@ describe('Historical Spending Aggregation', () => {
       }
     });
 
-    prRecord = await prisma.purchaseRequestRecord.create({
+    prRecord = await prisma.purchase_request_records.create({
       data: {
         localId: `PR-HIST-${timestamp}-${uniqueSuffix}`,
         payload: {
@@ -61,9 +61,9 @@ describe('Historical Spending Aggregation', () => {
   });
 
   afterAll(async () => {
-    await prisma.purchaseRequestRecord.delete({ where: { localId: prRecord.localId } });
-    await prisma.user.delete({ where: { id: testUser.id } });
-    await prisma.department.delete({ where: { id: testDept.id } });
+    await prisma.purchase_request_records.delete({ where: { localId: prRecord.localId } });
+    await prisma.users.delete({ where: { id: testUser.id } });
+    await prisma.departments.delete({ where: { id: testDept.id } });
     await prisma.$disconnect();
     await pool.end();
   });

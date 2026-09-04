@@ -478,7 +478,9 @@ router.get('/download/:filename', async (req, res) => {
     }
 
     // Construct file path
-    const exportsDir = path.join(__dirname, '..', 'exports');
+    // Chatbot export handler stores generated files in backend/temp/exports.
+    // Resolve from this module so downloads work regardless of the process cwd.
+    const exportsDir = path.join(__dirname, '..', 'temp', 'exports');
     const filePath = path.join(exportsDir, filename);
 
     // Verify file exists

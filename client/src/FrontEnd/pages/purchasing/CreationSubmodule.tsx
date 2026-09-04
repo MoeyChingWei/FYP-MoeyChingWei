@@ -578,7 +578,10 @@ export default function CreationSubmodule(): React.ReactElement {
         supplierTaxApplies: foundDraft.supplierTaxApplies ?? false,
         supplierTaxType: foundDraft.supplierTaxType ?? "NO_TAX",
         supplierTaxRate: foundDraft.supplierTaxRate ?? 0,
-        supplierTaxRules: foundDraft.supplierTaxRules ?? [],
+        supplierTaxRules: (foundDraft.supplierTaxRules ?? []).map((rule) => ({
+          taxType: rule.taxType as SupplierTaxRule["taxType"],
+          taxRate: rule.taxRate,
+        })),
         quantity: item.quantity,
         unitOfMeasurement: item.unitOfMeasurement,
         estimatedUnitPrice: item.unitPrice,

@@ -268,6 +268,7 @@ export default function ApprovalDetailSubmodule(): React.ReactElement {
         success: true,
         deductedAmount: 0,
         warnings: [] as Array<{ threshold: number; percentage: number }>,
+        reason: undefined as string | undefined,
       })
         .then(result => {
           if (result.success) {

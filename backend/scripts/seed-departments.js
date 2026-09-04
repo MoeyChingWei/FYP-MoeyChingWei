@@ -10,8 +10,8 @@ const pool = new pg.Pool({
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-export async function seedDepartmentsFromUsers() {
-  const users = await prisma.user.findMany({
+export async function seedDepartmentsFromUsers(usersToSeed) {
+  const users = usersToSeed ?? await prisma.users.findMany({
     where: {
       department: { not: null }
     },
@@ -21,7 +21,8 @@ export async function seedDepartmentsFromUsers() {
   const uniqueDepts = new Map();
 
   users.forEach(user => {
-    const deptName = user.department.trim();
+    const deptName = String(user.department ?? '').trim();
+    if (!deptName) return;
     const lowerName = deptName.toLowerCase();
 
     if (!uniqueDepts.has(lowerName)) {
@@ -33,7 +34,7 @@ export async function seedDepartmentsFromUsers() {
 
   for (const [lowerName, displayName] of uniqueDepts.entries()) {
     // Check if department with this name already exists (case-insensitive)
-    const existingByName = await prisma.department.findFirst({
+    const existingByName = await prisma.departments.findFirst({
       where: {
         name: {
           equals: displayName,
@@ -65,7 +66,7 @@ export async function seedDepartmentsFromUsers() {
         code = displayName.substring(0, 2).toUpperCase() + randomSuffix;
       }
 
-      const existing = await prisma.department.findUnique({
+      const existing = await prisma.departments.findUnique({
         where: { code }
       });
 
@@ -79,12 +80,13 @@ export async function seedDepartmentsFromUsers() {
       throw new Error(`Could not generate unique code for department "${displayName}" after ${maxAttempts} attempts`);
     }
 
-    const dept = await prisma.department.create({
+    const dept = await prisma.departments.create({
       data: {
         code,
         name: displayName,
         description: `Auto-generated from User.department field`,
-        isActive: true
+        isActive: true,
+        updatedAt: new Date(),
       }
     });
     created.push(dept.name);

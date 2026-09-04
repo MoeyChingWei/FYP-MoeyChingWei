@@ -246,7 +246,7 @@ const ExportChat: React.FC<ExportChatProps> = ({ messages, agentName, agentType 
   );
 
   return (
-    <Dropdown overlay={menu} placement="bottomRight">
+    <Dropdown menu={{ items: menu.props.items }} placement="bottomRight">
       <Button icon={<DownloadOutlined />} size="small">
         Export
       </Button>

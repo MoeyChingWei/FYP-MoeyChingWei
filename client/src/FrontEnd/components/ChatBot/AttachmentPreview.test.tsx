@@ -1,16 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import AttachmentPreview from '../AttachmentPreview';
 
 // Mock Ant Design Image component to avoid canvas issues in tests
-jest.mock('antd', () => ({
-  ...jest.requireActual('antd'),
+vi.mock('antd', async () => ({
+  ...(await vi.importActual<typeof import('antd')>('antd')),
   Image: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />
 }));
 
 describe('AttachmentPreview', () => {
-  const mockOnRemove = jest.fn();
+  const mockOnRemove = vi.fn();
 
   beforeEach(() => {
     mockOnRemove.mockClear();

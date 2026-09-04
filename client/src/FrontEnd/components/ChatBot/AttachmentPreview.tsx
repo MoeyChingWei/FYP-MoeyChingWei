@@ -63,7 +63,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ files, onRemove }
         reader.onload = (e) => {
           if (e.target?.result) {
             previews[index] = e.target.result as string;
-            setImagePreviews(prev => ({ ...prev, [index]: e.target.result as string }));
+            setImagePreviews(prev => ({ ...prev, [index]: e.target?.result as string }));
           }
         };
         reader.readAsDataURL(file);
@@ -91,7 +91,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ files, onRemove }
           <Card
             key={`${file.name}-${index}`}
             className="attachment-preview-card"
-            bodyStyle={{ padding: 8 }}
+            styles={{ body: { padding: 8 } }}
           >
             <Button
               icon={<CloseOutlined />}

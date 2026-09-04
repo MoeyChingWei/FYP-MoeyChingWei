@@ -284,14 +284,18 @@ const ChatBotPage: React.FC<ChatBotPageProps> = ({ embedded = false, onClose }) 
     setLoading(true);
     try {
       if (selectedAgent === 'chatbot') {
-        let sessionId = currentSessionId;
+        let sessionId: string | null = currentSessionId;
         if (!sessionId) {
           sessionId = await createNewSession(userId);
           setCurrentSessionId(sessionId);
         }
 
+        if (!sessionId) throw new Error('Unable to create chat session');
         setUploadingFiles(selectedFiles.length > 0);
-        const attachmentData = [];
+        const attachmentData: Array<{
+          id: string; fileName: string; fileUrl: string; fileType: string;
+          fileSize: number; mimeType: string; thumbnailUrl?: string;
+        }> = [];
         for (const file of selectedFiles) {
           if (isSourceFile(file)) {
             const sourceResult = await uploadSource(file, userId, sessionId);

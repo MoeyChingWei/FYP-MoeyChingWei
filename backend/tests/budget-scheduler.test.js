@@ -1,13 +1,20 @@
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import prisma from '../config/prisma.js';
 import { runMonthlyPredictions } from '../services/budget-scheduler.js';
 import * as predictionService from '../services/budget-prediction-service.js';
 
+vi.mock('../services/notification-service.js', () => ({
+  sendBudgetWorkflowEmail: vi.fn().mockResolvedValue({})
+}));
+
 describe('Budget Scheduler', () => {
   let testDept;
   let inactiveDept;
+  let predictionSpy;
+  let previousDepartmentStates = [];
 
   beforeAll(async () => {
+    await prisma.department.deleteMany({ where: { code: { in: ['SCHD', 'INAC'] } } });
     testDept = await prisma.department.create({
       data: { code: 'SCHD', name: 'Scheduler Test', isActive: true }
     });
@@ -16,19 +23,62 @@ describe('Budget Scheduler', () => {
       data: { code: 'INAC', name: 'Inactive Dept', isActive: false }
     });
 
+    previousDepartmentStates = await prisma.department.findMany({
+      where: { isActive: true, id: { not: testDept.id } },
+      select: { id: true }
+    });
+    if (previousDepartmentStates.length > 0) {
+      await prisma.department.updateMany({
+        where: { id: { in: previousDepartmentStates.map(({ id }) => id) } },
+        data: { isActive: false }
+      });
+    }
+
     // Clean up any existing predictions for these departments
     await prisma.budgetPrediction.deleteMany({
       where: { departmentId: { in: [testDept.id, inactiveDept.id] } }
     });
   });
 
+  beforeEach(() => {
+    predictionSpy = vi.spyOn(predictionService, 'generateDepartmentPrediction');
+    predictionSpy.mockImplementation(async (code, targetYear, targetMonth, triggeredBy = null) => {
+      const department = await prisma.department.findUnique({ where: { code } });
+      return prisma.budgetPrediction.create({
+        data: {
+          departmentId: department?.id,
+          targetYear,
+          targetMonth,
+          predictedAmount: 100000,
+          confidence: 'medium',
+          algorithm: 'test-fixture',
+          aiInsights: 'Deterministic scheduler test prediction',
+          triggerType: 'automatic',
+          triggeredBy
+        }
+      });
+    });
+  });
+
+  afterEach(() => {
+    predictionSpy?.mockRestore();
+  });
+
   afterAll(async () => {
+    if (!testDept || !inactiveDept) return;
+    await prisma.user.deleteMany({ where: { email: 'dept.head@test.com' } });
     await prisma.budgetPrediction.deleteMany({
       where: { departmentId: { in: [testDept.id, inactiveDept.id] } }
     });
     await prisma.department.deleteMany({
       where: { id: { in: [testDept.id, inactiveDept.id] } }
     });
+    if (previousDepartmentStates.length > 0) {
+      await prisma.department.updateMany({
+        where: { id: { in: previousDepartmentStates.map(({ id }) => id) } },
+        data: { isActive: true }
+      });
+    }
     await prisma.$disconnect();
   });
 
@@ -57,19 +107,30 @@ describe('Budget Scheduler', () => {
   });
 
   test('should handle prediction failures gracefully', async () => {
-    const spy = vi.spyOn(predictionService, 'generateDepartmentPrediction');
-    spy.mockImplementation((code) => {
+    predictionSpy.mockImplementation(async (code, targetYear, targetMonth, triggeredBy = null) => {
       if (code === 'SCHD') {
         throw new Error('Mock prediction failure');
       }
-      return predictionService.generateDepartmentPrediction(code);
+      const department = await prisma.department.findUnique({ where: { code } });
+      return prisma.budgetPrediction.create({
+        data: {
+          departmentId: department?.id,
+          targetYear,
+          targetMonth,
+          predictedAmount: 100000,
+          confidence: 'medium',
+          algorithm: 'test-fixture',
+          aiInsights: 'Deterministic scheduler test prediction',
+          triggerType: 'automatic',
+          triggeredBy
+        }
+      });
     });
 
     const result = await runMonthlyPredictions();
 
     expect(result.failed).toBeGreaterThanOrEqual(1);
 
-    spy.mockRestore();
   });
 
   test('should calculate correct target month and year', async () => {
@@ -90,6 +151,7 @@ describe('Budget Scheduler', () => {
 
   test('should create notifications for department heads', async () => {
     // Create a test user who is a department head
+    await prisma.user.deleteMany({ where: { email: 'dept.head@test.com' } });
     const testUser = await prisma.user.create({
       data: {
         email: 'dept.head@test.com',
@@ -123,4 +185,3 @@ describe('Budget Scheduler', () => {
     await prisma.user.delete({ where: { id: testUser.id } });
   });
 });
-

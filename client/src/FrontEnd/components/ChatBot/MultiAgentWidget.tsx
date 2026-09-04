@@ -102,7 +102,7 @@ const MultiAgentWidget: React.FC<MultiAgentWidgetProps> = ({ userId }) => {
       <div className="multi-agent-widget-buttons">
         {/* Agent selector dropdown (only show when closed) */}
         {!isOpen && (
-          <Dropdown overlay={menu} placement="topRight" trigger={['click']}>
+          <Dropdown menu={{ items: menu.props.items }} placement="topRight" trigger={['click']}>
             <Button
               type="default"
               shape="circle"

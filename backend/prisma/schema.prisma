@@ -109,7 +109,7 @@ model chat_sessions {
   userId        Int
   title         String?
   createdAt     DateTime        @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime @default(now())
   chat_messages chat_messages[]
   users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)
   sources       sources[]
@@ -125,7 +125,7 @@ model departments {
   description                String?
   isActive                   Boolean                      @default(true)
   createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime
+  updatedAt                  DateTime    @default(now())
   budget_adjustment_requests budget_adjustment_requests[]
   budget_predictions         budget_predictions[]
   budget_upcoming_events     budget_upcoming_events[]
@@ -164,7 +164,7 @@ model feedbacks {
   status       String   @default("OPEN")
   adminComment String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @default(now())
   users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([status, createdAt])
@@ -198,7 +198,7 @@ model monthly_budgets {
   notes                 String?
   reservedAmount        Decimal     @default(0) @db.Decimal(15, 2)
   spentAmount           Decimal     @default(0) @db.Decimal(15, 2)
-  updatedAt             DateTime
+  updatedAt             DateTime    @default(now())
   year                  Int
   lastNotifiedThreshold Int         @default(0)
   department            departments @relation(fields: [departmentId], references: [id], onDelete: Cascade)
@@ -248,7 +248,7 @@ model purchase_order_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -258,7 +258,7 @@ model purchase_request_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -320,7 +320,7 @@ model supplier_delivery_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -330,7 +330,7 @@ model supplier_grn_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -340,7 +340,7 @@ model supplier_invoice_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -350,7 +350,7 @@ model supplier_payment_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -368,7 +368,7 @@ model supplier_inventory_items {
   unitPrice    Float
   imageDataUrl String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @default(now())
   users        users    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@index([category])
@@ -380,7 +380,7 @@ model supplier_order_acknowledgement_records {
   localId   String   @id
   payload   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([updatedAt])

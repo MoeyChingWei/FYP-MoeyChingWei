@@ -8,7 +8,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const LOGS_DIR = path.join(__dirname, 'logs');
+const BACKEND_ROOT = path.resolve(__dirname, '..');
+const PROJECT_ROOT = path.resolve(BACKEND_ROOT, '..');
+const LOGS_DIR = path.join(BACKEND_ROOT, 'logs');
 const TEST_RESULTS = {
   totalTests: 0,
   passed: 0,
@@ -50,7 +52,7 @@ function testLogsDirectory() {
 function testLoggerFile() {
   log('info', 'Test 2: Checking simple-logger.js...');
 
-  const loggerPath = path.join(__dirname, 'services', 'simple-logger.js');
+  const loggerPath = path.join(BACKEND_ROOT, 'services', 'simple-logger.js');
 
   if (fs.existsSync(loggerPath)) {
     const content = fs.readFileSync(loggerPath, 'utf-8');
@@ -73,7 +75,7 @@ function testLoggerFile() {
 function testBaseAgent() {
   log('info', 'Test 3: Checking base-agent.js integration...');
 
-  const baseAgentPath = path.join(__dirname, 'agents', 'base-agent.js');
+  const baseAgentPath = path.join(BACKEND_ROOT, 'agents', 'base-agent.js');
 
   if (fs.existsSync(baseAgentPath)) {
     const content = fs.readFileSync(baseAgentPath, 'utf-8');
@@ -134,7 +136,7 @@ function testLogFiles() {
 function testGitignore() {
   log('info', 'Test 5: Checking .gitignore...');
 
-  const gitignorePath = path.join(__dirname, '.gitignore');
+  const gitignorePath = path.join(BACKEND_ROOT, '.gitignore');
 
   if (fs.existsSync(gitignorePath)) {
     const content = fs.readFileSync(gitignorePath, 'utf-8');
@@ -160,9 +162,9 @@ function testDocumentation() {
   log('info', 'Test 6: Checking documentation...');
 
   const docs = [
-    { name: 'CHECKLIST.md', path: path.join(__dirname, 'CHECKLIST.md') },
-    { name: 'QUICK_START.md', path: path.join(__dirname, 'QUICK_START.md') },
-    { name: 'AGENT_IMPROVEMENTS.md', path: path.join(__dirname, 'AGENT_IMPROVEMENTS.md') }
+    { name: 'CHECKLIST.md', path: path.join(PROJECT_ROOT, 'docs', '02-setup-guides', 'backend', 'CHECKLIST.md') },
+    { name: 'QUICK_START.md', path: path.join(PROJECT_ROOT, 'docs', '02-setup-guides', 'backend', 'QUICK_START.md') },
+    { name: 'AGENT_IMPROVEMENTS.md', path: path.join(PROJECT_ROOT, 'docs', '03-features', 'ai-agents', 'agents', 'AGENT_IMPROVEMENTS.md') }
   ];
 
   let found = 0;

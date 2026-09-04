@@ -120,7 +120,7 @@ const AIAssistantSubmodule: React.FC = () => {
     const query = debouncedSearch.toLowerCase();
     return agents.filter(agent => {
       const matchesName = agent.name.toLowerCase().includes(query);
-      const matchesDescription = agent.description.toLowerCase().includes(query);
+      const matchesDescription = (agent.description ?? agent.fullDescription ?? agent.shortDescription ?? '').toLowerCase().includes(query);
       const matchesCategory = CATEGORY_METADATA[agent.category].label.toLowerCase().includes(query);
 
       return matchesName || matchesDescription || matchesCategory;

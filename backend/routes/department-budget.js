@@ -55,9 +55,10 @@ router.use(authenticateRequest);
 // GET /api/department-budget/departments - List all departments
 router.get('/departments', async (req, res) => {
   try {
-    const departments = await prisma.department.findMany({
-      orderBy: { name: 'asc' }
-    });
+    const departments = await prisma.department.findMany();
+    departments.sort((left, right) =>
+      String(left.name ?? '').localeCompare(String(right.name ?? ''), undefined, { sensitivity: 'base' })
+    );
 
     res.json({
       success: true,
@@ -1471,18 +1472,7 @@ router.get('/historical/:departmentId', async (req, res) => {
       }
     };
 
-    if (preset === 'last-3-months') {
-      addRecentMonths(3);
-    } else if (preset === 'last-6-months' || !preset) {
-      addRecentMonths(6);
-    } else if (preset === 'last-12-months') {
-      addRecentMonths(12);
-    } else if (preset === 'year-over-year') {
-      periodConditions = [
-        { year: currentYear, month: currentMonth },
-        { year: currentYear - 1, month: currentMonth }
-      ];
-    } else if (startDate && endDate) {
+    if (startDate && endDate) {
       const [startYear, startMonth] = startDate.split('-').map(Number);
       const [endYear, endMonth] = endDate.split('-').map(Number);
 
@@ -1497,8 +1487,17 @@ router.get('/historical/:departmentId', async (req, res) => {
           year++;
         }
       }
-
-      dateFilter = { OR: conditions };
+    } else if (preset === 'last-3-months') {
+      addRecentMonths(3);
+    } else if (preset === 'last-6-months' || !preset) {
+      addRecentMonths(6);
+    } else if (preset === 'last-12-months') {
+      addRecentMonths(12);
+    } else if (preset === 'year-over-year') {
+      periodConditions = [
+        { year: currentYear, month: currentMonth },
+        { year: currentYear - 1, month: currentMonth }
+      ];
     }
 
     const historicalBudgets = await prisma.monthlyBudget.findMany({
@@ -1569,7 +1568,10 @@ router.get('/historical/:departmentId', async (req, res) => {
       const budget = budgetByPeriod.get(period);
       const allocated = budget ? Number(budget.allocatedAmount) : 0;
       const reserved = budget ? Number(budget.reservedAmount) : 0;
-      const spent = (spendingByPeriod.get(period) || new Decimal(0)).toDecimalPlaces(2).toNumber();
+      const spent = (spendingByPeriod.has(period)
+        ? spendingByPeriod.get(period)
+        : new Decimal(budget?.spentAmount ?? 0)
+      ).toDecimalPlaces(2).toNumber();
       const hasAllocatedBudget = Boolean(budget);
       const remaining = hasAllocatedBudget ? allocated - spent - reserved : 0;
       const utilization = allocated > 0 ? (spent / allocated) * 100 : 0;

@@ -12,6 +12,7 @@ export interface DraftLineItem {
   supplierId?: number;
   supplierName?: string;
   supplierEmail?: string;
+  supplierDepartment?: string;
   quantity: number;
   unitOfMeasurement: string;
   unitPrice: number;
@@ -33,6 +34,7 @@ export interface PurchaseRequestDraft {
   department?: string;
   companyLogo?: string;
   currency: string;
+  paymentTerms?: string;
   status: PurchaseOrderStatus;
   lineItems: DraftLineItem[];
   /** Supplier-level tax, applied once to the total purchase request. */

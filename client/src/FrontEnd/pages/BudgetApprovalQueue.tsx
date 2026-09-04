@@ -95,7 +95,7 @@ export const BudgetApprovalQueue: React.FC = () => {
     } catch (error) {
       console.error("Load requests error:", error);
       const axiosError = error as AxiosError;
-      message.error(axiosError.response?.data?.message || "Failed to load requests");
+      message.error((axiosError.response?.data as { message?: string } | undefined)?.message || "Failed to load requests");
     } finally {
       setLoading(false);
     }
@@ -215,7 +215,7 @@ export const BudgetApprovalQueue: React.FC = () => {
     }
   ];
 
-  const reviewedColumns = [
+  const reviewedColumns: any[] = [
     {
       title: "Department",
       dataIndex: ["department", "name"],
@@ -250,7 +250,7 @@ export const BudgetApprovalQueue: React.FC = () => {
         { text: "Approved", value: "approved" },
         { text: "Rejected", value: "rejected" }
       ],
-      onFilter: (value: string | number | boolean, record: AdjustmentRequest) => record.status === value
+      onFilter: (value: React.Key | boolean, record: AdjustmentRequest) => record.status === String(value)
     },
     {
       title: "Reviewed By",

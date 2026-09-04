@@ -84,7 +84,7 @@ const MultiAgentPageEnhanced: React.FC<MultiAgentPageEnhancedProps> = ({ userId 
               <Card
                 title={t('features.title')}
                 style={{ marginTop: 24 }}
-                bodyStyle={{ padding: '16px 20px' }}
+                styles={{ body: { padding: '16px 20px' } }}
               >
                 <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
                   <li dangerouslySetInnerHTML={{ __html: t('features.quickReplies') }} />
@@ -102,7 +102,7 @@ const MultiAgentPageEnhanced: React.FC<MultiAgentPageEnhancedProps> = ({ userId 
               <Card
                 title={t('tips.title')}
                 style={{ marginTop: 24 }}
-                bodyStyle={{ padding: '16px 20px' }}
+                styles={{ body: { padding: '16px 20px' } }}
               >
                 <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
                   <li dangerouslySetInnerHTML={{ __html: t('tips.quickActions') }} />

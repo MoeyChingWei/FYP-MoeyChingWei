@@ -3,7 +3,7 @@ import { Dropdown } from 'antd';
 import { GlobalOutlined, CheckOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { MenuProps } from 'antd';
-import type { SupportedLanguage } from '../../i18n/config';
+import type { SupportedLanguage } from '../../../i18n/config';
 import styles from './LanguageSelector.module.css';
 
 export default function LanguageSelector(): React.ReactElement {

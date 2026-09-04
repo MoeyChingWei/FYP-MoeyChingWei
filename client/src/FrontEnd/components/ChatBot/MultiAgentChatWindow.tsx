@@ -226,7 +226,7 @@ const MultiAgentChatWindow: React.FC<MultiAgentChatWindowProps> = ({
           </div>
         </div>
       }
-      bodyStyle={{ padding: 0, height: 'calc(100% - 73px)' }}
+      styles={{ body: { padding: 0, height: 'calc(100% - 73px)' } }}
       style={{ height: '100%' }}
     >
       <div className="multi-agent-chat-content">

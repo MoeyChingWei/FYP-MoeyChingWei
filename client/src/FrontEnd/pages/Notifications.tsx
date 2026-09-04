@@ -293,7 +293,7 @@ export default function NotificationsPage(): React.ReactElement {
                 border: row.isRead ? "1px solid #f0f0f0" : "1px solid #d6e4ff",
                 cursor: "pointer",
               }}
-              bodyStyle={{ padding: "16px 24px" }}
+              styles={{ body: { padding: "16px 24px" } }}
               onClick={() => void onOpen(row)}
             >
               <div style={{ display: "flex", gap: 16 }}>

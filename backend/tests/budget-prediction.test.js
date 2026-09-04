@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+﻿import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import "dotenv/config";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../prisma/generated/prisma/client/index.js';
@@ -13,21 +13,25 @@ const prisma = new PrismaClient({ adapter });
 
 describe('BudgetPrediction Model', () => {
   let testDept;
+  let nullDepartmentPrediction;
 
   beforeAll(async () => {
-    testDept = await prisma.department.create({
-      data: { code: 'PRED', name: 'Prediction Test Dept' }
+    testDept = await prisma.departments.create({
+      data: { code: 'PRED', name: 'Prediction Test Dept', updatedAt: new Date() }
     });
   });
 
   afterAll(async () => {
-    await prisma.budgetPrediction.deleteMany({ where: { departmentId: testDept.id } });
-    await prisma.department.delete({ where: { id: testDept.id } });
+    await prisma.budget_predictions.deleteMany({ where: { departmentId: testDept.id } });
+    if (nullDepartmentPrediction) {
+      await prisma.budget_predictions.delete({ where: { id: nullDepartmentPrediction.id } });
+    }
+    await prisma.departments.delete({ where: { id: testDept.id } });
     await prisma.$disconnect();
   });
 
   test('should create prediction with all fields', async () => {
-    const prediction = await prisma.budgetPrediction.create({
+    const prediction = await prisma.budget_predictions.create({
       data: {
         departmentId: testDept.id,
         targetYear: 2026,
@@ -51,7 +55,7 @@ describe('BudgetPrediction Model', () => {
   });
 
   test('should allow null departmentId for new departments', async () => {
-    const pred = await prisma.budgetPrediction.create({
+    nullDepartmentPrediction = await prisma.budget_predictions.create({
       data: {
         departmentId: null,
         targetYear: 2026,
@@ -64,8 +68,8 @@ describe('BudgetPrediction Model', () => {
       }
     });
 
-    expect(pred.departmentId).toBeNull();
-    expect(pred.algorithm).toBe('similar_dept');
-    expect(pred.createdAt).toBeInstanceOf(Date);
+    expect(nullDepartmentPrediction.departmentId).toBeNull();
+    expect(nullDepartmentPrediction.algorithm).toBe('similar_dept');
+    expect(nullDepartmentPrediction.createdAt).toBeInstanceOf(Date);
   });
 });

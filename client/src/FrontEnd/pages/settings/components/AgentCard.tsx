@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { AIAgent, AgentConfig } from '../../../../types/agent';
+import type { AIAgent, AgentConfig } from '../../../types/agent';
 import { getAgentConfig, saveAgentConfig } from '../../../../api/agentConfig';
 import styles from './AgentCard.module.css';
 

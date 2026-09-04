@@ -41,9 +41,12 @@ export interface WorkflowStep {
  */
 export type ConfigFieldType =
   | 'text'
+  | 'string'
   | 'number'
+  | 'boolean'
   | 'select'
   | 'multiSelect'
+  | 'multiselect'
   | 'switch'
   | 'slider'
   | 'dateRange';
@@ -73,10 +76,21 @@ export interface AIAgent {
   name: string;
   category: AgentCategory;
   status: AgentStatus;
-  description: string;
+  description?: string;
+  /** Display copy used by the configuration screens. */
+  shortDescription?: string;
+  fullDescription?: string;
   icon: string;
   workflow: WorkflowStep[];
-  configFields: ConfigField[];
+  configFields?: ConfigField[];
+  /** Legacy names retained for the generated agent catalogue. */
+  generalConfig?: ConfigField[];
+  specificConfig?: ConfigField[];
+  tags?: string[];
+  setupTime?: string;
+  estimatedSavings?: string;
+  version?: string;
+  lastUpdated?: string;
   currentConfig?: Record<string, any>;
   createdAt?: string;
   updatedAt?: string;

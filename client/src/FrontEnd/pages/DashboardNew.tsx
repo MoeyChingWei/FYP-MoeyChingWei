@@ -82,7 +82,7 @@ export default function Dashboard(): React.ReactElement {
         // Fetch dashboard statistics filtered by department
         // Super Admin sees all data, others see only their department's data
         const stats = await fetchDashboardStatistics(
-          isAdmin ? undefined : department
+          isAdmin ? undefined : (department ?? undefined)
         );
         setDashboardStats(stats);
       } catch (err: any) {
@@ -150,7 +150,7 @@ export default function Dashboard(): React.ReactElement {
         .map((grn) => grn.sourcePrNumber),
     );
     return ownedRequests.filter(
-      (request) => request.status === "COMPLETED" || completedRequestNumbers.has(request.prNumber),
+      (request) => String(request.status) === "COMPLETED" || completedRequestNumbers.has(request.prNumber),
     );
   }, [grns, ownedRequests]);
 

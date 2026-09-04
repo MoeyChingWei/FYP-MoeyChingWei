@@ -1,10 +1,11 @@
-import { describe, test, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+﻿import { describe, test, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from '../prisma/generated/prisma/client/index.js';
 import pg from "pg";
 import { generateDepartmentPrediction } from '../services/budget-prediction-service.js';
 import analyticsAgent from '../agents/analytics/analytics-agent.js';
+import { ROLES } from '../constants/roles.js';
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,7 +23,7 @@ describe('Budget Prediction Service', () => {
     const timestamp = Date.now();
 
     // Create test user for notifications
-    testUser = await prisma.user.create({
+    testUser = await prisma.users.create({
       data: {
         email: `pred-test-${timestamp}@example.com`,
         password: 'hash',
@@ -32,36 +33,40 @@ describe('Budget Prediction Service', () => {
       }
     });
 
-    testDept = await prisma.department.create({
-      data: { code: `PSVC${timestamp}`.substring(0, 10), name: 'Prediction Service Test' }
+    testDept = await prisma.departments.create({
+      data: { code: `PSVC${timestamp}`.substring(0, 10), name: 'Prediction Service Test', updatedAt: new Date() }
     });
 
-    newDept = await prisma.department.create({
-      data: { code: `NEWD${timestamp}`.substring(0, 10), name: 'New Department' }
+    newDept = await prisma.departments.create({
+      data: { code: `NEWD${timestamp}`.substring(0, 10), name: 'New Department', updatedAt: new Date() }
     });
   });
 
   afterAll(async () => {
-    await prisma.notification.deleteMany({
+    // Remove fallback-fixture users even when an assertion aborts the test.
+    await prisma.users.deleteMany({
+      where: { email: { startsWith: 'test-psvc-' } }
+    });
+    await prisma.notifications.deleteMany({
       where: { userId: testUser.id }
     });
-    await prisma.budgetPrediction.deleteMany({
+    await prisma.budget_predictions.deleteMany({
       where: {
         departmentId: {
           in: [testDept.id, newDept.id]
         }
       }
     });
-    await prisma.department.delete({ where: { id: testDept.id } });
-    await prisma.department.delete({ where: { id: newDept.id } });
-    await prisma.user.delete({ where: { id: testUser.id } });
+    await prisma.departments.delete({ where: { id: testDept.id } });
+    await prisma.departments.delete({ where: { id: newDept.id } });
+    await prisma.users.delete({ where: { id: testUser.id } });
     await prisma.$disconnect();
     await pool.end();
   });
 
   beforeEach(async () => {
     // Clean up predictions before each test
-    await prisma.budgetPrediction.deleteMany({
+    await prisma.budget_predictions.deleteMany({
       where: {
         departmentId: {
           in: [testDept.id, newDept.id]
@@ -105,23 +110,23 @@ describe('Budget Prediction Service', () => {
 
   test('should fallback to average when AI agent fails', async () => {
     // Create a test user for PSVC department
-    const testUser = await prisma.user.create({
+    const testUser = await prisma.users.create({
       data: {
         name: 'Test User PSVC',
         email: `test-psvc-${Date.now()}@test.com`,
         password: 'test123',
-        role: 'user',
-        department: 'PSVC'
+        role: ROLES.EMPLOYEE,
+        department: testDept.code
       }
     });
 
     // Create purchase request history for PSVC department
     const testLocalId = `test-pr-${Date.now()}`;
-    await prisma.purchaseRequestRecord.create({
+    await prisma.purchase_request_records.create({
       data: {
         localId: testLocalId,
         payload: {
-          department: 'Prediction Service Test',
+          department: testDept.name,
           status: 'APPROVED',
           requestorId: testUser.id,
           lineItems: [
@@ -135,7 +140,7 @@ describe('Budget Prediction Service', () => {
     const originalChat = analyticsAgent.chat;
     analyticsAgent.chat = vi.fn().mockRejectedValue(new Error('AI agent failed'));
 
-    const prediction = await generateDepartmentPrediction('PSVC', 2026, 12, null);
+    const prediction = await generateDepartmentPrediction(testDept.code, 2026, 12, null);
 
     expect(prediction).toBeDefined();
     expect(prediction.aiInsights).toContain('AI error');
@@ -145,12 +150,11 @@ describe('Budget Prediction Service', () => {
     analyticsAgent.chat = originalChat;
 
     // Clean up test data
-    await prisma.purchaseRequestRecord.delete({
+    await prisma.purchase_request_records.delete({
       where: { localId: testLocalId }
     });
-    await prisma.user.delete({
+    await prisma.users.delete({
       where: { id: testUser.id }
     });
   });
 });
-

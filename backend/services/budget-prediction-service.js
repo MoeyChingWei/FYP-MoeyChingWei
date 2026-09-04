@@ -346,7 +346,10 @@ function parseAIResponse(response) {
   const amountMatch = content.match(/(?:predicted(?:\s+(?:amount|spending|budget))?|forecast(?:ed)?(?:\s+(?:amount|spending|budget))?)\s*(?:is|:|of|for)?\s*(?:MYR|RM|\$)?\s*([\d,]+(?:\.\d{1,2})?)(?![-\d])/i);
   if (amountMatch) {
     const predictedAmount = Number(amountMatch[1].replace(/,/g, ''));
-    if (Number.isFinite(predictedAmount) && predictedAmount >= 0) {
+    // A zero-value forecast is not actionable when historical spending exists.
+    // Treat it as an invalid AI response so callAnalyticsAgent falls back to the
+    // deterministic moving-average forecast instead of persisting RM 0.00.
+    if (Number.isFinite(predictedAmount) && predictedAmount > 0) {
       return {
         predictedAmount,
         confidence: /\bhigh confidence\b/i.test(content) ? 'high' : /\bmedium confidence\b/i.test(content) ? 'medium' : 'low',

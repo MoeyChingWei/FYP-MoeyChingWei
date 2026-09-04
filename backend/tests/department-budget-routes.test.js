@@ -29,7 +29,9 @@ describe('Department Budget Routes', () => {
 
   beforeAll(async () => {
     // Clean up any existing test department first
-    await prisma.department.deleteMany({ where: { code: 'TEST-DEPT' } });
+    await prisma.department.deleteMany({
+      where: { OR: [{ code: 'TEST-DEPT' }, { name: 'TEST-DEPT' }] }
+    });
 
     testDept = await prisma.department.create({
       data: { code: 'TEST-DEPT', name: 'Test Department' }
@@ -375,7 +377,13 @@ describe('Department Budget Routes', () => {
 
     beforeAll(async () => {
       testUser = await prisma.user.create({
-        data: { email: 'depthead@test.com', password: 'hash', name: 'Dept Head', role: 'Department Executive' }
+        data: {
+          email: 'depthead@test.com',
+          password: 'hash',
+          name: 'Dept Head',
+          role: 'Department Executive',
+          department: testDept.code
+        }
       });
 
       financeUser = await prisma.user.create({

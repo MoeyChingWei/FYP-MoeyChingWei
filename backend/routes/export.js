@@ -9,6 +9,7 @@ import { formatCurrency, displayCurrency } from "../utils/currency.js";
 import { calculateWorkflowTotals } from "../utils/workflow-totals.js";
 import { formatPaymentTerm } from "../utils/payment-terms.js";
 import { getStatusDisplay } from "../utils/status-display.js";
+import { ROLES } from "../constants/roles.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -30,6 +31,11 @@ const WORKFLOW_TYPES = {
 // emails and downloads, but are intentionally not exposed through the generic
 // /api/export/workflow endpoints because they contain sensitive payment data.
 const FINANCE_WORKFLOW_TYPES = new Set(["supplier-invoice", "payment-advice"]);
+
+// The canonical role is `Admin`; `Super Admin` is retained for compatibility
+// with older workflow snapshots that may still carry that label.
+const canAccessAllDepartments = (role) =>
+  [ROLES.ADMIN, ROLES.TREASURY_FINANCE_OFFICER, "Super Admin"].includes(role);
 
 const WORKFLOW_FILENAME_PREFIXES = {
   "purchase-request": "purchase-request",
@@ -430,7 +436,7 @@ router.post("/:dataType", async (req, res) => {
             outputPath,
             {
               preparedBy: `User ${userId}`,
-              approvedBy: userRole === "Super Admin" ? "Super Admin" : undefined,
+              approvedBy: canAccessAllDepartments(userRole) ? userRole : undefined,
             }
           );
           break;
@@ -514,8 +520,9 @@ async function queryPurchaseRequests(filters, userRole, userDepartment) {
       where.createdAt.gte = new Date(filters.dateFrom);
     }
     if (filters.dateTo) {
-      where.dateTo = new Date(filters.dateTo);
-      where.createdAt.lte = new Date(where.dateTo.setHours(23, 59, 59, 999));
+      const endDate = new Date(filters.dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      where.createdAt.lte = endDate;
     }
   }
 
@@ -529,15 +536,15 @@ async function queryPurchaseRequests(filters, userRole, userDepartment) {
   return records.filter((record) => {
     const payload = record.payload;
 
-    // Super Admin sees all, others see only their department
-    if (userRole !== "Super Admin") {
+    // Admin/finance roles see all, others see only their department.
+    if (!canAccessAllDepartments(userRole)) {
       if (!userDepartment || payload.department !== userDepartment) {
         return false;
       }
     }
 
     // Apply status filter
-    if (filters.status && payload.status !== filters.status) {
+    if (filters.status && filters.status !== "ALL" && payload.status !== filters.status) {
       return false;
     }
 
@@ -563,8 +570,9 @@ async function queryPurchaseOrders(filters, userRole, userDepartment) {
       where.createdAt.gte = new Date(filters.dateFrom);
     }
     if (filters.dateTo) {
-      where.dateTo = new Date(filters.dateTo);
-      where.createdAt.lte = new Date(where.dateTo.setHours(23, 59, 59, 999));
+      const endDate = new Date(filters.dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      where.createdAt.lte = endDate;
     }
   }
 
@@ -578,15 +586,15 @@ async function queryPurchaseOrders(filters, userRole, userDepartment) {
   return records.filter((record) => {
     const payload = record.payload;
 
-    // Super Admin sees all, others see only their department
-    if (userRole !== "Super Admin") {
+    // Admin/finance roles see all, others see only their department.
+    if (!canAccessAllDepartments(userRole)) {
       if (!userDepartment || payload.department !== userDepartment) {
         return false;
       }
     }
 
     // Apply status filter
-    if (filters.status && payload.status !== filters.status) {
+    if (filters.status && filters.status !== "ALL" && payload.status !== filters.status) {
       return false;
     }
 

@@ -51,7 +51,8 @@ beforeAll(async () => {
     data: {
       code: "TEST_ADJ",
       name: "Test Adjustment Department",
-      isActive: true
+      isActive: true,
+      updatedAt: new Date(),
     }
   });
 
@@ -95,7 +96,8 @@ beforeAll(async () => {
       month: now.getMonth() + 1,
       allocatedAmount: 50000,
       spentAmount: 30000,
-      reservedAmount: 25000
+      reservedAmount: 25000,
+      updatedAt: new Date(),
     }
   });
 });
